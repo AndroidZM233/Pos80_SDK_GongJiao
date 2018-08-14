@@ -1,16 +1,35 @@
 {
     "logs": [
         {
-            "outputFile": "/Users/echo/Desktop/项目过程文档/对内研发配合相关/公交方向/微智SDK/SDKDemo_SourceCode/app/build/intermediates/incremental/mergeDebugResources/merged.dir/values-v16/values-v16.xml",
+            "outputFile": "D:\\SpeedataDemo18\\Pos80_SDK_GongJiao\\app\\build\\intermediates\\incremental\\mergeDebugResources\\merged.dir\\values-v16\\values-v16.xml",
             "map": [
                 {
-                    "source": "/Users/echo/.gradle/caches/transforms-1/files-1.1/appcompat-v7-25.0.1.aar/89d39cc1f3c41e3fd98f87ca07a30b5c/res/values-v16/values-v16.xml",
+                    "source": "C:\\Users\\42040\\.gradle\\caches\\transforms-1\\files-1.1\\support-compat-27.1.1.aar\\95de3bbc351a23486ea12f2c0cf39813\\res\\values-v16\\values-v16.xml",
                     "from": {
                         "startLines": "2",
                         "startColumns": "4",
                         "startOffsets": "55",
                         "endColumns": "65",
                         "endOffsets": "116"
+                    }
+                },
+                {
+                    "source": "C:\\Users\\42040\\.gradle\\caches\\transforms-1\\files-1.1\\appcompat-v7-27.1.1.aar\\0c15e873c626f7358d5f51330c4e3e3b\\res\\values-v16\\values-v16.xml",
+                    "from": {
+                        "startLines": "2",
+                        "startColumns": "4",
+                        "startOffsets": "55",
+                        "endLines": "5",
+                        "endColumns": "12",
+                        "endOffsets": "223"
+                    },
+                    "to": {
+                        "startLines": "3",
+                        "startColumns": "4",
+                        "startOffsets": "121",
+                        "endLines": "6",
+                        "endColumns": "12",
+                        "endOffsets": "289"
                     }
                 }
             ]
