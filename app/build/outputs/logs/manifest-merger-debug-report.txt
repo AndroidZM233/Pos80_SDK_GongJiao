@@ -1,0 +1,282 @@
+-- Merging decision tree log ---
+manifest
+ADDED from /Users/echo/Desktop/项目过程文档/对内研发配合相关/公交方向/微智SDK/SDKDemo_SourceCode/app/src/main/AndroidManifest.xml:2:1-71:12
+INJECTED from /Users/echo/Desktop/项目过程文档/对内研发配合相关/公交方向/微智SDK/SDKDemo_SourceCode/app/src/main/AndroidManifest.xml:2:1-71:12
+INJECTED from /Users/echo/Desktop/项目过程文档/对内研发配合相关/公交方向/微智SDK/SDKDemo_SourceCode/app/src/main/AndroidManifest.xml:2:1-71:12
+MERGED from [com.android.support.constraint:constraint-layout:1.0.2] /Users/echo/.gradle/caches/transforms-1/files-1.1/constraint-layout-1.0.2.aar/3df047b23dabb5b96034aaf27a84ba8b/AndroidManifest.xml:2:1-11:12
+MERGED from [com.android.support:appcompat-v7:25.0.1] /Users/echo/.gradle/caches/transforms-1/files-1.1/appcompat-v7-25.0.1.aar/89d39cc1f3c41e3fd98f87ca07a30b5c/AndroidManifest.xml:17:1-27:12
+MERGED from [com.google.android.gms:play-services-appindexing:8.4.0] /Users/echo/.gradle/caches/transforms-1/files-1.1/play-services-appindexing-8.4.0.aar/f28d9f19e51f94deaf0c8c3dd38e9137/AndroidManifest.xml:16:1-20:12
+MERGED from [com.google.android.gms:play-services-base:8.4.0] /Users/echo/.gradle/caches/transforms-1/files-1.1/play-services-base-8.4.0.aar/2c968306a6794a42f89cac274201fbbe/AndroidManifest.xml:16:1-19:12
+MERGED from [com.google.android.gms:play-services-basement:8.4.0] /Users/echo/.gradle/caches/transforms-1/files-1.1/play-services-basement-8.4.0.aar/16a0a915a01701c800a2ec215e88576c/AndroidManifest.xml:16:1-26:12
+MERGED from [com.android.support:support-v4:25.0.1] /Users/echo/.gradle/caches/transforms-1/files-1.1/support-v4-25.0.1.aar/a8ae08bad97583cddc8dadd711898355/AndroidManifest.xml:17:1-27:12
+MERGED from [com.android.support:animated-vector-drawable:25.0.1] /Users/echo/.gradle/caches/transforms-1/files-1.1/animated-vector-drawable-25.0.1.aar/91629f747e1d1abbafb8882d86e10a10/AndroidManifest.xml:17:1-24:12
+MERGED from [com.android.support:support-vector-drawable:25.0.1] /Users/echo/.gradle/caches/transforms-1/files-1.1/support-vector-drawable-25.0.1.aar/71ac53e5857399cefed79f2ad9c3d9de/AndroidManifest.xml:17:1-25:12
+MERGED from [com.android.support:support-fragment:25.0.1] /Users/echo/.gradle/caches/transforms-1/files-1.1/support-fragment-25.0.1.aar/42c6c0057b9e8353e8a52e1731a97da5/AndroidManifest.xml:17:1-27:12
+MERGED from [com.android.support:support-media-compat:25.0.1] /Users/echo/.gradle/caches/transforms-1/files-1.1/support-media-compat-25.0.1.aar/0ebfac302aedfc3f9c9bcbee466ccae7/AndroidManifest.xml:17:1-27:12
+MERGED from [com.android.support:support-core-utils:25.0.1] /Users/echo/.gradle/caches/transforms-1/files-1.1/support-core-utils-25.0.1.aar/26ef593f777c8cfdb1457b66386e6b57/AndroidManifest.xml:17:1-27:12
+MERGED from [com.android.support:support-core-ui:25.0.1] /Users/echo/.gradle/caches/transforms-1/files-1.1/support-core-ui-25.0.1.aar/1044cea4498a368c746acf9cc6dab5f9/AndroidManifest.xml:17:1-27:12
+MERGED from [com.android.support:support-compat:25.0.1] /Users/echo/.gradle/caches/transforms-1/files-1.1/support-compat-25.0.1.aar/803c8e92d17cddd77e5a66ba2069573f/AndroidManifest.xml:17:1-27:12
+INJECTED from /Users/echo/Desktop/项目过程文档/对内研发配合相关/公交方向/微智SDK/SDKDemo_SourceCode/app/src/main/AndroidManifest.xml:2:1-71:12
+INJECTED from /Users/echo/Desktop/项目过程文档/对内研发配合相关/公交方向/微智SDK/SDKDemo_SourceCode/app/src/main/AndroidManifest.xml:2:1-71:12
+	package
+		ADDED from /Users/echo/Desktop/项目过程文档/对内研发配合相关/公交方向/微智SDK/SDKDemo_SourceCode/app/src/main/AndroidManifest.xml:3:5-31
+	android:versionName
+		ADDED from /Users/echo/Desktop/项目过程文档/对内研发配合相关/公交方向/微智SDK/SDKDemo_SourceCode/app/src/main/AndroidManifest.xml:5:5-30
+		INJECTED from /Users/echo/Desktop/项目过程文档/对内研发配合相关/公交方向/微智SDK/SDKDemo_SourceCode/app/src/main/AndroidManifest.xml
+		INJECTED from /Users/echo/Desktop/项目过程文档/对内研发配合相关/公交方向/微智SDK/SDKDemo_SourceCode/app/src/main/AndroidManifest.xml
+	xmlns:android
+		ADDED from /Users/echo/Desktop/项目过程文档/对内研发配合相关/公交方向/微智SDK/SDKDemo_SourceCode/app/src/main/AndroidManifest.xml:2:11-69
+	android:versionCode
+		ADDED from /Users/echo/Desktop/项目过程文档/对内研发配合相关/公交方向/微智SDK/SDKDemo_SourceCode/app/src/main/AndroidManifest.xml:4:5-28
+		INJECTED from /Users/echo/Desktop/项目过程文档/对内研发配合相关/公交方向/微智SDK/SDKDemo_SourceCode/app/src/main/AndroidManifest.xml
+		INJECTED from /Users/echo/Desktop/项目过程文档/对内研发配合相关/公交方向/微智SDK/SDKDemo_SourceCode/app/src/main/AndroidManifest.xml
+uses-permission#android.permission.CALL_PHONE
+ADDED from /Users/echo/Desktop/项目过程文档/对内研发配合相关/公交方向/微智SDK/SDKDemo_SourceCode/app/src/main/AndroidManifest.xml:7:5-69
+	android:name
+		ADDED from /Users/echo/Desktop/项目过程文档/对内研发配合相关/公交方向/微智SDK/SDKDemo_SourceCode/app/src/main/AndroidManifest.xml:7:22-66
+uses-permission#android.permission.WAKE_LOCK
+ADDED from /Users/echo/Desktop/项目过程文档/对内研发配合相关/公交方向/微智SDK/SDKDemo_SourceCode/app/src/main/AndroidManifest.xml:8:5-68
+	android:name
+		ADDED from /Users/echo/Desktop/项目过程文档/对内研发配合相关/公交方向/微智SDK/SDKDemo_SourceCode/app/src/main/AndroidManifest.xml:8:22-65
+uses-permission#android.permission.WRITE_EXTERNAL_STORAGE
+ADDED from /Users/echo/Desktop/项目过程文档/对内研发配合相关/公交方向/微智SDK/SDKDemo_SourceCode/app/src/main/AndroidManifest.xml:9:5-81
+	android:name
+		ADDED from /Users/echo/Desktop/项目过程文档/对内研发配合相关/公交方向/微智SDK/SDKDemo_SourceCode/app/src/main/AndroidManifest.xml:9:22-78
+uses-permission#android.permission.READ_EXTERNAL_STORAGE
+ADDED from /Users/echo/Desktop/项目过程文档/对内研发配合相关/公交方向/微智SDK/SDKDemo_SourceCode/app/src/main/AndroidManifest.xml:10:5-80
+	android:name
+		ADDED from /Users/echo/Desktop/项目过程文档/对内研发配合相关/公交方向/微智SDK/SDKDemo_SourceCode/app/src/main/AndroidManifest.xml:10:22-77
+uses-permission#android.permission.MOUNT_UNMOUNT_FILESYSTEMS
+ADDED from /Users/echo/Desktop/项目过程文档/对内研发配合相关/公交方向/微智SDK/SDKDemo_SourceCode/app/src/main/AndroidManifest.xml:11:5-84
+	android:name
+		ADDED from /Users/echo/Desktop/项目过程文档/对内研发配合相关/公交方向/微智SDK/SDKDemo_SourceCode/app/src/main/AndroidManifest.xml:11:22-81
+uses-permission#android.permission.CHANGE_CONFIGURATION
+ADDED from /Users/echo/Desktop/项目过程文档/对内研发配合相关/公交方向/微智SDK/SDKDemo_SourceCode/app/src/main/AndroidManifest.xml:12:5-79
+	android:name
+		ADDED from /Users/echo/Desktop/项目过程文档/对内研发配合相关/公交方向/微智SDK/SDKDemo_SourceCode/app/src/main/AndroidManifest.xml:12:22-76
+uses-permission#android.permission.PROCESS_OUTGOING_CALLS
+ADDED from /Users/echo/Desktop/项目过程文档/对内研发配合相关/公交方向/微智SDK/SDKDemo_SourceCode/app/src/main/AndroidManifest.xml:13:5-81
+	android:name
+		ADDED from /Users/echo/Desktop/项目过程文档/对内研发配合相关/公交方向/微智SDK/SDKDemo_SourceCode/app/src/main/AndroidManifest.xml:13:22-78
+application
+ADDED from /Users/echo/Desktop/项目过程文档/对内研发配合相关/公交方向/微智SDK/SDKDemo_SourceCode/app/src/main/AndroidManifest.xml:15:5-69:19
+MERGED from [com.android.support.constraint:constraint-layout:1.0.2] /Users/echo/.gradle/caches/transforms-1/files-1.1/constraint-layout-1.0.2.aar/3df047b23dabb5b96034aaf27a84ba8b/AndroidManifest.xml:9:5-20
+MERGED from [com.android.support.constraint:constraint-layout:1.0.2] /Users/echo/.gradle/caches/transforms-1/files-1.1/constraint-layout-1.0.2.aar/3df047b23dabb5b96034aaf27a84ba8b/AndroidManifest.xml:9:5-20
+MERGED from [com.android.support:appcompat-v7:25.0.1] /Users/echo/.gradle/caches/transforms-1/files-1.1/appcompat-v7-25.0.1.aar/89d39cc1f3c41e3fd98f87ca07a30b5c/AndroidManifest.xml:25:5-20
+MERGED from [com.android.support:appcompat-v7:25.0.1] /Users/echo/.gradle/caches/transforms-1/files-1.1/appcompat-v7-25.0.1.aar/89d39cc1f3c41e3fd98f87ca07a30b5c/AndroidManifest.xml:25:5-20
+MERGED from [com.google.android.gms:play-services-appindexing:8.4.0] /Users/echo/.gradle/caches/transforms-1/files-1.1/play-services-appindexing-8.4.0.aar/f28d9f19e51f94deaf0c8c3dd38e9137/AndroidManifest.xml:19:5-20
+MERGED from [com.google.android.gms:play-services-appindexing:8.4.0] /Users/echo/.gradle/caches/transforms-1/files-1.1/play-services-appindexing-8.4.0.aar/f28d9f19e51f94deaf0c8c3dd38e9137/AndroidManifest.xml:19:5-20
+MERGED from [com.google.android.gms:play-services-basement:8.4.0] /Users/echo/.gradle/caches/transforms-1/files-1.1/play-services-basement-8.4.0.aar/16a0a915a01701c800a2ec215e88576c/AndroidManifest.xml:20:5-24:19
+MERGED from [com.google.android.gms:play-services-basement:8.4.0] /Users/echo/.gradle/caches/transforms-1/files-1.1/play-services-basement-8.4.0.aar/16a0a915a01701c800a2ec215e88576c/AndroidManifest.xml:20:5-24:19
+MERGED from [com.android.support:support-v4:25.0.1] /Users/echo/.gradle/caches/transforms-1/files-1.1/support-v4-25.0.1.aar/a8ae08bad97583cddc8dadd711898355/AndroidManifest.xml:25:5-20
+MERGED from [com.android.support:support-v4:25.0.1] /Users/echo/.gradle/caches/transforms-1/files-1.1/support-v4-25.0.1.aar/a8ae08bad97583cddc8dadd711898355/AndroidManifest.xml:25:5-20
+MERGED from [com.android.support:animated-vector-drawable:25.0.1] /Users/echo/.gradle/caches/transforms-1/files-1.1/animated-vector-drawable-25.0.1.aar/91629f747e1d1abbafb8882d86e10a10/AndroidManifest.xml:22:5-20
+MERGED from [com.android.support:animated-vector-drawable:25.0.1] /Users/echo/.gradle/caches/transforms-1/files-1.1/animated-vector-drawable-25.0.1.aar/91629f747e1d1abbafb8882d86e10a10/AndroidManifest.xml:22:5-20
+MERGED from [com.android.support:support-vector-drawable:25.0.1] /Users/echo/.gradle/caches/transforms-1/files-1.1/support-vector-drawable-25.0.1.aar/71ac53e5857399cefed79f2ad9c3d9de/AndroidManifest.xml:23:5-20
+MERGED from [com.android.support:support-vector-drawable:25.0.1] /Users/echo/.gradle/caches/transforms-1/files-1.1/support-vector-drawable-25.0.1.aar/71ac53e5857399cefed79f2ad9c3d9de/AndroidManifest.xml:23:5-20
+MERGED from [com.android.support:support-fragment:25.0.1] /Users/echo/.gradle/caches/transforms-1/files-1.1/support-fragment-25.0.1.aar/42c6c0057b9e8353e8a52e1731a97da5/AndroidManifest.xml:25:5-20
+MERGED from [com.android.support:support-fragment:25.0.1] /Users/echo/.gradle/caches/transforms-1/files-1.1/support-fragment-25.0.1.aar/42c6c0057b9e8353e8a52e1731a97da5/AndroidManifest.xml:25:5-20
+MERGED from [com.android.support:support-media-compat:25.0.1] /Users/echo/.gradle/caches/transforms-1/files-1.1/support-media-compat-25.0.1.aar/0ebfac302aedfc3f9c9bcbee466ccae7/AndroidManifest.xml:25:5-20
+MERGED from [com.android.support:support-media-compat:25.0.1] /Users/echo/.gradle/caches/transforms-1/files-1.1/support-media-compat-25.0.1.aar/0ebfac302aedfc3f9c9bcbee466ccae7/AndroidManifest.xml:25:5-20
+MERGED from [com.android.support:support-core-utils:25.0.1] /Users/echo/.gradle/caches/transforms-1/files-1.1/support-core-utils-25.0.1.aar/26ef593f777c8cfdb1457b66386e6b57/AndroidManifest.xml:25:5-20
+MERGED from [com.android.support:support-core-utils:25.0.1] /Users/echo/.gradle/caches/transforms-1/files-1.1/support-core-utils-25.0.1.aar/26ef593f777c8cfdb1457b66386e6b57/AndroidManifest.xml:25:5-20
+MERGED from [com.android.support:support-core-ui:25.0.1] /Users/echo/.gradle/caches/transforms-1/files-1.1/support-core-ui-25.0.1.aar/1044cea4498a368c746acf9cc6dab5f9/AndroidManifest.xml:25:5-20
+MERGED from [com.android.support:support-core-ui:25.0.1] /Users/echo/.gradle/caches/transforms-1/files-1.1/support-core-ui-25.0.1.aar/1044cea4498a368c746acf9cc6dab5f9/AndroidManifest.xml:25:5-20
+MERGED from [com.android.support:support-compat:25.0.1] /Users/echo/.gradle/caches/transforms-1/files-1.1/support-compat-25.0.1.aar/803c8e92d17cddd77e5a66ba2069573f/AndroidManifest.xml:25:5-20
+MERGED from [com.android.support:support-compat:25.0.1] /Users/echo/.gradle/caches/transforms-1/files-1.1/support-compat-25.0.1.aar/803c8e92d17cddd77e5a66ba2069573f/AndroidManifest.xml:25:5-20
+	android:supportsRtl
+		ADDED from /Users/echo/Desktop/项目过程文档/对内研发配合相关/公交方向/微智SDK/SDKDemo_SourceCode/app/src/main/AndroidManifest.xml:20:9-35
+	android:label
+		ADDED from /Users/echo/Desktop/项目过程文档/对内研发配合相关/公交方向/微智SDK/SDKDemo_SourceCode/app/src/main/AndroidManifest.xml:19:9-41
+	android:hardwareAccelerated
+		ADDED from /Users/echo/Desktop/项目过程文档/对内研发配合相关/公交方向/微智SDK/SDKDemo_SourceCode/app/src/main/AndroidManifest.xml:17:9-44
+	android:icon
+		ADDED from /Users/echo/Desktop/项目过程文档/对内研发配合相关/公交方向/微智SDK/SDKDemo_SourceCode/app/src/main/AndroidManifest.xml:18:9-43
+	android:allowBackup
+		ADDED from /Users/echo/Desktop/项目过程文档/对内研发配合相关/公交方向/微智SDK/SDKDemo_SourceCode/app/src/main/AndroidManifest.xml:16:9-35
+	android:theme
+		ADDED from /Users/echo/Desktop/项目过程文档/对内研发配合相关/公交方向/微智SDK/SDKDemo_SourceCode/app/src/main/AndroidManifest.xml:21:9-52
+activity#com.wpos.sdkdemo.MainActivity
+ADDED from /Users/echo/Desktop/项目过程文档/对内研发配合相关/公交方向/微智SDK/SDKDemo_SourceCode/app/src/main/AndroidManifest.xml:22:9-30:20
+	android:theme
+		ADDED from /Users/echo/Desktop/项目过程文档/对内研发配合相关/公交方向/微智SDK/SDKDemo_SourceCode/app/src/main/AndroidManifest.xml:24:13-56
+	android:name
+		ADDED from /Users/echo/Desktop/项目过程文档/对内研发配合相关/公交方向/微智SDK/SDKDemo_SourceCode/app/src/main/AndroidManifest.xml:23:13-41
+intent-filter#action:name:android.intent.action.MAIN+category:name:android.intent.category.LAUNCHER
+ADDED from /Users/echo/Desktop/项目过程文档/对内研发配合相关/公交方向/微智SDK/SDKDemo_SourceCode/app/src/main/AndroidManifest.xml:25:13-29:29
+action#android.intent.action.MAIN
+ADDED from /Users/echo/Desktop/项目过程文档/对内研发配合相关/公交方向/微智SDK/SDKDemo_SourceCode/app/src/main/AndroidManifest.xml:26:17-69
+	android:name
+		ADDED from /Users/echo/Desktop/项目过程文档/对内研发配合相关/公交方向/微智SDK/SDKDemo_SourceCode/app/src/main/AndroidManifest.xml:26:25-66
+category#android.intent.category.LAUNCHER
+ADDED from /Users/echo/Desktop/项目过程文档/对内研发配合相关/公交方向/微智SDK/SDKDemo_SourceCode/app/src/main/AndroidManifest.xml:28:17-77
+	android:name
+		ADDED from /Users/echo/Desktop/项目过程文档/对内研发配合相关/公交方向/微智SDK/SDKDemo_SourceCode/app/src/main/AndroidManifest.xml:28:27-74
+activity#com.wpos.sdkdemo.readcard.ReadCardManager
+ADDED from /Users/echo/Desktop/项目过程文档/对内研发配合相关/公交方向/微智SDK/SDKDemo_SourceCode/app/src/main/AndroidManifest.xml:31:9-62
+	android:name
+		ADDED from /Users/echo/Desktop/项目过程文档/对内研发配合相关/公交方向/微智SDK/SDKDemo_SourceCode/app/src/main/AndroidManifest.xml:31:19-59
+activity#com.wpos.sdkdemo.readcard.CardReader
+ADDED from /Users/echo/Desktop/项目过程文档/对内研发配合相关/公交方向/微智SDK/SDKDemo_SourceCode/app/src/main/AndroidManifest.xml:32:9-57
+	android:name
+		ADDED from /Users/echo/Desktop/项目过程文档/对内研发配合相关/公交方向/微智SDK/SDKDemo_SourceCode/app/src/main/AndroidManifest.xml:32:19-54
+activity#com.wpos.sdkdemo.system.SystemActivity
+ADDED from /Users/echo/Desktop/项目过程文档/对内研发配合相关/公交方向/微智SDK/SDKDemo_SourceCode/app/src/main/AndroidManifest.xml:33:9-59
+	android:name
+		ADDED from /Users/echo/Desktop/项目过程文档/对内研发配合相关/公交方向/微智SDK/SDKDemo_SourceCode/app/src/main/AndroidManifest.xml:33:19-56
+activity#com.wpos.sdkdemo.pin.Pin
+ADDED from /Users/echo/Desktop/项目过程文档/对内研发配合相关/公交方向/微智SDK/SDKDemo_SourceCode/app/src/main/AndroidManifest.xml:34:9-36:62
+	android:configChanges
+		ADDED from /Users/echo/Desktop/项目过程文档/对内研发配合相关/公交方向/微智SDK/SDKDemo_SourceCode/app/src/main/AndroidManifest.xml:36:13-59
+	android:name
+		ADDED from /Users/echo/Desktop/项目过程文档/对内研发配合相关/公交方向/微智SDK/SDKDemo_SourceCode/app/src/main/AndroidManifest.xml:35:13-36
+activity#com.wpos.sdkdemo.readcard.CardReaderNew
+ADDED from /Users/echo/Desktop/项目过程文档/对内研发配合相关/公交方向/微智SDK/SDKDemo_SourceCode/app/src/main/AndroidManifest.xml:37:9-60
+	android:name
+		ADDED from /Users/echo/Desktop/项目过程文档/对内研发配合相关/公交方向/微智SDK/SDKDemo_SourceCode/app/src/main/AndroidManifest.xml:37:19-57
+activity#com.wpos.sdkdemo.data.DataEnDecrypt
+ADDED from /Users/echo/Desktop/项目过程文档/对内研发配合相关/公交方向/微智SDK/SDKDemo_SourceCode/app/src/main/AndroidManifest.xml:38:9-56
+	android:name
+		ADDED from /Users/echo/Desktop/项目过程文档/对内研发配合相关/公交方向/微智SDK/SDKDemo_SourceCode/app/src/main/AndroidManifest.xml:38:19-53
+activity#com.wpos.sdkdemo.data.Mac
+ADDED from /Users/echo/Desktop/项目过程文档/对内研发配合相关/公交方向/微智SDK/SDKDemo_SourceCode/app/src/main/AndroidManifest.xml:39:9-46
+	android:name
+		ADDED from /Users/echo/Desktop/项目过程文档/对内研发配合相关/公交方向/微智SDK/SDKDemo_SourceCode/app/src/main/AndroidManifest.xml:39:19-43
+activity#com.wpos.sdkdemo.key.EraseKeys
+ADDED from /Users/echo/Desktop/项目过程文档/对内研发配合相关/公交方向/微智SDK/SDKDemo_SourceCode/app/src/main/AndroidManifest.xml:40:9-51
+	android:name
+		ADDED from /Users/echo/Desktop/项目过程文档/对内研发配合相关/公交方向/微智SDK/SDKDemo_SourceCode/app/src/main/AndroidManifest.xml:40:19-48
+activity#com.wpos.sdkdemo.key.KeyManager
+ADDED from /Users/echo/Desktop/项目过程文档/对内研发配合相关/公交方向/微智SDK/SDKDemo_SourceCode/app/src/main/AndroidManifest.xml:41:9-52
+	android:name
+		ADDED from /Users/echo/Desktop/项目过程文档/对内研发配合相关/公交方向/微智SDK/SDKDemo_SourceCode/app/src/main/AndroidManifest.xml:41:19-49
+activity#com.wpos.sdkdemo.util.keyrandom
+ADDED from /Users/echo/Desktop/项目过程文档/对内研发配合相关/公交方向/微智SDK/SDKDemo_SourceCode/app/src/main/AndroidManifest.xml:42:9-52
+	android:name
+		ADDED from /Users/echo/Desktop/项目过程文档/对内研发配合相关/公交方向/微智SDK/SDKDemo_SourceCode/app/src/main/AndroidManifest.xml:42:19-49
+activity#com.wpos.sdkdemo.key.KeyEx
+ADDED from /Users/echo/Desktop/项目过程文档/对内研发配合相关/公交方向/微智SDK/SDKDemo_SourceCode/app/src/main/AndroidManifest.xml:43:9-47
+	android:name
+		ADDED from /Users/echo/Desktop/项目过程文档/对内研发配合相关/公交方向/微智SDK/SDKDemo_SourceCode/app/src/main/AndroidManifest.xml:43:19-44
+activity#com.wpos.sdkdemo.print.BTPrinting
+ADDED from /Users/echo/Desktop/项目过程文档/对内研发配合相关/公交方向/微智SDK/SDKDemo_SourceCode/app/src/main/AndroidManifest.xml:44:9-54
+	android:name
+		ADDED from /Users/echo/Desktop/项目过程文档/对内研发配合相关/公交方向/微智SDK/SDKDemo_SourceCode/app/src/main/AndroidManifest.xml:44:19-51
+activity#com.wpos.sdkdemo.dukpt.DUKPT
+ADDED from /Users/echo/Desktop/项目过程文档/对内研发配合相关/公交方向/微智SDK/SDKDemo_SourceCode/app/src/main/AndroidManifest.xml:45:9-49
+	android:name
+		ADDED from /Users/echo/Desktop/项目过程文档/对内研发配合相关/公交方向/微智SDK/SDKDemo_SourceCode/app/src/main/AndroidManifest.xml:45:19-46
+activity#com.wpos.sdkdemo.print.Printing
+ADDED from /Users/echo/Desktop/项目过程文档/对内研发配合相关/公交方向/微智SDK/SDKDemo_SourceCode/app/src/main/AndroidManifest.xml:46:9-52
+	android:name
+		ADDED from /Users/echo/Desktop/项目过程文档/对内研发配合相关/公交方向/微智SDK/SDKDemo_SourceCode/app/src/main/AndroidManifest.xml:46:19-49
+activity#com.wpos.sdkdemo.print.PrinterManager
+ADDED from /Users/echo/Desktop/项目过程文档/对内研发配合相关/公交方向/微智SDK/SDKDemo_SourceCode/app/src/main/AndroidManifest.xml:47:9-58
+	android:name
+		ADDED from /Users/echo/Desktop/项目过程文档/对内研发配合相关/公交方向/微智SDK/SDKDemo_SourceCode/app/src/main/AndroidManifest.xml:47:19-55
+activity#com.wpos.sdkdemo.readcard.IDCardMana
+ADDED from /Users/echo/Desktop/项目过程文档/对内研发配合相关/公交方向/微智SDK/SDKDemo_SourceCode/app/src/main/AndroidManifest.xml:48:9-57
+	android:name
+		ADDED from /Users/echo/Desktop/项目过程文档/对内研发配合相关/公交方向/微智SDK/SDKDemo_SourceCode/app/src/main/AndroidManifest.xml:48:19-54
+activity#com.wpos.sdkdemo.sp.Spupdate
+ADDED from /Users/echo/Desktop/项目过程文档/对内研发配合相关/公交方向/微智SDK/SDKDemo_SourceCode/app/src/main/AndroidManifest.xml:49:9-49
+	android:name
+		ADDED from /Users/echo/Desktop/项目过程文档/对内研发配合相关/公交方向/微智SDK/SDKDemo_SourceCode/app/src/main/AndroidManifest.xml:49:19-46
+activity#com.wpos.sdkdemo.dock.DockTest
+ADDED from /Users/echo/Desktop/项目过程文档/对内研发配合相关/公交方向/微智SDK/SDKDemo_SourceCode/app/src/main/AndroidManifest.xml:50:9-51
+	android:name
+		ADDED from /Users/echo/Desktop/项目过程文档/对内研发配合相关/公交方向/微智SDK/SDKDemo_SourceCode/app/src/main/AndroidManifest.xml:50:19-48
+activity#com.wpos.sdkdemo.dock.Docksendpicture
+ADDED from /Users/echo/Desktop/项目过程文档/对内研发配合相关/公交方向/微智SDK/SDKDemo_SourceCode/app/src/main/AndroidManifest.xml:51:9-58
+	android:name
+		ADDED from /Users/echo/Desktop/项目过程文档/对内研发配合相关/公交方向/微智SDK/SDKDemo_SourceCode/app/src/main/AndroidManifest.xml:51:19-55
+activity#com.wpos.sdkdemo.dock.Dockupdate
+ADDED from /Users/echo/Desktop/项目过程文档/对内研发配合相关/公交方向/微智SDK/SDKDemo_SourceCode/app/src/main/AndroidManifest.xml:52:9-53
+	android:name
+		ADDED from /Users/echo/Desktop/项目过程文档/对内研发配合相关/公交方向/微智SDK/SDKDemo_SourceCode/app/src/main/AndroidManifest.xml:52:19-50
+activity#com.wpos.sdkdemo.dock.Docktesttipsshow
+ADDED from /Users/echo/Desktop/项目过程文档/对内研发配合相关/公交方向/微智SDK/SDKDemo_SourceCode/app/src/main/AndroidManifest.xml:53:9-59
+	android:name
+		ADDED from /Users/echo/Desktop/项目过程文档/对内研发配合相关/公交方向/微智SDK/SDKDemo_SourceCode/app/src/main/AndroidManifest.xml:53:19-56
+activity#com.wpos.sdkdemo.key.CheckkeyExist
+ADDED from /Users/echo/Desktop/项目过程文档/对内研发配合相关/公交方向/微智SDK/SDKDemo_SourceCode/app/src/main/AndroidManifest.xml:54:9-55
+	android:name
+		ADDED from /Users/echo/Desktop/项目过程文档/对内研发配合相关/公交方向/微智SDK/SDKDemo_SourceCode/app/src/main/AndroidManifest.xml:54:19-52
+activity#com.wpos.sdkdemo.emv.EmvActivity
+ADDED from /Users/echo/Desktop/项目过程文档/对内研发配合相关/公交方向/微智SDK/SDKDemo_SourceCode/app/src/main/AndroidManifest.xml:55:9-53
+	android:name
+		ADDED from /Users/echo/Desktop/项目过程文档/对内研发配合相关/公交方向/微智SDK/SDKDemo_SourceCode/app/src/main/AndroidManifest.xml:55:19-50
+activity#com.wpos.sdkdemo.emv.InputMoneyActivity
+ADDED from /Users/echo/Desktop/项目过程文档/对内研发配合相关/公交方向/微智SDK/SDKDemo_SourceCode/app/src/main/AndroidManifest.xml:56:9-60
+	android:name
+		ADDED from /Users/echo/Desktop/项目过程文档/对内研发配合相关/公交方向/微智SDK/SDKDemo_SourceCode/app/src/main/AndroidManifest.xml:56:19-57
+activity#com.wpos.sdkdemo.emv.PayActivity
+ADDED from /Users/echo/Desktop/项目过程文档/对内研发配合相关/公交方向/微智SDK/SDKDemo_SourceCode/app/src/main/AndroidManifest.xml:57:9-53
+	android:name
+		ADDED from /Users/echo/Desktop/项目过程文档/对内研发配合相关/公交方向/微智SDK/SDKDemo_SourceCode/app/src/main/AndroidManifest.xml:57:19-50
+receiver#com.wpos.sdkdemo.MyReceiver
+ADDED from /Users/echo/Desktop/项目过程文档/对内研发配合相关/公交方向/微智SDK/SDKDemo_SourceCode/app/src/main/AndroidManifest.xml:59:9-66:20
+	android:process
+		ADDED from /Users/echo/Desktop/项目过程文档/对内研发配合相关/公交方向/微智SDK/SDKDemo_SourceCode/app/src/main/AndroidManifest.xml:62:13-38
+	android:exported
+		ADDED from /Users/echo/Desktop/项目过程文档/对内研发配合相关/公交方向/微智SDK/SDKDemo_SourceCode/app/src/main/AndroidManifest.xml:61:13-36
+	android:name
+		ADDED from /Users/echo/Desktop/项目过程文档/对内研发配合相关/公交方向/微智SDK/SDKDemo_SourceCode/app/src/main/AndroidManifest.xml:60:13-39
+intent-filter#action:name:com.wpos.cardinfo.callback
+ADDED from /Users/echo/Desktop/项目过程文档/对内研发配合相关/公交方向/微智SDK/SDKDemo_SourceCode/app/src/main/AndroidManifest.xml:63:13-65:29
+action#com.wpos.cardinfo.callback
+ADDED from /Users/echo/Desktop/项目过程文档/对内研发配合相关/公交方向/微智SDK/SDKDemo_SourceCode/app/src/main/AndroidManifest.xml:64:17-69
+	android:name
+		ADDED from /Users/echo/Desktop/项目过程文档/对内研发配合相关/公交方向/微智SDK/SDKDemo_SourceCode/app/src/main/AndroidManifest.xml:64:25-66
+activity#com.wpos.sdkdemo.spdata.PsamIcActivity
+ADDED from /Users/echo/Desktop/项目过程文档/对内研发配合相关/公交方向/微智SDK/SDKDemo_SourceCode/app/src/main/AndroidManifest.xml:68:9-68
+	android:name
+		ADDED from /Users/echo/Desktop/项目过程文档/对内研发配合相关/公交方向/微智SDK/SDKDemo_SourceCode/app/src/main/AndroidManifest.xml:68:19-56
+uses-sdk
+INJECTED from /Users/echo/Desktop/项目过程文档/对内研发配合相关/公交方向/微智SDK/SDKDemo_SourceCode/app/src/main/AndroidManifest.xml reason: use-sdk injection requested
+INJECTED from /Users/echo/Desktop/项目过程文档/对内研发配合相关/公交方向/微智SDK/SDKDemo_SourceCode/app/src/main/AndroidManifest.xml
+INJECTED from /Users/echo/Desktop/项目过程文档/对内研发配合相关/公交方向/微智SDK/SDKDemo_SourceCode/app/src/main/AndroidManifest.xml
+MERGED from [com.android.support.constraint:constraint-layout:1.0.2] /Users/echo/.gradle/caches/transforms-1/files-1.1/constraint-layout-1.0.2.aar/3df047b23dabb5b96034aaf27a84ba8b/AndroidManifest.xml:5:5-7:41
+MERGED from [com.android.support.constraint:constraint-layout:1.0.2] /Users/echo/.gradle/caches/transforms-1/files-1.1/constraint-layout-1.0.2.aar/3df047b23dabb5b96034aaf27a84ba8b/AndroidManifest.xml:5:5-7:41
+MERGED from [com.android.support:appcompat-v7:25.0.1] /Users/echo/.gradle/caches/transforms-1/files-1.1/appcompat-v7-25.0.1.aar/89d39cc1f3c41e3fd98f87ca07a30b5c/AndroidManifest.xml:21:5-23:78
+MERGED from [com.android.support:appcompat-v7:25.0.1] /Users/echo/.gradle/caches/transforms-1/files-1.1/appcompat-v7-25.0.1.aar/89d39cc1f3c41e3fd98f87ca07a30b5c/AndroidManifest.xml:21:5-23:78
+MERGED from [com.google.android.gms:play-services-appindexing:8.4.0] /Users/echo/.gradle/caches/transforms-1/files-1.1/play-services-appindexing-8.4.0.aar/f28d9f19e51f94deaf0c8c3dd38e9137/AndroidManifest.xml:18:5-42
+MERGED from [com.google.android.gms:play-services-appindexing:8.4.0] /Users/echo/.gradle/caches/transforms-1/files-1.1/play-services-appindexing-8.4.0.aar/f28d9f19e51f94deaf0c8c3dd38e9137/AndroidManifest.xml:18:5-42
+MERGED from [com.google.android.gms:play-services-base:8.4.0] /Users/echo/.gradle/caches/transforms-1/files-1.1/play-services-base-8.4.0.aar/2c968306a6794a42f89cac274201fbbe/AndroidManifest.xml:18:5-42
+MERGED from [com.google.android.gms:play-services-base:8.4.0] /Users/echo/.gradle/caches/transforms-1/files-1.1/play-services-base-8.4.0.aar/2c968306a6794a42f89cac274201fbbe/AndroidManifest.xml:18:5-42
+MERGED from [com.google.android.gms:play-services-basement:8.4.0] /Users/echo/.gradle/caches/transforms-1/files-1.1/play-services-basement-8.4.0.aar/16a0a915a01701c800a2ec215e88576c/AndroidManifest.xml:18:5-42
+MERGED from [com.google.android.gms:play-services-basement:8.4.0] /Users/echo/.gradle/caches/transforms-1/files-1.1/play-services-basement-8.4.0.aar/16a0a915a01701c800a2ec215e88576c/AndroidManifest.xml:18:5-42
+MERGED from [com.android.support:support-v4:25.0.1] /Users/echo/.gradle/caches/transforms-1/files-1.1/support-v4-25.0.1.aar/a8ae08bad97583cddc8dadd711898355/AndroidManifest.xml:21:5-23:54
+MERGED from [com.android.support:support-v4:25.0.1] /Users/echo/.gradle/caches/transforms-1/files-1.1/support-v4-25.0.1.aar/a8ae08bad97583cddc8dadd711898355/AndroidManifest.xml:21:5-23:54
+MERGED from [com.android.support:animated-vector-drawable:25.0.1] /Users/echo/.gradle/caches/transforms-1/files-1.1/animated-vector-drawable-25.0.1.aar/91629f747e1d1abbafb8882d86e10a10/AndroidManifest.xml:20:5-44
+MERGED from [com.android.support:animated-vector-drawable:25.0.1] /Users/echo/.gradle/caches/transforms-1/files-1.1/animated-vector-drawable-25.0.1.aar/91629f747e1d1abbafb8882d86e10a10/AndroidManifest.xml:20:5-44
+MERGED from [com.android.support:support-vector-drawable:25.0.1] /Users/echo/.gradle/caches/transforms-1/files-1.1/support-vector-drawable-25.0.1.aar/71ac53e5857399cefed79f2ad9c3d9de/AndroidManifest.xml:21:5-43
+MERGED from [com.android.support:support-vector-drawable:25.0.1] /Users/echo/.gradle/caches/transforms-1/files-1.1/support-vector-drawable-25.0.1.aar/71ac53e5857399cefed79f2ad9c3d9de/AndroidManifest.xml:21:5-43
+MERGED from [com.android.support:support-fragment:25.0.1] /Users/echo/.gradle/caches/transforms-1/files-1.1/support-fragment-25.0.1.aar/42c6c0057b9e8353e8a52e1731a97da5/AndroidManifest.xml:21:5-23:60
+MERGED from [com.android.support:support-fragment:25.0.1] /Users/echo/.gradle/caches/transforms-1/files-1.1/support-fragment-25.0.1.aar/42c6c0057b9e8353e8a52e1731a97da5/AndroidManifest.xml:21:5-23:60
+MERGED from [com.android.support:support-media-compat:25.0.1] /Users/echo/.gradle/caches/transforms-1/files-1.1/support-media-compat-25.0.1.aar/0ebfac302aedfc3f9c9bcbee466ccae7/AndroidManifest.xml:21:5-23:63
+MERGED from [com.android.support:support-media-compat:25.0.1] /Users/echo/.gradle/caches/transforms-1/files-1.1/support-media-compat-25.0.1.aar/0ebfac302aedfc3f9c9bcbee466ccae7/AndroidManifest.xml:21:5-23:63
+MERGED from [com.android.support:support-core-utils:25.0.1] /Users/echo/.gradle/caches/transforms-1/files-1.1/support-core-utils-25.0.1.aar/26ef593f777c8cfdb1457b66386e6b57/AndroidManifest.xml:21:5-23:61
+MERGED from [com.android.support:support-core-utils:25.0.1] /Users/echo/.gradle/caches/transforms-1/files-1.1/support-core-utils-25.0.1.aar/26ef593f777c8cfdb1457b66386e6b57/AndroidManifest.xml:21:5-23:61
+MERGED from [com.android.support:support-core-ui:25.0.1] /Users/echo/.gradle/caches/transforms-1/files-1.1/support-core-ui-25.0.1.aar/1044cea4498a368c746acf9cc6dab5f9/AndroidManifest.xml:21:5-23:58
+MERGED from [com.android.support:support-core-ui:25.0.1] /Users/echo/.gradle/caches/transforms-1/files-1.1/support-core-ui-25.0.1.aar/1044cea4498a368c746acf9cc6dab5f9/AndroidManifest.xml:21:5-23:58
+MERGED from [com.android.support:support-compat:25.0.1] /Users/echo/.gradle/caches/transforms-1/files-1.1/support-compat-25.0.1.aar/803c8e92d17cddd77e5a66ba2069573f/AndroidManifest.xml:21:5-23:58
+MERGED from [com.android.support:support-compat:25.0.1] /Users/echo/.gradle/caches/transforms-1/files-1.1/support-compat-25.0.1.aar/803c8e92d17cddd77e5a66ba2069573f/AndroidManifest.xml:21:5-23:58
+INJECTED from /Users/echo/Desktop/项目过程文档/对内研发配合相关/公交方向/微智SDK/SDKDemo_SourceCode/app/src/main/AndroidManifest.xml
+INJECTED from /Users/echo/Desktop/项目过程文档/对内研发配合相关/公交方向/微智SDK/SDKDemo_SourceCode/app/src/main/AndroidManifest.xml
+	tools:overrideLibrary
+		ADDED from [com.android.support:appcompat-v7:25.0.1] /Users/echo/.gradle/caches/transforms-1/files-1.1/appcompat-v7-25.0.1.aar/89d39cc1f3c41e3fd98f87ca07a30b5c/AndroidManifest.xml:23:9-75
+	android:targetSdkVersion
+		INJECTED from /Users/echo/Desktop/项目过程文档/对内研发配合相关/公交方向/微智SDK/SDKDemo_SourceCode/app/src/main/AndroidManifest.xml
+		ADDED from /Users/echo/Desktop/项目过程文档/对内研发配合相关/公交方向/微智SDK/SDKDemo_SourceCode/app/src/main/AndroidManifest.xml
+		INJECTED from /Users/echo/Desktop/项目过程文档/对内研发配合相关/公交方向/微智SDK/SDKDemo_SourceCode/app/src/main/AndroidManifest.xml
+	android:minSdkVersion
+		INJECTED from /Users/echo/Desktop/项目过程文档/对内研发配合相关/公交方向/微智SDK/SDKDemo_SourceCode/app/src/main/AndroidManifest.xml
+		ADDED from /Users/echo/Desktop/项目过程文档/对内研发配合相关/公交方向/微智SDK/SDKDemo_SourceCode/app/src/main/AndroidManifest.xml
+		INJECTED from /Users/echo/Desktop/项目过程文档/对内研发配合相关/公交方向/微智SDK/SDKDemo_SourceCode/app/src/main/AndroidManifest.xml
+meta-data#com.google.android.gms.version
+ADDED from [com.google.android.gms:play-services-basement:8.4.0] /Users/echo/.gradle/caches/transforms-1/files-1.1/play-services-basement-8.4.0.aar/16a0a915a01701c800a2ec215e88576c/AndroidManifest.xml:21:9-23:69
+	android:value
+		ADDED from [com.google.android.gms:play-services-basement:8.4.0] /Users/echo/.gradle/caches/transforms-1/files-1.1/play-services-basement-8.4.0.aar/16a0a915a01701c800a2ec215e88576c/AndroidManifest.xml:23:13-66
+	android:name
+		ADDED from [com.google.android.gms:play-services-basement:8.4.0] /Users/echo/.gradle/caches/transforms-1/files-1.1/play-services-basement-8.4.0.aar/16a0a915a01701c800a2ec215e88576c/AndroidManifest.xml:22:13-58

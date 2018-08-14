@@ -1,0 +1,71 @@
+<?xml version="1.0" encoding="utf-8"?>
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    package="com.wpos.sdkdemo"
+    android:versionCode="4"
+    android:versionName="1.4">
+
+    <uses-permission android:name="android.permission.CALL_PHONE" />
+    <uses-permission android:name="android.permission.WAKE_LOCK" />
+    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
+    <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
+    <uses-permission android:name="android.permission.MOUNT_UNMOUNT_FILESYSTEMS" />
+    <uses-permission android:name="android.permission.CHANGE_CONFIGURATION" />
+    <uses-permission android:name="android.permission.PROCESS_OUTGOING_CALLS" />
+
+    <application
+        android:allowBackup="true"
+        android:hardwareAccelerated="false"
+        android:icon="@mipmap/ic_launcher"
+        android:label="@string/app_name"
+        android:supportsRtl="true"
+        android:theme="@style/AppTheme.NoActionBar">
+        <activity
+            android:name=".MainActivity"
+            android:theme="@style/AppTheme.NoActionBar">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity>
+        <activity android:name=".readcard.ReadCardManager" />
+        <activity android:name=".readcard.CardReader" />
+        <activity android:name=".system.SystemActivity" />
+        <activity
+            android:name=".pin.Pin"
+            android:configChanges="orientation|screenSize" />
+        <activity android:name=".readcard.CardReaderNew" />
+        <activity android:name=".data.DataEnDecrypt" />
+        <activity android:name=".data.Mac" />
+        <activity android:name=".key.EraseKeys" />
+        <activity android:name=".key.KeyManager" />
+        <activity android:name=".util.keyrandom" />
+        <activity android:name=".key.KeyEx" />
+        <activity android:name=".print.BTPrinting" />
+        <activity android:name=".dukpt.DUKPT" />
+        <activity android:name=".print.Printing" />
+        <activity android:name=".print.PrinterManager" />
+        <activity android:name=".readcard.IDCardMana" />
+        <activity android:name=".sp.Spupdate" />
+        <activity android:name=".dock.DockTest" />
+        <activity android:name=".dock.Docksendpicture" />
+        <activity android:name=".dock.Dockupdate" />
+        <activity android:name=".dock.Docktesttipsshow" />
+        <activity android:name=".key.CheckkeyExist" />
+        <activity android:name=".emv.EmvActivity" />
+        <activity android:name=".emv.InputMoneyActivity" />
+        <activity android:name=".emv.PayActivity" />
+
+        <receiver
+            android:name=".MyReceiver"
+            android:exported="true"
+            android:process=":remote">
+            <intent-filter>
+                <action android:name="com.wpos.cardinfo.callback" />
+            </intent-filter>
+        </receiver>
+
+        <activity android:name=".spdata.PsamIcActivity"></activity>
+    </application>
+
+</manifest>

@@ -1,0 +1,23 @@
+#Internal package file, do not edit.
+#Wed Aug 08 18:56:14 CST 2018
+2.base=/Users/echo/Desktop/项目过程文档/对内研发配合相关/公交方向/微智SDK/SDKDemo_SourceCode/app/build/intermediates/assets/debug
+0.path=wechat.png
+2.baseType=DIRECTORY
+3.base=/Users/echo/Desktop/项目过程文档/对内研发配合相关/公交方向/微智SDK/SDKDemo_SourceCode/app/build/intermediates/assets/debug
+2.set=ASSET
+1.path=logo.png
+4.base=/Users/echo/Desktop/项目过程文档/对内研发配合相关/公交方向/微智SDK/SDKDemo_SourceCode/app/build/intermediates/transforms/dexMerger/debug/0
+count=5
+2.path=fonnts/PraduhhTheGreat.ttf
+4.set=DEX
+3.path=ladybmp.png
+3.baseType=DIRECTORY
+1.set=ASSET
+4.path=classes.dex
+1.baseType=DIRECTORY
+0.base=/Users/echo/Desktop/项目过程文档/对内研发配合相关/公交方向/微智SDK/SDKDemo_SourceCode/app/build/intermediates/assets/debug
+0.baseType=DIRECTORY
+3.set=ASSET
+1.base=/Users/echo/Desktop/项目过程文档/对内研发配合相关/公交方向/微智SDK/SDKDemo_SourceCode/app/build/intermediates/assets/debug
+4.baseType=DIRECTORY
+0.set=ASSET

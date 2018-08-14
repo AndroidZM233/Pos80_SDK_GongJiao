@@ -1,0 +1,22 @@
+<resources>
+    <!-- Default screen margins, per the Android Design guidelines. -->
+    <dimen name="activity_horizontal_margin">16dp</dimen>
+    <dimen name="activity_vertical_margin">16dp</dimen>
+    <dimen name="fab_margin">16dp</dimen>
+
+    <dimen name="title_high">72dp</dimen>
+    <dimen name="edit_text_high">60dp</dimen>
+    <dimen name="button_high">68dip</dimen>
+    <dimen name="button_text_size">24sp</dimen>
+    <dimen name="text_medium_size">20sp</dimen>
+    <dimen name="text_normal_size">24sp</dimen>
+    <dimen name="divider_height">0.9dip</dimen>
+    <dimen name="input_num_text_size">25sp</dimen>
+    <dimen name="swing_card_4_plug_tip">36dp</dimen>
+    <dimen name="font_normal_text">24sp</dimen>
+    <dimen name="normal_table_row_left">120dip</dimen>
+    <dimen name="text_large_size">27sp</dimen>
+    <dimen name="text_xlarge_size">30sp</dimen>
+    <dimen name="padding_item">2dp</dimen>
+    <dimen name="input_money_yuan_text_size">50sp</dimen>
+</resources>

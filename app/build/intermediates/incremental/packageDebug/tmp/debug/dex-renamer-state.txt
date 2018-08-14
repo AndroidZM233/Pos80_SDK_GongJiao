@@ -1,0 +1,4 @@
+#Tue Aug 14 13:18:24 CST 2018
+base.0=/Users/echo/Desktop/项目过程文档/对内研发配合相关/公交方向/微智SDK/SDKDemo_SourceCode/app/build/intermediates/transforms/dexMerger/debug/0
+path.0=classes.dex
+renamed.0=classes.dex

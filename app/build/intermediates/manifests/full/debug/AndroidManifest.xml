@@ -1,0 +1,81 @@
+<?xml version="1.0" encoding="utf-8"?>
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    package="com.wpos.sdkdemo"
+    android:versionCode="1"
+    android:versionName="2.1.3" >
+
+    <uses-sdk
+        android:minSdkVersion="20"
+        android:targetSdkVersion="25" />
+
+    <uses-permission android:name="android.permission.CALL_PHONE" />
+    <uses-permission android:name="android.permission.WAKE_LOCK" />
+    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
+    <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
+    <uses-permission android:name="android.permission.MOUNT_UNMOUNT_FILESYSTEMS" />
+    <uses-permission android:name="android.permission.CHANGE_CONFIGURATION" />
+    <uses-permission android:name="android.permission.PROCESS_OUTGOING_CALLS" />
+
+    <application
+        android:allowBackup="true"
+        android:debuggable="true"
+        android:hardwareAccelerated="false"
+        android:icon="@mipmap/ic_launcher"
+        android:label="@string/app_name"
+        android:supportsRtl="true"
+        android:testOnly="true"
+        android:theme="@style/AppTheme.NoActionBar" >
+        <activity
+            android:name="com.wpos.sdkdemo.MainActivity"
+            android:theme="@style/AppTheme.NoActionBar" >
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity>
+        <activity android:name="com.wpos.sdkdemo.readcard.ReadCardManager" />
+        <activity android:name="com.wpos.sdkdemo.readcard.CardReader" />
+        <activity android:name="com.wpos.sdkdemo.system.SystemActivity" />
+        <activity
+            android:name="com.wpos.sdkdemo.pin.Pin"
+            android:configChanges="orientation|screenSize" />
+        <activity android:name="com.wpos.sdkdemo.readcard.CardReaderNew" />
+        <activity android:name="com.wpos.sdkdemo.data.DataEnDecrypt" />
+        <activity android:name="com.wpos.sdkdemo.data.Mac" />
+        <activity android:name="com.wpos.sdkdemo.key.EraseKeys" />
+        <activity android:name="com.wpos.sdkdemo.key.KeyManager" />
+        <activity android:name="com.wpos.sdkdemo.util.keyrandom" />
+        <activity android:name="com.wpos.sdkdemo.key.KeyEx" />
+        <activity android:name="com.wpos.sdkdemo.print.BTPrinting" />
+        <activity android:name="com.wpos.sdkdemo.dukpt.DUKPT" />
+        <activity android:name="com.wpos.sdkdemo.print.Printing" />
+        <activity android:name="com.wpos.sdkdemo.print.PrinterManager" />
+        <activity android:name="com.wpos.sdkdemo.readcard.IDCardMana" />
+        <activity android:name="com.wpos.sdkdemo.sp.Spupdate" />
+        <activity android:name="com.wpos.sdkdemo.dock.DockTest" />
+        <activity android:name="com.wpos.sdkdemo.dock.Docksendpicture" />
+        <activity android:name="com.wpos.sdkdemo.dock.Dockupdate" />
+        <activity android:name="com.wpos.sdkdemo.dock.Docktesttipsshow" />
+        <activity android:name="com.wpos.sdkdemo.key.CheckkeyExist" />
+        <activity android:name="com.wpos.sdkdemo.emv.EmvActivity" />
+        <activity android:name="com.wpos.sdkdemo.emv.InputMoneyActivity" />
+        <activity android:name="com.wpos.sdkdemo.emv.PayActivity" />
+
+        <receiver
+            android:name="com.wpos.sdkdemo.MyReceiver"
+            android:exported="true"
+            android:process=":remote" >
+            <intent-filter>
+                <action android:name="com.wpos.cardinfo.callback" />
+            </intent-filter>
+        </receiver>
+
+        <activity android:name="com.wpos.sdkdemo.spdata.PsamIcActivity" />
+
+        <meta-data
+            android:name="com.google.android.gms.version"
+            android:value="@integer/google_play_services_version" />
+    </application>
+
+</manifest>
