@@ -67,109 +67,109 @@ public class CardReader extends AppCompatActivity implements View.OnClickListene
             mThread = null;
             switch (msg.what) {
                 case PICC:
-                    if (msg.arg1 == 0){
+                    if (msg.arg1 == 0) {
                         tvcardreadershow.setText("PICC read card and send apdu success");
-                    }else if(msg.arg1==3){
+                    } else if (msg.arg1 == 3) {
                         tvcardreadershow.setText("time out");
-                    }else if(msg.arg1==4){
-                        Toast.makeText(CardReader.this,"cancel readcard",Toast.LENGTH_SHORT).show();
-                    }else{
+                    } else if (msg.arg1 == 4) {
+                        Toast.makeText(CardReader.this, "cancel readcard", Toast.LENGTH_SHORT).show();
+                    } else {
                         tvcardreadershow.setText("PICC fail");
                     }
                     break;
                 case IC:
-                    if (msg.arg1 == 0){
+                    if (msg.arg1 == 0) {
                         tvcardreadershow.setText("IC read card and send apdu success");
-                    }else if(msg.arg1==3){
+                    } else if (msg.arg1 == 3) {
                         tvcardreadershow.setText("time out");
-                    }else if(msg.arg1==4){
-                        Toast.makeText(CardReader.this,"cancel readcard",Toast.LENGTH_SHORT).show();
-                    }else{
+                    } else if (msg.arg1 == 4) {
+                        Toast.makeText(CardReader.this, "cancel readcard", Toast.LENGTH_SHORT).show();
+                    } else {
                         tvcardreadershow.setText("IC error");
                     }
                     break;
                 case MAG:
-                    if (msg.arg1 == 0){
+                    if (msg.arg1 == 0) {
                         tvcardreadershow.setText("MAG Test success");
-                    }else if(msg.arg1==3){
+                    } else if (msg.arg1 == 3) {
                         tvcardreadershow.setText("time out");
-                    }else if(msg.arg1==4){
-                        Toast.makeText(CardReader.this,"cancel readcard",Toast.LENGTH_SHORT).show();
-                    }else{
+                    } else if (msg.arg1 == 4) {
+                        Toast.makeText(CardReader.this, "cancel readcard", Toast.LENGTH_SHORT).show();
+                    } else {
                         tvcardreadershow.setText("MAG Test error");
                     }
                     break;
                 case PSAM1:
-                    if (msg.arg1 == 0){
+                    if (msg.arg1 == 0) {
                         tvcardreadershow.setText("PSAM1 send apdu success");
-                    }else if(msg.arg1==3){
+                    } else if (msg.arg1 == 3) {
                         tvcardreadershow.setText("time out");
-                    }else{
+                    } else {
                         tvcardreadershow.setText("PSAM1 error");
                     }
                     break;
                 case PSAM2:
-                    if (msg.arg1 == 0){
+                    if (msg.arg1 == 0) {
                         tvcardreadershow.setText("PSAM2 send apdu success");
-                    }else if(msg.arg1==3){
+                    } else if (msg.arg1 == 3) {
                         tvcardreadershow.setText("time out");
-                    }else{
+                    } else {
                         tvcardreadershow.setText("PSAM2 fail");
                     }
                     break;
                 case AT24:
-                    Log.e("zys", "mAT24 = "+mAT24);
-                    if (msg.arg1 == 0){
+                    Log.e("zys", "mAT24 = " + mAT24);
+                    if (msg.arg1 == 0) {
                         tvcardreadershow.setText(mAT24);
-                    }else if(msg.arg1==3){
+                    } else if (msg.arg1 == 3) {
                         tvcardreadershow.setText("time out");
-                    }else{
+                    } else {
                         tvcardreadershow.setText("AT24CXX read fail");
                     }
                     break;
                 case M0:
-                    if (msg.arg1 == 0){
+                    if (msg.arg1 == 0) {
                         tvcardreadershow.setText(stringBuilder.toString());
-                    }else if(msg.arg1==3){
+                    } else if (msg.arg1 == 3) {
                         tvcardreadershow.setText("time out");
-                    }else {
+                    } else {
                         tvcardreadershow.setText(stringBuilder.toString());
                     }
                     break;
                 case M1:
-                    if (msg.arg1 == 0){
+                    if (msg.arg1 == 0) {
                         tvcardreadershow.setText(stringBuilder.toString());
-                    }else if(msg.arg1==3){
+                    } else if (msg.arg1 == 3) {
                         tvcardreadershow.setText("time out");
-                    }else{
+                    } else {
                         tvcardreadershow.setText(stringBuilder.toString());
                     }
                     break;
 
                 case C4428:
-                    if (msg.arg1 == 0){
+                    if (msg.arg1 == 0) {
                         tvcardreadershow.setText("4428Card read/Write card and Verify success");
-                    }else if(msg.arg1==3){
+                    } else if (msg.arg1 == 3) {
                         tvcardreadershow.setText("time out");
-                    }else{
+                    } else {
                         tvcardreadershow.setText("4428Card error");
                     }
                     break;
                 case C4442:
-                    if (msg.arg1 == 0){
+                    if (msg.arg1 == 0) {
                         tvcardreadershow.setText("4442Card read/Write card and Verify success");
-                    }else if(msg.arg1==3){
+                    } else if (msg.arg1 == 3) {
                         tvcardreadershow.setText("time out");
-                    }else{
+                    } else {
                         tvcardreadershow.setText("4442Card error");
                     }
                     break;
                 case DESFIRE:
-                    if (msg.arg1 == 0){
+                    if (msg.arg1 == 0) {
                         tvcardreadershow.setText(stringBuilder.toString());
-                    }else if (msg.arg1 == 3){
+                    } else if (msg.arg1 == 3) {
                         tvcardreadershow.setText("time out");
-                    }else{
+                    } else {
                         tvcardreadershow.setText(stringBuilder.toString());
                     }
                     break;
@@ -202,10 +202,10 @@ public class CardReader extends AppCompatActivity implements View.OnClickListene
         mBtnPsam2 = (Button) findViewById(R.id.buttonpsm2);
         buttonM0 = (Button) findViewById(R.id.buttonM0);
         buttonM1 = (Button) findViewById(R.id.buttonM1);
-        mBtnAT24 = (Button)findViewById(R.id.atx24);
+        mBtnAT24 = (Button) findViewById(R.id.atx24);
         button4428 = (Button) findViewById(R.id.button4428);
         button4442 = (Button) findViewById(R.id.button4442);
-        buttonDesFire = (Button)findViewById(R.id.buttonDesFire);
+        buttonDesFire = (Button) findViewById(R.id.buttonDesFire);
         mBtnExit = (Button) findViewById(R.id.exit);
         mBtnStop = (Button) findViewById(R.id.btn_stop);
 
@@ -224,7 +224,7 @@ public class CardReader extends AppCompatActivity implements View.OnClickListene
         buttonDesFire.setOnClickListener(this);
 
 
-        mBtnArray = new Button[]{mBtnPicc, mBtnIc, mBtnMag, mBtnPsam1, mBtnPsam2,buttonM0,buttonM1,mBtnAT24,button4428,button4442,buttonDesFire};
+        mBtnArray = new Button[]{mBtnPicc, mBtnIc, mBtnMag, mBtnPsam1, mBtnPsam2, buttonM0, buttonM1, mBtnAT24, button4428, button4442, buttonDesFire};
         refreshButton(false);
         setMBtnPsam2Visibility();
 
@@ -248,7 +248,7 @@ public class CardReader extends AppCompatActivity implements View.OnClickListene
         stringBuilder = new StringBuilder();
         switch (v.getId()) {
             case R.id.card:
-                if(mThread==null) {
+                if (mThread == null) {
                     mThread = new Thread() {
                         @Override
                         public void run() {
@@ -259,9 +259,9 @@ public class CardReader extends AppCompatActivity implements View.OnClickListene
                     mThread.start();
                 }
                 break;
-                //IC 卡
+            //IC 卡
             case R.id.iccard:
-                if(mThread==null) {
+                if (mThread == null) {
                     mThread = new Thread() {
                         @Override
                         public void run() {
@@ -273,7 +273,7 @@ public class CardReader extends AppCompatActivity implements View.OnClickListene
                 }
                 break;
             case R.id.mag:
-                if(mThread==null) {
+                if (mThread == null) {
                     mThread = new Thread() {
                         @Override
                         public void run() {
@@ -285,7 +285,7 @@ public class CardReader extends AppCompatActivity implements View.OnClickListene
                 }
                 break;
             case R.id.buttonpsm1:
-                if(mThread==null) {
+                if (mThread == null) {
                     mThread = new Thread() {
                         @Override
                         public void run() {
@@ -297,7 +297,7 @@ public class CardReader extends AppCompatActivity implements View.OnClickListene
                 }
                 break;
             case R.id.buttonpsm2:
-                if(mThread==null) {
+                if (mThread == null) {
                     mThread = new Thread() {
                         @Override
                         public void run() {
@@ -309,7 +309,7 @@ public class CardReader extends AppCompatActivity implements View.OnClickListene
                 }
                 break;
             case R.id.buttonM0:
-                if(mThread==null) {
+                if (mThread == null) {
                     mThread = new Thread() {
                         @Override
                         public void run() {
@@ -321,7 +321,7 @@ public class CardReader extends AppCompatActivity implements View.OnClickListene
                 }
                 break;
             case R.id.buttonM1:
-                if(mThread==null) {
+                if (mThread == null) {
                     mThread = new Thread() {
                         @Override
                         public void run() {
@@ -333,7 +333,7 @@ public class CardReader extends AppCompatActivity implements View.OnClickListene
                 }
                 break;
             case R.id.atx24:
-                if(mThread==null) {
+                if (mThread == null) {
                     mThread = new Thread() {
                         @Override
                         public void run() {
@@ -344,8 +344,8 @@ public class CardReader extends AppCompatActivity implements View.OnClickListene
                     mThread.start();
                 }
                 break;
-            case R.id. button4428:
-                if(mThread==null) {
+            case R.id.button4428:
+                if (mThread == null) {
                     mThread = new Thread() {
                         @Override
                         public void run() {
@@ -356,8 +356,8 @@ public class CardReader extends AppCompatActivity implements View.OnClickListene
                     mThread.start();
                 }
                 break;
-            case R.id. button4442:
-                if(mThread==null) {
+            case R.id.button4442:
+                if (mThread == null) {
                     mThread = new Thread() {
                         @Override
                         public void run() {
@@ -369,8 +369,8 @@ public class CardReader extends AppCompatActivity implements View.OnClickListene
                 }
                 break;
             case R.id.buttonDesFire:
-                if (mThread == null){
-                    mThread = new Thread(){
+                if (mThread == null) {
+                    mThread = new Thread() {
                         @Override
                         public void run() {
                             mDetect = true;
@@ -404,7 +404,7 @@ public class CardReader extends AppCompatActivity implements View.OnClickListene
         }
     }
 
-    private void refreshButton(boolean isRead){
+    private void refreshButton(boolean isRead) {
         for (int i = 0; i < mBtnArray.length; i++) {
             mBtnArray[i].setEnabled(!isRead);
         }
@@ -428,16 +428,16 @@ public class CardReader extends AppCompatActivity implements View.OnClickListene
         } catch (Exception e) {
             e.printStackTrace();
         }
-        if(!mDetect){
+        if (!mDetect) {
             // Don't do the other process because press stop button.
             return;
         }
 
-        if(respdata[0] != 0x05){
+        if (respdata[0] != 0x05) {
             Message msg = mHandler.obtainMessage(PSAM1);
-            if(respdata[0] == 0x03){
+            if (respdata[0] == 0x03) {
                 msg.arg1 = 3;
-            }else {
+            } else {
                 msg.arg1 = 1;
             }
             mHandler.sendMessage(msg);
@@ -495,16 +495,16 @@ public class CardReader extends AppCompatActivity implements View.OnClickListene
             e.printStackTrace();
         }
 
-        if(!mDetect){
+        if (!mDetect) {
             // Don't do the other process because press stop button.
             return;
         }
 
-        if(respdata[0] != 0x05){
+        if (respdata[0] != 0x05) {
             Message msg = mHandler.obtainMessage(PSAM2);
-            if(respdata[0] == 0x03){
+            if (respdata[0] == 0x03) {
                 msg.arg1 = 3;
-            }else {
+            } else {
                 msg.arg1 = 1;
             }
             mHandler.sendMessage(msg);
@@ -563,19 +563,19 @@ public class CardReader extends AppCompatActivity implements View.OnClickListene
             e.printStackTrace();
         }
 
-        if(respdata[0] == 0x03){
+        if (respdata[0] == 0x03) {
             Message msg = mHandler.obtainMessage(PICC);
             msg.arg1 = 3;
             mHandler.sendMessage(msg);
             return;
-        }else if (respdata[0] == 0x04) {
+        } else if (respdata[0] == 0x04) {
             Message msg = mHandler.obtainMessage(PICC);
             msg.arg1 = 4;
             mHandler.sendMessage(msg);
             return;
         }
 
-        if(!mDetect){
+        if (!mDetect) {
             // Don't do the other process because press stop button.
             return;
         }
@@ -616,7 +616,7 @@ public class CardReader extends AppCompatActivity implements View.OnClickListene
         boolean whileCondition = false;
         do {
             SystemClock.sleep(200);
-            Log.v(TAG, "CardReader, piccCardTest, picc detecting--------------mDetect = "+mDetect);
+            Log.v(TAG, "CardReader, piccCardTest, picc detecting--------------mDetect = " + mDetect);
             //picc 卡在位检测
             try {
                 whileCondition = BankCard.CARD_DETECT_EXIST != mBankCard.piccDetect();
@@ -651,18 +651,18 @@ public class CardReader extends AppCompatActivity implements View.OnClickListene
             e.printStackTrace();
         }
 
-        if(respdata[0] == 0x03){
+        if (respdata[0] == 0x03) {
             Message msg = mHandler.obtainMessage(IC);
             msg.arg1 = 3;
             mHandler.sendMessage(msg);
             return;
-        }else if (respdata[0] == 0x04) {
+        } else if (respdata[0] == 0x04) {
             Message msg = mHandler.obtainMessage(IC);
             msg.arg1 = 4;
             mHandler.sendMessage(msg);
             return;
         }
-        if(!mDetect){
+        if (!mDetect) {
             // Don't do the other process because press stop button.
             return;
         }
@@ -694,7 +694,7 @@ public class CardReader extends AppCompatActivity implements View.OnClickListene
         boolean whileCondition = false;
         do {
             SystemClock.sleep(200);
-            Log.v(TAG, "CardReader, icCardTest, detecting---------mDetect = "+mDetect);
+            Log.v(TAG, "CardReader, icCardTest, detecting---------mDetect = " + mDetect);
             //IC 卡在位检测
             try {
                 whileCondition = BankCard.CARD_DETECT_EXIST != mBankCard.iccDetect();
@@ -713,6 +713,7 @@ public class CardReader extends AppCompatActivity implements View.OnClickListene
     }
 
     private String mAT24;
+
     public void at24CardTest() {
         Log.v(TAG, "CardReader, at24CardTest");
         try {
@@ -730,18 +731,18 @@ public class CardReader extends AppCompatActivity implements View.OnClickListene
         } catch (RemoteException e) {
             e.printStackTrace();
         }
-        if(respdata[0] == 0x03){
+        if (respdata[0] == 0x03) {
             Message msg = mHandler.obtainMessage(AT24);
             msg.arg1 = 3;
             mHandler.sendMessage(msg);
             return;
-        }else if (respdata[0] == 0x04) {
+        } else if (respdata[0] == 0x04) {
             Message msg = mHandler.obtainMessage(IC);
             msg.arg1 = 4;
             mHandler.sendMessage(msg);
             return;
         }
-        if(!mDetect){
+        if (!mDetect) {
             // Don't do the other process because press stop button.
             return;
         }
@@ -752,7 +753,7 @@ public class CardReader extends AppCompatActivity implements View.OnClickListene
         Message msg = mHandler.obtainMessage(AT24);
         if (respdata[0] == 0x45 && respdata[1] == 0x01) {
             msg.arg1 = 0;
-            switch (respdata[2]){
+            switch (respdata[2]) {
                 case 0x01:
                     mAT24 = "AT24C01";
                     break;
@@ -787,36 +788,36 @@ public class CardReader extends AppCompatActivity implements View.OnClickListene
 
             byte[] pwd = new byte[3];
 
-            mAT24+="\nWrite data is: ";
+            mAT24 += "\nWrite data is: ";
             String ori = "0102030405060708";
-            mAT24+="\n"+ori;
+            mAT24 += "\n" + ori;
             byte[] data = new byte[8];
-            data[0] = (byte)0x01;
-            data[1] = (byte)0x02;
-            data[2] = (byte)0x03;
-            data[3] = (byte)0x04;
-            data[4] = (byte)0x05;
-            data[5] = (byte)0x06;
-            data[6] = (byte)0x07;
-            data[7] = (byte)0x08;
+            data[0] = (byte) 0x01;
+            data[1] = (byte) 0x02;
+            data[2] = (byte) 0x03;
+            data[3] = (byte) 0x04;
+            data[4] = (byte) 0x05;
+            data[5] = (byte) 0x06;
+            data[6] = (byte) 0x07;
+            data[7] = (byte) 0x08;
 
             try {
                 mBankCard.WriteLogicCardData(pwd, 0, data.length, data);
-            } catch (RemoteException ex){
+            } catch (RemoteException ex) {
                 ex.printStackTrace();
             }
 
-            mAT24+="\nRead Data is: ";
+            mAT24 += "\nRead Data is: ";
 
             byte[] outdata = new byte[8];
             int[] len = new int[1];
 
             try {
                 mBankCard.ReadLogicCardData(0, 8, outdata, len);
-            } catch (RemoteException ex){
+            } catch (RemoteException ex) {
                 ex.printStackTrace();
             }
-            mAT24+= ByteUtil.bytes2HexString(outdata);
+            mAT24 += ByteUtil.bytes2HexString(outdata);
         } else {
             msg.arg1 = 1;
         }
@@ -824,6 +825,7 @@ public class CardReader extends AppCompatActivity implements View.OnClickListene
     }
 
     private String mC4428;
+
     public void Card4428Test() {
         Log.v(TAG, "CardReader, Card4428Test");
         try {
@@ -841,18 +843,18 @@ public class CardReader extends AppCompatActivity implements View.OnClickListene
         } catch (RemoteException e) {
             e.printStackTrace();
         }
-        if(respdata[0] == 0x03){
+        if (respdata[0] == 0x03) {
             Message msg = mHandler.obtainMessage(C4428);
             msg.arg1 = 3;
             mHandler.sendMessage(msg);
             return;
-        }else if (respdata[0] == 0x04) {
+        } else if (respdata[0] == 0x04) {
             Message msg = mHandler.obtainMessage(IC);
             msg.arg1 = 4;
             mHandler.sendMessage(msg);
             return;
         }
-        if(!mDetect){
+        if (!mDetect) {
             // Don't do the other process because press stop button.
             return;
         }
@@ -861,7 +863,7 @@ public class CardReader extends AppCompatActivity implements View.OnClickListene
         Log.v(TAG, "CardReader, icCardTest, resplen = " + resplen[0]);
 
         Message msg = mHandler.obtainMessage(C4428);
-        if (respdata[0] == 0x25 ) {
+        if (respdata[0] == 0x25) {
             msg.arg1 = 0;
             mC4428 += "4428 ";
 
@@ -872,37 +874,37 @@ public class CardReader extends AppCompatActivity implements View.OnClickListene
 
             try {
                 mBankCard.VerifyLogicCardPwd(pwd);
-            } catch (RemoteException ex){
+            } catch (RemoteException ex) {
                 ex.printStackTrace();
             }
 
             byte[] data = new byte[8];
 
-            mC4428+="\nWrite data is: ";
-            for (int i=0; i<data.length; i++){
-                data[i] = (byte)i;
-                mC4428+=data[i];
+            mC4428 += "\nWrite data is: ";
+            for (int i = 0; i < data.length; i++) {
+                data[i] = (byte) i;
+                mC4428 += data[i];
 
             }
 
             try {
                 mBankCard.WriteLogicCardData(pwd, 0x0A, data.length, data);
-            } catch (RemoteException ex){
+            } catch (RemoteException ex) {
                 ex.printStackTrace();
             }
 
-            mC4428+="\nRead Data is: ";
+            mC4428 += "\nRead Data is: ";
 
             byte[] outdata = new byte[16];
             int[] len = new int[1];
 
             try {
                 mBankCard.ReadLogicCardData(0x0A, 8, outdata, len);
-            } catch (RemoteException ex){
+            } catch (RemoteException ex) {
                 ex.printStackTrace();
             }
-            mC4428+=HEX.bytesToHex(outdata);
-            Log.v(TAG,mC4428);
+            mC4428 += HEX.bytesToHex(outdata);
+            Log.v(TAG, mC4428);
 
             //4428卡 APDU Verify
             byte[] APDU_CMD = new byte[7];
@@ -977,7 +979,9 @@ public class CardReader extends AppCompatActivity implements View.OnClickListene
         }
         mHandler.sendMessage(msg);
     }
+
     private String mC4442;
+
     private void Card4442Test() {
         Log.v(TAG, "CardReader, Card4442Test");
         try {
@@ -995,18 +999,18 @@ public class CardReader extends AppCompatActivity implements View.OnClickListene
         } catch (RemoteException e) {
             e.printStackTrace();
         }
-        if(respdata[0] == 0x03){
+        if (respdata[0] == 0x03) {
             Message msg = mHandler.obtainMessage(C4442);
             msg.arg1 = 3;
             mHandler.sendMessage(msg);
             return;
-        }else if (respdata[0] == 0x04) {
+        } else if (respdata[0] == 0x04) {
             Message msg = mHandler.obtainMessage(IC);
             msg.arg1 = 4;
             mHandler.sendMessage(msg);
             return;
         }
-        if(!mDetect){
+        if (!mDetect) {
             // Don't do the other process because press stop button.
             return;
         }
@@ -1015,7 +1019,7 @@ public class CardReader extends AppCompatActivity implements View.OnClickListene
         Log.v(TAG, "CardReader, icCardTest, resplen = " + resplen[0]);
 
         Message msg = mHandler.obtainMessage(C4442);
-        if (respdata[0] == 0x15 ) {
+        if (respdata[0] == 0x15) {
             msg.arg1 = 0;
             mC4442 += "4442 ";
 
@@ -1026,37 +1030,37 @@ public class CardReader extends AppCompatActivity implements View.OnClickListene
 
             try {
                 mBankCard.VerifyLogicCardPwd(pwd);
-            } catch (RemoteException ex){
+            } catch (RemoteException ex) {
                 ex.printStackTrace();
             }
 
             byte[] data = new byte[8];
 
-            mC4442+="\nWrite data is: ";
-            for (int i=0; i<data.length; i++){
-                data[i] = (byte)i;
-                mC4442+=data[i];
+            mC4442 += "\nWrite data is: ";
+            for (int i = 0; i < data.length; i++) {
+                data[i] = (byte) i;
+                mC4442 += data[i];
 
             }
 
             try {
                 mBankCard.WriteLogicCardData(pwd, 0x0A, data.length, data);
-            } catch (RemoteException ex){
+            } catch (RemoteException ex) {
                 ex.printStackTrace();
             }
 
-            mC4442+="\nRead Data is: ";
+            mC4442 += "\nRead Data is: ";
 
             byte[] outdata = new byte[8];
             int[] len = new int[1];
 
             try {
                 mBankCard.ReadLogicCardData(0x0A, 8, outdata, len);
-            } catch (RemoteException ex){
+            } catch (RemoteException ex) {
                 ex.printStackTrace();
             }
-            mC4442+=HEX.bytesToHex(outdata);
-            Log.v(TAG,mC4442);
+            mC4442 += HEX.bytesToHex(outdata);
+            Log.v(TAG, mC4442);
         } else {
             msg.arg1 = 1;
         }
@@ -1079,18 +1083,18 @@ public class CardReader extends AppCompatActivity implements View.OnClickListene
         } catch (RemoteException e) {
             e.printStackTrace();
         }
-        if(respdata[0] == 0x03){
+        if (respdata[0] == 0x03) {
             Message msg = mHandler.obtainMessage(M0);
             msg.arg1 = 3;
             mHandler.sendMessage(msg);
             return;
-        }else if (respdata[0] == 0x04) {
+        } else if (respdata[0] == 0x04) {
             Message msg = mHandler.obtainMessage(IC);
             msg.arg1 = 4;
             mHandler.sendMessage(msg);
             return;
         }
-        if(!mDetect){
+        if (!mDetect) {
             return;
         }
         Message msg = mHandler.obtainMessage(M0);
@@ -1114,33 +1118,33 @@ public class CardReader extends AppCompatActivity implements View.OnClickListene
                     indata[1] = (byte) 0x01;
                     indata[2] = (byte) 0x02;
                     indata[3] = (byte) 0x03;
-                    int resIn = mBankCard.NFCTagWriteBlock(0x0A,indata);
-                    Log.v(TAG, "CardReader, resIn--->>>"+resIn);
+                    int resIn = mBankCard.NFCTagWriteBlock(0x0A, indata);
+                    Log.v(TAG, "CardReader, resIn--->>>" + resIn);
                     if (resIn == 0) {
                         stringBuilder.append("M0 Write success\n");
                         byte[] outdata = new byte[20];
                         int[] oulen = new int[1];
-                        int resOut = mBankCard.NFCTagReadBlock(0x0A,outdata,oulen);
+                        int resOut = mBankCard.NFCTagReadBlock(0x0A, outdata, oulen);
                         if (resOut == 0) {
-                            byte[] snData = new byte[oulen[0]-1];
-                            System.arraycopy(outdata,1,snData,0,oulen[0]-1);
+                            byte[] snData = new byte[oulen[0] - 1];
+                            System.arraycopy(outdata, 1, snData, 0, oulen[0] - 1);
                             msg.arg1 = 0;
                             stringBuilder.append("M0 read success\n");
-                            Log.v(TAG, "CardReader, M0--->>>"+HEX.bytesToHex(snData));
-                        }else {
+                            Log.v(TAG, "CardReader, M0--->>>" + HEX.bytesToHex(snData));
+                        } else {
                             stringBuilder.append("M0 read fail\n");
                         }
-                    }else {
+                    } else {
                         stringBuilder.append("M0 write fail\n");
                     }
                 } catch (RemoteException e) {
                     e.printStackTrace();
                 }
-            }else {
+            } else {
                 stringBuilder.append("detecte M0 fail\n");
                 msg.arg1 = 1;
             }
-        }else {
+        } else {
             stringBuilder.append("detecte M0 fail\n");
             msg.arg1 = 1;
         }
@@ -1163,45 +1167,45 @@ public class CardReader extends AppCompatActivity implements View.OnClickListene
         } catch (RemoteException e) {
             e.printStackTrace();
         }
-        if(respdata[0] == 0x03){
+        if (respdata[0] == 0x03) {
             Message msg = mHandler.obtainMessage(M1);
             msg.arg1 = 3;
             mHandler.sendMessage(msg);
             return;
-        }else if (respdata[0] == 0x04) {
+        } else if (respdata[0] == 0x04) {
             Message msg = mHandler.obtainMessage(IC);
             msg.arg1 = 4;
             mHandler.sendMessage(msg);
             return;
         }
-        if(!mDetect){
+        if (!mDetect) {
             return;
         }
         Message msg = mHandler.obtainMessage(M1);
         if (retvalue == 0x00) {
-            Log.v(TAG, "m1CardSNFunction, respdata--->>>"+respdata[0]);
-            if (respdata[0] == 0x37||respdata[0] == 0x47) {//0x37:M1-S50卡;0x47:M1-S70卡
+            Log.v(TAG, "m1CardSNFunction, respdata--->>>" + respdata[0]);
+            if (respdata[0] == 0x37 || respdata[0] == 0x47) {//0x37:M1-S50卡;0x47:M1-S70卡
                 try {
                     byte[] keyData = new byte[6];
                     for (int i = 0; i < keyData.length; i++) {
                         keyData[i] = (byte) 0xFF;
                     }
-
+//                    byte[] keyData = {(byte) 0x82, (byte) 0xF0, (byte) 0xAC, (byte) 0xB4, 0x20,(byte) 0x8C};
                     byte[] sn = new byte[16];
                     int[] pes = new int[1];
-                    int resSn = mBankCard.getCardSNFunction(sn,pes);
+                    int resSn = mBankCard.getCardSNFunction(sn, pes);
                     if (resSn == 0) {
                         stringBuilder.append("M1 CardSNFunction success\n");
-                    }else {
+                    } else {
                         stringBuilder.append("M1 CardSNFunction fail\n");
                     }
-                    Log.v(TAG, "m1CardSNFunction, respes--->>>"+pes[0]);
-                    Log.v(TAG, "m1CardSNFunction, resSn--->>>"+HEX.bytesToHex(sn));
+                    Log.v(TAG, "m1CardSNFunction, respes--->>>" + pes[0]);
+                    Log.v(TAG, "m1CardSNFunction, resSn--->>>" + HEX.bytesToHex(sn));
                     byte[] snData = new byte[pes[0]];
-                    System.arraycopy(sn,0,snData,0,pes[0]);
-                    Log.v(TAG, "m1CardSNFunction, ressnData--->>>"+HEX.bytesToHex(snData));
-                    int resKeyAuth = mBankCard.m1CardKeyAuth(0x41,0x0A,keyData.length,keyData,snData.length,snData);
-                    Log.v(TAG, "m1CardKeyAuth, resKeyAuth--->>>"+resKeyAuth);
+                    System.arraycopy(sn, 0, snData, 0, pes[0]);
+                    Log.v(TAG, "m1CardSNFunction, ressnData--->>>" + HEX.bytesToHex(snData));
+                    int resKeyAuth = mBankCard.m1CardKeyAuth(0x41, 0x0A, keyData.length, keyData, snData.length, snData);
+                    Log.v(TAG, "m1CardKeyAuth, resKeyAuth--->>>" + resKeyAuth);
                     if (resKeyAuth == 0) {
                         stringBuilder.append("M1 CardKeyAuth success\n");
                         byte[] writeData = new byte[16];
@@ -1209,47 +1213,48 @@ public class CardReader extends AppCompatActivity implements View.OnClickListene
                         writeData[1] = (byte) 0x01;
                         writeData[2] = (byte) 0x02;
                         writeData[3] = (byte) 0x03;
-                        int resWrite = mBankCard.m1CardWriteBlockData(0x0A,writeData.length,writeData);
+                        writeData[4] = (byte) 0x55;
+                        int resWrite = mBankCard.m1CardWriteBlockData(0x0A, writeData.length, writeData);
                         if (resWrite == 0) {
                             stringBuilder.append("M1 Write success\n");
                             byte[] readData = new byte[20];
                             int[] readLen = new int[1];
-                            int resRead = mBankCard.m1CardReadBlockData(0x0A,readData,readLen);
+                            int resRead = mBankCard.m1CardReadBlockData(10, readData, readLen);
                             if (resRead == 0) {
                                 stringBuilder.append("M1 Read success\n");
-                                Log.v(TAG, "m1CardReadBlockData, readDataOrl--->>>"+HEX.bytesToHex(readData));
-                                byte[] read = new byte[readLen[0]-1];
-                                System.arraycopy(readData,1,read,0,read.length/2);
-                                Log.v(TAG, "m1CardReadBlockData, readData--->>>"+HEX.bytesToHex(read));
+                                Log.v(TAG, "m1CardReadBlockData, readDataOrl--->>>" + HEX.bytesToHex(readData));
+                                byte[] read = new byte[readLen[0] - 1];
+                                System.arraycopy(readData, 1, read, 0, read.length / 2);
+                                Log.v(TAG, "m1CardReadBlockData, readData--->>>" + HEX.bytesToHex(read));
                                 msg.arg1 = 0;
-                                int resValue = mBankCard.m1CardValueOperation(0x2B,0x0A,1,0x0A);
+                                int resValue = mBankCard.m1CardValueOperation(0x2B, 0x0A, 1, 0x0A);
                                 if (resValue == 0) {
                                     msg.arg1 = 0;
                                     stringBuilder.append("M1 ValueOperation success\n");
-                                }else {
+                                } else {
                                     stringBuilder.append("M1 ValueOperation fail\n");
                                     msg.arg1 = 1;
                                 }
-                            }else {
+                            } else {
                                 stringBuilder.append("M1 read fail\n");
                                 msg.arg1 = 1;
                             }
-                        }else {
+                        } else {
                             stringBuilder.append("M1 Write fail\n");
                             msg.arg1 = 1;
                         }
-                    }else {
+                    } else {
                         stringBuilder.append("M1 CardKeyAuth fail\n");
                         msg.arg1 = 1;
                     }
                 } catch (RemoteException e) {
                     e.printStackTrace();
                 }
-            }else {
+            } else {
                 stringBuilder.append("detecte M1 fail\n");
                 msg.arg1 = 1;
             }
-        }else {
+        } else {
             stringBuilder.append("detecte M1 fail\n");
             msg.arg1 = 1;
         }
@@ -1273,17 +1278,17 @@ public class CardReader extends AppCompatActivity implements View.OnClickListene
             e.printStackTrace();
         }
 
-        if(respdata[0] == 0x03){
+        if (respdata[0] == 0x03) {
             Message msg = mHandler.obtainMessage(MAG);
             msg.arg1 = 3;
             mHandler.sendMessage(msg);
             return;
-        }else if (respdata[0] == 0x04) {
+        } else if (respdata[0] == 0x04) {
             Message msg = mHandler.obtainMessage(MAG);
             msg.arg1 = 4;
             mHandler.sendMessage(msg);
             return;
-        }else if(respdata[0] == 0x00){
+        } else if (respdata[0] == 0x00) {
             String s1 = HEX.bytesToHex(respdata);
             Log.v(TAG, "CardReader, magTest, s1 = " + s1);
             Log.v(TAG, "CardReader, magTest, resplen = " + resplen[0]);
@@ -1294,25 +1299,25 @@ public class CardReader extends AppCompatActivity implements View.OnClickListene
             int[] magLen2 = new int[1];
             byte[] mag3 = new byte[128];
             int[] magLen3 = new int[1];
-            retvalue = mBankCard.parseMagnetic(respdata,respdata.length,mag1,magLen1,mag2,magLen2,mag3,magLen3);
+            retvalue = mBankCard.parseMagnetic(respdata, respdata.length, mag1, magLen1, mag2, magLen2, mag3, magLen3);
             if (retvalue == 0) {
                 String m1 = HEX.bytesToHex(mag1);
                 Log.v(TAG, "CardReader, magTest, HEX-m1 = " + m1);
                 Log.v(TAG, "CardReader, magTest, resplen1 = " + magLen1[0]);
-                Log.v(TAG, "CardReader, magTest, m1 = " + new String(mag1).substring(0,magLen1[0]));
+                Log.v(TAG, "CardReader, magTest, m1 = " + new String(mag1).substring(0, magLen1[0]));
 
                 String m2 = HEX.bytesToHex(mag2);
                 Log.v(TAG, "CardReader, magTest, HEX-m2 = " + m2);
                 Log.v(TAG, "CardReader, magTest, resplen2 = " + magLen2[0]);
-                Log.v(TAG, "CardReader, magTest, m2 = " + new String(mag2).substring(0,magLen2[0]));
+                Log.v(TAG, "CardReader, magTest, m2 = " + new String(mag2).substring(0, magLen2[0]));
 
                 String m3 = HEX.bytesToHex(mag3);
                 Log.v(TAG, "CardReader, magTest, HEX-m3 = " + m3);
                 Log.v(TAG, "CardReader, magTest, resplen3 = " + magLen3[0]);
-                Log.v(TAG, "CardReader, magTest, m3 = " + new String(mag3).substring(0,magLen3[0]));
+                Log.v(TAG, "CardReader, magTest, m3 = " + new String(mag3).substring(0, magLen3[0]));
             }
         }
-        if(!mDetect){
+        if (!mDetect) {
             // Don't do the other process because press stop button.
             return;
         }
@@ -1326,7 +1331,7 @@ public class CardReader extends AppCompatActivity implements View.OnClickListene
         mHandler.sendMessage(msg);
     }
 
-    private void desFireTest(){
+    private void desFireTest() {
 
         Log.v(TAG, "CardReader, DesFire Card Test");
         try {
@@ -1343,18 +1348,18 @@ public class CardReader extends AppCompatActivity implements View.OnClickListene
         } catch (RemoteException e) {
             e.printStackTrace();
         }
-        if(respdata[0] == 0x03){
+        if (respdata[0] == 0x03) {
             Message msg = mHandler.obtainMessage(C4442);
             msg.arg1 = 3;
             mHandler.sendMessage(msg);
             return;
-        }else if (respdata[0] == 0x04) {
+        } else if (respdata[0] == 0x04) {
             Message msg = mHandler.obtainMessage(IC);
             msg.arg1 = 4;
             mHandler.sendMessage(msg);
             return;
         }
-        if(!mDetect){
+        if (!mDetect) {
             // Don't do the other process because press stop button.
             return;
         }
@@ -1364,7 +1369,7 @@ public class CardReader extends AppCompatActivity implements View.OnClickListene
 
         Message msg = mHandler.obtainMessage(DESFIRE);
         String code = ByteUtil.intToHexString(respdata[0]);
-        if ("0087".equals(code)){
+        if ("0087".equals(code)) {
 //            byte[] apdu = new byte[5];
 //            apdu[0] = (byte) 0x00;
 //            apdu[1] = (byte) 0x84;
@@ -1392,123 +1397,123 @@ public class CardReader extends AppCompatActivity implements View.OnClickListene
             try {
                 byte[] aidData = {0x00, 0x00, 0x01};
                 byte[] outData = new byte[256];
-                int [] outDataLen = new int[1];
+                int[] outDataLen = new int[1];
                 retvalue = mBankCard.DesFire_SelApp(aidData.length, aidData, outData, outDataLen);
-                if (retvalue != 0){
+                if (retvalue != 0) {
                     msg.arg1 = 1;
                     stringBuilder.append("DesFire_SelApp fail\n");
                     mHandler.sendMessage(msg);
                     return;
-                }else{
+                } else {
                     stringBuilder.append("DesFire_SelApp success\n");
                 }
-                Log.d(TAG,"Data="+ByteUtil.bytes2HexString(outData)+"\noutDataLen="+outDataLen[0]);
+                Log.d(TAG, "Data=" + ByteUtil.bytes2HexString(outData) + "\noutDataLen=" + outDataLen[0]);
                 int keyNo = 0;
                 int keyType = 0;
-                byte[] keyData = {0x11, 0x11, 0x11,0x11, 0x11, 0x11, 0x11, 0x11,0x22, 0x22, 0x22,0x22, 0x22, 0x22, 0x22, 0x22};
+                byte[] keyData = {0x11, 0x11, 0x11, 0x11, 0x11, 0x11, 0x11, 0x11, 0x22, 0x22, 0x22, 0x22, 0x22, 0x22, 0x22, 0x22};
                 int keyLen = keyData.length;
                 retvalue = mBankCard.DesFire_Auth(keyNo, keyType, keyLen, keyData);
-                if (retvalue != 0 ){
+                if (retvalue != 0) {
                     msg.arg1 = 1;
                     stringBuilder.append("DesFire_Auth fail\n");
                     mHandler.sendMessage(msg);
                     return;
-                }else {
+                } else {
                     stringBuilder.append("DesFire_Auth success\n");
                 }
                 int mode = 0;
                 int id = 2;
                 retvalue = mBankCard.DesFire_GetCardInfo(mode, id, outData, outDataLen);
-                if (retvalue != 0){
+                if (retvalue != 0) {
                     msg.arg1 = 1;
                     stringBuilder.append("DesFire_GetCardInfo fail\n");
                     mHandler.sendMessage(msg);
                     return;
-                }else {
+                } else {
                     stringBuilder.append("DesFire_GetCardInfo success\n");
                 }
-                Log.d(TAG,"Data="+ByteUtil.bytes2HexString(outData)+"\noutDataLen="+outDataLen[0]);
+                Log.d(TAG, "Data=" + ByteUtil.bytes2HexString(outData) + "\noutDataLen=" + outDataLen[0]);
                 int fileType = 0;
                 int fileId = 0;
                 int offset = 0;
-                byte[] writeData = {0x01, 0x02, 0x03,0x04, 0x05, 0x06, 0x07, 0x08,0x01, 0x02, 0x03,0x04, 0x05, 0x06, 0x07, 0x08};
+                byte[] writeData = {0x01, 0x02, 0x03, 0x04, 0x05, 0x06, 0x07, 0x08, 0x01, 0x02, 0x03, 0x04, 0x05, 0x06, 0x07, 0x08};
                 int writeLen = writeData.length;
-                retvalue = mBankCard.DesFire_WriteFile(fileType, fileId, offset, writeLen, writeData, outData,outDataLen);
-                if (retvalue != 0){
+                retvalue = mBankCard.DesFire_WriteFile(fileType, fileId, offset, writeLen, writeData, outData, outDataLen);
+                if (retvalue != 0) {
                     msg.arg1 = 1;
                     stringBuilder.append("DesFire_WriteFile fail\n");
                     mHandler.sendMessage(msg);
                     return;
-                }else {
+                } else {
                     stringBuilder.append("DesFire_WriteFile success\n");
                 }
                 int readLen = 16;
                 retvalue = mBankCard.DesFire_ReadFile(fileType, fileId, offset, readLen, outData, outDataLen);
-                if (retvalue != 0){
+                if (retvalue != 0) {
                     msg.arg1 = 1;
                     stringBuilder.append("DesFire_ReadFile fail\n");
                     mHandler.sendMessage(msg);
                     return;
-                }else {
+                } else {
                     stringBuilder.append("DesFire_ReadFile success\n");
                 }
                 readLen = 0;
-                retvalue = mBankCard.DesFire_ReadFile(fileType+2, fileId+1, offset, readLen, outData, outDataLen);
-                if (retvalue != 0){
+                retvalue = mBankCard.DesFire_ReadFile(fileType + 2, fileId + 1, offset, readLen, outData, outDataLen);
+                if (retvalue != 0) {
                     msg.arg1 = 1;
                     stringBuilder.append("DesFire_ReadFile fail\n");
                     mHandler.sendMessage(msg);
                     return;
-                }else {
+                } else {
                     stringBuilder.append("DesFire_ReadFile success\n");
                 }
-                Log.d(TAG,"Data1="+ByteUtil.bytes2HexString(outData)+"\noutDataLen="+outDataLen[0]);
+                Log.d(TAG, "Data1=" + ByteUtil.bytes2HexString(outData) + "\noutDataLen=" + outDataLen[0]);
 
                 byte[] operateValue = {0x00, 0x00, 0x00, 0x01};
-                retvalue = mBankCard.DesFire_ValueFileOpr(fileType+1, fileId+1, operateValue, outData, outDataLen);
-                if (retvalue != 0){
+                retvalue = mBankCard.DesFire_ValueFileOpr(fileType + 1, fileId + 1, operateValue, outData, outDataLen);
+                if (retvalue != 0) {
                     msg.arg1 = 1;
                     stringBuilder.append("DesFire_ValueFileOpration fail\n");
                     mHandler.sendMessage(msg);
                     return;
-                }else {
+                } else {
                     stringBuilder.append("DesFire_ValueFileOpration success\n");
                 }
-                Log.d(TAG,"Data2="+ByteUtil.bytes2HexString(outData)+"\noutDataLen="+outDataLen[0]);
-                retvalue = mBankCard.DesFire_Comfirm_Cancel(fileType+1, outData, outDataLen);
-                if (retvalue != 0){
+                Log.d(TAG, "Data2=" + ByteUtil.bytes2HexString(outData) + "\noutDataLen=" + outDataLen[0]);
+                retvalue = mBankCard.DesFire_Comfirm_Cancel(fileType + 1, outData, outDataLen);
+                if (retvalue != 0) {
                     msg.arg1 = 1;
                     stringBuilder.append("DesFire_Comfirm_Cancel fail\n");
                     mHandler.sendMessage(msg);
                     return;
-                }else {
+                } else {
                     stringBuilder.append("DesFire_Comfirm_Cancel success\n");
                 }
                 readLen = 0;
-                retvalue = mBankCard.DesFire_ReadFile(fileType+2, fileId+1, offset, readLen, outData, outDataLen);
-                if (retvalue != 0){
+                retvalue = mBankCard.DesFire_ReadFile(fileType + 2, fileId + 1, offset, readLen, outData, outDataLen);
+                if (retvalue != 0) {
                     msg.arg1 = 1;
                     stringBuilder.append("DesFire_ReadFile fail\n");
                     mHandler.sendMessage(msg);
                     return;
-                }else {
+                } else {
                     stringBuilder.append("DesFire_ReadFile success\n");
                 }
-                Log.d(TAG,"Data3="+ByteUtil.bytes2HexString(outData)+"\noutDataLen="+outDataLen[0]);
+                Log.d(TAG, "Data3=" + ByteUtil.bytes2HexString(outData) + "\noutDataLen=" + outDataLen[0]);
                 msg.arg1 = 0;
             } catch (RemoteException e) {
                 e.printStackTrace();
             }
-        }else {
+        } else {
             msg.arg1 = 1;
             stringBuilder.append("detecte DesFire fail\n");
         }
         mHandler.sendMessage(msg);
     }
 
-    private void setMBtnPsam2Visibility(){
+    private void setMBtnPsam2Visibility() {
         String model = Build.MODEL;
-        if (WANG_POS_TAB.equals(model) || WANG_POS_MIN.equals(model)){
+        if (WANG_POS_TAB.equals(model) || WANG_POS_MIN.equals(model)) {
             mBtnPsam2.setVisibility(View.GONE);
         }
     }

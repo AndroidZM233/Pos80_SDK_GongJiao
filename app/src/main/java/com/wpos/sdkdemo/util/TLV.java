@@ -5,6 +5,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 
@@ -15,148 +16,148 @@ public class TLV {
 
     // IC卡第5部分-P84
     private final static String NAMES = //
-        "9F01:收单行标识;"//
-            + "9F40:附加终端性能;"//
-            + "81:授权金额(二进制);"//
-            + "9F02:授权金额(数值型);"//
-            + "9F04:其它金额(二进制);"//
-            + "9F03:其它金额(数值型);"//
-            + "9F3A:参考货币金额;"//
-            + "9F06:应用标识(AID);"//
-            + "9F09:应用版本号;"//
-            + "8A:授权响应代码;"//
-            + "9F34:持卡人验证方法(CVM)结果;"//
-            + "9F22:认证中心公钥索引;"//
-            + "83:命令模版;"//
-            + "9F1E:接口设备(IFD)序列号;"//
-            + "9F15:商户分类码;"//
-            + "9F16:商户标识;"//
-            + "9F39:销售点(POS)输入方式;"//
-            + "9F33:终端性能(TERM_CAPA);"//
-            + "9F1A:终端国家代码;"//
-            + "9F1B:终端最低限额;"//
-            + "9F1C:终端标识;"//
-            + "9F35:终端类型;"//
-            + "95:终端验证结果(TVR);"//
-            + "98:交易证书(TC)哈希值;"//
-            + "5F2A:交易货币代码;"//
-            + "5F36:交易货币指数;"//
-            + "9A:交易日期;"//
-            + "99:交易PIN数据;"//
-            + "9F3C:交易参考货币代码;"//
-            + "9F3D:交易参考货币指数;"//
-            + "9F41:终端维护的交易序列计数器;"//
-            + "9B:交易状态信息(TSI);"//
-            + "9F21:交易时间;"//
-            + "9C:交易类型;"//
-            + "9F37:不可预知数(UNPR_NO);"//
-            + "5F57:账户类型;"//
-            + "6F:文件控制信息(FCI)模板;"//
-            + "9F26:应用密文(AC)(ARQC);"// 生成应用密文命令返回的密文
-            + "9F42:应用货币代码;"// 按 GB/T 12406 编码
-            + "9F51:应用货币代码;"// JR/T 0025 专有数据。按GB/T 12406 编码
-            + "9F44:应用货币指数;"// 指出金额数据中小数点从最右边开始第几个位置
-            + "9F52:应用缺省行为(ADA);"// 定义在一些特定条件下卡片执行的发卡行指定的行为。如果卡片中没有此数据，缺省认为全零
-            + "9F05:应用自定义数据;"// 和卡片应用有关的发卡行指定数据
-            + "5F25:应用生效日期;"// YYMMDD卡片中应用启用日期
-            + "5F24:应用失效日期;"// YYMMDD卡片中应用启用日期
-            + "94:应用文件定位器(AFL);"// 指出和应用相关的数据存放位置（短文件标识符和记录号）,对于每一个要读的文件，AFL 包括
-            // 4 个字节：
-            // 字节 1：位 8–4=SFI 短文件标识符; 位 3–1=000;
-            // 字节 2：文件中要读的第 1 个记录的记录号（不能为 0）;
-            // 字节 3： 文件中要读的最后一个记录的记录号 （等于或大于字节 2）;
-            // 字节 4：从字节 2 中的记录号开始，存放认证用静态数据记录的个数（值从 0 到字节 3-字节 2+1的值;
-            + "4F:应用标识符(AID);"// 按 GB/T 16649.5
-            // 规定标识应用。由注册的应用提供商标识（RID）和扩展的专用应用标识符（PIX）组成
-            + "82:应用交互特征(AIP);"// 一个列表，说明此应用中卡片支持指定功能的能力;
-            // 字节 1： 位 8：1=RFU; 位 7：1=支持 SDA; 位 6：1=支持 DDA; 位 5：1=支持持卡人认证; 位
-            // 4：1=执行终端风险管理; 位 3：1=支持发卡行认证; 位 2：RFU（0）; 位 1：1=支持 CDA 字节
-            // 2：RFU（“00”）
-            + "50:应用标签;"// 和 AID 相关的便于记忆的数据。用于应用选择。 存在于 ADF的 FCI 中（可选）和
-            // ADF目录入口中（必备）
-            + "9F12:应用首选名称;"//
-            + "5A:应用主账号(PAN);"//
-            + "5F34:应用主账号序列号(CSN);"//
-            + "87:应用优先指示器;"//
-            + "61:应用模板;"//
-            + "9F36:应用交易计数器(ATC);"//
-            + "9F07:应用用途控制;"//
-            + "9F08:应用版本号;"//
-            + "8A:授权响应码;"//
-            + "8C:卡片风险管理数据对象列表1(CDOL1);"//
-            + "8D:卡片风险管理数据对象列表2(CDOL2);"//
-            + "5F20:持卡人姓名;"//
-            + "9F0B:持卡人姓名扩展;"//
-            + "9F61:持卡人证件号;"//
-            + "9F62:持卡人证件类型;"//
-            + "8E:持卡人验证方法(CVM)列表;"//
-            + "8F:CA公钥索引(PKI);"//
-            + "9F53:连续脱机交易限制数(国际-货币);"//
-            + "9F72:连续脱机交易限制数(国际-国家);"//
-            + "9F27:应用信息数据;"//
-            + "9F54:累计脱机交易金额限制数;"//
-            + "9F75:累计脱机交易金额限制数(双货币);"//
-            + "9F5C:累计脱机交易金额上限;"//
-            + "9F73:货币转换因子;"//
-            + "9F45:数据认证码;"//
-            + "84:专用文件(DF)名称;"//
-            + "73:目录自定义模板;" + "9F49:动态数据认证数据对象列表(DDOL);"//
-            + "BF0C:文件控制信息(FCI)发卡行自定义数据;"//
-            + "A5:文件控制信息(FCI)专用模板;"//
-            + "6F:文件控制信息(FCI)模板;"//
-            + "9F4C:IC动态数;"//
-            + "9F47:IC卡RSA公钥指数;"//
-            + "9F46:IC卡公钥证书;"//
-            + "9F48:IC卡RSA公钥余数;"//
-            + "9F0D:发卡行行为代码(IAC)-缺省;"//
-            + "9F0E:发卡行行为代码(IAC)-拒绝;"//
-            + "9F0F:发卡行行为代码(IAC)-联机;"//
-            + "9F10:发卡行应用数据(IAD);"// qPBOC P-64
-            + "91:发卡行认证数据;"//
-            + "9F56:发卡行认证指示位;"//
-            + "9F11:发卡行代码表索引;"//
-            + "5F28:发卡行国家代码;"//
-            + "9F57:发卡行国家代码;"//
-            + "90:发卡行公钥证书;"//
-            + "9F32:发卡行RSA公钥指数;"//
-            + "92:发卡行RSA公钥余数;"//
-            + "86:发卡行脚本命令;"//
-            + "72:发卡行脚本模板2;"//
-            + "5F50:发卡行URL;"//
-            + "9F5A:发卡行URL2;"//
-            + "5F2D:首选语言;"//
-            + "9F13:上次联机应用交易计数器(ATC)寄存器;"//
-            + "9F4D:交易日志入口;"//
-            + "9F4F:交易日志格式;"//
-            + "9F14:连续脱机交易下限;"//
-            + "9F58:连续脱机交易下限;"//
-            + "9F66:终端交易属性;"// 字节1:[7]支持非接触式借记/贷记应用; [6]支持 qPBOC;
-            // [5]支持接触式借记/贷记应用;[4]终端仅支持脱机;[3]支持联机 PIN;[2]支持签名;
-            // 字节2:[8]要求联机密文;[7]要求 CVM;
-            // 字节4:[8]终端支持“01”版本的 fDDA
-            + "9F17:PIN尝试计数器;"//
-            + "9F38:处理选项数据对象列表(PDOL);"//
-            + "80:响应报文模板格式1;"//
-            + "77:响应报文模板格式2;"//
-            + "9F76:第2应用货币代码;"//
-            + "5F30:服务码;"//
-            + "88:短文件标识符(SFI);"//
-            + "9F4B:签名的动态应用数据;"//
-            + "93:签名的静态应用数据(SAD);"//
-            + "9F4A:静态数据认证标签列表;"//
-            + "9F1F:磁条1自定义数据;"//
-            + "57:磁条2等效数据;"// PAN和失效时间可以从这取得
-            + "97:交易证书数据对象列表(TDOL);"//
-            + "9F23:连续脱机交易上限;"//
-            + "9F59:连续脱机交易上限;"//
-            + "9F63:产品标识信息;"// 当终端能够获取卡标识信息时，本域出现；否则，本域不出现
-            + "DF69:SM2算法支持指示器;"//
-            + "70:响应报文的数据域;"//
-            + "DF32:芯片序列号;"//
-            + "DF33:过程密钥数据;"//
-            + "DF34:终端读取时间;"//
-            + "EFA0:自定义输入方式;"//
-            + "";//
+            "9F01:收单行标识;"//
+                    + "9F40:附加终端性能;"//
+                    + "81:授权金额(二进制);"//
+                    + "9F02:授权金额(数值型);"//
+                    + "9F04:其它金额(二进制);"//
+                    + "9F03:其它金额(数值型);"//
+                    + "9F3A:参考货币金额;"//
+                    + "9F06:应用标识(AID);"//
+                    + "9F09:应用版本号;"//
+                    + "8A:授权响应代码;"//
+                    + "9F34:持卡人验证方法(CVM)结果;"//
+                    + "9F22:认证中心公钥索引;"//
+                    + "83:命令模版;"//
+                    + "9F1E:接口设备(IFD)序列号;"//
+                    + "9F15:商户分类码;"//
+                    + "9F16:商户标识;"//
+                    + "9F39:销售点(POS)输入方式;"//
+                    + "9F33:终端性能(TERM_CAPA);"//
+                    + "9F1A:终端国家代码;"//
+                    + "9F1B:终端最低限额;"//
+                    + "9F1C:终端标识;"//
+                    + "9F35:终端类型;"//
+                    + "95:终端验证结果(TVR);"//
+                    + "98:交易证书(TC)哈希值;"//
+                    + "5F2A:交易货币代码;"//
+                    + "5F36:交易货币指数;"//
+                    + "9A:交易日期;"//
+                    + "99:交易PIN数据;"//
+                    + "9F3C:交易参考货币代码;"//
+                    + "9F3D:交易参考货币指数;"//
+                    + "9F41:终端维护的交易序列计数器;"//
+                    + "9B:交易状态信息(TSI);"//
+                    + "9F21:交易时间;"//
+                    + "9C:交易类型;"//
+                    + "9F37:不可预知数(UNPR_NO);"//
+                    + "5F57:账户类型;"//
+                    + "6F:文件控制信息(FCI)模板;"//
+                    + "9F26:应用密文(AC)(ARQC);"// 生成应用密文命令返回的密文
+                    + "9F42:应用货币代码;"// 按 GB/T 12406 编码
+                    + "9F51:应用货币代码;"// JR/T 0025 专有数据。按GB/T 12406 编码
+                    + "9F44:应用货币指数;"// 指出金额数据中小数点从最右边开始第几个位置
+                    + "9F52:应用缺省行为(ADA);"// 定义在一些特定条件下卡片执行的发卡行指定的行为。如果卡片中没有此数据，缺省认为全零
+                    + "9F05:应用自定义数据;"// 和卡片应用有关的发卡行指定数据
+                    + "5F25:应用生效日期;"// YYMMDD卡片中应用启用日期
+                    + "5F24:应用失效日期;"// YYMMDD卡片中应用启用日期
+                    + "94:应用文件定位器(AFL);"// 指出和应用相关的数据存放位置（短文件标识符和记录号）,对于每一个要读的文件，AFL 包括
+                    // 4 个字节：
+                    // 字节 1：位 8–4=SFI 短文件标识符; 位 3–1=000;
+                    // 字节 2：文件中要读的第 1 个记录的记录号（不能为 0）;
+                    // 字节 3： 文件中要读的最后一个记录的记录号 （等于或大于字节 2）;
+                    // 字节 4：从字节 2 中的记录号开始，存放认证用静态数据记录的个数（值从 0 到字节 3-字节 2+1的值;
+                    + "4F:应用标识符(AID);"// 按 GB/T 16649.5
+                    // 规定标识应用。由注册的应用提供商标识（RID）和扩展的专用应用标识符（PIX）组成
+                    + "82:应用交互特征(AIP);"// 一个列表，说明此应用中卡片支持指定功能的能力;
+                    // 字节 1： 位 8：1=RFU; 位 7：1=支持 SDA; 位 6：1=支持 DDA; 位 5：1=支持持卡人认证; 位
+                    // 4：1=执行终端风险管理; 位 3：1=支持发卡行认证; 位 2：RFU（0）; 位 1：1=支持 CDA 字节
+                    // 2：RFU（“00”）
+                    + "50:应用标签;"// 和 AID 相关的便于记忆的数据。用于应用选择。 存在于 ADF的 FCI 中（可选）和
+                    // ADF目录入口中（必备）
+                    + "9F12:应用首选名称;"//
+                    + "5A:应用主账号(PAN);"//
+                    + "5F34:应用主账号序列号(CSN);"//
+                    + "87:应用优先指示器;"//
+                    + "61:应用模板;"//
+                    + "9F36:应用交易计数器(ATC);"//
+                    + "9F07:应用用途控制;"//
+                    + "9F08:应用版本号;"//
+                    + "8A:授权响应码;"//
+                    + "8C:卡片风险管理数据对象列表1(CDOL1);"//
+                    + "8D:卡片风险管理数据对象列表2(CDOL2);"//
+                    + "5F20:持卡人姓名;"//
+                    + "9F0B:持卡人姓名扩展;"//
+                    + "9F61:持卡人证件号;"//
+                    + "9F62:持卡人证件类型;"//
+                    + "8E:持卡人验证方法(CVM)列表;"//
+                    + "8F:CA公钥索引(PKI);"//
+                    + "9F53:连续脱机交易限制数(国际-货币);"//
+                    + "9F72:连续脱机交易限制数(国际-国家);"//
+                    + "9F27:应用信息数据;"//
+                    + "9F54:累计脱机交易金额限制数;"//
+                    + "9F75:累计脱机交易金额限制数(双货币);"//
+                    + "9F5C:累计脱机交易金额上限;"//
+                    + "9F73:货币转换因子;"//
+                    + "9F45:数据认证码;"//
+                    + "84:专用文件(DF)名称;"//
+                    + "73:目录自定义模板;" + "9F49:动态数据认证数据对象列表(DDOL);"//
+                    + "BF0C:文件控制信息(FCI)发卡行自定义数据;"//
+                    + "A5:文件控制信息(FCI)专用模板;"//
+                    + "6F:文件控制信息(FCI)模板;"//
+                    + "9F4C:IC动态数;"//
+                    + "9F47:IC卡RSA公钥指数;"//
+                    + "9F46:IC卡公钥证书;"//
+                    + "9F48:IC卡RSA公钥余数;"//
+                    + "9F0D:发卡行行为代码(IAC)-缺省;"//
+                    + "9F0E:发卡行行为代码(IAC)-拒绝;"//
+                    + "9F0F:发卡行行为代码(IAC)-联机;"//
+                    + "9F10:发卡行应用数据(IAD);"// qPBOC P-64
+                    + "91:发卡行认证数据;"//
+                    + "9F56:发卡行认证指示位;"//
+                    + "9F11:发卡行代码表索引;"//
+                    + "5F28:发卡行国家代码;"//
+                    + "9F57:发卡行国家代码;"//
+                    + "90:发卡行公钥证书;"//
+                    + "9F32:发卡行RSA公钥指数;"//
+                    + "92:发卡行RSA公钥余数;"//
+                    + "86:发卡行脚本命令;"//
+                    + "72:发卡行脚本模板2;"//
+                    + "5F50:发卡行URL;"//
+                    + "9F5A:发卡行URL2;"//
+                    + "5F2D:首选语言;"//
+                    + "9F13:上次联机应用交易计数器(ATC)寄存器;"//
+                    + "9F4D:交易日志入口;"//
+                    + "9F4F:交易日志格式;"//
+                    + "9F14:连续脱机交易下限;"//
+                    + "9F58:连续脱机交易下限;"//
+                    + "9F66:终端交易属性;"// 字节1:[7]支持非接触式借记/贷记应用; [6]支持 qPBOC;
+                    // [5]支持接触式借记/贷记应用;[4]终端仅支持脱机;[3]支持联机 PIN;[2]支持签名;
+                    // 字节2:[8]要求联机密文;[7]要求 CVM;
+                    // 字节4:[8]终端支持“01”版本的 fDDA
+                    + "9F17:PIN尝试计数器;"//
+                    + "9F38:处理选项数据对象列表(PDOL);"//
+                    + "80:响应报文模板格式1;"//
+                    + "77:响应报文模板格式2;"//
+                    + "9F76:第2应用货币代码;"//
+                    + "5F30:服务码;"//
+                    + "88:短文件标识符(SFI);"//
+                    + "9F4B:签名的动态应用数据;"//
+                    + "93:签名的静态应用数据(SAD);"//
+                    + "9F4A:静态数据认证标签列表;"//
+                    + "9F1F:磁条1自定义数据;"//
+                    + "57:磁条2等效数据;"// PAN和失效时间可以从这取得
+                    + "97:交易证书数据对象列表(TDOL);"//
+                    + "9F23:连续脱机交易上限;"//
+                    + "9F59:连续脱机交易上限;"//
+                    + "9F63:产品标识信息;"// 当终端能够获取卡标识信息时，本域出现；否则，本域不出现
+                    + "DF69:SM2算法支持指示器;"//
+                    + "70:响应报文的数据域;"//
+                    + "DF32:芯片序列号;"//
+                    + "DF33:过程密钥数据;"//
+                    + "DF34:终端读取时间;"//
+                    + "EFA0:自定义输入方式;"//
+                    + "";//
 
     private final static String DIR = "6F,A5,BF0C,70,61,77";
     private final static String LEN1 = "6F,4F";
@@ -255,46 +256,14 @@ public class TLV {
         return sb.toString();
     }
 
+    public static void anaTagSpeedata(byte[] bs, List<String> listTlvMap) {
+        TLV.toString(bs);
+        anaTagSpeedata(bs, 0, bs.length, listTlvMap);
+    }
+
     public static void anaTag(byte[] bs, HashMap<String, String> map) {
         TLV.toString(bs);
         anaTag(bs, 0, bs.length, map);
-    }
-
-    public static void decodeBF0C(byte[] bs, HashMap<String, String> map) {
-        String p4F = null;
-        String p50 = null;
-        int p87 = 0xFFFF;
-        for (int i = 0; i < bs.length; i++) {
-            if (bs[i] == 0x61) {
-                int len = bs[i + 1] & 0xFF;
-                byte[] ts = Arrays.copyOfRange(bs, i + 2, i + 2 + len);
-                byte[] fs = findByTag(ts, 0x87);
-                if (fs == null || fs.length <= 0 || (fs[0] & 0xFF) < p87) {
-                    if (fs == null || fs.length <= 0) {
-                        p87 = 0;
-                    } else {
-                        p87 = fs[0] & 0xFF;
-                    }
-                    byte[] tbs = findByTag(bs, 0x4F);
-                    if (tbs != null) {
-                        p4F = HEX.bytesToHex(tbs);
-                    }
-                    tbs = findByTag(bs, 0x50);
-                    if (tbs != null) {
-                        p50 = HEX.bytesToHex(tbs);
-                    }
-                }
-
-            } else {
-                break;
-            }
-        }
-        if (p4F != null) {
-            map.put("4F", p4F);
-        }
-        if (p50 != null) {
-            map.put("50", p50);
-        }
     }
 
     public static void anaTag(byte[] bs, int pos, int len, Map<String, String> map) {
@@ -347,7 +316,103 @@ public class TLV {
         }
     }
 
+    public static void decodeBF0C(byte[] bs, HashMap<String, String> map) {
+        String p4F = null;
+        String p50 = null;
+        int p87 = 0xFFFF;
+        for (int i = 0; i < bs.length; i++) {
+            if (bs[i] == 0x61) {
+                int len = bs[i + 1] & 0xFF;
+                byte[] ts = Arrays.copyOfRange(bs, i + 2, i + 2 + len);
+                byte[] fs = findByTag(ts, 0x87);
+                if (fs == null || fs.length <= 0 || (fs[0] & 0xFF) < p87) {
+                    if (fs == null || fs.length <= 0) {
+                        p87 = 0;
+                    } else {
+                        p87 = fs[0] & 0xFF;
+                    }
+                    byte[] tbs = findByTag(bs, 0x4F);
+                    if (tbs != null) {
+                        p4F = HEX.bytesToHex(tbs);
+                    }
+                    tbs = findByTag(bs, 0x50);
+                    if (tbs != null) {
+                        p50 = HEX.bytesToHex(tbs);
+                    }
+                }
+
+            } else {
+                break;
+            }
+        }
+        if (p4F != null) {
+            map.put("4F", p4F);
+        }
+        if (p50 != null) {
+            map.put("50", p50);
+        }
+    }
+
+
+    public static void anaTagSpeedata(byte[] bs, int pos, int len, List<String> listTlvMap) {
+        Map<String, String> map = new HashMap<>();
+        String myTlv = "";
+        int end = pos + len;
+        while (pos < end) {
+            int t = bs[pos++] & 0xFF;
+            if ((t & 0xF) == 0xF && !len1Set.contains(t)) {
+                // tag占用2字节
+                t <<= 8;
+                if (pos + 1 < end) {
+                    t |= bs[pos++] & 0xFF;
+                } else {
+                    return;
+                }
+            }
+            String tag = Integer.toHexString(t).toUpperCase(Locale.getDefault());
+            // 再取得长度
+            int tlen = 0;
+            // if (pos < end - 1) { //TODO houj 最后一个tag长度为0就漏掉了
+            if (pos < end) {
+                tlen = bs[pos++] & 0xFF;
+            } else {
+                return;
+            }
+            if ((tlen & 0x80) != 0) {
+                int lenCount = tlen & 0x7F;
+                tlen = 0;
+                for (int i = 0; i < lenCount; i++) {
+                    tlen <<= 8;
+                    if (pos < end - 1) {
+                        tlen |= bs[pos++] & 0xFF;
+                    } else {
+                        return;
+                    }
+                }
+            }
+            if (pos + tlen > end) {
+                // TAG体超出范围
+                return;
+            }
+            if (dirSet.contains(t)) {
+                // anaTag(bs, pos, end - pos, map);
+                map.put(tag, HEX.bytesToHex(bs, pos, tlen));
+
+            } else {
+                // 跳过长度
+                map.put(tag, HEX.bytesToHex(bs, pos, tlen));
+                if (tag.equals("4F")) {
+                    myTlv = HEX.bytesToHex(bs, pos, tlen);
+                    listTlvMap.add(myTlv);
+                }
+                pos += tlen;
+            }
+
+        }
+    }
+
     private final static HashMap<String, String> nameMap = new HashMap<String, String>();
+
     static {
         for (String s : NAMES.split(";")) {
             int i = s.indexOf(':');
@@ -567,27 +632,27 @@ public class TLV {
     }
 
     // 6-P83 5 A.5 终端验证结果 (TVR)
-    private final static String[] TVR = { "", "", "复合动态数据认证/应用密文生成失败", "脱机动态数据认证失败", "卡片出现在终端异常文件中", "IC 卡数据缺失", "脱机静态数据认证失败", "未进行脱机数据认证",//
-        "", "", "", "新卡", "卡片不允许所请求的服务", "应用尚未生效", "应用已过期", "IC 卡和终端应用版本不一致",//
-        "", "", "输入联机 PIN", "要求输入 PIN，密码键盘存在，但未输入 PIN", "要求输入 PIN，但密码键盘不存在或工作不正常", "PIN 重试次数超限", "未知的 CVM", "持卡人验证失败",//
-        "", "", "", "商户要求联机交易", "交易被随机选择联机处理", "超过连续脱机交易上限", "超过连续脱机交易下限", "交易超过最低限额",//
-        "", "", "", "", "最后一次 GENERATE AC 命令之后脚本处理失败", "最后一次 GENERATE AC 命令之前脚本处理失败", "发卡行认证失败", "使用缺省 TDOL",//
+    private final static String[] TVR = {"", "", "复合动态数据认证/应用密文生成失败", "脱机动态数据认证失败", "卡片出现在终端异常文件中", "IC 卡数据缺失", "脱机静态数据认证失败", "未进行脱机数据认证",//
+            "", "", "", "新卡", "卡片不允许所请求的服务", "应用尚未生效", "应用已过期", "IC 卡和终端应用版本不一致",//
+            "", "", "输入联机 PIN", "要求输入 PIN，密码键盘存在，但未输入 PIN", "要求输入 PIN，但密码键盘不存在或工作不正常", "PIN 重试次数超限", "未知的 CVM", "持卡人验证失败",//
+            "", "", "", "商户要求联机交易", "交易被随机选择联机处理", "超过连续脱机交易上限", "超过连续脱机交易下限", "交易超过最低限额",//
+            "", "", "", "", "最后一次 GENERATE AC 命令之后脚本处理失败", "最后一次 GENERATE AC 命令之前脚本处理失败", "发卡行认证失败", "使用缺省 TDOL",//
     };
 
     public static void printTVR(String s) {
         printBitInfo(s, TVR);
     }
 
-    private final static String[] AIP_INFO = { "支持CDA—不支持", "", "支持发卡行认证—支持", "执行终端风险管理—支持", "支持持卡人认证—支持", "支持DDA—支持", "支持SDA—支持", "" };
+    private final static String[] AIP_INFO = {"支持CDA—不支持", "", "支持发卡行认证—支持", "执行终端风险管理—支持", "支持持卡人认证—支持", "支持DDA—支持", "支持SDA—支持", ""};
 
     public static void printAIP(String ns) {
         printBitInfo(ns, AIP_INFO);
     }
 
     private final static String[] XINGNENG_INFO = {//
-        "", "", "", "", "", "接触式IC卡", "磁条", "手工键盘输入",//
-        "持卡人证件验证", "", "", "无需CVM", "", "签名（纸）", "加密 PIN联机验证", "IC卡明文PIN验证",//
-        "", "", "", "复合动态数据认证/应用密文生成（CDA）", "", "吞卡", "动态数据认证（DDA）", "静态数据认证（SDA",//
+            "", "", "", "", "", "接触式IC卡", "磁条", "手工键盘输入",//
+            "持卡人证件验证", "", "", "无需CVM", "", "签名（纸）", "加密 PIN联机验证", "IC卡明文PIN验证",//
+            "", "", "", "复合动态数据认证/应用密文生成（CDA）", "", "吞卡", "动态数据认证（DDA）", "静态数据认证（SDA",//
     };
 
     /**
@@ -699,11 +764,8 @@ public class TLV {
     }
 
     /**
-     *
-     * @param f55
-     *            源55
-     * @param add
-     *            添加项 "84,9F09,9F41,9F63"
+     * @param f55 源55
+     * @param add 添加项 "84,9F09,9F41,9F63"
      * @return 添加后的
      */
     private static String fixF55(String f55, String add) {
@@ -737,7 +799,7 @@ public class TLV {
 
         // printAIP("7C00");
 
-        // // TLV.printAIP("0040");
+        // // TLVSS.printAIP("0040");
         //
         // // 无效交易
         // // String
@@ -764,7 +826,7 @@ public class TLV {
         // HashMap<String, String> map = new HashMap();
         // byte[] bs =
         // HEX.hexToBytes("9F26084EE0A7F9E31922B19F2701809F101307020103A0A000010A0100000000008F7630A39F37047890230A9F36020029950500000408009A031512189C01009F02060000000000015F2A02015682027C009F1A0201569F03060000000000009F33034060009F34034203009F3501219F1E0C313331303030303030363031");
-        // TLV.anaTag(bs, map);
+        // TLVSS.anaTag(bs, map);
         // System.out.println(map);
         //
 
@@ -781,13 +843,12 @@ public class TLV {
     private int length = -1;
     private byte[] value;
 
-    public static TLV fromRawData(byte[] tlData, int tlOffset, byte[] vData, int vOffset)
-    {
+    public static TLV fromRawData(byte[] tlData, int tlOffset, byte[] vData, int vOffset) {
         int tLen = getTLength(tlData, tlOffset);
         int lLen = getLLength(tlData, tlOffset + tLen);
         int vLen = calcValueLength(tlData, tlOffset + tLen, lLen);
         TLV d = new TLV();
-        d.data = ByteUtil.merage(new byte[][] { ByteUtil.subBytes(tlData, tlOffset, tLen + lLen), ByteUtil.subBytes(vData, vOffset, vLen) });
+        d.data = ByteUtil.merage(new byte[][]{ByteUtil.subBytes(tlData, tlOffset, tLen + lLen), ByteUtil.subBytes(vData, vOffset, vLen)});
         d.getTag();
         d.getLength();
         d.getBytesValue();
@@ -798,7 +859,7 @@ public class TLV {
     public static TLV fromData(String tagName, byte[] value) {
         byte[] tag = ByteUtil.hexString2Bytes(tagName);
         TLV d = new TLV();
-        d.data = ByteUtil.merage(new byte[][] { tag, makeLengthData(value.length), value });
+        d.data = ByteUtil.merage(new byte[][]{tag, makeLengthData(value.length), value});
         d.tag = tagName;
         d.length = value.length;
         d.value = value;
@@ -938,21 +999,20 @@ public class TLV {
             byte[] lenData = new byte[4];
             int validIndex = -1;
             for (int i = 0; i < lenData.length; i++) {
-                lenData[i] = ((byte)(len >> 8 * (3 - i) & 0xF));
+                lenData[i] = ((byte) (len >> 8 * (3 - i) & 0xF));
                 if ((lenData[(3 - i)] != 0) && (validIndex < 0)) {
                     validIndex = i;
                 }
             }
             lenData = ByteUtil.subBytes(lenData, validIndex, -1);
-            lenData = ByteUtil.merage(new byte[][] { { (byte)(0x80 & lenData.length) }, lenData });
+            lenData = ByteUtil.merage(new byte[][]{{(byte) (0x80 & lenData.length)}, lenData});
             return lenData;
         }
 
-        return new byte[] { (byte)len };
+        return new byte[]{(byte) len};
     }
 
-    public boolean equals(Object obj)
-    {
+    public boolean equals(Object obj) {
         if (obj == this) {
             return true;
         }
@@ -961,15 +1021,14 @@ public class TLV {
             return false;
         }
 
-        if ((this.data == null) || (((TLV)obj).data == null)) {
+        if ((this.data == null) || (((TLV) obj).data == null)) {
             return false;
         }
 
-        return Arrays.equals(this.data, ((TLV)obj).data);
+        return Arrays.equals(this.data, ((TLV) obj).data);
     }
 
-    public String toString()
-    {
+    public String toString() {
         if (this.data == null) {
             return super.toString();
         }

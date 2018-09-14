@@ -65,7 +65,11 @@
             </intent-filter>
         </receiver>
 
-        <activity android:name=".spdata.PsamIcActivity"></activity>
+        <activity android:name=".spdata.PsamIcActivity">
+
+        </activity>
+        <activity android:name=".spdata.MainActivity"></activity>
+        <activity android:name=".spdata.ScanActivity"></activity>
     </application>
 
 </manifest>

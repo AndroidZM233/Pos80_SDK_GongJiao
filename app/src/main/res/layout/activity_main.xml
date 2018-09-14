@@ -1,93 +1,100 @@
 <?xml version="1.0" encoding="utf-8"?>
-<ScrollView  xmlns:android="http://schemas.android.com/apk/res/android"
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="fill_parent"
     android:layout_height="fill_parent"
-    android:scrollbars="vertical"
     android:fadingEdge="vertical"
-    >
+    android:scrollbars="vertical">
+
     <LinearLayout
-        android:orientation="vertical"
         android:layout_width="match_parent"
-        android:layout_height="match_parent">
+        android:layout_height="match_parent"
+        android:orientation="vertical">
 
         <TextView
             android:id="@+id/txt_app_title"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:textSize="25dp"
-            android:gravity="center"
             android:layout_marginBottom="10dp"
-            android:textStyle="bold"/>
+            android:gravity="center"
+            android:textSize="25dp"
+            android:textStyle="bold" />
 
         <Button
             android:id="@+id/btn_psam_ic"
 
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:textSize="20dp"
-            android:text="@string/psam_ic"/>
+            android:text="@string/psam_ic"
+            android:textSize="20dp" />
+
         <Button
             android:id="@+id/sys_Id"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:textSize="20dp"
-            android:text="@string/index_sys"/>
+            android:text="@string/index_sys"
+            android:textSize="20dp" />
+
         <Button
             android:id="@+id/card_Id"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:textSize="20dp"
-            android:text="@string/read_operation"/>
+            android:text="@string/read_operation"
+            android:textSize="20dp" />
+
         <Button
             android:id="@+id/key_Id"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:textSize="20dp"
-            android:text="@string/key_operation"/>
+            android:text="@string/key_operation"
+            android:textSize="20dp" />
+
         <Button
             android:id="@+id/pin_Id"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:text="@string/pin_operation"
-            android:textSize="20dp"
-            />
+            android:textSize="20dp" />
+
         <Button
             android:id="@+id/en_de_Id"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:text="@string/index_en"
-            android:textSize="20dp"
-            />
+            android:textSize="20dp" />
+
         <Button
             android:id="@+id/mac_Id"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:text="@string/index_mac"
-            android:textSize="20dp"
-            />
+            android:textSize="20dp" />
+
         <Button
             android:id="@+id/print_Id"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:text="@string/index_print"
-            android:textSize="20dp"/>
+            android:textSize="20dp" />
+
         <Button
             android:id="@+id/dukpt_Id"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:text="@string/index_dukpt"
-            android:textSize="20dp"/>
+            android:textSize="20dp" />
+
         <Button
             android:id="@+id/dock_Id"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:text="@string/index_dock"
-            android:textSize="20dp"/>
+            android:textSize="20dp" />
+
         <Button
             android:id="@+id/emv_Id"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:text="@string/index_emv"
-            android:textSize="20dp"/>
+            android:textSize="20dp" />
     </LinearLayout>
 </ScrollView>
