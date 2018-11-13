@@ -1,6 +1,7 @@
 package com.example.test.yinlianbarcode;
 
 import android.app.Application;
+import android.content.Intent;
 
 import com.example.test.yinlianbarcode.entity.PubKey;
 import com.example.test.yinlianbarcode.entity.PubKeyEntity;

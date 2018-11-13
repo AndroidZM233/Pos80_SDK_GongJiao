@@ -1,239 +1,344 @@
 -- Merging decision tree log ---
 manifest
-ADDED from D:\SpeedataDemo18\Pos80_SDK_GongJiao\app\src\main\AndroidManifest.xml:2:1-71:12
-INJECTED from D:\SpeedataDemo18\Pos80_SDK_GongJiao\app\src\main\AndroidManifest.xml:2:1-71:12
-INJECTED from D:\SpeedataDemo18\Pos80_SDK_GongJiao\app\src\main\AndroidManifest.xml:2:1-71:12
-MERGED from [com.android.support.constraint:constraint-layout:2.0.0-alpha2] C:\Users\42040\.gradle\caches\transforms-1\files-1.1\constraint-layout-2.0.0-alpha2.aar\baab7c9e338ef22bf15f6b279ba928c4\AndroidManifest.xml:2:1-11:12
+ADDED from D:\SpeedataDemo18\Pos80_SDK_GongJiao\app\src\main\AndroidManifest.xml:2:1-96:12
+INJECTED from D:\SpeedataDemo18\Pos80_SDK_GongJiao\app\src\main\AndroidManifest.xml:2:1-96:12
+INJECTED from D:\SpeedataDemo18\Pos80_SDK_GongJiao\app\src\main\AndroidManifest.xml:2:1-96:12
+INJECTED from D:\SpeedataDemo18\Pos80_SDK_GongJiao\app\src\main\AndroidManifest.xml:2:1-96:12
+MERGED from [com.android.support:multidex:1.0.2] C:\Users\42040\.gradle\caches\transforms-1\files-1.1\multidex-1.0.2.aar\fe39fe004c56b5d2440cab074b45ca79\AndroidManifest.xml:17:1-22:12
+MERGED from [:wechat] D:\SpeedataDemo18\Pos80_SDK_GongJiao\wechat\build\intermediates\manifests\full\debug\AndroidManifest.xml:2:1-13:12
+MERGED from [:alipay] D:\SpeedataDemo18\Pos80_SDK_GongJiao\alipay\build\intermediates\manifests\full\debug\AndroidManifest.xml:2:1-12:12
+MERGED from [com.android.support.constraint:constraint-layout:1.1.3] C:\Users\42040\.gradle\caches\transforms-1\files-1.1\constraint-layout-1.1.3.aar\190dd715c99c5dc0ddbdeb618a3097df\AndroidManifest.xml:2:1-11:12
+MERGED from [com.android.support:design:27.1.1] C:\Users\42040\.gradle\caches\transforms-1\files-1.1\design-27.1.1.aar\1f785bed6168612ab8dff620db3c3760\AndroidManifest.xml:17:1-22:12
+MERGED from [:yinlianbarcode] D:\SpeedataDemo18\Pos80_SDK_GongJiao\yinlianbarcode\build\intermediates\manifests\full\debug\AndroidManifest.xml:2:1-11:12
+MERGED from [SwiftDecoderMobile.aar] C:\Users\42040\.gradle\caches\transforms-1\files-1.1\SwiftDecoderMobile.aar\9d76c6578ebd2c62683731b28262bc25\AndroidManifest.xml:2:1-25:12
+MERGED from [:base] D:\SpeedataDemo18\Pos80_SDK_GongJiao\base\build\intermediates\manifests\full\debug\AndroidManifest.xml:2:1-13:12
 MERGED from [com.android.support:appcompat-v7:27.1.1] C:\Users\42040\.gradle\caches\transforms-1\files-1.1\appcompat-v7-27.1.1.aar\0c15e873c626f7358d5f51330c4e3e3b\AndroidManifest.xml:17:1-22:12
-MERGED from [com.google.android.gms:play-services-appindexing:8.4.0] C:\Users\42040\.gradle\caches\transforms-1\files-1.1\play-services-appindexing-8.4.0.aar\a03dfa652cee2e8d48a1d2a6b17524ba\AndroidManifest.xml:16:1-20:12
+MERGED from [com.google.firebase:firebase-appindexing:16.0.2] C:\Users\42040\.gradle\caches\transforms-1\files-1.1\firebase-appindexing-16.0.2.aar\817cf101e9810e110c449be0309cadeb\AndroidManifest.xml:17:1-24:12
+MERGED from [com.google.android.gms:play-services-base:16.0.1] C:\Users\42040\.gradle\caches\transforms-1\files-1.1\play-services-base-16.0.1.aar\f17630c159bebeb0976ef0c156d46192\AndroidManifest.xml:17:1-29:12
+MERGED from [com.google.firebase:firebase-common:16.0.3] C:\Users\42040\.gradle\caches\transforms-1\files-1.1\firebase-common-16.0.3.aar\87fbb0d60c09870f8537964df78c0422\AndroidManifest.xml:2:1-17:12
+MERGED from [com.google.android.gms:play-services-tasks:16.0.1] C:\Users\42040\.gradle\caches\transforms-1\files-1.1\play-services-tasks-16.0.1.aar\ae29bec45a7ecb52141267f82b46c029\AndroidManifest.xml:2:1-9:12
+MERGED from [com.google.android.gms:play-services-basement:16.0.1] C:\Users\42040\.gradle\caches\transforms-1\files-1.1\play-services-basement-16.0.1.aar\7fb9850a50c51b23505a428ab9d01cf2\AndroidManifest.xml:17:1-28:12
+MERGED from [com.android.support:support-v4:27.1.1] C:\Users\42040\.gradle\caches\transforms-1\files-1.1\support-v4-27.1.1.aar\cc5eeaeb805239b8bcefb1e8fad3d4d0\AndroidManifest.xml:17:1-22:12
 MERGED from [com.android.support:recyclerview-v7:27.1.1] C:\Users\42040\.gradle\caches\transforms-1\files-1.1\recyclerview-v7-27.1.1.aar\7962d76d97856c89238fb251c5c3bb99\AndroidManifest.xml:17:1-22:12
-MERGED from [com.google.android.gms:play-services-base:8.4.0] C:\Users\42040\.gradle\caches\transforms-1\files-1.1\play-services-base-8.4.0.aar\6279c05d92a28960f82bdd5d35c3e96f\AndroidManifest.xml:16:1-19:12
+MERGED from [com.android.support:transition:27.1.1] C:\Users\42040\.gradle\caches\transforms-1\files-1.1\transition-27.1.1.aar\5c5344d3677c9670af1bc2bd1eee12c7\AndroidManifest.xml:17:1-22:12
 MERGED from [com.android.support:support-fragment:27.1.1] C:\Users\42040\.gradle\caches\transforms-1\files-1.1\support-fragment-27.1.1.aar\b191e52f1417070be06f0e07e0b17274\AndroidManifest.xml:17:1-22:12
 MERGED from [com.android.support:animated-vector-drawable:27.1.1] C:\Users\42040\.gradle\caches\transforms-1\files-1.1\animated-vector-drawable-27.1.1.aar\48b9c5550311ce8ab94565ef9f624bcd\AndroidManifest.xml:17:1-22:12
 MERGED from [com.android.support:support-core-ui:27.1.1] C:\Users\42040\.gradle\caches\transforms-1\files-1.1\support-core-ui-27.1.1.aar\53c7eacefab8ece7cfb7ea8d25b21068\AndroidManifest.xml:17:1-22:12
 MERGED from [com.android.support:support-core-utils:27.1.1] C:\Users\42040\.gradle\caches\transforms-1\files-1.1\support-core-utils-27.1.1.aar\ff9333c3687f5b5f91730821a74273cc\AndroidManifest.xml:17:1-22:12
 MERGED from [com.android.support:support-vector-drawable:27.1.1] C:\Users\42040\.gradle\caches\transforms-1\files-1.1\support-vector-drawable-27.1.1.aar\56e7b006a3d9d7dcbf0b3bcc0ecb324c\AndroidManifest.xml:17:1-22:12
+MERGED from [com.android.support:support-media-compat:27.1.1] C:\Users\42040\.gradle\caches\transforms-1\files-1.1\support-media-compat-27.1.1.aar\9758123ac8b8d859f7f1436826e18198\AndroidManifest.xml:17:1-22:12
 MERGED from [com.android.support:support-compat:27.1.1] C:\Users\42040\.gradle\caches\transforms-1\files-1.1\support-compat-27.1.1.aar\95de3bbc351a23486ea12f2c0cf39813\AndroidManifest.xml:17:1-22:12
-MERGED from [com.google.android.gms:play-services-basement:8.4.0] C:\Users\42040\.gradle\caches\transforms-1\files-1.1\play-services-basement-8.4.0.aar\4b73fea51ab1e6fe17d66cbe9ca15cb5\AndroidManifest.xml:16:1-26:12
-MERGED from [com.android.support:support-v4:23.0.0] C:\Users\42040\.gradle\caches\transforms-1\files-1.1\support-v4-23.0.0.aar\90c4df5181d61af9d138d3257fc0b835\AndroidManifest.xml:17:1-24:12
-MERGED from [android.arch.lifecycle:runtime:1.1.0] C:\Users\42040\.gradle\caches\transforms-1\files-1.1\runtime-1.1.0.aar\6f639582ae2aec41a1cd9190bec4808b\AndroidManifest.xml:17:1-22:12
+MERGED from [io.reactivex:rxandroid:1.2.0] C:\Users\42040\.gradle\caches\transforms-1\files-1.1\rxandroid-1.2.0.aar\e9c6ed670373f7438ed897bc99fce1b8\AndroidManifest.xml:15:1-21:12
+MERGED from [io.reactivex.rxjava2:rxandroid:2.1.0] C:\Users\42040\.gradle\caches\transforms-1\files-1.1\rxandroid-2.1.0.aar\f0e056b84beb01a6b6c308e30efde61d\AndroidManifest.xml:15:1-20:12
 MERGED from [android.arch.lifecycle:livedata-core:1.1.0] C:\Users\42040\.gradle\caches\transforms-1\files-1.1\livedata-core-1.1.0.aar\a4170dbed2d612e4dd6d54a3114645a0\AndroidManifest.xml:17:1-22:12
-MERGED from [android.arch.core:runtime:1.1.0] C:\Users\42040\.gradle\caches\transforms-1\files-1.1\runtime-1.1.0.aar\247beb0c9a9a51bf82eb56691dde6edd\AndroidManifest.xml:17:1-22:12
 MERGED from [android.arch.lifecycle:viewmodel:1.1.0] C:\Users\42040\.gradle\caches\transforms-1\files-1.1\viewmodel-1.1.0.aar\5102f78bbed8397de7b35cf9ec7f424a\AndroidManifest.xml:17:1-22:12
-INJECTED from D:\SpeedataDemo18\Pos80_SDK_GongJiao\app\src\main\AndroidManifest.xml:2:1-71:12
-INJECTED from D:\SpeedataDemo18\Pos80_SDK_GongJiao\app\src\main\AndroidManifest.xml:2:1-71:12
+MERGED from [android.arch.lifecycle:runtime:1.1.0] C:\Users\42040\.gradle\caches\transforms-1\files-1.1\runtime-1.1.0.aar\6f639582ae2aec41a1cd9190bec4808b\AndroidManifest.xml:17:1-22:12
+MERGED from [android.arch.core:runtime:1.1.0] C:\Users\42040\.gradle\caches\transforms-1\files-1.1\runtime-1.1.0.aar\247beb0c9a9a51bf82eb56691dde6edd\AndroidManifest.xml:17:1-22:12
+INJECTED from D:\SpeedataDemo18\Pos80_SDK_GongJiao\app\src\main\AndroidManifest.xml:2:1-96:12
+INJECTED from D:\SpeedataDemo18\Pos80_SDK_GongJiao\app\src\main\AndroidManifest.xml:2:1-96:12
+INJECTED from D:\SpeedataDemo18\Pos80_SDK_GongJiao\app\src\main\AndroidManifest.xml:2:1-96:12
 	package
-		ADDED from D:\SpeedataDemo18\Pos80_SDK_GongJiao\app\src\main\AndroidManifest.xml:3:5-31
-	android:versionName
-		ADDED from D:\SpeedataDemo18\Pos80_SDK_GongJiao\app\src\main\AndroidManifest.xml:5:5-30
+		ADDED from D:\SpeedataDemo18\Pos80_SDK_GongJiao\app\src\main\AndroidManifest.xml:4:5-26
 		INJECTED from D:\SpeedataDemo18\Pos80_SDK_GongJiao\app\src\main\AndroidManifest.xml
+		INJECTED from D:\SpeedataDemo18\Pos80_SDK_GongJiao\app\src\main\AndroidManifest.xml
+	android:versionName
+		INJECTED from D:\SpeedataDemo18\Pos80_SDK_GongJiao\app\src\main\AndroidManifest.xml
+		ADDED from D:\SpeedataDemo18\Pos80_SDK_GongJiao\app\src\main\AndroidManifest.xml:2:1-96:12
+		INJECTED from D:\SpeedataDemo18\Pos80_SDK_GongJiao\app\src\main\AndroidManifest.xml
+	xmlns:tools
+		ADDED from D:\SpeedataDemo18\Pos80_SDK_GongJiao\app\src\main\AndroidManifest.xml:3:5-51
+	android:versionCode
+		INJECTED from D:\SpeedataDemo18\Pos80_SDK_GongJiao\app\src\main\AndroidManifest.xml
+		ADDED from D:\SpeedataDemo18\Pos80_SDK_GongJiao\app\src\main\AndroidManifest.xml:2:1-96:12
 		INJECTED from D:\SpeedataDemo18\Pos80_SDK_GongJiao\app\src\main\AndroidManifest.xml
 	xmlns:android
 		ADDED from D:\SpeedataDemo18\Pos80_SDK_GongJiao\app\src\main\AndroidManifest.xml:2:11-69
-	android:versionCode
-		ADDED from D:\SpeedataDemo18\Pos80_SDK_GongJiao\app\src\main\AndroidManifest.xml:4:5-28
-		INJECTED from D:\SpeedataDemo18\Pos80_SDK_GongJiao\app\src\main\AndroidManifest.xml
-		INJECTED from D:\SpeedataDemo18\Pos80_SDK_GongJiao\app\src\main\AndroidManifest.xml
 uses-permission#android.permission.CALL_PHONE
-ADDED from D:\SpeedataDemo18\Pos80_SDK_GongJiao\app\src\main\AndroidManifest.xml:7:5-69
+ADDED from D:\SpeedataDemo18\Pos80_SDK_GongJiao\app\src\main\AndroidManifest.xml:6:5-69
 	android:name
-		ADDED from D:\SpeedataDemo18\Pos80_SDK_GongJiao\app\src\main\AndroidManifest.xml:7:22-66
+		ADDED from D:\SpeedataDemo18\Pos80_SDK_GongJiao\app\src\main\AndroidManifest.xml:6:22-66
 uses-permission#android.permission.WAKE_LOCK
-ADDED from D:\SpeedataDemo18\Pos80_SDK_GongJiao\app\src\main\AndroidManifest.xml:8:5-68
+ADDED from D:\SpeedataDemo18\Pos80_SDK_GongJiao\app\src\main\AndroidManifest.xml:7:5-68
 	android:name
-		ADDED from D:\SpeedataDemo18\Pos80_SDK_GongJiao\app\src\main\AndroidManifest.xml:8:22-65
+		ADDED from D:\SpeedataDemo18\Pos80_SDK_GongJiao\app\src\main\AndroidManifest.xml:7:22-65
 uses-permission#android.permission.WRITE_EXTERNAL_STORAGE
-ADDED from D:\SpeedataDemo18\Pos80_SDK_GongJiao\app\src\main\AndroidManifest.xml:9:5-81
+ADDED from D:\SpeedataDemo18\Pos80_SDK_GongJiao\app\src\main\AndroidManifest.xml:8:5-81
+MERGED from [SwiftDecoderMobile.aar] C:\Users\42040\.gradle\caches\transforms-1\files-1.1\SwiftDecoderMobile.aar\9d76c6578ebd2c62683731b28262bc25\AndroidManifest.xml:16:5-81
+MERGED from [SwiftDecoderMobile.aar] C:\Users\42040\.gradle\caches\transforms-1\files-1.1\SwiftDecoderMobile.aar\9d76c6578ebd2c62683731b28262bc25\AndroidManifest.xml:16:5-81
 	android:name
-		ADDED from D:\SpeedataDemo18\Pos80_SDK_GongJiao\app\src\main\AndroidManifest.xml:9:22-78
+		ADDED from D:\SpeedataDemo18\Pos80_SDK_GongJiao\app\src\main\AndroidManifest.xml:8:22-78
 uses-permission#android.permission.READ_EXTERNAL_STORAGE
-ADDED from D:\SpeedataDemo18\Pos80_SDK_GongJiao\app\src\main\AndroidManifest.xml:10:5-80
+ADDED from D:\SpeedataDemo18\Pos80_SDK_GongJiao\app\src\main\AndroidManifest.xml:9:5-80
+MERGED from [SwiftDecoderMobile.aar] C:\Users\42040\.gradle\caches\transforms-1\files-1.1\SwiftDecoderMobile.aar\9d76c6578ebd2c62683731b28262bc25\AndroidManifest.xml:17:5-80
+MERGED from [SwiftDecoderMobile.aar] C:\Users\42040\.gradle\caches\transforms-1\files-1.1\SwiftDecoderMobile.aar\9d76c6578ebd2c62683731b28262bc25\AndroidManifest.xml:17:5-80
 	android:name
-		ADDED from D:\SpeedataDemo18\Pos80_SDK_GongJiao\app\src\main\AndroidManifest.xml:10:22-77
+		ADDED from D:\SpeedataDemo18\Pos80_SDK_GongJiao\app\src\main\AndroidManifest.xml:9:22-77
 uses-permission#android.permission.MOUNT_UNMOUNT_FILESYSTEMS
-ADDED from D:\SpeedataDemo18\Pos80_SDK_GongJiao\app\src\main\AndroidManifest.xml:11:5-84
+ADDED from D:\SpeedataDemo18\Pos80_SDK_GongJiao\app\src\main\AndroidManifest.xml:10:5-12:47
+	tools:ignore
+		ADDED from D:\SpeedataDemo18\Pos80_SDK_GongJiao\app\src\main\AndroidManifest.xml:12:9-44
 	android:name
-		ADDED from D:\SpeedataDemo18\Pos80_SDK_GongJiao\app\src\main\AndroidManifest.xml:11:22-81
+		ADDED from D:\SpeedataDemo18\Pos80_SDK_GongJiao\app\src\main\AndroidManifest.xml:11:9-68
 uses-permission#android.permission.CHANGE_CONFIGURATION
-ADDED from D:\SpeedataDemo18\Pos80_SDK_GongJiao\app\src\main\AndroidManifest.xml:12:5-79
+ADDED from D:\SpeedataDemo18\Pos80_SDK_GongJiao\app\src\main\AndroidManifest.xml:13:5-15:47
+	tools:ignore
+		ADDED from D:\SpeedataDemo18\Pos80_SDK_GongJiao\app\src\main\AndroidManifest.xml:15:9-44
 	android:name
-		ADDED from D:\SpeedataDemo18\Pos80_SDK_GongJiao\app\src\main\AndroidManifest.xml:12:22-76
+		ADDED from D:\SpeedataDemo18\Pos80_SDK_GongJiao\app\src\main\AndroidManifest.xml:14:9-63
 uses-permission#android.permission.PROCESS_OUTGOING_CALLS
-ADDED from D:\SpeedataDemo18\Pos80_SDK_GongJiao\app\src\main\AndroidManifest.xml:13:5-81
+ADDED from D:\SpeedataDemo18\Pos80_SDK_GongJiao\app\src\main\AndroidManifest.xml:16:5-81
 	android:name
-		ADDED from D:\SpeedataDemo18\Pos80_SDK_GongJiao\app\src\main\AndroidManifest.xml:13:22-78
+		ADDED from D:\SpeedataDemo18\Pos80_SDK_GongJiao\app\src\main\AndroidManifest.xml:16:22-78
+uses-permission#android.permission.RECEIVE_BOOT_COMPLETED
+ADDED from D:\SpeedataDemo18\Pos80_SDK_GongJiao\app\src\main\AndroidManifest.xml:19:5-81
+	android:name
+		ADDED from D:\SpeedataDemo18\Pos80_SDK_GongJiao\app\src\main\AndroidManifest.xml:19:22-78
+uses-permission#android.permission.CAMERA
+ADDED from D:\SpeedataDemo18\Pos80_SDK_GongJiao\app\src\main\AndroidManifest.xml:20:5-65
+MERGED from [SwiftDecoderMobile.aar] C:\Users\42040\.gradle\caches\transforms-1\files-1.1\SwiftDecoderMobile.aar\9d76c6578ebd2c62683731b28262bc25\AndroidManifest.xml:11:5-65
+MERGED from [SwiftDecoderMobile.aar] C:\Users\42040\.gradle\caches\transforms-1\files-1.1\SwiftDecoderMobile.aar\9d76c6578ebd2c62683731b28262bc25\AndroidManifest.xml:11:5-65
+	android:name
+		ADDED from D:\SpeedataDemo18\Pos80_SDK_GongJiao\app\src\main\AndroidManifest.xml:20:22-62
 application
-ADDED from D:\SpeedataDemo18\Pos80_SDK_GongJiao\app\src\main\AndroidManifest.xml:15:5-69:19
-MERGED from [com.android.support.constraint:constraint-layout:2.0.0-alpha2] C:\Users\42040\.gradle\caches\transforms-1\files-1.1\constraint-layout-2.0.0-alpha2.aar\baab7c9e338ef22bf15f6b279ba928c4\AndroidManifest.xml:9:5-20
-MERGED from [com.android.support.constraint:constraint-layout:2.0.0-alpha2] C:\Users\42040\.gradle\caches\transforms-1\files-1.1\constraint-layout-2.0.0-alpha2.aar\baab7c9e338ef22bf15f6b279ba928c4\AndroidManifest.xml:9:5-20
-MERGED from [com.google.android.gms:play-services-appindexing:8.4.0] C:\Users\42040\.gradle\caches\transforms-1\files-1.1\play-services-appindexing-8.4.0.aar\a03dfa652cee2e8d48a1d2a6b17524ba\AndroidManifest.xml:19:5-20
-MERGED from [com.google.android.gms:play-services-appindexing:8.4.0] C:\Users\42040\.gradle\caches\transforms-1\files-1.1\play-services-appindexing-8.4.0.aar\a03dfa652cee2e8d48a1d2a6b17524ba\AndroidManifest.xml:19:5-20
-MERGED from [com.google.android.gms:play-services-basement:8.4.0] C:\Users\42040\.gradle\caches\transforms-1\files-1.1\play-services-basement-8.4.0.aar\4b73fea51ab1e6fe17d66cbe9ca15cb5\AndroidManifest.xml:20:5-24:19
-MERGED from [com.google.android.gms:play-services-basement:8.4.0] C:\Users\42040\.gradle\caches\transforms-1\files-1.1\play-services-basement-8.4.0.aar\4b73fea51ab1e6fe17d66cbe9ca15cb5\AndroidManifest.xml:20:5-24:19
-MERGED from [com.android.support:support-v4:23.0.0] C:\Users\42040\.gradle\caches\transforms-1\files-1.1\support-v4-23.0.0.aar\90c4df5181d61af9d138d3257fc0b835\AndroidManifest.xml:22:5-20
-MERGED from [com.android.support:support-v4:23.0.0] C:\Users\42040\.gradle\caches\transforms-1\files-1.1\support-v4-23.0.0.aar\90c4df5181d61af9d138d3257fc0b835\AndroidManifest.xml:22:5-20
+ADDED from D:\SpeedataDemo18\Pos80_SDK_GongJiao\app\src\main\AndroidManifest.xml:22:5-94:19
+MERGED from [:wechat] D:\SpeedataDemo18\Pos80_SDK_GongJiao\wechat\build\intermediates\manifests\full\debug\AndroidManifest.xml:11:5-20
+MERGED from [:wechat] D:\SpeedataDemo18\Pos80_SDK_GongJiao\wechat\build\intermediates\manifests\full\debug\AndroidManifest.xml:11:5-20
+MERGED from [com.android.support.constraint:constraint-layout:1.1.3] C:\Users\42040\.gradle\caches\transforms-1\files-1.1\constraint-layout-1.1.3.aar\190dd715c99c5dc0ddbdeb618a3097df\AndroidManifest.xml:9:5-20
+MERGED from [com.android.support.constraint:constraint-layout:1.1.3] C:\Users\42040\.gradle\caches\transforms-1\files-1.1\constraint-layout-1.1.3.aar\190dd715c99c5dc0ddbdeb618a3097df\AndroidManifest.xml:9:5-20
+MERGED from [SwiftDecoderMobile.aar] C:\Users\42040\.gradle\caches\transforms-1\files-1.1\SwiftDecoderMobile.aar\9d76c6578ebd2c62683731b28262bc25\AndroidManifest.xml:21:5-23:19
+MERGED from [SwiftDecoderMobile.aar] C:\Users\42040\.gradle\caches\transforms-1\files-1.1\SwiftDecoderMobile.aar\9d76c6578ebd2c62683731b28262bc25\AndroidManifest.xml:21:5-23:19
+MERGED from [com.google.firebase:firebase-appindexing:16.0.2] C:\Users\42040\.gradle\caches\transforms-1\files-1.1\firebase-appindexing-16.0.2.aar\817cf101e9810e110c449be0309cadeb\AndroidManifest.xml:22:5-20
+MERGED from [com.google.firebase:firebase-appindexing:16.0.2] C:\Users\42040\.gradle\caches\transforms-1\files-1.1\firebase-appindexing-16.0.2.aar\817cf101e9810e110c449be0309cadeb\AndroidManifest.xml:22:5-20
+MERGED from [com.google.android.gms:play-services-base:16.0.1] C:\Users\42040\.gradle\caches\transforms-1\files-1.1\play-services-base-16.0.1.aar\f17630c159bebeb0976ef0c156d46192\AndroidManifest.xml:22:5-27:19
+MERGED from [com.google.android.gms:play-services-base:16.0.1] C:\Users\42040\.gradle\caches\transforms-1\files-1.1\play-services-base-16.0.1.aar\f17630c159bebeb0976ef0c156d46192\AndroidManifest.xml:22:5-27:19
+MERGED from [com.google.firebase:firebase-common:16.0.3] C:\Users\42040\.gradle\caches\transforms-1\files-1.1\firebase-common-16.0.3.aar\87fbb0d60c09870f8537964df78c0422\AndroidManifest.xml:9:5-15:19
+MERGED from [com.google.firebase:firebase-common:16.0.3] C:\Users\42040\.gradle\caches\transforms-1\files-1.1\firebase-common-16.0.3.aar\87fbb0d60c09870f8537964df78c0422\AndroidManifest.xml:9:5-15:19
+MERGED from [com.google.android.gms:play-services-tasks:16.0.1] C:\Users\42040\.gradle\caches\transforms-1\files-1.1\play-services-tasks-16.0.1.aar\ae29bec45a7ecb52141267f82b46c029\AndroidManifest.xml:7:5-20
+MERGED from [com.google.android.gms:play-services-tasks:16.0.1] C:\Users\42040\.gradle\caches\transforms-1\files-1.1\play-services-tasks-16.0.1.aar\ae29bec45a7ecb52141267f82b46c029\AndroidManifest.xml:7:5-20
+MERGED from [com.google.android.gms:play-services-basement:16.0.1] C:\Users\42040\.gradle\caches\transforms-1\files-1.1\play-services-basement-16.0.1.aar\7fb9850a50c51b23505a428ab9d01cf2\AndroidManifest.xml:22:5-26:19
+MERGED from [com.google.android.gms:play-services-basement:16.0.1] C:\Users\42040\.gradle\caches\transforms-1\files-1.1\play-services-basement-16.0.1.aar\7fb9850a50c51b23505a428ab9d01cf2\AndroidManifest.xml:22:5-26:19
 	android:supportsRtl
-		ADDED from D:\SpeedataDemo18\Pos80_SDK_GongJiao\app\src\main\AndroidManifest.xml:20:9-35
+		ADDED from D:\SpeedataDemo18\Pos80_SDK_GongJiao\app\src\main\AndroidManifest.xml:28:9-35
 	android:label
-		ADDED from D:\SpeedataDemo18\Pos80_SDK_GongJiao\app\src\main\AndroidManifest.xml:19:9-41
+		ADDED from D:\SpeedataDemo18\Pos80_SDK_GongJiao\app\src\main\AndroidManifest.xml:27:9-41
 	android:hardwareAccelerated
-		ADDED from D:\SpeedataDemo18\Pos80_SDK_GongJiao\app\src\main\AndroidManifest.xml:17:9-44
+		ADDED from D:\SpeedataDemo18\Pos80_SDK_GongJiao\app\src\main\AndroidManifest.xml:25:9-44
 	android:icon
-		ADDED from D:\SpeedataDemo18\Pos80_SDK_GongJiao\app\src\main\AndroidManifest.xml:18:9-43
+		ADDED from D:\SpeedataDemo18\Pos80_SDK_GongJiao\app\src\main\AndroidManifest.xml:26:9-41
 	android:allowBackup
-		ADDED from D:\SpeedataDemo18\Pos80_SDK_GongJiao\app\src\main\AndroidManifest.xml:16:9-35
+		ADDED from D:\SpeedataDemo18\Pos80_SDK_GongJiao\app\src\main\AndroidManifest.xml:24:9-35
 	android:theme
-		ADDED from D:\SpeedataDemo18\Pos80_SDK_GongJiao\app\src\main\AndroidManifest.xml:21:9-52
-activity#com.wpos.sdkdemo.MainActivity
-ADDED from D:\SpeedataDemo18\Pos80_SDK_GongJiao\app\src\main\AndroidManifest.xml:22:9-30:20
-	android:theme
-		ADDED from D:\SpeedataDemo18\Pos80_SDK_GongJiao\app\src\main\AndroidManifest.xml:24:13-56
+		ADDED from D:\SpeedataDemo18\Pos80_SDK_GongJiao\app\src\main\AndroidManifest.xml:29:9-52
 	android:name
-		ADDED from D:\SpeedataDemo18\Pos80_SDK_GongJiao\app\src\main\AndroidManifest.xml:23:13-41
+		ADDED from D:\SpeedataDemo18\Pos80_SDK_GongJiao\app\src\main\AndroidManifest.xml:23:9-38
+meta-data#companyId
+ADDED from D:\SpeedataDemo18\Pos80_SDK_GongJiao\app\src\main\AndroidManifest.xml:30:9-32:68
+	android:value
+		ADDED from D:\SpeedataDemo18\Pos80_SDK_GongJiao\app\src\main\AndroidManifest.xml:32:13-65
+	android:name
+		ADDED from D:\SpeedataDemo18\Pos80_SDK_GongJiao\app\src\main\AndroidManifest.xml:31:13-37
+activity#com.spd.bus.spdata.PsamIcActivity
+ADDED from D:\SpeedataDemo18\Pos80_SDK_GongJiao\app\src\main\AndroidManifest.xml:33:9-43:20
+	android:screenOrientation
+		ADDED from D:\SpeedataDemo18\Pos80_SDK_GongJiao\app\src\main\AndroidManifest.xml:35:13-50
+	android:theme
+		ADDED from D:\SpeedataDemo18\Pos80_SDK_GongJiao\app\src\main\AndroidManifest.xml:36:13-56
+	android:name
+		ADDED from D:\SpeedataDemo18\Pos80_SDK_GongJiao\app\src\main\AndroidManifest.xml:34:13-50
 intent-filter#action:name:android.intent.action.MAIN+category:name:android.intent.category.LAUNCHER
-ADDED from D:\SpeedataDemo18\Pos80_SDK_GongJiao\app\src\main\AndroidManifest.xml:25:13-29:29
+ADDED from D:\SpeedataDemo18\Pos80_SDK_GongJiao\app\src\main\AndroidManifest.xml:37:13-41:29
 action#android.intent.action.MAIN
-ADDED from D:\SpeedataDemo18\Pos80_SDK_GongJiao\app\src\main\AndroidManifest.xml:26:17-69
+ADDED from D:\SpeedataDemo18\Pos80_SDK_GongJiao\app\src\main\AndroidManifest.xml:38:17-69
 	android:name
-		ADDED from D:\SpeedataDemo18\Pos80_SDK_GongJiao\app\src\main\AndroidManifest.xml:26:25-66
+		ADDED from D:\SpeedataDemo18\Pos80_SDK_GongJiao\app\src\main\AndroidManifest.xml:38:25-66
 category#android.intent.category.LAUNCHER
-ADDED from D:\SpeedataDemo18\Pos80_SDK_GongJiao\app\src\main\AndroidManifest.xml:28:17-77
+ADDED from D:\SpeedataDemo18\Pos80_SDK_GongJiao\app\src\main\AndroidManifest.xml:40:17-77
 	android:name
-		ADDED from D:\SpeedataDemo18\Pos80_SDK_GongJiao\app\src\main\AndroidManifest.xml:28:27-74
-activity#com.wpos.sdkdemo.readcard.ReadCardManager
-ADDED from D:\SpeedataDemo18\Pos80_SDK_GongJiao\app\src\main\AndroidManifest.xml:31:9-62
+		ADDED from D:\SpeedataDemo18\Pos80_SDK_GongJiao\app\src\main\AndroidManifest.xml:40:27-74
+receiver#com.spd.bus.spdata.BootBroadcastReceiver
+ADDED from D:\SpeedataDemo18\Pos80_SDK_GongJiao\app\src\main\AndroidManifest.xml:45:9-51:20
 	android:name
-		ADDED from D:\SpeedataDemo18\Pos80_SDK_GongJiao\app\src\main\AndroidManifest.xml:31:19-59
-activity#com.wpos.sdkdemo.readcard.CardReader
-ADDED from D:\SpeedataDemo18\Pos80_SDK_GongJiao\app\src\main\AndroidManifest.xml:32:9-57
+		ADDED from D:\SpeedataDemo18\Pos80_SDK_GongJiao\app\src\main\AndroidManifest.xml:45:19-63
+intent-filter#action:name:android.intent.action.BOOT_COMPLETED+category:name:android.intent.category.HOME
+ADDED from D:\SpeedataDemo18\Pos80_SDK_GongJiao\app\src\main\AndroidManifest.xml:46:13-50:29
+action#android.intent.action.BOOT_COMPLETED
+ADDED from D:\SpeedataDemo18\Pos80_SDK_GongJiao\app\src\main\AndroidManifest.xml:47:17-79
 	android:name
-		ADDED from D:\SpeedataDemo18\Pos80_SDK_GongJiao\app\src\main\AndroidManifest.xml:32:19-54
-activity#com.wpos.sdkdemo.system.SystemActivity
-ADDED from D:\SpeedataDemo18\Pos80_SDK_GongJiao\app\src\main\AndroidManifest.xml:33:9-59
+		ADDED from D:\SpeedataDemo18\Pos80_SDK_GongJiao\app\src\main\AndroidManifest.xml:47:25-76
+category#android.intent.category.HOME
+ADDED from D:\SpeedataDemo18\Pos80_SDK_GongJiao\app\src\main\AndroidManifest.xml:49:17-73
 	android:name
-		ADDED from D:\SpeedataDemo18\Pos80_SDK_GongJiao\app\src\main\AndroidManifest.xml:33:19-56
-activity#com.wpos.sdkdemo.pin.Pin
-ADDED from D:\SpeedataDemo18\Pos80_SDK_GongJiao\app\src\main\AndroidManifest.xml:34:9-36:62
+		ADDED from D:\SpeedataDemo18\Pos80_SDK_GongJiao\app\src\main\AndroidManifest.xml:49:27-70
+activity#com.spd.bus.readcard.ReadCardManager
+ADDED from D:\SpeedataDemo18\Pos80_SDK_GongJiao\app\src\main\AndroidManifest.xml:53:9-62
+	android:name
+		ADDED from D:\SpeedataDemo18\Pos80_SDK_GongJiao\app\src\main\AndroidManifest.xml:53:19-59
+activity#com.spd.bus.readcard.CardReader
+ADDED from D:\SpeedataDemo18\Pos80_SDK_GongJiao\app\src\main\AndroidManifest.xml:54:9-57
+	android:name
+		ADDED from D:\SpeedataDemo18\Pos80_SDK_GongJiao\app\src\main\AndroidManifest.xml:54:19-54
+activity#com.spd.bus.system.SystemActivity
+ADDED from D:\SpeedataDemo18\Pos80_SDK_GongJiao\app\src\main\AndroidManifest.xml:55:9-59
+	android:name
+		ADDED from D:\SpeedataDemo18\Pos80_SDK_GongJiao\app\src\main\AndroidManifest.xml:55:19-56
+activity#com.spd.bus.pin.Pin
+ADDED from D:\SpeedataDemo18\Pos80_SDK_GongJiao\app\src\main\AndroidManifest.xml:56:9-58:62
 	android:configChanges
-		ADDED from D:\SpeedataDemo18\Pos80_SDK_GongJiao\app\src\main\AndroidManifest.xml:36:13-59
+		ADDED from D:\SpeedataDemo18\Pos80_SDK_GongJiao\app\src\main\AndroidManifest.xml:58:13-59
 	android:name
-		ADDED from D:\SpeedataDemo18\Pos80_SDK_GongJiao\app\src\main\AndroidManifest.xml:35:13-36
-activity#com.wpos.sdkdemo.readcard.CardReaderNew
-ADDED from D:\SpeedataDemo18\Pos80_SDK_GongJiao\app\src\main\AndroidManifest.xml:37:9-60
+		ADDED from D:\SpeedataDemo18\Pos80_SDK_GongJiao\app\src\main\AndroidManifest.xml:57:13-36
+activity#com.spd.bus.readcard.CardReaderNew
+ADDED from D:\SpeedataDemo18\Pos80_SDK_GongJiao\app\src\main\AndroidManifest.xml:59:9-60
 	android:name
-		ADDED from D:\SpeedataDemo18\Pos80_SDK_GongJiao\app\src\main\AndroidManifest.xml:37:19-57
-activity#com.wpos.sdkdemo.data.DataEnDecrypt
-ADDED from D:\SpeedataDemo18\Pos80_SDK_GongJiao\app\src\main\AndroidManifest.xml:38:9-56
+		ADDED from D:\SpeedataDemo18\Pos80_SDK_GongJiao\app\src\main\AndroidManifest.xml:59:19-57
+activity#com.spd.bus.data.DataEnDecrypt
+ADDED from D:\SpeedataDemo18\Pos80_SDK_GongJiao\app\src\main\AndroidManifest.xml:60:9-56
 	android:name
-		ADDED from D:\SpeedataDemo18\Pos80_SDK_GongJiao\app\src\main\AndroidManifest.xml:38:19-53
-activity#com.wpos.sdkdemo.data.Mac
-ADDED from D:\SpeedataDemo18\Pos80_SDK_GongJiao\app\src\main\AndroidManifest.xml:39:9-46
+		ADDED from D:\SpeedataDemo18\Pos80_SDK_GongJiao\app\src\main\AndroidManifest.xml:60:19-53
+activity#com.spd.bus.data.Mac
+ADDED from D:\SpeedataDemo18\Pos80_SDK_GongJiao\app\src\main\AndroidManifest.xml:61:9-46
 	android:name
-		ADDED from D:\SpeedataDemo18\Pos80_SDK_GongJiao\app\src\main\AndroidManifest.xml:39:19-43
-activity#com.wpos.sdkdemo.key.EraseKeys
-ADDED from D:\SpeedataDemo18\Pos80_SDK_GongJiao\app\src\main\AndroidManifest.xml:40:9-51
+		ADDED from D:\SpeedataDemo18\Pos80_SDK_GongJiao\app\src\main\AndroidManifest.xml:61:19-43
+activity#com.spd.bus.key.EraseKeys
+ADDED from D:\SpeedataDemo18\Pos80_SDK_GongJiao\app\src\main\AndroidManifest.xml:62:9-51
 	android:name
-		ADDED from D:\SpeedataDemo18\Pos80_SDK_GongJiao\app\src\main\AndroidManifest.xml:40:19-48
-activity#com.wpos.sdkdemo.key.KeyManager
-ADDED from D:\SpeedataDemo18\Pos80_SDK_GongJiao\app\src\main\AndroidManifest.xml:41:9-52
+		ADDED from D:\SpeedataDemo18\Pos80_SDK_GongJiao\app\src\main\AndroidManifest.xml:62:19-48
+activity#com.spd.bus.key.KeyManager
+ADDED from D:\SpeedataDemo18\Pos80_SDK_GongJiao\app\src\main\AndroidManifest.xml:63:9-52
 	android:name
-		ADDED from D:\SpeedataDemo18\Pos80_SDK_GongJiao\app\src\main\AndroidManifest.xml:41:19-49
-activity#com.wpos.sdkdemo.util.keyrandom
-ADDED from D:\SpeedataDemo18\Pos80_SDK_GongJiao\app\src\main\AndroidManifest.xml:42:9-52
+		ADDED from D:\SpeedataDemo18\Pos80_SDK_GongJiao\app\src\main\AndroidManifest.xml:63:19-49
+activity#com.spd.bus.util.keyrandom
+ADDED from D:\SpeedataDemo18\Pos80_SDK_GongJiao\app\src\main\AndroidManifest.xml:64:9-52
 	android:name
-		ADDED from D:\SpeedataDemo18\Pos80_SDK_GongJiao\app\src\main\AndroidManifest.xml:42:19-49
-activity#com.wpos.sdkdemo.key.KeyEx
-ADDED from D:\SpeedataDemo18\Pos80_SDK_GongJiao\app\src\main\AndroidManifest.xml:43:9-47
+		ADDED from D:\SpeedataDemo18\Pos80_SDK_GongJiao\app\src\main\AndroidManifest.xml:64:19-49
+activity#com.spd.bus.key.KeyEx
+ADDED from D:\SpeedataDemo18\Pos80_SDK_GongJiao\app\src\main\AndroidManifest.xml:65:9-47
 	android:name
-		ADDED from D:\SpeedataDemo18\Pos80_SDK_GongJiao\app\src\main\AndroidManifest.xml:43:19-44
-activity#com.wpos.sdkdemo.print.BTPrinting
-ADDED from D:\SpeedataDemo18\Pos80_SDK_GongJiao\app\src\main\AndroidManifest.xml:44:9-54
+		ADDED from D:\SpeedataDemo18\Pos80_SDK_GongJiao\app\src\main\AndroidManifest.xml:65:19-44
+activity#com.spd.bus.print.BTPrinting
+ADDED from D:\SpeedataDemo18\Pos80_SDK_GongJiao\app\src\main\AndroidManifest.xml:66:9-54
 	android:name
-		ADDED from D:\SpeedataDemo18\Pos80_SDK_GongJiao\app\src\main\AndroidManifest.xml:44:19-51
-activity#com.wpos.sdkdemo.dukpt.DUKPT
-ADDED from D:\SpeedataDemo18\Pos80_SDK_GongJiao\app\src\main\AndroidManifest.xml:45:9-49
+		ADDED from D:\SpeedataDemo18\Pos80_SDK_GongJiao\app\src\main\AndroidManifest.xml:66:19-51
+activity#com.spd.bus.dukpt.DUKPT
+ADDED from D:\SpeedataDemo18\Pos80_SDK_GongJiao\app\src\main\AndroidManifest.xml:67:9-49
 	android:name
-		ADDED from D:\SpeedataDemo18\Pos80_SDK_GongJiao\app\src\main\AndroidManifest.xml:45:19-46
-activity#com.wpos.sdkdemo.print.Printing
-ADDED from D:\SpeedataDemo18\Pos80_SDK_GongJiao\app\src\main\AndroidManifest.xml:46:9-52
+		ADDED from D:\SpeedataDemo18\Pos80_SDK_GongJiao\app\src\main\AndroidManifest.xml:67:19-46
+activity#com.spd.bus.print.Printing
+ADDED from D:\SpeedataDemo18\Pos80_SDK_GongJiao\app\src\main\AndroidManifest.xml:68:9-52
 	android:name
-		ADDED from D:\SpeedataDemo18\Pos80_SDK_GongJiao\app\src\main\AndroidManifest.xml:46:19-49
-activity#com.wpos.sdkdemo.print.PrinterManager
-ADDED from D:\SpeedataDemo18\Pos80_SDK_GongJiao\app\src\main\AndroidManifest.xml:47:9-58
+		ADDED from D:\SpeedataDemo18\Pos80_SDK_GongJiao\app\src\main\AndroidManifest.xml:68:19-49
+activity#com.spd.bus.print.PrinterManager
+ADDED from D:\SpeedataDemo18\Pos80_SDK_GongJiao\app\src\main\AndroidManifest.xml:69:9-58
 	android:name
-		ADDED from D:\SpeedataDemo18\Pos80_SDK_GongJiao\app\src\main\AndroidManifest.xml:47:19-55
-activity#com.wpos.sdkdemo.readcard.IDCardMana
-ADDED from D:\SpeedataDemo18\Pos80_SDK_GongJiao\app\src\main\AndroidManifest.xml:48:9-57
+		ADDED from D:\SpeedataDemo18\Pos80_SDK_GongJiao\app\src\main\AndroidManifest.xml:69:19-55
+activity#com.spd.bus.readcard.IDCardMana
+ADDED from D:\SpeedataDemo18\Pos80_SDK_GongJiao\app\src\main\AndroidManifest.xml:70:9-57
 	android:name
-		ADDED from D:\SpeedataDemo18\Pos80_SDK_GongJiao\app\src\main\AndroidManifest.xml:48:19-54
-activity#com.wpos.sdkdemo.sp.Spupdate
-ADDED from D:\SpeedataDemo18\Pos80_SDK_GongJiao\app\src\main\AndroidManifest.xml:49:9-49
+		ADDED from D:\SpeedataDemo18\Pos80_SDK_GongJiao\app\src\main\AndroidManifest.xml:70:19-54
+activity#com.spd.bus.sp.Spupdate
+ADDED from D:\SpeedataDemo18\Pos80_SDK_GongJiao\app\src\main\AndroidManifest.xml:71:9-49
 	android:name
-		ADDED from D:\SpeedataDemo18\Pos80_SDK_GongJiao\app\src\main\AndroidManifest.xml:49:19-46
-activity#com.wpos.sdkdemo.dock.DockTest
-ADDED from D:\SpeedataDemo18\Pos80_SDK_GongJiao\app\src\main\AndroidManifest.xml:50:9-51
+		ADDED from D:\SpeedataDemo18\Pos80_SDK_GongJiao\app\src\main\AndroidManifest.xml:71:19-46
+activity#com.spd.bus.dock.DockTest
+ADDED from D:\SpeedataDemo18\Pos80_SDK_GongJiao\app\src\main\AndroidManifest.xml:72:9-51
 	android:name
-		ADDED from D:\SpeedataDemo18\Pos80_SDK_GongJiao\app\src\main\AndroidManifest.xml:50:19-48
-activity#com.wpos.sdkdemo.dock.Docksendpicture
-ADDED from D:\SpeedataDemo18\Pos80_SDK_GongJiao\app\src\main\AndroidManifest.xml:51:9-58
+		ADDED from D:\SpeedataDemo18\Pos80_SDK_GongJiao\app\src\main\AndroidManifest.xml:72:19-48
+activity#com.spd.bus.dock.Docksendpicture
+ADDED from D:\SpeedataDemo18\Pos80_SDK_GongJiao\app\src\main\AndroidManifest.xml:73:9-58
 	android:name
-		ADDED from D:\SpeedataDemo18\Pos80_SDK_GongJiao\app\src\main\AndroidManifest.xml:51:19-55
-activity#com.wpos.sdkdemo.dock.Dockupdate
-ADDED from D:\SpeedataDemo18\Pos80_SDK_GongJiao\app\src\main\AndroidManifest.xml:52:9-53
+		ADDED from D:\SpeedataDemo18\Pos80_SDK_GongJiao\app\src\main\AndroidManifest.xml:73:19-55
+activity#com.spd.bus.dock.Dockupdate
+ADDED from D:\SpeedataDemo18\Pos80_SDK_GongJiao\app\src\main\AndroidManifest.xml:74:9-53
 	android:name
-		ADDED from D:\SpeedataDemo18\Pos80_SDK_GongJiao\app\src\main\AndroidManifest.xml:52:19-50
-activity#com.wpos.sdkdemo.dock.Docktesttipsshow
-ADDED from D:\SpeedataDemo18\Pos80_SDK_GongJiao\app\src\main\AndroidManifest.xml:53:9-59
+		ADDED from D:\SpeedataDemo18\Pos80_SDK_GongJiao\app\src\main\AndroidManifest.xml:74:19-50
+activity#com.spd.bus.dock.Docktesttipsshow
+ADDED from D:\SpeedataDemo18\Pos80_SDK_GongJiao\app\src\main\AndroidManifest.xml:75:9-59
 	android:name
-		ADDED from D:\SpeedataDemo18\Pos80_SDK_GongJiao\app\src\main\AndroidManifest.xml:53:19-56
-activity#com.wpos.sdkdemo.key.CheckkeyExist
-ADDED from D:\SpeedataDemo18\Pos80_SDK_GongJiao\app\src\main\AndroidManifest.xml:54:9-55
+		ADDED from D:\SpeedataDemo18\Pos80_SDK_GongJiao\app\src\main\AndroidManifest.xml:75:19-56
+activity#com.spd.bus.key.CheckkeyExist
+ADDED from D:\SpeedataDemo18\Pos80_SDK_GongJiao\app\src\main\AndroidManifest.xml:76:9-55
 	android:name
-		ADDED from D:\SpeedataDemo18\Pos80_SDK_GongJiao\app\src\main\AndroidManifest.xml:54:19-52
-activity#com.wpos.sdkdemo.emv.EmvActivity
-ADDED from D:\SpeedataDemo18\Pos80_SDK_GongJiao\app\src\main\AndroidManifest.xml:55:9-53
+		ADDED from D:\SpeedataDemo18\Pos80_SDK_GongJiao\app\src\main\AndroidManifest.xml:76:19-52
+activity#com.spd.bus.emv.EmvActivity
+ADDED from D:\SpeedataDemo18\Pos80_SDK_GongJiao\app\src\main\AndroidManifest.xml:77:9-53
 	android:name
-		ADDED from D:\SpeedataDemo18\Pos80_SDK_GongJiao\app\src\main\AndroidManifest.xml:55:19-50
-activity#com.wpos.sdkdemo.emv.InputMoneyActivity
-ADDED from D:\SpeedataDemo18\Pos80_SDK_GongJiao\app\src\main\AndroidManifest.xml:56:9-60
+		ADDED from D:\SpeedataDemo18\Pos80_SDK_GongJiao\app\src\main\AndroidManifest.xml:77:19-50
+activity#com.spd.bus.emv.InputMoneyActivity
+ADDED from D:\SpeedataDemo18\Pos80_SDK_GongJiao\app\src\main\AndroidManifest.xml:78:9-60
 	android:name
-		ADDED from D:\SpeedataDemo18\Pos80_SDK_GongJiao\app\src\main\AndroidManifest.xml:56:19-57
-activity#com.wpos.sdkdemo.emv.PayActivity
-ADDED from D:\SpeedataDemo18\Pos80_SDK_GongJiao\app\src\main\AndroidManifest.xml:57:9-53
+		ADDED from D:\SpeedataDemo18\Pos80_SDK_GongJiao\app\src\main\AndroidManifest.xml:78:19-57
+activity#com.spd.bus.emv.PayActivity
+ADDED from D:\SpeedataDemo18\Pos80_SDK_GongJiao\app\src\main\AndroidManifest.xml:79:9-53
 	android:name
-		ADDED from D:\SpeedataDemo18\Pos80_SDK_GongJiao\app\src\main\AndroidManifest.xml:57:19-50
-receiver#com.wpos.sdkdemo.MyReceiver
-ADDED from D:\SpeedataDemo18\Pos80_SDK_GongJiao\app\src\main\AndroidManifest.xml:59:9-66:20
+		ADDED from D:\SpeedataDemo18\Pos80_SDK_GongJiao\app\src\main\AndroidManifest.xml:79:19-50
+receiver#com.spd.bus.MyReceiver
+ADDED from D:\SpeedataDemo18\Pos80_SDK_GongJiao\app\src\main\AndroidManifest.xml:81:9-88:20
 	android:process
-		ADDED from D:\SpeedataDemo18\Pos80_SDK_GongJiao\app\src\main\AndroidManifest.xml:62:13-38
+		ADDED from D:\SpeedataDemo18\Pos80_SDK_GongJiao\app\src\main\AndroidManifest.xml:84:13-38
 	android:exported
-		ADDED from D:\SpeedataDemo18\Pos80_SDK_GongJiao\app\src\main\AndroidManifest.xml:61:13-36
+		ADDED from D:\SpeedataDemo18\Pos80_SDK_GongJiao\app\src\main\AndroidManifest.xml:83:13-36
 	android:name
-		ADDED from D:\SpeedataDemo18\Pos80_SDK_GongJiao\app\src\main\AndroidManifest.xml:60:13-39
+		ADDED from D:\SpeedataDemo18\Pos80_SDK_GongJiao\app\src\main\AndroidManifest.xml:82:13-39
 intent-filter#action:name:com.wpos.cardinfo.callback
-ADDED from D:\SpeedataDemo18\Pos80_SDK_GongJiao\app\src\main\AndroidManifest.xml:63:13-65:29
+ADDED from D:\SpeedataDemo18\Pos80_SDK_GongJiao\app\src\main\AndroidManifest.xml:85:13-87:29
 action#com.wpos.cardinfo.callback
-ADDED from D:\SpeedataDemo18\Pos80_SDK_GongJiao\app\src\main\AndroidManifest.xml:64:17-69
+ADDED from D:\SpeedataDemo18\Pos80_SDK_GongJiao\app\src\main\AndroidManifest.xml:86:17-69
 	android:name
-		ADDED from D:\SpeedataDemo18\Pos80_SDK_GongJiao\app\src\main\AndroidManifest.xml:64:25-66
-activity#com.wpos.sdkdemo.spdata.PsamIcActivity
-ADDED from D:\SpeedataDemo18\Pos80_SDK_GongJiao\app\src\main\AndroidManifest.xml:68:9-68
+		ADDED from D:\SpeedataDemo18\Pos80_SDK_GongJiao\app\src\main\AndroidManifest.xml:86:25-66
+activity#com.spd.bus.MainActivity
+ADDED from D:\SpeedataDemo18\Pos80_SDK_GongJiao\app\src\main\AndroidManifest.xml:90:9-50
 	android:name
-		ADDED from D:\SpeedataDemo18\Pos80_SDK_GongJiao\app\src\main\AndroidManifest.xml:68:19-56
+		ADDED from D:\SpeedataDemo18\Pos80_SDK_GongJiao\app\src\main\AndroidManifest.xml:90:19-47
+activity#com.spd.bus.spdata.MainActivity
+ADDED from D:\SpeedataDemo18\Pos80_SDK_GongJiao\app\src\main\AndroidManifest.xml:91:9-57
+	android:name
+		ADDED from D:\SpeedataDemo18\Pos80_SDK_GongJiao\app\src\main\AndroidManifest.xml:91:19-54
+activity#com.spd.bus.spdata.ScanActivity
+ADDED from D:\SpeedataDemo18\Pos80_SDK_GongJiao\app\src\main\AndroidManifest.xml:92:9-57
+	android:name
+		ADDED from D:\SpeedataDemo18\Pos80_SDK_GongJiao\app\src\main\AndroidManifest.xml:92:19-54
+activity#com.spd.bus.spdata.oldPsamIcActivityold
+ADDED from D:\SpeedataDemo18\Pos80_SDK_GongJiao\app\src\main\AndroidManifest.xml:93:9-65
+	android:name
+		ADDED from D:\SpeedataDemo18\Pos80_SDK_GongJiao\app\src\main\AndroidManifest.xml:93:19-62
 uses-sdk
 INJECTED from D:\SpeedataDemo18\Pos80_SDK_GongJiao\app\src\main\AndroidManifest.xml reason: use-sdk injection requested
 INJECTED from D:\SpeedataDemo18\Pos80_SDK_GongJiao\app\src\main\AndroidManifest.xml
 INJECTED from D:\SpeedataDemo18\Pos80_SDK_GongJiao\app\src\main\AndroidManifest.xml
-MERGED from [com.android.support.constraint:constraint-layout:2.0.0-alpha2] C:\Users\42040\.gradle\caches\transforms-1\files-1.1\constraint-layout-2.0.0-alpha2.aar\baab7c9e338ef22bf15f6b279ba928c4\AndroidManifest.xml:5:5-7:41
-MERGED from [com.android.support.constraint:constraint-layout:2.0.0-alpha2] C:\Users\42040\.gradle\caches\transforms-1\files-1.1\constraint-layout-2.0.0-alpha2.aar\baab7c9e338ef22bf15f6b279ba928c4\AndroidManifest.xml:5:5-7:41
+MERGED from [com.android.support:multidex:1.0.2] C:\Users\42040\.gradle\caches\transforms-1\files-1.1\multidex-1.0.2.aar\fe39fe004c56b5d2440cab074b45ca79\AndroidManifest.xml:20:5-43
+MERGED from [com.android.support:multidex:1.0.2] C:\Users\42040\.gradle\caches\transforms-1\files-1.1\multidex-1.0.2.aar\fe39fe004c56b5d2440cab074b45ca79\AndroidManifest.xml:20:5-43
+MERGED from [:wechat] D:\SpeedataDemo18\Pos80_SDK_GongJiao\wechat\build\intermediates\manifests\full\debug\AndroidManifest.xml:7:5-9:41
+MERGED from [:wechat] D:\SpeedataDemo18\Pos80_SDK_GongJiao\wechat\build\intermediates\manifests\full\debug\AndroidManifest.xml:7:5-9:41
+MERGED from [:alipay] D:\SpeedataDemo18\Pos80_SDK_GongJiao\alipay\build\intermediates\manifests\full\debug\AndroidManifest.xml:8:5-10:41
+MERGED from [:alipay] D:\SpeedataDemo18\Pos80_SDK_GongJiao\alipay\build\intermediates\manifests\full\debug\AndroidManifest.xml:8:5-10:41
+MERGED from [com.android.support.constraint:constraint-layout:1.1.3] C:\Users\42040\.gradle\caches\transforms-1\files-1.1\constraint-layout-1.1.3.aar\190dd715c99c5dc0ddbdeb618a3097df\AndroidManifest.xml:5:5-7:41
+MERGED from [com.android.support.constraint:constraint-layout:1.1.3] C:\Users\42040\.gradle\caches\transforms-1\files-1.1\constraint-layout-1.1.3.aar\190dd715c99c5dc0ddbdeb618a3097df\AndroidManifest.xml:5:5-7:41
+MERGED from [com.android.support:design:27.1.1] C:\Users\42040\.gradle\caches\transforms-1\files-1.1\design-27.1.1.aar\1f785bed6168612ab8dff620db3c3760\AndroidManifest.xml:20:5-44
+MERGED from [com.android.support:design:27.1.1] C:\Users\42040\.gradle\caches\transforms-1\files-1.1\design-27.1.1.aar\1f785bed6168612ab8dff620db3c3760\AndroidManifest.xml:20:5-44
+MERGED from [:yinlianbarcode] D:\SpeedataDemo18\Pos80_SDK_GongJiao\yinlianbarcode\build\intermediates\manifests\full\debug\AndroidManifest.xml:7:5-9:41
+MERGED from [:yinlianbarcode] D:\SpeedataDemo18\Pos80_SDK_GongJiao\yinlianbarcode\build\intermediates\manifests\full\debug\AndroidManifest.xml:7:5-9:41
+MERGED from [SwiftDecoderMobile.aar] C:\Users\42040\.gradle\caches\transforms-1\files-1.1\SwiftDecoderMobile.aar\9d76c6578ebd2c62683731b28262bc25\AndroidManifest.xml:7:5-9:41
+MERGED from [SwiftDecoderMobile.aar] C:\Users\42040\.gradle\caches\transforms-1\files-1.1\SwiftDecoderMobile.aar\9d76c6578ebd2c62683731b28262bc25\AndroidManifest.xml:7:5-9:41
+MERGED from [:base] D:\SpeedataDemo18\Pos80_SDK_GongJiao\base\build\intermediates\manifests\full\debug\AndroidManifest.xml:7:5-9:41
+MERGED from [:base] D:\SpeedataDemo18\Pos80_SDK_GongJiao\base\build\intermediates\manifests\full\debug\AndroidManifest.xml:7:5-9:41
 MERGED from [com.android.support:appcompat-v7:27.1.1] C:\Users\42040\.gradle\caches\transforms-1\files-1.1\appcompat-v7-27.1.1.aar\0c15e873c626f7358d5f51330c4e3e3b\AndroidManifest.xml:20:5-44
 MERGED from [com.android.support:appcompat-v7:27.1.1] C:\Users\42040\.gradle\caches\transforms-1\files-1.1\appcompat-v7-27.1.1.aar\0c15e873c626f7358d5f51330c4e3e3b\AndroidManifest.xml:20:5-44
-MERGED from [com.google.android.gms:play-services-appindexing:8.4.0] C:\Users\42040\.gradle\caches\transforms-1\files-1.1\play-services-appindexing-8.4.0.aar\a03dfa652cee2e8d48a1d2a6b17524ba\AndroidManifest.xml:18:5-42
-MERGED from [com.google.android.gms:play-services-appindexing:8.4.0] C:\Users\42040\.gradle\caches\transforms-1\files-1.1\play-services-appindexing-8.4.0.aar\a03dfa652cee2e8d48a1d2a6b17524ba\AndroidManifest.xml:18:5-42
+MERGED from [com.google.firebase:firebase-appindexing:16.0.2] C:\Users\42040\.gradle\caches\transforms-1\files-1.1\firebase-appindexing-16.0.2.aar\817cf101e9810e110c449be0309cadeb\AndroidManifest.xml:20:5-44
+MERGED from [com.google.firebase:firebase-appindexing:16.0.2] C:\Users\42040\.gradle\caches\transforms-1\files-1.1\firebase-appindexing-16.0.2.aar\817cf101e9810e110c449be0309cadeb\AndroidManifest.xml:20:5-44
+MERGED from [com.google.android.gms:play-services-base:16.0.1] C:\Users\42040\.gradle\caches\transforms-1\files-1.1\play-services-base-16.0.1.aar\f17630c159bebeb0976ef0c156d46192\AndroidManifest.xml:20:5-44
+MERGED from [com.google.android.gms:play-services-base:16.0.1] C:\Users\42040\.gradle\caches\transforms-1\files-1.1\play-services-base-16.0.1.aar\f17630c159bebeb0976ef0c156d46192\AndroidManifest.xml:20:5-44
+MERGED from [com.google.firebase:firebase-common:16.0.3] C:\Users\42040\.gradle\caches\transforms-1\files-1.1\firebase-common-16.0.3.aar\87fbb0d60c09870f8537964df78c0422\AndroidManifest.xml:5:5-7:41
+MERGED from [com.google.firebase:firebase-common:16.0.3] C:\Users\42040\.gradle\caches\transforms-1\files-1.1\firebase-common-16.0.3.aar\87fbb0d60c09870f8537964df78c0422\AndroidManifest.xml:5:5-7:41
+MERGED from [com.google.android.gms:play-services-tasks:16.0.1] C:\Users\42040\.gradle\caches\transforms-1\files-1.1\play-services-tasks-16.0.1.aar\ae29bec45a7ecb52141267f82b46c029\AndroidManifest.xml:5:5-44
+MERGED from [com.google.android.gms:play-services-tasks:16.0.1] C:\Users\42040\.gradle\caches\transforms-1\files-1.1\play-services-tasks-16.0.1.aar\ae29bec45a7ecb52141267f82b46c029\AndroidManifest.xml:5:5-44
+MERGED from [com.google.android.gms:play-services-basement:16.0.1] C:\Users\42040\.gradle\caches\transforms-1\files-1.1\play-services-basement-16.0.1.aar\7fb9850a50c51b23505a428ab9d01cf2\AndroidManifest.xml:20:5-44
+MERGED from [com.google.android.gms:play-services-basement:16.0.1] C:\Users\42040\.gradle\caches\transforms-1\files-1.1\play-services-basement-16.0.1.aar\7fb9850a50c51b23505a428ab9d01cf2\AndroidManifest.xml:20:5-44
+MERGED from [com.android.support:support-v4:27.1.1] C:\Users\42040\.gradle\caches\transforms-1\files-1.1\support-v4-27.1.1.aar\cc5eeaeb805239b8bcefb1e8fad3d4d0\AndroidManifest.xml:20:5-44
+MERGED from [com.android.support:support-v4:27.1.1] C:\Users\42040\.gradle\caches\transforms-1\files-1.1\support-v4-27.1.1.aar\cc5eeaeb805239b8bcefb1e8fad3d4d0\AndroidManifest.xml:20:5-44
 MERGED from [com.android.support:recyclerview-v7:27.1.1] C:\Users\42040\.gradle\caches\transforms-1\files-1.1\recyclerview-v7-27.1.1.aar\7962d76d97856c89238fb251c5c3bb99\AndroidManifest.xml:20:5-44
 MERGED from [com.android.support:recyclerview-v7:27.1.1] C:\Users\42040\.gradle\caches\transforms-1\files-1.1\recyclerview-v7-27.1.1.aar\7962d76d97856c89238fb251c5c3bb99\AndroidManifest.xml:20:5-44
-MERGED from [com.google.android.gms:play-services-base:8.4.0] C:\Users\42040\.gradle\caches\transforms-1\files-1.1\play-services-base-8.4.0.aar\6279c05d92a28960f82bdd5d35c3e96f\AndroidManifest.xml:18:5-42
-MERGED from [com.google.android.gms:play-services-base:8.4.0] C:\Users\42040\.gradle\caches\transforms-1\files-1.1\play-services-base-8.4.0.aar\6279c05d92a28960f82bdd5d35c3e96f\AndroidManifest.xml:18:5-42
+MERGED from [com.android.support:transition:27.1.1] C:\Users\42040\.gradle\caches\transforms-1\files-1.1\transition-27.1.1.aar\5c5344d3677c9670af1bc2bd1eee12c7\AndroidManifest.xml:20:5-44
+MERGED from [com.android.support:transition:27.1.1] C:\Users\42040\.gradle\caches\transforms-1\files-1.1\transition-27.1.1.aar\5c5344d3677c9670af1bc2bd1eee12c7\AndroidManifest.xml:20:5-44
 MERGED from [com.android.support:support-fragment:27.1.1] C:\Users\42040\.gradle\caches\transforms-1\files-1.1\support-fragment-27.1.1.aar\b191e52f1417070be06f0e07e0b17274\AndroidManifest.xml:20:5-44
 MERGED from [com.android.support:support-fragment:27.1.1] C:\Users\42040\.gradle\caches\transforms-1\files-1.1\support-fragment-27.1.1.aar\b191e52f1417070be06f0e07e0b17274\AndroidManifest.xml:20:5-44
 MERGED from [com.android.support:animated-vector-drawable:27.1.1] C:\Users\42040\.gradle\caches\transforms-1\files-1.1\animated-vector-drawable-27.1.1.aar\48b9c5550311ce8ab94565ef9f624bcd\AndroidManifest.xml:20:5-44
@@ -244,20 +349,22 @@ MERGED from [com.android.support:support-core-utils:27.1.1] C:\Users\42040\.grad
 MERGED from [com.android.support:support-core-utils:27.1.1] C:\Users\42040\.gradle\caches\transforms-1\files-1.1\support-core-utils-27.1.1.aar\ff9333c3687f5b5f91730821a74273cc\AndroidManifest.xml:20:5-44
 MERGED from [com.android.support:support-vector-drawable:27.1.1] C:\Users\42040\.gradle\caches\transforms-1\files-1.1\support-vector-drawable-27.1.1.aar\56e7b006a3d9d7dcbf0b3bcc0ecb324c\AndroidManifest.xml:20:5-44
 MERGED from [com.android.support:support-vector-drawable:27.1.1] C:\Users\42040\.gradle\caches\transforms-1\files-1.1\support-vector-drawable-27.1.1.aar\56e7b006a3d9d7dcbf0b3bcc0ecb324c\AndroidManifest.xml:20:5-44
+MERGED from [com.android.support:support-media-compat:27.1.1] C:\Users\42040\.gradle\caches\transforms-1\files-1.1\support-media-compat-27.1.1.aar\9758123ac8b8d859f7f1436826e18198\AndroidManifest.xml:20:5-44
+MERGED from [com.android.support:support-media-compat:27.1.1] C:\Users\42040\.gradle\caches\transforms-1\files-1.1\support-media-compat-27.1.1.aar\9758123ac8b8d859f7f1436826e18198\AndroidManifest.xml:20:5-44
 MERGED from [com.android.support:support-compat:27.1.1] C:\Users\42040\.gradle\caches\transforms-1\files-1.1\support-compat-27.1.1.aar\95de3bbc351a23486ea12f2c0cf39813\AndroidManifest.xml:20:5-44
 MERGED from [com.android.support:support-compat:27.1.1] C:\Users\42040\.gradle\caches\transforms-1\files-1.1\support-compat-27.1.1.aar\95de3bbc351a23486ea12f2c0cf39813\AndroidManifest.xml:20:5-44
-MERGED from [com.google.android.gms:play-services-basement:8.4.0] C:\Users\42040\.gradle\caches\transforms-1\files-1.1\play-services-basement-8.4.0.aar\4b73fea51ab1e6fe17d66cbe9ca15cb5\AndroidManifest.xml:18:5-42
-MERGED from [com.google.android.gms:play-services-basement:8.4.0] C:\Users\42040\.gradle\caches\transforms-1\files-1.1\play-services-basement-8.4.0.aar\4b73fea51ab1e6fe17d66cbe9ca15cb5\AndroidManifest.xml:18:5-42
-MERGED from [com.android.support:support-v4:23.0.0] C:\Users\42040\.gradle\caches\transforms-1\files-1.1\support-v4-23.0.0.aar\90c4df5181d61af9d138d3257fc0b835\AndroidManifest.xml:20:5-43
-MERGED from [com.android.support:support-v4:23.0.0] C:\Users\42040\.gradle\caches\transforms-1\files-1.1\support-v4-23.0.0.aar\90c4df5181d61af9d138d3257fc0b835\AndroidManifest.xml:20:5-43
-MERGED from [android.arch.lifecycle:runtime:1.1.0] C:\Users\42040\.gradle\caches\transforms-1\files-1.1\runtime-1.1.0.aar\6f639582ae2aec41a1cd9190bec4808b\AndroidManifest.xml:20:5-44
-MERGED from [android.arch.lifecycle:runtime:1.1.0] C:\Users\42040\.gradle\caches\transforms-1\files-1.1\runtime-1.1.0.aar\6f639582ae2aec41a1cd9190bec4808b\AndroidManifest.xml:20:5-44
+MERGED from [io.reactivex:rxandroid:1.2.0] C:\Users\42040\.gradle\caches\transforms-1\files-1.1\rxandroid-1.2.0.aar\e9c6ed670373f7438ed897bc99fce1b8\AndroidManifest.xml:19:5-43
+MERGED from [io.reactivex:rxandroid:1.2.0] C:\Users\42040\.gradle\caches\transforms-1\files-1.1\rxandroid-1.2.0.aar\e9c6ed670373f7438ed897bc99fce1b8\AndroidManifest.xml:19:5-43
+MERGED from [io.reactivex.rxjava2:rxandroid:2.1.0] C:\Users\42040\.gradle\caches\transforms-1\files-1.1\rxandroid-2.1.0.aar\f0e056b84beb01a6b6c308e30efde61d\AndroidManifest.xml:18:5-43
+MERGED from [io.reactivex.rxjava2:rxandroid:2.1.0] C:\Users\42040\.gradle\caches\transforms-1\files-1.1\rxandroid-2.1.0.aar\f0e056b84beb01a6b6c308e30efde61d\AndroidManifest.xml:18:5-43
 MERGED from [android.arch.lifecycle:livedata-core:1.1.0] C:\Users\42040\.gradle\caches\transforms-1\files-1.1\livedata-core-1.1.0.aar\a4170dbed2d612e4dd6d54a3114645a0\AndroidManifest.xml:20:5-44
 MERGED from [android.arch.lifecycle:livedata-core:1.1.0] C:\Users\42040\.gradle\caches\transforms-1\files-1.1\livedata-core-1.1.0.aar\a4170dbed2d612e4dd6d54a3114645a0\AndroidManifest.xml:20:5-44
-MERGED from [android.arch.core:runtime:1.1.0] C:\Users\42040\.gradle\caches\transforms-1\files-1.1\runtime-1.1.0.aar\247beb0c9a9a51bf82eb56691dde6edd\AndroidManifest.xml:20:5-44
-MERGED from [android.arch.core:runtime:1.1.0] C:\Users\42040\.gradle\caches\transforms-1\files-1.1\runtime-1.1.0.aar\247beb0c9a9a51bf82eb56691dde6edd\AndroidManifest.xml:20:5-44
 MERGED from [android.arch.lifecycle:viewmodel:1.1.0] C:\Users\42040\.gradle\caches\transforms-1\files-1.1\viewmodel-1.1.0.aar\5102f78bbed8397de7b35cf9ec7f424a\AndroidManifest.xml:20:5-44
 MERGED from [android.arch.lifecycle:viewmodel:1.1.0] C:\Users\42040\.gradle\caches\transforms-1\files-1.1\viewmodel-1.1.0.aar\5102f78bbed8397de7b35cf9ec7f424a\AndroidManifest.xml:20:5-44
+MERGED from [android.arch.lifecycle:runtime:1.1.0] C:\Users\42040\.gradle\caches\transforms-1\files-1.1\runtime-1.1.0.aar\6f639582ae2aec41a1cd9190bec4808b\AndroidManifest.xml:20:5-44
+MERGED from [android.arch.lifecycle:runtime:1.1.0] C:\Users\42040\.gradle\caches\transforms-1\files-1.1\runtime-1.1.0.aar\6f639582ae2aec41a1cd9190bec4808b\AndroidManifest.xml:20:5-44
+MERGED from [android.arch.core:runtime:1.1.0] C:\Users\42040\.gradle\caches\transforms-1\files-1.1\runtime-1.1.0.aar\247beb0c9a9a51bf82eb56691dde6edd\AndroidManifest.xml:20:5-44
+MERGED from [android.arch.core:runtime:1.1.0] C:\Users\42040\.gradle\caches\transforms-1\files-1.1\runtime-1.1.0.aar\247beb0c9a9a51bf82eb56691dde6edd\AndroidManifest.xml:20:5-44
 INJECTED from D:\SpeedataDemo18\Pos80_SDK_GongJiao\app\src\main\AndroidManifest.xml
 INJECTED from D:\SpeedataDemo18\Pos80_SDK_GongJiao\app\src\main\AndroidManifest.xml
 	android:targetSdkVersion
@@ -268,9 +375,57 @@ INJECTED from D:\SpeedataDemo18\Pos80_SDK_GongJiao\app\src\main\AndroidManifest.
 		INJECTED from D:\SpeedataDemo18\Pos80_SDK_GongJiao\app\src\main\AndroidManifest.xml
 		ADDED from D:\SpeedataDemo18\Pos80_SDK_GongJiao\app\src\main\AndroidManifest.xml
 		INJECTED from D:\SpeedataDemo18\Pos80_SDK_GongJiao\app\src\main\AndroidManifest.xml
-meta-data#com.google.android.gms.version
-ADDED from [com.google.android.gms:play-services-basement:8.4.0] C:\Users\42040\.gradle\caches\transforms-1\files-1.1\play-services-basement-8.4.0.aar\4b73fea51ab1e6fe17d66cbe9ca15cb5\AndroidManifest.xml:21:9-23:69
-	android:value
-		ADDED from [com.google.android.gms:play-services-basement:8.4.0] C:\Users\42040\.gradle\caches\transforms-1\files-1.1\play-services-basement-8.4.0.aar\4b73fea51ab1e6fe17d66cbe9ca15cb5\AndroidManifest.xml:23:13-66
+uses-permission#android.permission.INTERNET
+ADDED from [SwiftDecoderMobile.aar] C:\Users\42040\.gradle\caches\transforms-1\files-1.1\SwiftDecoderMobile.aar\9d76c6578ebd2c62683731b28262bc25\AndroidManifest.xml:12:5-67
+MERGED from [:base] D:\SpeedataDemo18\Pos80_SDK_GongJiao\base\build\intermediates\manifests\full\debug\AndroidManifest.xml:11:5-67
+MERGED from [:base] D:\SpeedataDemo18\Pos80_SDK_GongJiao\base\build\intermediates\manifests\full\debug\AndroidManifest.xml:11:5-67
 	android:name
-		ADDED from [com.google.android.gms:play-services-basement:8.4.0] C:\Users\42040\.gradle\caches\transforms-1\files-1.1\play-services-basement-8.4.0.aar\4b73fea51ab1e6fe17d66cbe9ca15cb5\AndroidManifest.xml:22:13-58
+		ADDED from [SwiftDecoderMobile.aar] C:\Users\42040\.gradle\caches\transforms-1\files-1.1\SwiftDecoderMobile.aar\9d76c6578ebd2c62683731b28262bc25\AndroidManifest.xml:12:22-64
+uses-permission#android.permission.RECORD_AUDIO
+ADDED from [SwiftDecoderMobile.aar] C:\Users\42040\.gradle\caches\transforms-1\files-1.1\SwiftDecoderMobile.aar\9d76c6578ebd2c62683731b28262bc25\AndroidManifest.xml:13:5-71
+	android:name
+		ADDED from [SwiftDecoderMobile.aar] C:\Users\42040\.gradle\caches\transforms-1\files-1.1\SwiftDecoderMobile.aar\9d76c6578ebd2c62683731b28262bc25\AndroidManifest.xml:13:22-68
+uses-permission#android.permission.ACCESS_WIFI_STATE
+ADDED from [SwiftDecoderMobile.aar] C:\Users\42040\.gradle\caches\transforms-1\files-1.1\SwiftDecoderMobile.aar\9d76c6578ebd2c62683731b28262bc25\AndroidManifest.xml:14:5-76
+	android:name
+		ADDED from [SwiftDecoderMobile.aar] C:\Users\42040\.gradle\caches\transforms-1\files-1.1\SwiftDecoderMobile.aar\9d76c6578ebd2c62683731b28262bc25\AndroidManifest.xml:14:22-73
+uses-permission#android.permission.ACCESS_NETWORK_STATE
+ADDED from [SwiftDecoderMobile.aar] C:\Users\42040\.gradle\caches\transforms-1\files-1.1\SwiftDecoderMobile.aar\9d76c6578ebd2c62683731b28262bc25\AndroidManifest.xml:15:5-79
+	android:name
+		ADDED from [SwiftDecoderMobile.aar] C:\Users\42040\.gradle\caches\transforms-1\files-1.1\SwiftDecoderMobile.aar\9d76c6578ebd2c62683731b28262bc25\AndroidManifest.xml:15:22-76
+uses-permission#android.permission.CHANGE_WIFI_STATE
+ADDED from [SwiftDecoderMobile.aar] C:\Users\42040\.gradle\caches\transforms-1\files-1.1\SwiftDecoderMobile.aar\9d76c6578ebd2c62683731b28262bc25\AndroidManifest.xml:18:5-76
+	android:name
+		ADDED from [SwiftDecoderMobile.aar] C:\Users\42040\.gradle\caches\transforms-1\files-1.1\SwiftDecoderMobile.aar\9d76c6578ebd2c62683731b28262bc25\AndroidManifest.xml:18:22-73
+uses-permission#android.permission.WRITE_INTERNAL_STORAGE
+ADDED from [SwiftDecoderMobile.aar] C:\Users\42040\.gradle\caches\transforms-1\files-1.1\SwiftDecoderMobile.aar\9d76c6578ebd2c62683731b28262bc25\AndroidManifest.xml:19:5-81
+	android:name
+		ADDED from [SwiftDecoderMobile.aar] C:\Users\42040\.gradle\caches\transforms-1\files-1.1\SwiftDecoderMobile.aar\9d76c6578ebd2c62683731b28262bc25\AndroidManifest.xml:19:22-78
+activity#com.honeywell.camera.HSMCameraPreview
+ADDED from [SwiftDecoderMobile.aar] C:\Users\42040\.gradle\caches\transforms-1\files-1.1\SwiftDecoderMobile.aar\9d76c6578ebd2c62683731b28262bc25\AndroidManifest.xml:22:9-74
+	android:name
+		ADDED from [SwiftDecoderMobile.aar] C:\Users\42040\.gradle\caches\transforms-1\files-1.1\SwiftDecoderMobile.aar\9d76c6578ebd2c62683731b28262bc25\AndroidManifest.xml:22:19-71
+activity#com.google.android.gms.common.api.GoogleApiActivity
+ADDED from [com.google.android.gms:play-services-base:16.0.1] C:\Users\42040\.gradle\caches\transforms-1\files-1.1\play-services-base-16.0.1.aar\f17630c159bebeb0976ef0c156d46192\AndroidManifest.xml:23:9-26:75
+	android:exported
+		ADDED from [com.google.android.gms:play-services-base:16.0.1] C:\Users\42040\.gradle\caches\transforms-1\files-1.1\play-services-base-16.0.1.aar\f17630c159bebeb0976ef0c156d46192\AndroidManifest.xml:25:13-37
+	android:theme
+		ADDED from [com.google.android.gms:play-services-base:16.0.1] C:\Users\42040\.gradle\caches\transforms-1\files-1.1\play-services-base-16.0.1.aar\f17630c159bebeb0976ef0c156d46192\AndroidManifest.xml:26:13-72
+	android:name
+		ADDED from [com.google.android.gms:play-services-base:16.0.1] C:\Users\42040\.gradle\caches\transforms-1\files-1.1\play-services-base-16.0.1.aar\f17630c159bebeb0976ef0c156d46192\AndroidManifest.xml:24:13-79
+provider#com.google.firebase.provider.FirebaseInitProvider
+ADDED from [com.google.firebase:firebase-common:16.0.3] C:\Users\42040\.gradle\caches\transforms-1\files-1.1\firebase-common-16.0.3.aar\87fbb0d60c09870f8537964df78c0422\AndroidManifest.xml:10:9-14:39
+	android:authorities
+		ADDED from [com.google.firebase:firebase-common:16.0.3] C:\Users\42040\.gradle\caches\transforms-1\files-1.1\firebase-common-16.0.3.aar\87fbb0d60c09870f8537964df78c0422\AndroidManifest.xml:12:13-72
+	android:exported
+		ADDED from [com.google.firebase:firebase-common:16.0.3] C:\Users\42040\.gradle\caches\transforms-1\files-1.1\firebase-common-16.0.3.aar\87fbb0d60c09870f8537964df78c0422\AndroidManifest.xml:13:13-37
+	android:initOrder
+		ADDED from [com.google.firebase:firebase-common:16.0.3] C:\Users\42040\.gradle\caches\transforms-1\files-1.1\firebase-common-16.0.3.aar\87fbb0d60c09870f8537964df78c0422\AndroidManifest.xml:14:13-36
+	android:name
+		ADDED from [com.google.firebase:firebase-common:16.0.3] C:\Users\42040\.gradle\caches\transforms-1\files-1.1\firebase-common-16.0.3.aar\87fbb0d60c09870f8537964df78c0422\AndroidManifest.xml:11:13-77
+meta-data#com.google.android.gms.version
+ADDED from [com.google.android.gms:play-services-basement:16.0.1] C:\Users\42040\.gradle\caches\transforms-1\files-1.1\play-services-basement-16.0.1.aar\7fb9850a50c51b23505a428ab9d01cf2\AndroidManifest.xml:23:9-25:69
+	android:value
+		ADDED from [com.google.android.gms:play-services-basement:16.0.1] C:\Users\42040\.gradle\caches\transforms-1\files-1.1\play-services-basement-16.0.1.aar\7fb9850a50c51b23505a428ab9d01cf2\AndroidManifest.xml:25:13-66
+	android:name
+		ADDED from [com.google.android.gms:play-services-basement:16.0.1] C:\Users\42040\.gradle\caches\transforms-1\files-1.1\play-services-basement-16.0.1.aar\7fb9850a50c51b23505a428ab9d01cf2\AndroidManifest.xml:24:13-58
