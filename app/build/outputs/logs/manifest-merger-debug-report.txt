@@ -4,7 +4,6 @@ ADDED from D:\SpeedataDemo18\Pos80_SDK_GongJiao\app\src\main\AndroidManifest.xml
 INJECTED from D:\SpeedataDemo18\Pos80_SDK_GongJiao\app\src\main\AndroidManifest.xml:2:1-96:12
 INJECTED from D:\SpeedataDemo18\Pos80_SDK_GongJiao\app\src\main\AndroidManifest.xml:2:1-96:12
 INJECTED from D:\SpeedataDemo18\Pos80_SDK_GongJiao\app\src\main\AndroidManifest.xml:2:1-96:12
-MERGED from [com.android.support:multidex:1.0.2] C:\Users\42040\.gradle\caches\transforms-1\files-1.1\multidex-1.0.2.aar\fe39fe004c56b5d2440cab074b45ca79\AndroidManifest.xml:17:1-22:12
 MERGED from [:wechat] D:\SpeedataDemo18\Pos80_SDK_GongJiao\wechat\build\intermediates\manifests\full\debug\AndroidManifest.xml:2:1-13:12
 MERGED from [:alipay] D:\SpeedataDemo18\Pos80_SDK_GongJiao\alipay\build\intermediates\manifests\full\debug\AndroidManifest.xml:2:1-12:12
 MERGED from [com.android.support.constraint:constraint-layout:1.1.3] C:\Users\42040\.gradle\caches\transforms-1\files-1.1\constraint-layout-1.1.3.aar\190dd715c99c5dc0ddbdeb618a3097df\AndroidManifest.xml:2:1-11:12
@@ -305,8 +304,6 @@ uses-sdk
 INJECTED from D:\SpeedataDemo18\Pos80_SDK_GongJiao\app\src\main\AndroidManifest.xml reason: use-sdk injection requested
 INJECTED from D:\SpeedataDemo18\Pos80_SDK_GongJiao\app\src\main\AndroidManifest.xml
 INJECTED from D:\SpeedataDemo18\Pos80_SDK_GongJiao\app\src\main\AndroidManifest.xml
-MERGED from [com.android.support:multidex:1.0.2] C:\Users\42040\.gradle\caches\transforms-1\files-1.1\multidex-1.0.2.aar\fe39fe004c56b5d2440cab074b45ca79\AndroidManifest.xml:20:5-43
-MERGED from [com.android.support:multidex:1.0.2] C:\Users\42040\.gradle\caches\transforms-1\files-1.1\multidex-1.0.2.aar\fe39fe004c56b5d2440cab074b45ca79\AndroidManifest.xml:20:5-43
 MERGED from [:wechat] D:\SpeedataDemo18\Pos80_SDK_GongJiao\wechat\build\intermediates\manifests\full\debug\AndroidManifest.xml:7:5-9:41
 MERGED from [:wechat] D:\SpeedataDemo18\Pos80_SDK_GongJiao\wechat\build\intermediates\manifests\full\debug\AndroidManifest.xml:7:5-9:41
 MERGED from [:alipay] D:\SpeedataDemo18\Pos80_SDK_GongJiao\alipay\build\intermediates\manifests\full\debug\AndroidManifest.xml:8:5-10:41

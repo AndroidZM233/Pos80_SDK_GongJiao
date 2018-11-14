@@ -3,11 +3,16 @@ package com.spd.bus.spdata.spdbuspay;
 import android.text.TextUtils;
 import android.util.Log;
 
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
 import com.spd.alipay.AlipayJni;
 import com.spd.alipay.Datautils;
 import com.spd.alipay.been.AliCodeinfoData;
 import com.spd.alipay.been.AlipayPublicKey;
+import com.spd.alipay.been.AlipayUploadBeen;
+import com.spd.alipay.been.PayUploadResult;
 import com.spd.alipay.net.AlipayApi;
+import com.spd.alipay.net.AlipayApi2;
 import com.spd.bus.spdata.been.ErroCode;
 import com.spd.bus.spdata.mvp.BasePresenterImpl;
 import com.tencent.wlxsdk.WlxSdk;
@@ -16,6 +21,7 @@ import com.wechat.net.WechatApi;
 
 import java.util.List;
 
+import io.reactivex.Observer;
 import io.reactivex.disposables.Disposable;
 import okhttp3.MediaType;
 import okhttp3.RequestBody;
@@ -32,7 +38,7 @@ import static com.spd.bus.spdata.been.ErroCode.SYSTEM_ERROR;
 public class SpdBusPayPresenter extends BasePresenterImpl<SpdBusPayContract.View> implements SpdBusPayContract.Presenter {
     private AlipayJni alipayJni;
     private WlxSdk wlxSdk;
-    private String TAG = "qrcode";
+    private String TAG = "PsamIcActivity";
 
     @Override
     public void getAliPublicKey() {
@@ -82,6 +88,43 @@ public class SpdBusPayPresenter extends BasePresenterImpl<SpdBusPayContract.View
                 lineInfo, stationNo, lbsInfo,
                 recordType);
         mView.checkAliQrCode(aliCodeinfoData);
+    }
+
+    @Override
+    public void uploadAlipay(AlipayUploadBeen alipayUploadBeen) {
+        final Gson gson = new GsonBuilder().serializeNulls().create();
+        String rusultData = gson.toJson(alipayUploadBeen);
+        RequestBody requestBody = RequestBody.create(MediaType.parse("application/json; charset=utf-8"), rusultData);
+        AlipayApi2.getInstance().alipayUpload(requestBody)
+                .subscribeOn(io.reactivex.schedulers.Schedulers.io())
+                .observeOn(io.reactivex.android.schedulers.AndroidSchedulers.mainThread())
+                .subscribe(new Observer<PayUploadResult>() {
+                    @Override
+                    public void onSubscribe(Disposable d) {
+
+                    }
+
+                    @Override
+                    public void onNext(PayUploadResult payUploadResult) {
+                        Log.i(TAG, "onNext: " + payUploadResult.toString());
+                    }
+
+                    @Override
+                    public void onError(Throwable e) {
+                        Log.e(TAG, "上传结果onError :" + e.toString());
+                    }
+
+                    @Override
+                    public void onComplete() {
+
+                    }
+                });
+    }
+
+    @Override
+    public void releseAlipayJni() {
+        int re = alipayJni.release();
+        mView.releseAlipayJni(re);
     }
 
 
@@ -146,7 +189,7 @@ public class SpdBusPayPresenter extends BasePresenterImpl<SpdBusPayContract.View
         int result = 0;
         result = wlxSdk.init(code);
         if (result != ErroCode.EC_SUCCESS) {
-            mView.checkWechatQrCode(result, "","");
+            mView.checkWechatQrCode(result, "", "");
             return;
         }
         Log.i(TAG, "key_id:" + wlxSdk.get_key_id());
@@ -170,10 +213,10 @@ public class SpdBusPayPresenter extends BasePresenterImpl<SpdBusPayContract.View
         }
         result = wlxSdk.verify(openId, pubKey, payfee, scene, scantype, posId, posTrxId, aesMacRoot);
         if (result != ErroCode.EC_SUCCESS) {
-            mView.checkWechatQrCode(result, "","");
+            mView.checkWechatQrCode(result, "", "");
         }
         String record = wlxSdk.get_record();
-        mView.checkWechatQrCode(result, record,openId);
+        mView.checkWechatQrCode(result, record, openId);
         String resInfo = "二维码:" + code + "\r\nkey_id:" + wlxSdk.get_key_id() + "\r\nmac_root_id:" + wlxSdk.get_mac_root_id() + "\r\nopne_id:" + openId + "\r\nbiz_data:" + wlxSdk.get_biz_data_hex() + "\r\npub_Key:" + pubKey + "\r\nmac_key:" + aesMacRoot + "\r\n验码结果:" + result + "\r\n扫码记录:" + record;
         Log.i(TAG, "验码记录:" + resInfo);
         Log.i(TAG, "验码结果:" + result + "$$$$" + record);

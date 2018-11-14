@@ -144,12 +144,12 @@
         "source": "C:\\Users\\42040\\.gradle\\caches\\transforms-1\\files-1.1\\support-compat-27.1.1.aar\\95de3bbc351a23486ea12f2c0cf39813\\res\\drawable-mdpi-v4\\notification_bg_normal.9.png"
     },
     {
-        "merged": "D:\\SpeedataDemo18\\Pos80_SDK_GongJiao\\app\\build\\intermediates\\res\\merged\\debug\\drawable-mdpi-v4_abc_ic_menu_copy_mtrl_am_alpha.png.flat",
-        "source": "C:\\Users\\42040\\.gradle\\caches\\transforms-1\\files-1.1\\appcompat-v7-27.1.1.aar\\0c15e873c626f7358d5f51330c4e3e3b\\res\\drawable-mdpi-v4\\abc_ic_menu_copy_mtrl_am_alpha.png"
-    },
-    {
         "merged": "D:\\SpeedataDemo18\\Pos80_SDK_GongJiao\\app\\build\\intermediates\\res\\merged\\debug\\layout_docksendpicture.xml.flat",
         "source": "D:\\SpeedataDemo18\\Pos80_SDK_GongJiao\\app\\src\\main\\res\\layout\\docksendpicture.xml"
+    },
+    {
+        "merged": "D:\\SpeedataDemo18\\Pos80_SDK_GongJiao\\app\\build\\intermediates\\res\\merged\\debug\\drawable-mdpi-v4_abc_ic_menu_copy_mtrl_am_alpha.png.flat",
+        "source": "C:\\Users\\42040\\.gradle\\caches\\transforms-1\\files-1.1\\appcompat-v7-27.1.1.aar\\0c15e873c626f7358d5f51330c4e3e3b\\res\\drawable-mdpi-v4\\abc_ic_menu_copy_mtrl_am_alpha.png"
     },
     {
         "merged": "D:\\SpeedataDemo18\\Pos80_SDK_GongJiao\\app\\build\\intermediates\\res\\merged\\debug\\drawable-xxhdpi-v4_abc_ic_commit_search_api_mtrl_alpha.png.flat",
@@ -176,16 +176,16 @@
         "source": "D:\\SpeedataDemo18\\Pos80_SDK_GongJiao\\app\\src\\main\\res\\layout\\activity_standardpage.xml"
     },
     {
-        "merged": "D:\\SpeedataDemo18\\Pos80_SDK_GongJiao\\app\\build\\intermediates\\res\\merged\\debug\\drawable_title_return_press.png.flat",
-        "source": "D:\\SpeedataDemo18\\Pos80_SDK_GongJiao\\app\\src\\main\\res\\drawable\\title_return_press.png"
+        "merged": "D:\\SpeedataDemo18\\Pos80_SDK_GongJiao\\app\\build\\intermediates\\res\\merged\\debug\\drawable-mdpi-v4_abc_ic_menu_paste_mtrl_am_alpha.png.flat",
+        "source": "C:\\Users\\42040\\.gradle\\caches\\transforms-1\\files-1.1\\appcompat-v7-27.1.1.aar\\0c15e873c626f7358d5f51330c4e3e3b\\res\\drawable-mdpi-v4\\abc_ic_menu_paste_mtrl_am_alpha.png"
     },
     {
         "merged": "D:\\SpeedataDemo18\\Pos80_SDK_GongJiao\\app\\build\\intermediates\\res\\merged\\debug\\layout-v26_abc_screen_toolbar.xml.flat",
         "source": "C:\\Users\\42040\\.gradle\\caches\\transforms-1\\files-1.1\\appcompat-v7-27.1.1.aar\\0c15e873c626f7358d5f51330c4e3e3b\\res\\layout-v26\\abc_screen_toolbar.xml"
     },
     {
-        "merged": "D:\\SpeedataDemo18\\Pos80_SDK_GongJiao\\app\\build\\intermediates\\res\\merged\\debug\\drawable-mdpi-v4_abc_ic_menu_paste_mtrl_am_alpha.png.flat",
-        "source": "C:\\Users\\42040\\.gradle\\caches\\transforms-1\\files-1.1\\appcompat-v7-27.1.1.aar\\0c15e873c626f7358d5f51330c4e3e3b\\res\\drawable-mdpi-v4\\abc_ic_menu_paste_mtrl_am_alpha.png"
+        "merged": "D:\\SpeedataDemo18\\Pos80_SDK_GongJiao\\app\\build\\intermediates\\res\\merged\\debug\\drawable_title_return_press.png.flat",
+        "source": "D:\\SpeedataDemo18\\Pos80_SDK_GongJiao\\app\\src\\main\\res\\drawable\\title_return_press.png"
     },
     {
         "merged": "D:\\SpeedataDemo18\\Pos80_SDK_GongJiao\\app\\build\\intermediates\\res\\merged\\debug\\layout_activity_printmanager.xml.flat",
@@ -320,16 +320,16 @@
         "source": "C:\\Users\\42040\\.gradle\\caches\\transforms-1\\files-1.1\\appcompat-v7-27.1.1.aar\\0c15e873c626f7358d5f51330c4e3e3b\\res\\drawable-xxhdpi-v4\\abc_btn_check_to_on_mtrl_015.png"
     },
     {
-        "merged": "D:\\SpeedataDemo18\\Pos80_SDK_GongJiao\\app\\build\\intermediates\\res\\merged\\debug\\layout_abc_activity_chooser_view_list_item.xml.flat",
-        "source": "C:\\Users\\42040\\.gradle\\caches\\transforms-1\\files-1.1\\appcompat-v7-27.1.1.aar\\0c15e873c626f7358d5f51330c4e3e3b\\res\\layout\\abc_activity_chooser_view_list_item.xml"
+        "merged": "D:\\SpeedataDemo18\\Pos80_SDK_GongJiao\\app\\build\\intermediates\\res\\merged\\debug\\drawable-ldrtl-xxxhdpi-v17_abc_ic_menu_cut_mtrl_alpha.png.flat",
+        "source": "C:\\Users\\42040\\.gradle\\caches\\transforms-1\\files-1.1\\appcompat-v7-27.1.1.aar\\0c15e873c626f7358d5f51330c4e3e3b\\res\\drawable-ldrtl-xxxhdpi-v17\\abc_ic_menu_cut_mtrl_alpha.png"
     },
     {
         "merged": "D:\\SpeedataDemo18\\Pos80_SDK_GongJiao\\app\\build\\intermediates\\res\\merged\\debug\\drawable-hdpi-v4_abc_textfield_search_default_mtrl_alpha.9.png.flat",
         "source": "C:\\Users\\42040\\.gradle\\caches\\transforms-1\\files-1.1\\appcompat-v7-27.1.1.aar\\0c15e873c626f7358d5f51330c4e3e3b\\res\\drawable-hdpi-v4\\abc_textfield_search_default_mtrl_alpha.9.png"
     },
     {
-        "merged": "D:\\SpeedataDemo18\\Pos80_SDK_GongJiao\\app\\build\\intermediates\\res\\merged\\debug\\drawable-ldrtl-xxxhdpi-v17_abc_ic_menu_cut_mtrl_alpha.png.flat",
-        "source": "C:\\Users\\42040\\.gradle\\caches\\transforms-1\\files-1.1\\appcompat-v7-27.1.1.aar\\0c15e873c626f7358d5f51330c4e3e3b\\res\\drawable-ldrtl-xxxhdpi-v17\\abc_ic_menu_cut_mtrl_alpha.png"
+        "merged": "D:\\SpeedataDemo18\\Pos80_SDK_GongJiao\\app\\build\\intermediates\\res\\merged\\debug\\layout_abc_activity_chooser_view_list_item.xml.flat",
+        "source": "C:\\Users\\42040\\.gradle\\caches\\transforms-1\\files-1.1\\appcompat-v7-27.1.1.aar\\0c15e873c626f7358d5f51330c4e3e3b\\res\\layout\\abc_activity_chooser_view_list_item.xml"
     },
     {
         "merged": "D:\\SpeedataDemo18\\Pos80_SDK_GongJiao\\app\\build\\intermediates\\res\\merged\\debug\\color-v23_abc_tint_edittext.xml.flat",
@@ -384,12 +384,12 @@
         "source": "C:\\Users\\42040\\.gradle\\caches\\transforms-1\\files-1.1\\appcompat-v7-27.1.1.aar\\0c15e873c626f7358d5f51330c4e3e3b\\res\\drawable-xxhdpi-v4\\abc_list_selector_disabled_holo_dark.9.png"
     },
     {
-        "merged": "D:\\SpeedataDemo18\\Pos80_SDK_GongJiao\\app\\build\\intermediates\\res\\merged\\debug\\layout_notification_template_part_chronometer.xml.flat",
-        "source": "C:\\Users\\42040\\.gradle\\caches\\transforms-1\\files-1.1\\support-compat-27.1.1.aar\\95de3bbc351a23486ea12f2c0cf39813\\res\\layout\\notification_template_part_chronometer.xml"
-    },
-    {
         "merged": "D:\\SpeedataDemo18\\Pos80_SDK_GongJiao\\app\\build\\intermediates\\res\\merged\\debug\\drawable-xxhdpi-v4_abc_tab_indicator_mtrl_alpha.9.png.flat",
         "source": "C:\\Users\\42040\\.gradle\\caches\\transforms-1\\files-1.1\\appcompat-v7-27.1.1.aar\\0c15e873c626f7358d5f51330c4e3e3b\\res\\drawable-xxhdpi-v4\\abc_tab_indicator_mtrl_alpha.9.png"
+    },
+    {
+        "merged": "D:\\SpeedataDemo18\\Pos80_SDK_GongJiao\\app\\build\\intermediates\\res\\merged\\debug\\layout_notification_template_part_chronometer.xml.flat",
+        "source": "C:\\Users\\42040\\.gradle\\caches\\transforms-1\\files-1.1\\support-compat-27.1.1.aar\\95de3bbc351a23486ea12f2c0cf39813\\res\\layout\\notification_template_part_chronometer.xml"
     },
     {
         "merged": "D:\\SpeedataDemo18\\Pos80_SDK_GongJiao\\app\\build\\intermediates\\res\\merged\\debug\\drawable_common_google_signin_btn_icon_dark_normal.xml.flat",
@@ -852,10 +852,6 @@
         "source": "C:\\Users\\42040\\.gradle\\caches\\transforms-1\\files-1.1\\appcompat-v7-27.1.1.aar\\0c15e873c626f7358d5f51330c4e3e3b\\res\\drawable-xhdpi-v4\\abc_ic_menu_share_mtrl_alpha.png"
     },
     {
-        "merged": "D:\\SpeedataDemo18\\Pos80_SDK_GongJiao\\app\\build\\intermediates\\res\\merged\\debug\\anim_design_bottom_sheet_slide_in.xml.flat",
-        "source": "C:\\Users\\42040\\.gradle\\caches\\transforms-1\\files-1.1\\design-27.1.1.aar\\1f785bed6168612ab8dff620db3c3760\\res\\anim\\design_bottom_sheet_slide_in.xml"
-    },
-    {
         "merged": "D:\\SpeedataDemo18\\Pos80_SDK_GongJiao\\app\\build\\intermediates\\res\\merged\\debug\\drawable-xxhdpi-v4_abc_btn_radio_to_on_mtrl_000.png.flat",
         "source": "C:\\Users\\42040\\.gradle\\caches\\transforms-1\\files-1.1\\appcompat-v7-27.1.1.aar\\0c15e873c626f7358d5f51330c4e3e3b\\res\\drawable-xxhdpi-v4\\abc_btn_radio_to_on_mtrl_000.png"
     },
@@ -966,10 +962,6 @@
     {
         "merged": "D:\\SpeedataDemo18\\Pos80_SDK_GongJiao\\app\\build\\intermediates\\res\\merged\\debug\\drawable-xhdpi-v4_abc_btn_switch_to_on_mtrl_00012.9.png.flat",
         "source": "C:\\Users\\42040\\.gradle\\caches\\transforms-1\\files-1.1\\appcompat-v7-27.1.1.aar\\0c15e873c626f7358d5f51330c4e3e3b\\res\\drawable-xhdpi-v4\\abc_btn_switch_to_on_mtrl_00012.9.png"
-    },
-    {
-        "merged": "D:\\SpeedataDemo18\\Pos80_SDK_GongJiao\\app\\build\\intermediates\\res\\merged\\debug\\layout_notification_template_custom_big.xml.flat",
-        "source": "C:\\Users\\42040\\.gradle\\caches\\transforms-1\\files-1.1\\support-compat-27.1.1.aar\\95de3bbc351a23486ea12f2c0cf39813\\res\\layout\\notification_template_custom_big.xml"
     },
     {
         "merged": "D:\\SpeedataDemo18\\Pos80_SDK_GongJiao\\app\\build\\intermediates\\res\\merged\\debug\\layout_select_dialog_singlechoice_material.xml.flat",
@@ -1208,10 +1200,6 @@
         "source": "C:\\Users\\42040\\.gradle\\caches\\transforms-1\\files-1.1\\design-27.1.1.aar\\1f785bed6168612ab8dff620db3c3760\\res\\layout\\design_layout_snackbar.xml"
     },
     {
-        "merged": "D:\\SpeedataDemo18\\Pos80_SDK_GongJiao\\app\\build\\intermediates\\res\\merged\\debug\\layout_notification_action.xml.flat",
-        "source": "C:\\Users\\42040\\.gradle\\caches\\transforms-1\\files-1.1\\support-compat-27.1.1.aar\\95de3bbc351a23486ea12f2c0cf39813\\res\\layout\\notification_action.xml"
-    },
-    {
         "merged": "D:\\SpeedataDemo18\\Pos80_SDK_GongJiao\\app\\build\\intermediates\\res\\merged\\debug\\drawable-xxxhdpi-v4_abc_scrubber_control_to_pressed_mtrl_005.png.flat",
         "source": "C:\\Users\\42040\\.gradle\\caches\\transforms-1\\files-1.1\\appcompat-v7-27.1.1.aar\\0c15e873c626f7358d5f51330c4e3e3b\\res\\drawable-xxxhdpi-v4\\abc_scrubber_control_to_pressed_mtrl_005.png"
     },
@@ -1392,10 +1380,6 @@
         "source": "C:\\Users\\42040\\.gradle\\caches\\transforms-1\\files-1.1\\support-compat-27.1.1.aar\\95de3bbc351a23486ea12f2c0cf39813\\res\\drawable-xhdpi-v4\\notify_panel_notification_icon_bg.png"
     },
     {
-        "merged": "D:\\SpeedataDemo18\\Pos80_SDK_GongJiao\\app\\build\\intermediates\\res\\merged\\debug\\layout-v16_notification_template_custom_big.xml.flat",
-        "source": "C:\\Users\\42040\\.gradle\\caches\\transforms-1\\files-1.1\\support-compat-27.1.1.aar\\95de3bbc351a23486ea12f2c0cf39813\\res\\layout-v16\\notification_template_custom_big.xml"
-    },
-    {
         "merged": "D:\\SpeedataDemo18\\Pos80_SDK_GongJiao\\app\\build\\intermediates\\res\\merged\\debug\\drawable-xhdpi-v4_abc_btn_radio_to_on_mtrl_000.png.flat",
         "source": "C:\\Users\\42040\\.gradle\\caches\\transforms-1\\files-1.1\\appcompat-v7-27.1.1.aar\\0c15e873c626f7358d5f51330c4e3e3b\\res\\drawable-xhdpi-v4\\abc_btn_radio_to_on_mtrl_000.png"
     },
@@ -1448,10 +1432,6 @@
         "source": "C:\\Users\\42040\\.gradle\\caches\\transforms-1\\files-1.1\\support-media-compat-27.1.1.aar\\9758123ac8b8d859f7f1436826e18198\\res\\layout\\notification_template_big_media.xml"
     },
     {
-        "merged": "D:\\SpeedataDemo18\\Pos80_SDK_GongJiao\\app\\build\\intermediates\\res\\merged\\debug\\drawable_design_password_eye.xml.flat",
-        "source": "C:\\Users\\42040\\.gradle\\caches\\transforms-1\\files-1.1\\design-27.1.1.aar\\1f785bed6168612ab8dff620db3c3760\\res\\drawable\\design_password_eye.xml"
-    },
-    {
         "merged": "D:\\SpeedataDemo18\\Pos80_SDK_GongJiao\\app\\build\\intermediates\\res\\merged\\debug\\drawable-xhdpi-v4_abc_text_select_handle_middle_mtrl_dark.png.flat",
         "source": "C:\\Users\\42040\\.gradle\\caches\\transforms-1\\files-1.1\\appcompat-v7-27.1.1.aar\\0c15e873c626f7358d5f51330c4e3e3b\\res\\drawable-xhdpi-v4\\abc_text_select_handle_middle_mtrl_dark.png"
     },
@@ -1502,10 +1482,6 @@
     {
         "merged": "D:\\SpeedataDemo18\\Pos80_SDK_GongJiao\\app\\build\\intermediates\\res\\merged\\debug\\drawable-v21_avd_hide_password.xml.flat",
         "source": "C:\\Users\\42040\\.gradle\\caches\\transforms-1\\files-1.1\\design-27.1.1.aar\\1f785bed6168612ab8dff620db3c3760\\res\\drawable-v21\\avd_hide_password.xml"
-    },
-    {
-        "merged": "D:\\SpeedataDemo18\\Pos80_SDK_GongJiao\\app\\build\\intermediates\\res\\merged\\debug\\drawable_abc_edit_text_material.xml.flat",
-        "source": "C:\\Users\\42040\\.gradle\\caches\\transforms-1\\files-1.1\\appcompat-v7-27.1.1.aar\\0c15e873c626f7358d5f51330c4e3e3b\\res\\drawable\\abc_edit_text_material.xml"
     },
     {
         "merged": "D:\\SpeedataDemo18\\Pos80_SDK_GongJiao\\app\\build\\intermediates\\res\\merged\\debug\\drawable-xxxhdpi-v4_abc_btn_radio_to_on_mtrl_015.png.flat",
@@ -1574,10 +1550,6 @@
     {
         "merged": "D:\\SpeedataDemo18\\Pos80_SDK_GongJiao\\app\\build\\intermediates\\res\\merged\\debug\\anim_abc_slide_in_top.xml.flat",
         "source": "C:\\Users\\42040\\.gradle\\caches\\transforms-1\\files-1.1\\appcompat-v7-27.1.1.aar\\0c15e873c626f7358d5f51330c4e3e3b\\res\\anim\\abc_slide_in_top.xml"
-    },
-    {
-        "merged": "D:\\SpeedataDemo18\\Pos80_SDK_GongJiao\\app\\build\\intermediates\\res\\merged\\debug\\layout_notification_action_tombstone.xml.flat",
-        "source": "C:\\Users\\42040\\.gradle\\caches\\transforms-1\\files-1.1\\support-compat-27.1.1.aar\\95de3bbc351a23486ea12f2c0cf39813\\res\\layout\\notification_action_tombstone.xml"
     },
     {
         "merged": "D:\\SpeedataDemo18\\Pos80_SDK_GongJiao\\app\\build\\intermediates\\res\\merged\\debug\\drawable-xhdpi-v4_abc_ic_commit_search_api_mtrl_alpha.png.flat",
@@ -1684,24 +1656,12 @@
         "source": "C:\\Users\\42040\\.gradle\\caches\\transforms-1\\files-1.1\\appcompat-v7-27.1.1.aar\\0c15e873c626f7358d5f51330c4e3e3b\\res\\layout\\abc_action_bar_title_item.xml"
     },
     {
-        "merged": "D:\\SpeedataDemo18\\Pos80_SDK_GongJiao\\app\\build\\intermediates\\res\\merged\\debug\\anim_design_bottom_sheet_slide_out.xml.flat",
-        "source": "C:\\Users\\42040\\.gradle\\caches\\transforms-1\\files-1.1\\design-27.1.1.aar\\1f785bed6168612ab8dff620db3c3760\\res\\anim\\design_bottom_sheet_slide_out.xml"
-    },
-    {
-        "merged": "D:\\SpeedataDemo18\\Pos80_SDK_GongJiao\\app\\build\\intermediates\\res\\merged\\debug\\drawable_abc_btn_colored_material.xml.flat",
-        "source": "C:\\Users\\42040\\.gradle\\caches\\transforms-1\\files-1.1\\appcompat-v7-27.1.1.aar\\0c15e873c626f7358d5f51330c4e3e3b\\res\\drawable\\abc_btn_colored_material.xml"
-    },
-    {
         "merged": "D:\\SpeedataDemo18\\Pos80_SDK_GongJiao\\app\\build\\intermediates\\res\\merged\\debug\\drawable-xxhdpi-v4_common_google_signin_btn_text_dark_normal_background.9.png.flat",
         "source": "C:\\Users\\42040\\.gradle\\caches\\transforms-1\\files-1.1\\play-services-base-16.0.1.aar\\f17630c159bebeb0976ef0c156d46192\\res\\drawable-xxhdpi-v4\\common_google_signin_btn_text_dark_normal_background.9.png"
     },
     {
         "merged": "D:\\SpeedataDemo18\\Pos80_SDK_GongJiao\\app\\build\\intermediates\\res\\merged\\debug\\layout_select_dialog_item_material.xml.flat",
         "source": "C:\\Users\\42040\\.gradle\\caches\\transforms-1\\files-1.1\\appcompat-v7-27.1.1.aar\\0c15e873c626f7358d5f51330c4e3e3b\\res\\layout\\select_dialog_item_material.xml"
-    },
-    {
-        "merged": "D:\\SpeedataDemo18\\Pos80_SDK_GongJiao\\app\\build\\intermediates\\res\\merged\\debug\\layout_notification_template_icon_group.xml.flat",
-        "source": "C:\\Users\\42040\\.gradle\\caches\\transforms-1\\files-1.1\\support-compat-27.1.1.aar\\95de3bbc351a23486ea12f2c0cf39813\\res\\layout\\notification_template_icon_group.xml"
     },
     {
         "merged": "D:\\SpeedataDemo18\\Pos80_SDK_GongJiao\\app\\build\\intermediates\\res\\merged\\debug\\color_abc_tint_default.xml.flat",
@@ -1904,10 +1864,6 @@
         "source": "C:\\Users\\42040\\.gradle\\caches\\transforms-1\\files-1.1\\appcompat-v7-27.1.1.aar\\0c15e873c626f7358d5f51330c4e3e3b\\res\\drawable-xxxhdpi-v4\\abc_scrubber_control_to_pressed_mtrl_000.png"
     },
     {
-        "merged": "D:\\SpeedataDemo18\\Pos80_SDK_GongJiao\\app\\build\\intermediates\\res\\merged\\debug\\drawable_design_bottom_navigation_item_background.xml.flat",
-        "source": "C:\\Users\\42040\\.gradle\\caches\\transforms-1\\files-1.1\\design-27.1.1.aar\\1f785bed6168612ab8dff620db3c3760\\res\\drawable\\design_bottom_navigation_item_background.xml"
-    },
-    {
         "merged": "D:\\SpeedataDemo18\\Pos80_SDK_GongJiao\\app\\build\\intermediates\\res\\merged\\debug\\drawable-xxhdpi-v4_abc_btn_switch_to_on_mtrl_00012.9.png.flat",
         "source": "C:\\Users\\42040\\.gradle\\caches\\transforms-1\\files-1.1\\appcompat-v7-27.1.1.aar\\0c15e873c626f7358d5f51330c4e3e3b\\res\\drawable-xxhdpi-v4\\abc_btn_switch_to_on_mtrl_00012.9.png"
     },
@@ -2034,10 +1990,6 @@
     {
         "merged": "D:\\SpeedataDemo18\\Pos80_SDK_GongJiao\\app\\build\\intermediates\\res\\merged\\debug\\drawable-xxxhdpi-v4_abc_switch_track_mtrl_alpha.9.png.flat",
         "source": "C:\\Users\\42040\\.gradle\\caches\\transforms-1\\files-1.1\\appcompat-v7-27.1.1.aar\\0c15e873c626f7358d5f51330c4e3e3b\\res\\drawable-xxxhdpi-v4\\abc_switch_track_mtrl_alpha.9.png"
-    },
-    {
-        "merged": "D:\\SpeedataDemo18\\Pos80_SDK_GongJiao\\app\\build\\intermediates\\res\\merged\\debug\\color_abc_btn_colored_borderless_text_material.xml.flat",
-        "source": "C:\\Users\\42040\\.gradle\\caches\\transforms-1\\files-1.1\\appcompat-v7-27.1.1.aar\\0c15e873c626f7358d5f51330c4e3e3b\\res\\color\\abc_btn_colored_borderless_text_material.xml"
     },
     {
         "merged": "D:\\SpeedataDemo18\\Pos80_SDK_GongJiao\\app\\build\\intermediates\\res\\merged\\debug\\drawable-xhdpi-v4_notification_bg_normal_pressed.9.png.flat",

@@ -21,7 +21,7 @@ ANDROID_ABI:UNINITIALIZED=armeabi-v7a
 ANDROID_NDK:UNINITIALIZED=C:\Users\42040\AppData\Local\Android\Sdk\ndk-bundle
 
 //No help, variable specified on the command line.
-ANDROID_PLATFORM:UNINITIALIZED=android-16
+ANDROID_PLATFORM:UNINITIALIZED=android-21
 
 //Archiver
 CMAKE_AR:FILEPATH=C:/Users/42040/AppData/Local/Android/Sdk/ndk-bundle/toolchains/arm-linux-androideabi-4.9/prebuilt/windows-x86_64/bin/arm-linux-androideabi-ar.exe
@@ -56,7 +56,7 @@ CMAKE_CXX_FLAGS_RELEASE:STRING=
 CMAKE_CXX_FLAGS_RELWITHDEBINFO:STRING=-O2 -g -DNDEBUG
 
 //Libraries linked by default with all C++ applications.
-CMAKE_CXX_STANDARD_LIBRARIES:STRING=-latomic -lm "C:/Users/42040/AppData/Local/Android/Sdk/ndk-bundle/sources/cxx-stl/llvm-libc++/libs/armeabi-v7a/libc++_static.a" "C:/Users/42040/AppData/Local/Android/Sdk/ndk-bundle/sources/cxx-stl/llvm-libc++/libs/armeabi-v7a/libc++abi.a" "C:/Users/42040/AppData/Local/Android/Sdk/ndk-bundle/sources/cxx-stl/llvm-libc++/libs/armeabi-v7a/libandroid_support.a" "C:/Users/42040/AppData/Local/Android/Sdk/ndk-bundle/sources/cxx-stl/llvm-libc++/libs/armeabi-v7a/libunwind.a" "-ldl"
+CMAKE_CXX_STANDARD_LIBRARIES:STRING=-latomic -lm "C:/Users/42040/AppData/Local/Android/Sdk/ndk-bundle/sources/cxx-stl/llvm-libc++/libs/armeabi-v7a/libc++_static.a" "C:/Users/42040/AppData/Local/Android/Sdk/ndk-bundle/sources/cxx-stl/llvm-libc++/libs/armeabi-v7a/libc++abi.a" "C:/Users/42040/AppData/Local/Android/Sdk/ndk-bundle/sources/cxx-stl/llvm-libc++/libs/armeabi-v7a/libunwind.a" "-ldl"
 
 //Flags used by the compiler during all build types.
 CMAKE_C_FLAGS:STRING=
@@ -177,8 +177,8 @@ CMAKE_STATIC_LINKER_FLAGS_RELWITHDEBINFO:STRING=
 //Path to a program.
 CMAKE_STRIP:FILEPATH=C:/Users/42040/AppData/Local/Android/Sdk/ndk-bundle/toolchains/arm-linux-androideabi-4.9/prebuilt/windows-x86_64/bin/arm-linux-androideabi-strip.exe
 
-//No help, variable specified on the command line.
-CMAKE_TOOLCHAIN_FILE:UNINITIALIZED=C:\Users\42040\AppData\Local\Android\Sdk\ndk-bundle\build\cmake\android.toolchain.cmake
+//The CMake toolchain file
+CMAKE_TOOLCHAIN_FILE:FILEPATH=C:/Users/42040/AppData/Local/Android/Sdk/ndk-bundle/build/cmake/android.toolchain.cmake
 
 //If this value is on, makefiles will be generated without the
 // .SILENT directive, and all commands will be echoed to the console
@@ -196,7 +196,7 @@ Project_SOURCE_DIR:STATIC=D:/SpeedataDemo18/Pos80_SDK_GongJiao/alipay
 alipay_LIB_DEPENDS:STATIC=general;posoffline;
 
 //Path to a library.
-log-lib:FILEPATH=C:/Users/42040/AppData/Local/Android/Sdk/ndk-bundle/platforms/android-16/arch-arm/usr/lib/liblog.so
+log-lib:FILEPATH=C:/Users/42040/AppData/Local/Android/Sdk/ndk-bundle/platforms/android-21/arch-arm/usr/lib/liblog.so
 
 
 ########################

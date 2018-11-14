@@ -2,6 +2,7 @@ package com.spd.bus.spdata.spdbuspay;
 
 import com.spd.alipay.been.AliCodeinfoData;
 import com.spd.alipay.been.AlipayPublicKey;
+import com.spd.alipay.been.AlipayUploadBeen;
 import com.spd.bus.spdata.mvp.BasePresenter;
 import com.spd.bus.spdata.mvp.BaseView;
 import com.wechat.been.WechatPublicKey;
@@ -30,6 +31,8 @@ public class SpdBusPayContract {
 
         void checkAliQrCode(AliCodeinfoData aliCodeinfoData);
 
+        void releseAlipayJni(int result);
+
         void checkWechatQrCode(int result, String wechatResult, String openId);
     }
 
@@ -44,6 +47,10 @@ public class SpdBusPayContract {
                             String vehicleId, String plateNo, String driverId,
                             String lineInfo, String stationNo, String lbsInfo,
                             String recordType);
+
+        void uploadAlipay(AlipayUploadBeen alipayUploadBeen);
+
+        void releseAlipayJni();
 
         void getWechatPublicKey();
 

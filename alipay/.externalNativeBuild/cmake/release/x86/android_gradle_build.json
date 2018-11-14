@@ -1,0 +1,46 @@
+
+{
+	"buildFiles" : [ "D:/SpeedataDemo18/Pos80_SDK_GongJiao/alipay/CMakeLists.txt" ],
+	"cFileExtensions" : [ "c" ],
+	"cleanCommands" : 
+	[
+		"C:\\Users\\42040\\AppData\\Local\\Android\\Sdk\\cmake\\3.6.4111459\\bin\\cmake.exe --build D:\\SpeedataDemo18\\Pos80_SDK_GongJiao\\alipay\\.externalNativeBuild\\cmake\\release\\x86 --target clean"
+	],
+	"libraries" : 
+	{
+		"alipay-Release-x86" : 
+		{
+			"abi" : "x86",
+			"artifactName" : "alipay",
+			"buildCommand" : "C:\\Users\\42040\\AppData\\Local\\Android\\Sdk\\cmake\\3.6.4111459\\bin\\cmake.exe --build D:\\SpeedataDemo18\\Pos80_SDK_GongJiao\\alipay\\.externalNativeBuild\\cmake\\release\\x86 --target alipay",
+			"buildType" : "release",
+			"files" : 
+			[
+				
+				{
+					"flags" : "  --target=i686-none-linux-android21 --gcc-toolchain=C:/Users/42040/AppData/Local/Android/Sdk/ndk-bundle/toolchains/x86-4.9/prebuilt/windows-x86_64 --sysroot=C:/Users/42040/AppData/Local/Android/Sdk/ndk-bundle/sysroot -Dalipay_EXPORTS  -isystem C:/Users/42040/AppData/Local/Android/Sdk/ndk-bundle/sysroot/usr/include/i686-linux-android -g -DANDROID -ffunction-sections -funwind-tables -fstack-protector-strong -no-canonical-prefixes -mstackrealign -Wa,--noexecstack -Wformat -Werror=format-security  -O2 -DNDEBUG  -fPIC      -c ",
+					"src" : "D:/SpeedataDemo18/Pos80_SDK_GongJiao/alipay/src/main/cpp/alipay.c",
+					"workingDirectory" : "D:/SpeedataDemo18/Pos80_SDK_GongJiao/alipay/.externalNativeBuild/cmake/release/x86"
+				}
+			],
+			"output" : "D:/SpeedataDemo18/Pos80_SDK_GongJiao/alipay/build/intermediates/cmake/release/obj/x86/libalipay.so",
+			"toolchain" : "1701869593"
+		},
+		"posoffline-Release-x86" : 
+		{
+			"abi" : "x86",
+			"artifactName" : "posoffline",
+			"buildType" : "release",
+			"output" : "D:/SpeedataDemo18/Pos80_SDK_GongJiao/alipay/src/main/jniLibs/armeabi-v7a/libposoffline.so",
+			"toolchain" : "1701869593"
+		}
+	},
+	"toolchains" : 
+	{
+		"1701869593" : 
+		{
+			"cCompilerExecutable" : "C:/Users/42040/AppData/Local/Android/Sdk/ndk-bundle/toolchains/llvm/prebuilt/windows-x86_64/bin/clang.exe",
+			"cppCompilerExecutable" : "C:/Users/42040/AppData/Local/Android/Sdk/ndk-bundle/toolchains/llvm/prebuilt/windows-x86_64/bin/clang++.exe"
+		}
+	}
+}

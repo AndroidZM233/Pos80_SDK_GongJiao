@@ -30,7 +30,22 @@ public class SpdBusPayActivity extends MVPBaseActivity<SpdBusPayContract.View, S
     }
 
     @Override
+    public void aliPayInit(int result) {
+
+    }
+
+    @Override
     public void checkAliQrCode(AliCodeinfoData testdata) {
+
+    }
+
+    @Override
+    public void releseAlipayJni(int result) {
+
+    }
+
+    @Override
+    public void checkWechatQrCode(int result, String wechatResult, String openId) {
 
     }
 
@@ -39,8 +54,5 @@ public class SpdBusPayActivity extends MVPBaseActivity<SpdBusPayContract.View, S
 
     }
 
-    @Override
-    public void checkWechatQrCode(String wechatResult) {
 
-    }
 }
