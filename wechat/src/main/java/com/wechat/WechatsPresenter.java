@@ -3,9 +3,10 @@ package com.wechat;
 
 import android.util.Log;
 
-import com.spd.base.mvp.BasePresenterImpl;
+
 import com.tencent.wlxsdk.WlxSdk;
 import com.wechat.been.WechatPublicKey;
+import com.wechat.mvp.BasePresenterImpl;
 import com.wechat.net.WechatApi;
 
 import java.util.List;

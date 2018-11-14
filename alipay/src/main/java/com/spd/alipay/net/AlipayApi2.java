@@ -14,12 +14,12 @@ import retrofit2.Retrofit;
 import retrofit2.adapter.rxjava2.RxJava2CallAdapterFactory;
 import retrofit2.converter.gson.GsonConverterFactory;
 
-public class AlipayApi {
+public class AlipayApi2 {
     private AlipayService service;
 
-    private AlipayApi(OkHttpClient okHttpClient) {
+    private AlipayApi2(OkHttpClient okHttpClient) {
         Retrofit retrofit = new Retrofit.Builder()
-                .baseUrl(Url.ALIPAY_BASE_URL)
+                .baseUrl(Url.ALIPAY_BASE_URL2)
                 .addCallAdapterFactory(RxJava2CallAdapterFactory.create())
                 .addConverterFactory(GsonConverterFactory.create())
                 .client(okHttpClient)
@@ -28,7 +28,7 @@ public class AlipayApi {
     }
 
     private static class NetApiHolder {
-        private static final AlipayApi INSTANCE = new AlipayApi(getOkHttpClient());
+        private static final AlipayApi2 INSTANCE = new AlipayApi2(getOkHttpClient());
     }
 
     /**
@@ -36,7 +36,7 @@ public class AlipayApi {
      *
      * @return NetApi
      */
-    public static AlipayApi getInstance() {
+    public static AlipayApi2 getInstance() {
         return NetApiHolder.INSTANCE;
     }
 
@@ -50,12 +50,8 @@ public class AlipayApi {
     }
 
 
-    public Observable<AlipayPublicKey> getPublicKey(RequestBody body) {
-        return service.getPublicKey(body);
+    public Observable<PayUploadResult> alipayUpload(RequestBody body) {
+        return service.alipayUpload(body);
     }
-
-//    public Observable<PayUploadResult> alipayUpload(RequestBody body) {
-//        return service.alipayUpload(body);
-//    }
 
 }

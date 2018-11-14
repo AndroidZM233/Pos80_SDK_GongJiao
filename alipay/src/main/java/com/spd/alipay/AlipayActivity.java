@@ -11,7 +11,8 @@ import android.widget.Toast;
 
 import com.spd.alipay.been.AliCodeinfoData;
 import com.spd.alipay.been.AlipayPublicKey;
-import com.spd.base.mvp.MVPBaseActivity;
+import com.spd.alipay.mvp.MVPBaseActivity;
+
 
 import java.util.Collections;
 import java.util.List;

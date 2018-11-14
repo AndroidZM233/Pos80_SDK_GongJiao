@@ -7,25 +7,16 @@ public class Url {
     // https://shaynelee.cn/tecentQR/QRCode/downloadKeyList
     private static final String IP = "140.143.4.112";
     private static final String PORT = ":443";
-//        static final String WECHATS_BASE_URL = "https://" + IP + PORT + "/tecentQR/QRCode/";
+    //        static final String WECHATS_BASE_URL = "https://" + IP + PORT + "/tecentQR/QRCode/";
     static final String WECHATS_BASE_URL = "https://shaynelee.cn/tecentQR/QRCode/";
     /**
      * 获取公钥
      */
     static final String PUB_KEY = "downloadKeyList";
 
-    static final String MOBILE_MARK = "/ttsp/app_auth_dowload";
     /**
      * 扫码数据上传
      */
     static final String QR_CODE_SCAN = "ttsp/qrcode_scan";
-    /**
-     * 行程扣款
-     */
-    static final String ITINERARY = "ttsp/trip_consume";
-    /**
-     * 行程数据同步
-     */
-    static final String SYNC_DATA = "/ttsp/trip_sync";
 
 }

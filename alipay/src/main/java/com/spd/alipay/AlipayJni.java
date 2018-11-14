@@ -1,5 +1,7 @@
 package com.spd.alipay;
 
+import android.util.Log;
+
 import com.spd.alipay.been.AlipayPublicKey;
 import com.spd.alipay.been.AliCodeinfoData;
 
@@ -9,6 +11,23 @@ public class AlipayJni {
 
     public int initAliDev(List<AlipayPublicKey.PublicKeyListBean> publicKeyListBeans) {
         return initdev(publicKeyListBeans);
+    }
+
+    public AliCodeinfoData checkAliQrCode(AliCodeinfoData aliCodeinfoData, String code, String recordId,
+                                          String posId, String posMfId, String posSwVersion,
+                                          String merchantType, String currency, int amount,
+                                          String vehicleId, String plateNo, String driverId,
+                                          String lineInfo, String stationNo, String lbsInfo,
+                                          String recordType) {
+//        if (aliCodeinfoData == null) {
+//            Log.e("PsamIcActivity", "空空空: ");
+//        }
+        return checkAliQrCodeJni(aliCodeinfoData, code, recordId,
+                posId, posMfId, posSwVersion,
+                merchantType, currency, amount,
+                vehicleId, plateNo, driverId,
+                lineInfo, stationNo, lbsInfo,
+                recordType);
     }
 
     /**
@@ -24,7 +43,7 @@ public class AlipayJni {
      *
      * @return
      */
-    private native int release();
+    public native int release();
 
 
     /**
@@ -46,12 +65,12 @@ public class AlipayJni {
      * @param recordType   (脱机记录类型，公交场景为"BUS", 地铁场景为"SUBWAY")
      * @return 返回验码状态以及相关参数
      */
-    public native AliCodeinfoData checkAliQrCode(AliCodeinfoData testdata, String code, String recordId,
-                                                 String posId, String posMfId, String posSwVersion,
-                                                 String merchantType, String currency, int amount,
-                                                 String vehicleId, String plateNo, String driverId,
-                                                 String lineInfo, String stationNo, String lbsInfo,
-                                                 String recordType);
+    private native AliCodeinfoData checkAliQrCodeJni(AliCodeinfoData aliCodeinfoData, String code, String recordId,
+                                                     String posId, String posMfId, String posSwVersion,
+                                                     String merchantType, String currency, int amount,
+                                                     String vehicleId, String plateNo, String driverId,
+                                                     String lineInfo, String stationNo, String lbsInfo,
+                                                     String recordType);
 
     static {
         System.loadLibrary("alipay");

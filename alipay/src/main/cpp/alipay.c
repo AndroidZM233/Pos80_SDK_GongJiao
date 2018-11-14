@@ -59,7 +59,7 @@ Java_com_spd_alipay_AlipayJni_initdev(JNIEnv *env, jobject obj, jobject key_obj)
         jint Id = (*env)->CallIntMethod(env, keystu_obj, keyId);
         publicKey[i].key_id = Id;
         jstring classStr = (jstring) (*env)->CallObjectMethod(env, keystu_obj, pubKey);
-        char *pubkey = (*env)->GetStringUTFChars(env, classStr, 0);
+        char *pubkey = (char*)(*env)->GetStringUTFChars(env, classStr, 0);
         publicKey[i].pub_key = pubkey;
     }
 
@@ -71,7 +71,7 @@ JNIEXPORT jint JNICALL Java_com_spd_alipay_AlipayJni_release(JNIEnv *env, jobjec
 }
 
 JNIEXPORT jobject JNICALL
-Java_com_spd_alipay_AlipayJni_checkAliQrCode(JNIEnv *env, jobject obj, jobject classInfo, jstring Qrcode,
+Java_com_spd_alipay_AlipayJni_checkAliQrCodeJni(JNIEnv *env, jobject obj, jobject classInfo, jstring Qrcode,
                                      jstring record_id,
                                      jstring pos_id, jstring pos_mf_id, jstring pos_sw_version,
                                      jstring merchant_type, jstring currency, jint amount,
@@ -216,23 +216,23 @@ check_qrcode_demo(char *qrcode_hex, char *record, int *recordLen, JNIEnv *env, j
     char *aaa = info_response.code_info->alipay_code_info.user_id;
     //cha* 转jbyteArray
     jbyteArray data1 = (*env)->NewByteArray(env,
-                                            strlen(info_response.code_info->alipay_code_info.user_id));
+                                            (jsize)strlen(info_response.code_info->alipay_code_info.user_id));
     (*env)->SetByteArrayRegion(env, data1, 0,
-                               strlen(info_response.code_info->alipay_code_info.user_id),
-                               info_response.code_info->alipay_code_info.user_id);
+                               (jsize)strlen(info_response.code_info->alipay_code_info.user_id),
+                               (jbyte *) info_response.code_info->alipay_code_info.user_id);
 //    char *ttt = "123123132";
 //    jbyteArray data1 = (*env)->NewByteArray(env,9);
 //    (*env)->SetByteArrayRegion(env, data1, 0, 9, ttt);
     jbyteArray data2 = (*env)->NewByteArray(env,
-                                            strlen(info_response.code_info->alipay_code_info.card_type));
+                                            (jsize)strlen(info_response.code_info->alipay_code_info.card_type));
     (*env)->SetByteArrayRegion(env, data2, 0,
                                (jsize) strlen(info_response.code_info->alipay_code_info.card_type),
                                (jbyte *) info_response.code_info->alipay_code_info.card_type);
     jbyteArray data3 = (*env)->NewByteArray(env,
-                                            strlen(info_response.code_info->alipay_code_info.card_no));
+                                            (jsize)strlen(info_response.code_info->alipay_code_info.card_no));
     (*env)->SetByteArrayRegion(env, data3, 0,
-                               strlen(info_response.code_info->alipay_code_info.card_no),
-                               info_response.code_info->alipay_code_info.card_no);
+                               (jsize) strlen(info_response.code_info->alipay_code_info.card_no),
+                               (jbyte *) info_response.code_info->alipay_code_info.card_no);
 //    jbyteArray data5 = (*env)->NewByteArray(env, strlen(info_response.code_info->alipay_code_info.key_id));
 //    (*env)->SetByteArrayRegion(env, data5, 0, strlen(info_response.code_info->alipay_code_info.key_id), info_response.code_info->alipay_code_info.key_id);
 
@@ -345,7 +345,6 @@ check_qrcode_demo(char *qrcode_hex, char *record, int *recordLen, JNIEnv *env, j
         if (info_response.code_info->alipay_code_info.key_id == i) {
             char *ah = publicKey->pub_key;
             verify_request.public_key = ah;
-            char *ad = verify_request.public_key;
             break;
         }
     }
@@ -384,9 +383,9 @@ check_qrcode_demo(char *qrcode_hex, char *record, int *recordLen, JNIEnv *env, j
      * 3.商户需要根据卡类型、卡号、卡数据 综合判断该卡的合法性、以及是否受理该卡
      * 请商户保留 可受理 的脱机记录
      */
-    jbyteArray data4 = (*env)->NewByteArray(env, strlen(verify_response.record));
-    (*env)->SetByteArrayRegion(env, data4, 0, strlen(verify_response.record),
-                               verify_response.record);
+    jbyteArray data4 = (*env)->NewByteArray(env,(jsize) strlen(verify_response.record));
+    (*env)->SetByteArrayRegion(env, data4, 0, (jsize)strlen(verify_response.record),
+                               (jbyte *) verify_response.record);
     (*env)->SetObjectField(env, classInfo, alipayResult, data4);
     free(verify_response.record);
     return classInfo;

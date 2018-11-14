@@ -2,6 +2,8 @@ package com.spd.alipay.net;
 
 
 import com.spd.alipay.been.AlipayPublicKey;
+import com.spd.alipay.been.AlipayUploadBeen;
+import com.spd.alipay.been.PayUploadResult;
 
 import io.reactivex.Observable;
 import okhttp3.RequestBody;
@@ -18,12 +20,12 @@ public interface AlipayService {
     Observable<AlipayPublicKey> getPublicKey(@Body RequestBody requestBody);
 
     /**
-     * 获取私钥
+     * 上传结果
      *
      * @param requestBody
      * @return
      */
-    @POST(Url.PUB_KEY)
-    Observable<AlipayPublicKey> getPrivateKey(@Body RequestBody requestBody);
+    @POST("/")
+    Observable<PayUploadResult> alipayUpload(@Body RequestBody requestBody);
 
 }

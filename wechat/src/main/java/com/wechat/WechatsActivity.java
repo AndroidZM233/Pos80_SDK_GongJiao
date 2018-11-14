@@ -9,9 +9,10 @@ import android.widget.Button;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.spd.base.mvp.MVPBaseActivity;
+
 import com.tencent.wlxsdk.WlxSdk;
 import com.wechat.been.WechatPublicKey;
+import com.wechat.mvp.MVPBaseActivity;
 
 import java.util.List;
 

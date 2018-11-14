@@ -34,7 +34,6 @@ typedef struct sucess_qrcode {
 
 static char g_hex_map_table[] = "0123456789ABCDEF";
 
-int init_alipay();
 
 jobject
 check_qrcode_demo(char *qrcode_hex, char *record, int *recordLen, JNIEnv *env, jobject classInfo,

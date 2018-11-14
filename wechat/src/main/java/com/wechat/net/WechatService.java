@@ -17,22 +17,4 @@ public interface WechatService {
     @POST(Url.PUB_KEY)
     Observable<WechatPublicKey> getPublicKey(@Body RequestBody requestBody);
 
-    /**
-     * 获取私钥
-     *
-     * @param requestBody
-     * @return
-     */
-    @POST(Url.PUB_KEY)
-    Observable<WechatPublicKey> getPrivateKey(@Body RequestBody requestBody);
-
-//    /**
-//     * 获取公钥
-//     *
-//     * @param headers -
-//     * @param body    -
-//     * @return -
-//     */
-//    @POST(Url.PUB_KEY)
-//    Observable<PubKeyEntity> getPubKey(@HeaderMap Map<String, String> headers, @Body RequestBody body);
 }

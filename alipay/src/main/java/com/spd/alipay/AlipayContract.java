@@ -1,8 +1,9 @@
 package com.spd.alipay;
 
 import com.spd.alipay.been.AlipayPublicKey;
-import com.spd.base.mvp.BasePresenter;
-import com.spd.base.mvp.BaseView;
+import com.spd.alipay.mvp.BasePresenter;
+import com.spd.alipay.mvp.BaseView;
+
 
 /**
  * MVPPlugin

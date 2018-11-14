@@ -1,8 +1,9 @@
 package com.wechat;
 
-import com.spd.base.mvp.BasePresenter;
-import com.spd.base.mvp.BaseView;
+
 import com.wechat.been.WechatPublicKey;
+import com.wechat.mvp.BasePresenter;
+import com.wechat.mvp.BaseView;
 
 import java.util.List;
 

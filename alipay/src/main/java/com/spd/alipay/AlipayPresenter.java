@@ -3,8 +3,9 @@ package com.spd.alipay;
 import android.util.Log;
 
 import com.spd.alipay.been.AlipayPublicKey;
+import com.spd.alipay.mvp.BasePresenterImpl;
 import com.spd.alipay.net.AlipayApi;
-import com.spd.base.mvp.BasePresenterImpl;
+
 
 import io.reactivex.disposables.Disposable;
 import okhttp3.MediaType;

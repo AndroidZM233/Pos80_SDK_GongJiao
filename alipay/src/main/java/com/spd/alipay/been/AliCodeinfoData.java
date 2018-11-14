@@ -1,9 +1,8 @@
 package com.spd.alipay.been;
 
+import java.util.Arrays;
+
 public class AliCodeinfoData {
-    public String name;
-    public int num;
-    public double average;
     /**
      * inforState  获取二维码信息返回状态
      *
@@ -35,4 +34,35 @@ public class AliCodeinfoData {
     public int cardDataLen;
     public byte[] alipayResult;
 
+    public AliCodeinfoData() {
+        super();
+    }
+
+    public AliCodeinfoData(int inforState, byte[] userId, byte[] cardType, byte[] cardNo, byte[] alipayResult) {
+        this.inforState = inforState;
+        this.userId = userId;
+        this.cardType = cardType;
+        this.cardNo = cardNo;
+        this.alipayResult = alipayResult;
+    }
+
+    @Override
+    public String toString() {
+        return "AliCodeinfoData{" +
+                "inforState=" + inforState +
+                ", algId=" + algId +
+                ", keyId=" + keyId +
+                ", codeIssuerNo=" + Arrays.toString(codeIssuerNo) +
+                ", codeIssuerNoLen=" + codeIssuerNoLen +
+                ", userId=" + Arrays.toString(userId) +
+                ", userIdLen=" + userIdLen +
+                ", cardType=" + Arrays.toString(cardType) +
+                ", cardTypeLen=" + cardTypeLen +
+                ", cardNo=" + Arrays.toString(cardNo) +
+                ", cardNoLen=" + cardNoLen +
+                ", cardData=" + Arrays.toString(cardData) +
+                ", cardDataLen=" + cardDataLen +
+                ", alipayResult=" + Arrays.toString(alipayResult) +
+                '}';
+    }
 }
