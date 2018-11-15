@@ -1,6 +1,9 @@
 #ifndef _QRCODENODULE_H
 #define _QRCODENODULE_H
 
+#ifdef __cplusplus
+extern "C" {
+#endif
 
 #ifndef IN
 #define IN
@@ -85,4 +88,9 @@ int QueryCertVer(OUT BYTE* uCertsVerInfo);
 */
 //////////////////////////////////////////////////////////////////////////
 int VerifyMac(IN char * cQRCode, OUT BYTE * uCardID, OUT int *iCardIdLen);
+
+#ifdef __cplusplus
+}
+#endif
+
 #endif

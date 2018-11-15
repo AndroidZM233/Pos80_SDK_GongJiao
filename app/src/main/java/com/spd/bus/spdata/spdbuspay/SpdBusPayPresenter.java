@@ -6,7 +6,6 @@ import android.util.Log;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.spd.alipay.AlipayJni;
-import com.spd.alipay.Datautils;
 import com.spd.alipay.been.AliCodeinfoData;
 import com.spd.alipay.been.AlipayPublicKey;
 import com.spd.alipay.been.AlipayUploadBeen;
@@ -90,7 +89,7 @@ public class SpdBusPayPresenter extends BasePresenterImpl<SpdBusPayContract.View
                 lineInfo, stationNo, lbsInfo,
                 recordType);
         Log.e(TAG, "mView: " + mView);
-        mView.checkAliQrCode(aliCodeinfoData);
+        mView.checkAliQrCodeShow(aliCodeinfoData);
     }
 
     @Override

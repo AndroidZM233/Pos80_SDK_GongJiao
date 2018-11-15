@@ -29,7 +29,7 @@ public class SpdBusPayContract {
 
         void getWechatPublicKey(WechatPublicKey wechatPublicKey);
 
-        void checkAliQrCode(AliCodeinfoData aliCodeinfoData);
+        void checkAliQrCodeShow(AliCodeinfoData aliCodeinfoData);
 
         void releseAlipayJni(int result);
 

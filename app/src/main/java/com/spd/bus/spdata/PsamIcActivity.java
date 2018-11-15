@@ -17,10 +17,10 @@ import android.widget.TextView;
 
 import com.honeywell.barcode.HSMDecodeResult;
 import com.honeywell.plugins.decode.DecodeResultListener;
-import com.spd.alipay.Datautils;
 import com.spd.alipay.been.AliCodeinfoData;
 import com.spd.alipay.been.AlipayPublicKey;
 import com.spd.alipay.been.AlipayUploadBeen;
+import com.spd.base.Datautils;
 import com.spd.bus.DataConversionUtils;
 import com.spd.bus.MyApplication;
 import com.spd.bus.R;
@@ -1738,7 +1738,7 @@ public class PsamIcActivity extends com.spd.bus.spdata.mvp.MVPBaseActivity<SpdBu
     private AliCodeinfoData codeinfoData;
 
     @Override
-    public void checkAliQrCode(AliCodeinfoData aliCodeinfoData) {
+    public void checkAliQrCodeShow(AliCodeinfoData aliCodeinfoData) {
         codeinfoData = aliCodeinfoData;
         Log.e(TAG, "checkAliQrCode:不为空 ");
         if (codeinfoData.inforState == ErroCode.SUCCESS) {
