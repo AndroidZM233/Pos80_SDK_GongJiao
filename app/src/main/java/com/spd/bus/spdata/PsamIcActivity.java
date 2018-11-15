@@ -128,7 +128,6 @@ public class PsamIcActivity extends com.spd.bus.spdata.mvp.MVPBaseActivity<SpdBu
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.bus_layout);
-//        mPresenter.attachView(this);
         initView();
 //        mPresenter.attachView(this);
         initCard();
@@ -1358,9 +1357,9 @@ public class PsamIcActivity extends com.spd.bus.spdata.mvp.MVPBaseActivity<SpdBu
     protected void onDestroy() {
         super.onDestroy();
         mPresenter.releseAlipayJni();
+        MyApplication.getHSMDecoder().removeResultListener(this);
 //        handler.removeCallbacks(runnable);  //停止Time
         unregisterReceiver(receiver);
-//        mPresenter.detachView();
 //        try {
 //            mBankCard.breakOffCommand();
 //            mBankCard = null;
@@ -1741,6 +1740,7 @@ public class PsamIcActivity extends com.spd.bus.spdata.mvp.MVPBaseActivity<SpdBu
     @Override
     public void checkAliQrCode(AliCodeinfoData aliCodeinfoData) {
         codeinfoData = aliCodeinfoData;
+        Log.e(TAG, "checkAliQrCode:不为空 ");
         if (codeinfoData.inforState == ErroCode.SUCCESS) {
             Log.i(TAG, "\n支付宝校验结果:：" + codeinfoData.inforState +
                     "\n卡类型:：" + Datautils.byteArrayToAscii(codeinfoData.cardType) +

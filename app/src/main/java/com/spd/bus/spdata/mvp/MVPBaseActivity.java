@@ -4,6 +4,7 @@ import android.content.Context;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v7.app.AppCompatActivity;
+import android.util.Log;
 
 import java.lang.reflect.ParameterizedType;
 
@@ -18,6 +19,7 @@ public abstract class MVPBaseActivity<V extends BaseView,T extends BasePresenter
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        Log.e("PsamIcActivity", "onCreate: ");
         mPresenter= getInstance(this,1);
         mPresenter.attachView((V) this);
     }
@@ -26,6 +28,7 @@ public abstract class MVPBaseActivity<V extends BaseView,T extends BasePresenter
     protected void onDestroy() {
         super.onDestroy();
         if (mPresenter!=null) {
+            Log.e("PsamIcActivity", "onDestroy: ");
             mPresenter.detachView();
         }
     }

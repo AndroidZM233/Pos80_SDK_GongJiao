@@ -75,11 +75,13 @@ public class SpdBusPayPresenter extends BasePresenterImpl<SpdBusPayContract.View
     public void aliPayInit(List<AlipayPublicKey.PublicKeyListBean> publicKeyListBeans) {
         alipayJni = new AlipayJni();
         int result = alipayJni.initAliDev(publicKeyListBeans);
+        Log.e(TAG, "aliPayInit: " + mView);
         mView.aliPayInit(result);
     }
 
     @Override
     public void checkAliQrCode(String code, String recordId, String posId, String posMfId, String posSwVersion, String merchantType, String currency, int amount, String vehicleId, String plateNo, String driverId, String lineInfo, String stationNo, String lbsInfo, String recordType) {
+        Log.e(TAG, "mView11111: " + mView);
         AliCodeinfoData aliCodeinfoData = new AliCodeinfoData();
         aliCodeinfoData = alipayJni.checkAliQrCode(aliCodeinfoData, code, recordId,
                 posId, posMfId, posSwVersion,
@@ -87,6 +89,7 @@ public class SpdBusPayPresenter extends BasePresenterImpl<SpdBusPayContract.View
                 vehicleId, plateNo, driverId,
                 lineInfo, stationNo, lbsInfo,
                 recordType);
+        Log.e(TAG, "mView: " + mView);
         mView.checkAliQrCode(aliCodeinfoData);
     }
 
