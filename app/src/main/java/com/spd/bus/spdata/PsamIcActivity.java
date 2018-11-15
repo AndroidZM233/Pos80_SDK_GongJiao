@@ -127,8 +127,8 @@ public class PsamIcActivity extends com.spd.bus.spdata.mvp.MVPBaseActivity<SpdBu
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        mPresenter.attachView(this);
         setContentView(R.layout.bus_layout);
+//        mPresenter.attachView(this);
         initView();
 //        mPresenter.attachView(this);
         initCard();
@@ -1350,7 +1350,6 @@ public class PsamIcActivity extends com.spd.bus.spdata.mvp.MVPBaseActivity<SpdBu
 
     @Override
     protected void onStop() {
-        mPresenter.releseAlipayJni();
 //        mPresenter.detachView();
         super.onStop();
     }
@@ -1358,10 +1357,10 @@ public class PsamIcActivity extends com.spd.bus.spdata.mvp.MVPBaseActivity<SpdBu
     @Override
     protected void onDestroy() {
         super.onDestroy();
-        mPresenter.detachView();
+        mPresenter.releseAlipayJni();
 //        handler.removeCallbacks(runnable);  //停止Time
         unregisterReceiver(receiver);
-
+//        mPresenter.detachView();
 //        try {
 //            mBankCard.breakOffCommand();
 //            mBankCard = null;
@@ -1705,13 +1704,13 @@ public class PsamIcActivity extends com.spd.bus.spdata.mvp.MVPBaseActivity<SpdBu
         Log.i(TAG, "erro:::" + msg);
     }
 
-    private List<AlipayPublicKey.PublicKeyListBean> publicKeyListBeans;
 
     @Override
     public void getAliPublicKey(AlipayPublicKey alipayPublickKey) {
+        List<AlipayPublicKey.PublicKeyListBean> publicKeyListBeans;
         publicKeyListBeans = alipayPublickKey.getPublicKeyList();
         Collections.sort(publicKeyListBeans);
-        if (pubKeyListBeans != null) {
+        if (publicKeyListBeans != null) {
             mPresenter.aliPayInit(publicKeyListBeans);
         } else {
             Log.i(TAG, "获取支付宝key失败 ");

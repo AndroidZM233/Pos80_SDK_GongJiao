@@ -124,7 +124,7 @@ public class SpdBusPayPresenter extends BasePresenterImpl<SpdBusPayContract.View
     @Override
     public void releseAlipayJni() {
         int re = alipayJni.release();
-        mView.releseAlipayJni(re);
+//        mView.releseAlipayJni(re);
     }
 
 
