@@ -23,7 +23,7 @@ import java.io.IOException;
 import static com.honeywell.barcode.Symbology.QR;
 
 public class MyApplication extends Application {
-    String TAG = "sc100r6";
+    String TAG = "PsamIcActivity";
     private static HSMDecoder hsmDecoder;
     private HSMDecodeComponent hsmDecodeComponent;
 

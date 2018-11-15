@@ -1,6 +1,9 @@
 
 #ifndef DEMO__h
 #define DEMO__h
+
+#include <jni.h>
+
 #ifdef __cplusplus
 
 #endif
