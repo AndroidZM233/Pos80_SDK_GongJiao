@@ -127,6 +127,7 @@ public class PsamIcActivity extends com.spd.bus.spdata.mvp.MVPBaseActivity<SpdBu
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        mPresenter.attachView(this);
         setContentView(R.layout.bus_layout);
         initView();
 //        mPresenter.attachView(this);
@@ -1357,6 +1358,7 @@ public class PsamIcActivity extends com.spd.bus.spdata.mvp.MVPBaseActivity<SpdBu
     @Override
     protected void onDestroy() {
         super.onDestroy();
+        mPresenter.detachView();
 //        handler.removeCallbacks(runnable);  //停止Time
         unregisterReceiver(receiver);
 
