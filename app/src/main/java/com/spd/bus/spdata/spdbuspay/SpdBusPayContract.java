@@ -1,11 +1,12 @@
 package com.spd.bus.spdata.spdbuspay;
 
 import com.spd.alipay.been.AliCodeinfoData;
-import com.spd.alipay.been.AlipayPublicKey;
-import com.spd.alipay.been.AlipayUploadBeen;
+import com.spd.base.beenali.AlipayQrcodekey;
+import com.spd.base.beenbosi.BosiQrcodeKey;
+import com.spd.base.beenupload.QrcodeUpload;
+import com.spd.base.beenwechat.WechatQrcodeKey;
 import com.spd.bus.spdata.mvp.BasePresenter;
 import com.spd.bus.spdata.mvp.BaseView;
-import com.wechat.been.WechatPublicKey;
 
 import java.util.List;
 
@@ -23,23 +24,38 @@ public class SpdBusPayContract {
 
         void erro(String msg);
 
-        void getAliPublicKey(AlipayPublicKey alipayPublickKey);
+        void showAliPublicKey(AlipayQrcodekey aliQrcodekey);
 
-        void aliPayInit(int result);
+        void showAliPayInit(int result);
 
-        void getWechatPublicKey(WechatPublicKey wechatPublicKey);
+        void showWechatPublicKey(WechatQrcodeKey wechatQrcodeKey);
 
-        void checkAliQrCodeShow(AliCodeinfoData aliCodeinfoData);
+        void showCheckAliQrCode(AliCodeinfoData aliCodeinfoData);
 
-        void releseAlipayJni(int result);
+        void showReleseAlipayJni(int result);
 
-        void checkWechatQrCode(int result, String wechatResult, String openId);
+        void showCheckWechatQrCode(int result, String wechatResult, String openId);
+
+        //博思
+        void showBosikey(BosiQrcodeKey bosiQrcodeKey);
+
+        void showSetBosiCerPath(int state);
+
+        void showBosiCerVersion(String vension);
+
+        void showUpdataBosiKey(int state);
+
+
+
     }
 
     interface Presenter extends BasePresenter<View> {
-        void getAliPublicKey();
+        /**
+         * 支付宝二维码
+         */
+        void getAliPubKey();
 
-        void aliPayInit(List<AlipayPublicKey.PublicKeyListBean> publicKeyListBeans);
+        void aliPayInitJni(List<AlipayQrcodekey.PublicKeyListBean> publicKeyListBeans);
 
         void checkAliQrCode(String code, String recordId,
                             String posId, String posMfId, String posSwVersion,
@@ -48,15 +64,39 @@ public class SpdBusPayContract {
                             String lineInfo, String stationNo, String lbsInfo,
                             String recordType);
 
-        void uploadAlipay(AlipayUploadBeen alipayUploadBeen);
+        void uploadAlipayRe(QrcodeUpload qrcodeUpload);
 
         void releseAlipayJni();
 
+        /**
+         * 腾讯（微信）二维码
+         */
         void getWechatPublicKey();
 
-        void wechatInit();
+        void wechatInitJin();
 
-        void checkWechatQrCode(String code, List<WechatPublicKey.PubKeyListBean> pbKeyList, List<WechatPublicKey.MacKeyListBean> macKeyList, int payfee, byte scene, byte scantype, String posId, String posTrxId);
+        void checkWechatQrCode(String code, List<WechatQrcodeKey.PubKeyListBean> pbKeyList, List<WechatQrcodeKey.MacKeyListBean> macKeyList, int payfee, byte scene, byte scantype, String posId, String posTrxId);
+
+//        void uploadWechatRe();
+
+
+        /**
+         * 博思二维码
+         */
+
+        void bosiInitJin();
+
+        void getBosikey();
+
+        void setBosiCerPath();
+
+        void getBosiCerVersion();
+
+        void updataBosiKey(byte[] cer);
+
+        void checkBosiQrCode(String qrcode);
+
+//        void uploadBosiRe();
 
     }
 }

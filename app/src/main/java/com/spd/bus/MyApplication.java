@@ -1,11 +1,8 @@
 package com.spd.bus;
 
-import android.app.Activity;
 import android.app.Application;
-import android.content.Context;
 import android.graphics.Color;
 import android.os.Build;
-import android.os.Bundle;
 import android.support.annotation.RequiresApi;
 import android.util.Log;
 import android.widget.Toast;
@@ -15,10 +12,11 @@ import com.example.test.yinlianbarcode.utils.ScanUtils;
 import com.honeywell.barcode.ActiveCamera;
 import com.honeywell.barcode.HSMDecodeComponent;
 import com.honeywell.barcode.HSMDecoder;
-import com.honeywell.camera.CameraManager;
+import com.spd.base.database.BoxStorManage;
 import com.spd.bus.spdata.utils.PlaySound;
 
-import java.io.IOException;
+
+import io.objectbox.android.AndroidObjectBrowser;
 
 import static com.honeywell.barcode.Symbology.QR;
 
@@ -33,43 +31,49 @@ public class MyApplication extends Application {
         super.onCreate();
         PlaySound.initSoundPool(this);
         initScanBards();
-        registerActivityLifecycleCallbacks(new ActivityLifecycleCallbacks() {
-            @Override
-            public void onActivityCreated(Activity activity, Bundle savedInstanceState) {
-                Log.d(TAG, "onActivityCreated: " + activity.getLocalClassName());
-            }
+        //objectbox数据库初始化 必须在 application中
+        BoxStorManage.init(this);
 
-            @Override
-            public void onActivityStarted(Activity activity) {
-                Log.d(TAG, "onActivityStarted: " + activity.getLocalClassName());
-            }
-
-            @Override
-            public void onActivityResumed(Activity activity) {
-                Log.d(TAG, "onActivityResumed: " + activity.getLocalClassName());
-            }
-
-            @Override
-            public void onActivityPaused(Activity activity) {
-                Log.d(TAG, "onActivityPaused: " + activity.getLocalClassName());
-            }
-
-            @Override
-            public void onActivityStopped(Activity activity) {
-                Log.d(TAG, "onActivityStopped: " + activity.getLocalClassName());
-            }
-
-            @Override
-            public void onActivitySaveInstanceState(Activity activity, Bundle outState) {
-            }
-
-            @Override
-            public void onActivityDestroyed(Activity activity) {
-                Log.d(TAG, "onActivityDestroyed: " + activity.getLocalClassName());
-//                hsmDecodeComponent.enableScanning(false);
-//                hsmDecodeComponent.dispose();
-            }
-        });
+        if (BuildConfig.DEBUG) {
+            new AndroidObjectBrowser(BoxStorManage.getInstance().getBoxDao()).start(this);
+        }
+//        registerActivityLifecycleCallbacks(new ActivityLifecycleCallbacks() {
+//            @Override
+//            public void onActivityCreated(Activity activity, Bundle savedInstanceState) {
+//                Log.d(TAG, "onActivityCreated: " + activity.getLocalClassName());
+//            }
+//
+//            @Override
+//            public void onActivityStarted(Activity activity) {
+//                Log.d(TAG, "onActivityStarted: " + activity.getLocalClassName());
+//            }
+//
+//            @Override
+//            public void onActivityResumed(Activity activity) {
+//                Log.d(TAG, "onActivityResumed: " + activity.getLocalClassName());
+//            }
+//
+//            @Override
+//            public void onActivityPaused(Activity activity) {
+//                Log.d(TAG, "onActivityPaused: " + activity.getLocalClassName());
+//            }
+//
+//            @Override
+//            public void onActivityStopped(Activity activity) {
+//                Log.d(TAG, "onActivityStopped: " + activity.getLocalClassName());
+//            }
+//
+//            @Override
+//            public void onActivitySaveInstanceState(Activity activity, Bundle outState) {
+//            }
+//
+//            @Override
+//            public void onActivityDestroyed(Activity activity) {
+//                Log.d(TAG, "onActivityDestroyed: " + activity.getLocalClassName());
+////                hsmDecodeComponent.enableScanning(false);
+////                hsmDecodeComponent.dispose();
+//            }
+//        });
 
     }
 
@@ -88,7 +92,7 @@ public class MyApplication extends Application {
         hsmDecoder.setOverlayTextColor(Color.RED);
         hsmDecoder.enableSound(true);
         //初始为默认前置摄像头扫码
-        hsmDecoder.setActiveCamera(ActiveCamera.FRONT_FACING);
+//        hsmDecoder.setActiveCamera(ActiveCamera.FRONT_FACING);
         hsmDecoder.enableSymbology(QR);
 
 //        CameraManager cameraManager = CameraManager.getInstance(getApplicationContext());

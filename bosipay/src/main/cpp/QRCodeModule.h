@@ -89,6 +89,37 @@ int QueryCertVer(OUT BYTE* uCertsVerInfo);
 //////////////////////////////////////////////////////////////////////////
 int VerifyMac(IN char * cQRCode, OUT BYTE * uCardID, OUT int *iCardIdLen);
 
+//////////////////////////////////////////////////////////////////////////
+/**
+@fun		SetCertFilePath
+@brief      设置证书存储路径
+			设置证书路径格式要以"/"结尾，例如 "/home/test/"
+
+@param      (i)char	*	cFilePath		：要存储证书路径地址
+
+@retval     无
+
+@exception
+			RESULT_OK					设置成功
+			其他值						设置失败
+*/
+//////////////////////////////////////////////////////////////////////////
+int SetCertFilePath(char * cFilePath);
+
+//////////////////////////////////////////////////////////////////////////
+/**
+@fun		GetSoVer
+@brief      获取So库版本号
+
+@param      (i)int	*	iVerNo		：So库版本号
+
+@retval     无
+
+@exception  无
+*/
+//////////////////////////////////////////////////////////////////////////
+void GetSoVer(int* iVerNo);
+
 #ifdef __cplusplus
 }
 #endif

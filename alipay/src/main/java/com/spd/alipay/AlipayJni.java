@@ -1,15 +1,13 @@
 package com.spd.alipay;
 
-import android.util.Log;
-
-import com.spd.alipay.been.AlipayPublicKey;
 import com.spd.alipay.been.AliCodeinfoData;
+import com.spd.base.beenali.AlipayQrcodekey;
 
 import java.util.List;
 
 public class AlipayJni {
 
-    public int initAliDev(List<AlipayPublicKey.PublicKeyListBean> publicKeyListBeans) {
+    public int initAliDev(List<AlipayQrcodekey.PublicKeyListBean> publicKeyListBeans) {
         return initdev(publicKeyListBeans);
     }
 
@@ -36,7 +34,7 @@ public class AlipayJni {
      * @param publicKeyListBeans 获取到的公钥
      * @return
      */
-    private native int initdev(List<AlipayPublicKey.PublicKeyListBean> publicKeyListBeans);
+    private native int initdev(List<AlipayQrcodekey.PublicKeyListBean> publicKeyListBeans);
 
     /**
      * 销毁

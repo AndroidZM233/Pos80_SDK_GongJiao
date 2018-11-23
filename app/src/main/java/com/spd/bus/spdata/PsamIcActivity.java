@@ -18,9 +18,13 @@ import android.widget.TextView;
 import com.honeywell.barcode.HSMDecodeResult;
 import com.honeywell.plugins.decode.DecodeResultListener;
 import com.spd.alipay.been.AliCodeinfoData;
-import com.spd.alipay.been.AlipayPublicKey;
-import com.spd.alipay.been.AlipayUploadBeen;
 import com.spd.base.Datautils;
+import com.spd.base.been.AlipayDatabaseBeen;
+import com.spd.base.beenali.AlipayQrcodekey;
+import com.spd.base.beenbosi.BosiQrcodeKey;
+import com.spd.base.beenupload.QrcodeUpload;
+import com.spd.base.beenwechat.WechatQrcodeKey;
+import com.spd.base.database.BoxStorManage;
 import com.spd.bus.DataConversionUtils;
 import com.spd.bus.MyApplication;
 import com.spd.bus.R;
@@ -33,7 +37,6 @@ import com.spd.bus.spdata.spdbuspay.SpdBusPayPresenter;
 import com.spd.bus.spdata.utils.DataUtils;
 import com.spd.bus.spdata.utils.PlaySound;
 import com.spd.bus.util.TLV;
-import com.wechat.been.WechatPublicKey;
 
 import java.io.UnsupportedEncodingException;
 import java.text.SimpleDateFormat;
@@ -43,6 +46,7 @@ import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 
+import io.objectbox.Box;
 import wangpos.sdk4.libbasebinder.BankCard;
 import wangpos.sdk4.libbasebinder.Core;
 import wangpos.sdk4.libbasebinder.HEX;
@@ -129,7 +133,6 @@ public class PsamIcActivity extends com.spd.bus.spdata.mvp.MVPBaseActivity<SpdBu
         super.onCreate(savedInstanceState);
         setContentView(R.layout.bus_layout);
         initView();
-//        mPresenter.attachView(this);
         initCard();
     }
 //    @TargetApi(Build.VERSION_CODES.JELLY_BEAN)
@@ -179,8 +182,9 @@ public class PsamIcActivity extends com.spd.bus.spdata.mvp.MVPBaseActivity<SpdBu
 //            }
 //        }).start();
         //获取支付宝微信key
-        mPresenter.getAliPublicKey();
+        mPresenter.getAliPubKey();
         mPresenter.getWechatPublicKey();
+        mPresenter.getBosikey();
     }
 
 
@@ -1595,6 +1599,8 @@ public class PsamIcActivity extends com.spd.bus.spdata.mvp.MVPBaseActivity<SpdBu
     public void onHSMDecodeResult(HSMDecodeResult[] hsmDecodeResults) {
         if (hsmDecodeResults.length > 0) {
             HSMDecodeResult firstResult = hsmDecodeResults[0];
+//            String str2 = new String(Base64.decode(firstResult.getBarcodeDataBytes(), Base64.NO_WRAP));
+//            Log.d(TAG, "onHSMDecodeResult: " + str2);
             if (isUTF8(firstResult.getBarcodeDataBytes())) {
                 Log.d(TAG, "is a utf8 string");
                 try {
@@ -1705,20 +1711,27 @@ public class PsamIcActivity extends com.spd.bus.spdata.mvp.MVPBaseActivity<SpdBu
 
 
     @Override
-    public void getAliPublicKey(AlipayPublicKey alipayPublickKey) {
-        List<AlipayPublicKey.PublicKeyListBean> publicKeyListBeans;
-        publicKeyListBeans = alipayPublickKey.getPublicKeyList();
-        Collections.sort(publicKeyListBeans);
-        if (publicKeyListBeans != null) {
-            mPresenter.aliPayInit(publicKeyListBeans);
+    public void showAliPublicKey(AlipayQrcodekey aliQrcodekey) {
+        List<AlipayQrcodekey.PublicKeyListBean> aliQrcodekeyList = aliQrcodekey.getPublicKeyList();
+
+        Collections.sort(aliQrcodekeyList);
+        if (aliQrcodekeyList != null) {
+            Box<AlipayDatabaseBeen> beenBox = BoxStorManage.getInstance().getBoxDao().boxFor(AlipayDatabaseBeen.class);
+            for (int i = 0; i < aliQrcodekeyList.size(); i++) {
+                AlipayDatabaseBeen alipayDatabaseBeen = new AlipayDatabaseBeen(aliQrcodekey.getKeyType(), aliQrcodekey.getVersion(), aliQrcodekeyList.get(i).getKey_id(), aliQrcodekeyList.get(i).getPub_key());
+                beenBox.put(alipayDatabaseBeen);
+            }
+            List<AlipayDatabaseBeen> dd = BoxStorManage.getInstance().getBoxDao().boxFor(AlipayDatabaseBeen.class).getAll();
+            Log.i(TAG, "showAliPublicKey: " + dd.get(0).getKeyType() + dd.get(0).getKeyType() + dd.get(1).getKeyType());
+            mPresenter.aliPayInitJni(aliQrcodekeyList);
         } else {
             Log.i(TAG, "获取支付宝key失败 ");
         }
-        Log.i(TAG, "支付宝key：：： " + publicKeyListBeans.toString());
+        Log.i(TAG, "支付宝key：：： " + aliQrcodekeyList.toString());
     }
 
     @Override
-    public void aliPayInit(int result) {
+    public void showAliPayInit(int result) {
         switch (result) {
             case ILLEGAL_PARAM:
                 Log.i(TAG, "初始化参数格式错误！请检查参数各字段是否正确");
@@ -1738,7 +1751,7 @@ public class PsamIcActivity extends com.spd.bus.spdata.mvp.MVPBaseActivity<SpdBu
     private AliCodeinfoData codeinfoData;
 
     @Override
-    public void checkAliQrCodeShow(AliCodeinfoData aliCodeinfoData) {
+    public void showCheckAliQrCode(AliCodeinfoData aliCodeinfoData) {
         codeinfoData = aliCodeinfoData;
         Log.e(TAG, "checkAliQrCode:不为空 ");
         if (codeinfoData.inforState == ErroCode.SUCCESS) {
@@ -1747,40 +1760,42 @@ public class PsamIcActivity extends com.spd.bus.spdata.mvp.MVPBaseActivity<SpdBu
                     "\n卡号：:" + Datautils.byteArrayToAscii(codeinfoData.cardNo) +
                     "\nuserId:：" + Datautils.byteArrayToAscii(codeinfoData.userId) +
                     "\n支付宝sdk返回:：" + Datautils.byteArrayToAscii(codeinfoData.alipayResult));
-            AlipayUploadBeen alipayUploadBeen = new AlipayUploadBeen();
-            alipayUploadBeen.setRecordType("ALIQR");
-            List<AlipayUploadBeen.RecordBean> recordBeans = new ArrayList<>();
-            AlipayUploadBeen.RecordBean recordBean = new AlipayUploadBeen.RecordBean("6410001", "09", record_id, pos_mf_id, driver_id, DataConversionUtils.getDefautCurrentTime(), "6410", line_info, station_no, currency, 0, 1, amount, Datautils.byteArrayToAscii(codeinfoData.userId), record_type, Datautils.byteArrayToAscii(codeinfoData.cardType), Datautils.byteArrayToAscii(codeinfoData.cardNo), decodeDate, Datautils.byteArrayToAscii(codeinfoData.alipayResult));
-            recordBeans.add(recordBean);
-            alipayUploadBeen.setRecord(recordBeans);
-            mPresenter.uploadAlipay(alipayUploadBeen);
+
+
+            QrcodeUpload qrcodeUpload = new QrcodeUpload();
+            QrcodeUpload.DataBean dataBean = new QrcodeUpload.DataBean();
+            dataBean.setRecordType("ALIQR");
+            List<QrcodeUpload.DataBean> dataBeans = new ArrayList<>();
+            QrcodeUpload.DataBean.RecordBean recordBean = new QrcodeUpload.DataBean.RecordBean("09", DataConversionUtils.getDefautCurrentTime(), "6410", 0, Datautils.byteArrayToAscii(codeinfoData.cardType), line_info, pos_mf_id, "6410001", record_id, Datautils.byteArrayToAscii(codeinfoData.userId), amount, driver_id, decodeDate, 1, Datautils.byteArrayToAscii(codeinfoData.cardNo), Datautils.byteArrayToAscii(codeinfoData.alipayResult), station_no, currency, record_type);
+            dataBean.setRecord(recordBean);
+            qrcodeUpload.setData(dataBeans);
+            mPresenter.uploadAlipayRe(qrcodeUpload);
         } else {
             Log.i(TAG, "\n支付宝校验结果错误:：" + codeinfoData.inforState);
         }
     }
 
     @Override
-    public void releseAlipayJni(int result) {
+    public void showReleseAlipayJni(int result) {
         if (result == 1) {
-            Log.i(TAG, "releseAlipayJni: 支付宝库关闭成功");
+            Log.i(TAG, "showReleseAlipayJni: 支付宝库关闭成功");
         } else {
-            Log.e(TAG, "releseAlipayJni: 支付宝库关闭失败");
-
+            Log.e(TAG, "showReleseAlipayJni: 支付宝库关闭失败");
         }
     }
 
-    private List<WechatPublicKey.MacKeyListBean> macKeyListBeans;
-    private List<WechatPublicKey.PubKeyListBean> pubKeyListBeans;
+    private List<WechatQrcodeKey.MacKeyListBean> macKeyListBeans;
+    private List<WechatQrcodeKey.PubKeyListBean> pubKeyListBeans;
 
     @Override
-    public void getWechatPublicKey(WechatPublicKey wechatPublicKey) {
-        if (wechatPublicKey != null) {
-            macKeyListBeans = wechatPublicKey.getMacKeyList();
-            pubKeyListBeans = wechatPublicKey.getPubKeyList();
+    public void showWechatPublicKey(WechatQrcodeKey wechatQrcodeKey) {
+        if (wechatQrcodeKey != null) {
+            macKeyListBeans = wechatQrcodeKey.getMacKeyList();
+            pubKeyListBeans = wechatQrcodeKey.getPubKeyList();
             Log.i(TAG, "微信PblicKey: " + pubKeyListBeans.toString());
             Log.i(TAG, "微信macklicKey: " + macKeyListBeans.toString());
             if (macKeyListBeans != null && pubKeyListBeans != null) {
-                mPresenter.wechatInit();
+                mPresenter.wechatInitJin();
             } else {
                 Log.i(TAG, "获取微信Key失败 " + macKeyListBeans.toString());
             }
@@ -1788,20 +1803,52 @@ public class PsamIcActivity extends com.spd.bus.spdata.mvp.MVPBaseActivity<SpdBu
     }
 
     @Override
-    public void checkWechatQrCode(int result, String wechatResult, String openId) {
-        if (result == ErroCode.EC_SUCCESS) {
-            Log.i(TAG, "微信结果: " + "openID" + openId + "结果" + wechatResult);
-            AlipayUploadBeen alipayUploadBeen = new AlipayUploadBeen();
-            alipayUploadBeen.setRecordType("TXQR");
-            List<AlipayUploadBeen.RecordBean> recordBeans = new ArrayList<>();
-            AlipayUploadBeen.RecordBean recordBean = new AlipayUploadBeen.RecordBean("6410001", "09", record_id, pos_mf_id, driver_id, DataConversionUtils.getDefautCurrentTime(), "6410", line_info, station_no, currency, 0, 1, 1, "0123456", record_type, "20181114032300", openId, decodeDate, wechatResult);
-            recordBeans.add(recordBean);
-            alipayUploadBeen.setRecord(recordBeans);
-            mPresenter.uploadAlipay(alipayUploadBeen);
+    public void showCheckWechatQrCode(int result, String wechatResult, String openId) {
+//        if (result == ErroCode.EC_SUCCESS) {
+//            Log.i(TAG, "微信结果: " + "openID" + openId + "结果" + wechatResult);
+//            AlipayUploadBeen alipayUploadBeen = new AlipayUploadBeen();
+//            alipayUploadBeen.setRecordType("TXQR");
+//            List<AlipayUploadBeen.RecordBean> recordBeans = new ArrayList<>();
+//            AlipayUploadBeen.RecordBean recordBean = new AlipayUploadBeen.RecordBean("6410001", "09", record_id, pos_mf_id, driver_id, DataConversionUtils.getDefautCurrentTime(), "6410", line_info, station_no, currency, 0, 1, 1, "0123456", record_type, "20181114032300", openId, decodeDate, wechatResult);
+//            recordBeans.add(recordBean);
+//            alipayUploadBeen.setRecord(recordBeans);
+//            mPresenter.uploadAlipayRe(alipayUploadBeen);
+//
+//        } else {
+//            Log.i(TAG, "微信校验结果错误 " + result);
+//
+//        }
+    }
 
+    @Override
+    public void showBosikey(BosiQrcodeKey bosiQrcodeKey) {
+        Log.i(TAG, "showBosikey: " + bosiQrcodeKey.toString());
+    }
+
+    @Override
+    public void showSetBosiCerPath(int state) {
+        if (state == 0) {
+            Log.i(TAG, "showSetBosiCerPath: 设置路径成功");
         } else {
-            Log.i(TAG, "微信校验结果错误 " + result);
+            Log.i(TAG, "showSetBosiCerPath: 设置路径失败");
+        }
+
+    }
+
+    @Override
+    public void showBosiCerVersion(String vension) {
+
+
+    }
+
+    @Override
+    public void showUpdataBosiKey(int state) {
+        if (state == 0) {
+            Log.i(TAG, "showUpdataBosiKey: 更新证书成功");
+        } else {
+            Log.i(TAG, "showUpdataBosiKey: 更新证书失败");
 
         }
+
     }
 }

@@ -1,6 +1,12 @@
 package com.spd.bus.spdata.been;
 
+
+
+
 public class ErroCode {
+
+
+
     /**
      * 支付宝错误码
      * MALFORMED_QRCODE        -1   二维码格式错误 二维码格式错误，检查输入的二维码是否正确。

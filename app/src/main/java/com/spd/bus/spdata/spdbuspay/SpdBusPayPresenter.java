@@ -1,22 +1,21 @@
 package com.spd.bus.spdata.spdbuspay;
 
-import android.text.TextUtils;
 import android.util.Log;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.spd.alipay.AlipayJni;
 import com.spd.alipay.been.AliCodeinfoData;
-import com.spd.alipay.been.AlipayPublicKey;
-import com.spd.alipay.been.AlipayUploadBeen;
-import com.spd.alipay.been.PayUploadResult;
-import com.spd.alipay.net.AlipayApi;
-import com.spd.alipay.net.AlipayApi2;
+import com.spd.base.beenali.AlipayQrcodekey;
+import com.spd.base.beenbosi.BosiQrcodeKey;
+import com.spd.base.beenres.QrcodeUploadResult;
+import com.spd.base.beenupload.QrcodeUpload;
+import com.spd.base.beenwechat.WechatQrcodeKey;
+import com.spd.base.net.QrcodeApi;
+import com.spd.bosipay.BosiPayJni;
 import com.spd.bus.spdata.been.ErroCode;
 import com.spd.bus.spdata.mvp.BasePresenterImpl;
 import com.tencent.wlxsdk.WlxSdk;
-import com.wechat.been.WechatPublicKey;
-import com.wechat.net.WechatApi;
 
 import java.util.List;
 
@@ -24,10 +23,6 @@ import io.reactivex.Observer;
 import io.reactivex.disposables.Disposable;
 import okhttp3.MediaType;
 import okhttp3.RequestBody;
-
-import static com.spd.bus.spdata.been.ErroCode.ILLEGAL_PARAM;
-import static com.spd.bus.spdata.been.ErroCode.NO_ENOUGH_MEMORY;
-import static com.spd.bus.spdata.been.ErroCode.SYSTEM_ERROR;
 
 /**
  * MVPPlugin
@@ -37,23 +32,27 @@ import static com.spd.bus.spdata.been.ErroCode.SYSTEM_ERROR;
 public class SpdBusPayPresenter extends BasePresenterImpl<SpdBusPayContract.View> implements SpdBusPayContract.Presenter {
     private AlipayJni alipayJni;
     private WlxSdk wlxSdk;
+    private BosiPayJni bosiPayJni;
     private String TAG = "PsamIcActivity";
 
+
+    //===============支付宝二维码==============
+
     @Override
-    public void getAliPublicKey() {
+    public void getAliPubKey() {
         RequestBody requestBody = RequestBody.create(MediaType.parse("application/json"), "".toString());
-        AlipayApi.getInstance().getPublicKey(requestBody)
+        QrcodeApi.getInstance().getAlipayPubKey(requestBody)
                 .subscribeOn(io.reactivex.schedulers.Schedulers.io())
                 .observeOn(io.reactivex.android.schedulers.AndroidSchedulers.mainThread())
-                .subscribe(new io.reactivex.Observer<AlipayPublicKey>() {
+                .subscribe(new io.reactivex.Observer<AlipayQrcodekey>() {
                     @Override
                     public void onSubscribe(Disposable d) {
 
                     }
 
                     @Override
-                    public void onNext(AlipayPublicKey alipayPublickKey) {
-                        mView.getAliPublicKey(alipayPublickKey);
+                    public void onNext(AlipayQrcodekey aliQrcodekey) {
+                        mView.showAliPublicKey(aliQrcodekey);
                         mView.success("获取支付宝KEY成功");
                     }
 
@@ -71,11 +70,11 @@ public class SpdBusPayPresenter extends BasePresenterImpl<SpdBusPayContract.View
     }
 
     @Override
-    public void aliPayInit(List<AlipayPublicKey.PublicKeyListBean> publicKeyListBeans) {
+    public void aliPayInitJni(List<AlipayQrcodekey.PublicKeyListBean> publicKeyListBeans) {
         alipayJni = new AlipayJni();
         int result = alipayJni.initAliDev(publicKeyListBeans);
-        Log.e(TAG, "aliPayInit: " + mView);
-        mView.aliPayInit(result);
+        Log.e(TAG, "showAliPayInit: " + mView);
+        mView.showAliPayInit(result);
     }
 
     @Override
@@ -89,31 +88,33 @@ public class SpdBusPayPresenter extends BasePresenterImpl<SpdBusPayContract.View
                 lineInfo, stationNo, lbsInfo,
                 recordType);
         Log.e(TAG, "mView: " + mView);
-        mView.checkAliQrCodeShow(aliCodeinfoData);
+        mView.showCheckAliQrCode(aliCodeinfoData);
     }
 
     @Override
-    public void uploadAlipay(AlipayUploadBeen alipayUploadBeen) {
+    public void uploadAlipayRe(QrcodeUpload qrcodeUpload) {
         final Gson gson = new GsonBuilder().serializeNulls().create();
-        String rusultData = gson.toJson(alipayUploadBeen);
+        String rusultData = gson.toJson(qrcodeUpload);
         RequestBody requestBody = RequestBody.create(MediaType.parse("application/json; charset=utf-8"), rusultData);
-        AlipayApi2.getInstance().alipayUpload(requestBody)
+        QrcodeApi.getInstance().alipayUpload(requestBody)
                 .subscribeOn(io.reactivex.schedulers.Schedulers.io())
                 .observeOn(io.reactivex.android.schedulers.AndroidSchedulers.mainThread())
-                .subscribe(new Observer<PayUploadResult>() {
+                .subscribe(new Observer<QrcodeUploadResult>() {
                     @Override
                     public void onSubscribe(Disposable d) {
 
                     }
 
                     @Override
-                    public void onNext(PayUploadResult payUploadResult) {
+                    public void onNext(QrcodeUploadResult payUploadResult) {
                         Log.i(TAG, "onNext: " + payUploadResult.toString());
+                        mView.success("支付宝上传成功");
                     }
 
                     @Override
                     public void onError(Throwable e) {
                         Log.e(TAG, "上传结果onError :" + e.toString());
+                        mView.erro(e.toString());
                     }
 
                     @Override
@@ -126,27 +127,28 @@ public class SpdBusPayPresenter extends BasePresenterImpl<SpdBusPayContract.View
     @Override
     public void releseAlipayJni() {
         int re = alipayJni.release();
-//        mView.releseAlipayJni(re);
+//        mView.showReleseAlipayJni(re);
     }
-
+//===============腾讯（微信）二维码==============
 
     @Override
     public void getWechatPublicKey() {
         RequestBody requestBody = RequestBody.create(MediaType.parse("application/json"), "".toString());
-        WechatApi.getInstance().getPublicKey(requestBody)
+        QrcodeApi.getInstance().getWechatPubKey(requestBody)
                 .subscribeOn(io.reactivex.schedulers.Schedulers.io())
                 .observeOn(io.reactivex.android.schedulers.AndroidSchedulers.mainThread())
-                .subscribe(new io.reactivex.Observer<WechatPublicKey>() {
+                .subscribe(new io.reactivex.Observer<WechatQrcodeKey>() {
                     @Override
                     public void onSubscribe(Disposable d) {
 
                     }
 
                     @Override
-                    public void onNext(WechatPublicKey wechatPublicKey) {
-                        mView.getWechatPublicKey(wechatPublicKey);
+                    public void onNext(WechatQrcodeKey wechatQrcodeKey) {
+                        mView.showWechatPublicKey(wechatQrcodeKey);
                         mView.success("微信获取key成功");
                     }
+
 
                     @Override
                     public void onError(Throwable e) {
@@ -162,9 +164,8 @@ public class SpdBusPayPresenter extends BasePresenterImpl<SpdBusPayContract.View
     }
 
     @Override
-    public void wechatInit() {
+    public void wechatInitJin() {
         wlxSdk = new WlxSdk();
-
     }
 
     /**
@@ -187,11 +188,11 @@ public class SpdBusPayPresenter extends BasePresenterImpl<SpdBusPayContract.View
      * @param posTrxId
      */
     @Override
-    public void checkWechatQrCode(String code, List<WechatPublicKey.PubKeyListBean> pbKeyList, List<WechatPublicKey.MacKeyListBean> macKeyList, int payfee, byte scene, byte scantype, String posId, String posTrxId) {
+    public void checkWechatQrCode(String code, List<WechatQrcodeKey.PubKeyListBean> pbKeyList, List<WechatQrcodeKey.MacKeyListBean> macKeyList, int payfee, byte scene, byte scantype, String posId, String posTrxId) {
         int result = 0;
         result = wlxSdk.init(code);
         if (result != ErroCode.EC_SUCCESS) {
-            mView.checkWechatQrCode(result, "", "");
+            mView.showCheckWechatQrCode(result, "", "");
             return;
         }
         Log.i(TAG, "key_id:" + wlxSdk.get_key_id());
@@ -215,12 +216,74 @@ public class SpdBusPayPresenter extends BasePresenterImpl<SpdBusPayContract.View
         }
         result = wlxSdk.verify(openId, pubKey, payfee, scene, scantype, posId, posTrxId, aesMacRoot);
         if (result != ErroCode.EC_SUCCESS) {
-            mView.checkWechatQrCode(result, "", "");
+            mView.showCheckWechatQrCode(result, "", "");
         }
         String record = wlxSdk.get_record();
-        mView.checkWechatQrCode(result, record, openId);
+        mView.showCheckWechatQrCode(result, record, openId);
         String resInfo = "二维码:" + code + "\r\nkey_id:" + wlxSdk.get_key_id() + "\r\nmac_root_id:" + wlxSdk.get_mac_root_id() + "\r\nopne_id:" + openId + "\r\nbiz_data:" + wlxSdk.get_biz_data_hex() + "\r\npub_Key:" + pubKey + "\r\nmac_key:" + aesMacRoot + "\r\n验码结果:" + result + "\r\n扫码记录:" + record;
         Log.i(TAG, "验码记录:" + resInfo);
         Log.i(TAG, "验码结果:" + result + "$$$$" + record);
+    }
+
+    //=============博思二维码============
+
+    @Override
+    public void bosiInitJin() {
+        bosiPayJni = new BosiPayJni();
+    }
+
+
+    @Override
+    public void getBosikey() {
+        RequestBody requestBody = RequestBody.create(MediaType.parse("application/json"), "".toString());
+        QrcodeApi.getInstance().getBosiPubKey(requestBody)
+                .subscribeOn(io.reactivex.schedulers.Schedulers.io())
+                .observeOn(io.reactivex.android.schedulers.AndroidSchedulers.mainThread())
+                .subscribe(new io.reactivex.Observer<BosiQrcodeKey>() {
+                    @Override
+                    public void onSubscribe(Disposable d) {
+
+                    }
+
+                    @Override
+                    public void onNext(BosiQrcodeKey bosiQrcodeKey) {
+                        mView.showBosikey(bosiQrcodeKey);
+                        mView.success("获取博思KEY成功");
+                    }
+
+                    @Override
+                    public void onError(Throwable e) {
+                        mView.erro(e.toString());
+                        Log.i("PsamIcActivity", "onError:  获取 錯誤 " + e.toString());
+                    }
+
+                    @Override
+                    public void onComplete() {
+
+                    }
+                });
+    }
+
+    @Override
+    public void setBosiCerPath() {
+        int res = bosiPayJni.SetCertFilePath("/storage/sdcard0/bosi/");
+        mView.showSetBosiCerPath(res);
+    }
+
+    @Override
+    public void getBosiCerVersion() {
+        String vension = bosiPayJni.getCertVer();
+        mView.showBosiCerVersion(vension);
+    }
+
+    @Override
+    public void updataBosiKey(byte[] cer) {
+        int res = bosiPayJni.UpdateCert(cer);
+        mView.showUpdataBosiKey(res);
+    }
+
+    @Override
+    public void checkBosiQrCode(String qrcode) {
+        int res = bosiPayJni.VerifyCode(qrcode);
     }
 }

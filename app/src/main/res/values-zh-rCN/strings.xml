@@ -4,7 +4,7 @@
     <string name="title_activity_keyex">keyex</string>
     <string name="picccard">PICC Card</string>
     <string name="icacard">IC Card</string>
-    <string name="psam_ic">psam+IC SPEEDATA</string>
+    <string name="psamic">psamIC SPEEDATA</string>
     <string name="magcard">磁条卡</string>
     <string name="psam1">psam1</string>
     <string name="psam2">psam2</string>

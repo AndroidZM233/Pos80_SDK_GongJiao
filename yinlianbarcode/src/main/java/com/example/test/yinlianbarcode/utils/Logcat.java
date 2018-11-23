@@ -580,7 +580,7 @@ public final class Logcat {
     public static class Config {
         private String mDefaultDir;
         private String mDir;
-        private String mFilePrefix = "util";
+        private String mFilePrefix = "baseutil";
         private boolean mLogSwitch = BuildConfig.DEBUG;
         private boolean mLog2ConsoleSwitch = true;
         private String mGlobalTag = "Reginer";
@@ -654,7 +654,7 @@ public final class Logcat {
         @NonNull
         public Config setFilePrefix(@NonNull final String filePrefix) {
             if (isSpace(filePrefix)) {
-                mFilePrefix = "util";
+                mFilePrefix = "baseutil";
             } else {
                 mFilePrefix = filePrefix;
             }
