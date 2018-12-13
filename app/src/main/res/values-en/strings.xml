@@ -1,0 +1,111 @@
+<resources xmlns:xliff="urn:oasis:names:tc:xliff:document:1.2">
+    <string name="app_name">小拓公交</string>
+    <string name="main_title">产品编号:0123456789</string>
+    <string name="main_Circuit">公交线路:888路</string>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+    <string name="action_settings">Settings</string>
+    <string name="title_activity_keyex">keyex</string>
+    <string name="picccard">PICC Card</string>
+    <string name="icacard">IC Card</string>
+    <string name="psamic">psamIC SPEEDATA</string>
+    <string name="magcard">磁条卡</string>
+    <string name="psam1">psam1</string>
+    <string name="psam2">psam2</string>
+    <string name="ditips">请在滴声后刷卡</string>
+    <string name="exit">EXIT</string>
+    <string name="carddete">卡在位检测</string>
+    <string name="iddete">身份证</string>
+    <string name="closecard">关闭读卡器</string>
+    <string name="index_sys">系统命令</string>
+    <string name="read_operation">卡片操作</string>
+    <string name="key_operation">秘钥操作</string>
+    <string name="pin_operation">密码键盘</string>
+    <string name="index_readcardold">读卡器(等待读卡)</string>
+    <string name="index_readcard">读卡器(循环读卡)</string>
+    <string name="index_ex">导入密钥</string>
+    <string name="index_checkkeyexist">查找某个密钥是否存在</string>
+    <string name="get_keykcv">获取秘钥KCV</string>
+    <string name="index_keyboard">密码键盘</string>
+    <string name="index_en">数据加解密</string>
+    <string name="index_mac">获取MAC</string>
+    <string name="index_random">获取随机数</string>
+    <string name="index_eraser">擦除密钥</string>
+    <string name="index_print">打印机</string>
+    <string name="index_btprint">蓝牙打印机</string>
+    <string name="index_idcard">身份证</string>
+    <string name="index_sp">sp升级</string>
+    <string name="index_dock">DOCK</string>
+    <string name="index_emv">EMV</string>
+    <string name="btn_read_non_contact_title">读取卡片非接信息</string>
+    <string name="print_press">压力测试</string>
+    <string name="priman_con">打印机控制</string>
+    <string name="btpriman_con">蓝牙打印机控制</string>
+    <string name="priman_status">获取打印机状态</string>
+    <string name="priman_kilometres">获取打印公里</string>
+    <string name="clear_kilometres">清空打印公里</string>
+    <string name="confirm">确认</string>
+    <string name="clear">清除</string>
+    <string name="delete">删除</string>
+    <string name="cancel">取消</string>
+    <string name="dock_update_tips">升级流程：\n1 准备好升级文件\n2 修改升级文件名为 DOCKupdatefile\n3 将DOCKupdatefile 放到android的/data/目录下\n4 点击升级按钮\n5 等待提示升级完成\n6 手动重启DOCK ,查看版本，确认升级完成</string>
+    <string name="dock_test">test</string>
+    <string name="docktest_tip">使用此测试功能需要准备：\n1 准备2张jpg图片，800x600 ，小于 1M\n2 修改名字为 WangposTestImage_1.jpg 和 WangposTestImage_2.jpg\n3 将图片放到 android的/data目录下</string>
+    <string name="read_non_context_success">读取非接信息成功！\n数据长度：<xliff:g id="length">%1$d</xliff:g>\n数据内容：<xliff:g id="length">%2$s</xliff:g></string>
+    <string name="execute_success">执行成功!</string>
+    <string name="execute_fail">执行失败!</string>
+    <string name="get_service_version">获取服务版本</string>
+    <string name="get_date_time">读取当前时间</string>
+    <string name="set_date_time">设置当前时间</string>
+    <string name="read_sn">获取设备SN序列号</string>
+    <string name="read_sp_sn">获取SP-SN序列号</string>
+    <string name="write_sp_sn">设置SP-SN序列号</string>
+    <string name="get_battery_level">获取电池电压</string>
+    <string name="get_temper">获取tamper状态</string>
+    <string name="enable_temper">开启安全环境</string>
+    <string name="get_devices_version">获取系统版本号</string>
+    <string name="get_sp_version">获取安全版本号</string>
+    <string name="get_firmware_version">获取固件版本号</string>
+    <string name="get_gm_status">获取国密状态</string>
+    <string name="break_off_command">中断指令</string>
+    <string name="buzzer">蜂鸣器</string>
+    <string name="led">Led灯</string>
+    <string name="stop_card_reader">停止读卡</string>
+    <string name="test_please">Please click button</string>
+    <string name="test_result">Test result</string>
+    <string name="get_sp_id">获取SP唯一序列号</string>
+    <string name="note_key">注意：使用本功能前先导入秘钥</string>
+    <string name="emv_aid_capk">设置Aid_Capk</string>
+    <string name="emv_trans">交易</string>
+</resources>

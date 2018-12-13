@@ -2,20 +2,14 @@ apply plugin: 'com.android.library'
 
 android {
     compileSdkVersion 28
-
-
-
     defaultConfig {
-        minSdkVersion 21
+        minSdkVersion 15
         targetSdkVersion 28
         versionCode 1
         versionName "1.0"
 
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
-        ndk {
-            abiFilters 'armeabi-v7a'
-//            ldLibs "log"//实现__android_log_print
-        }
+
     }
 
     buildTypes {
@@ -36,10 +30,5 @@ dependencies {
     testImplementation 'junit:junit:4.12'
     androidTestImplementation 'com.android.support.test:runner:1.0.2'
     androidTestImplementation 'com.android.support.test.espresso:espresso-core:3.0.2'
-    //    implementation 'org.bouncycastle:bcprov-jdk16:1.46'
-    // RxJava
-    //    implementation 'org.bouncycastle:bcpkix-jdk15on:1.57'
-    //    implementation 'org.bouncycastle:bcmail-jdk15on:1.56'
-    //    implementation 'com.xiaoleilu:hutool-all:3.0.9'
     implementation project(':base')
 }

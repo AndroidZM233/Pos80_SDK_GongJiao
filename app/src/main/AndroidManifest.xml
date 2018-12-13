@@ -31,7 +31,7 @@
             android:name="companyId"
             android:value="b8254759-295e-43c7-b4d1-0acb1f2a0c33" />
         <activity
-            android:name=".spdata.PsamIcActivity"
+            android:name=".spdata.test"
             android:screenOrientation="landscape"
             android:theme="@style/AppTheme.NoActionBar">
             <intent-filter>
@@ -88,8 +88,6 @@
         </receiver>
 
         <activity android:name=".MainActivity" />
-        <activity android:name=".spdata.MainActivity" />
-        <activity android:name=".spdata.ScanActivity" />
         <activity android:name=".spdata.oldPsamIcActivityold" />
     </application>
 

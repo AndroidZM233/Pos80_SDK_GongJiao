@@ -192,7 +192,7 @@ public class oldPsamIcActivityold extends AppCompatActivity implements View.OnCl
                                             psamKey = cutBytes(respdata, 0, 1);
                                             Log.d(TAG, "交通部秘钥索引: " + HEX.bytesToHex(psamKey) + "\n" + "PSAM初始化成功！！！请读消费卡\n");
                                             handler.sendMessage(handler.obtainMessage(1, "交通部秘钥索引: " + HEX.bytesToHex(psamKey) + "\n" + "PSAM初始化成功！！！请读消费卡\n"));
-                                            psamDatas.add(new PsamBeen(new byte[]{0, 0}, deviceCode, psamKey));
+                                            psamDatas.add(new PsamBeen(1, deviceCode, psamKey));
                                             //切换等待读消费卡
 
                                         } else {
@@ -267,7 +267,7 @@ public class oldPsamIcActivityold extends AppCompatActivity implements View.OnCl
                                             psamKey = cutBytes(respdata, 0, 1);
                                             Log.d(TAG, "住建部秘钥索引: " + HEX.bytesToHex(psamKey) + "\n" + "PSAM初始化成功！！！请读消费卡\n");
                                             handler.sendMessage(handler.obtainMessage(1, "住建部秘钥索引: " + HEX.bytesToHex(psamKey) + "\n" + "PSAM初始化成功！！！请读消费卡\n"));
-                                            psamDatas.add(new PsamBeen(new byte[]{0, 0}, deviceCode, psamKey));
+                                            psamDatas.add(new PsamBeen(1, deviceCode, psamKey));
                                             for (int i = 0; i < psamDatas.size(); i++) {
                                                 Log.d(TAG, "psamzhujianbuInit: 秘钥" + DataConversionUtils.byteArrayToString(psamDatas.get(i).getKeyID()) + "终端编号：" + DataConversionUtils.byteArrayToString(psamDatas.get(i).getTermBumber()));
                                             }

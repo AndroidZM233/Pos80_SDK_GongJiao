@@ -3,31 +3,29 @@ package com.spd.bus.spdata.been;
 import java.lang.invoke.CallSite;
 import java.util.List;
 
-/**
- * Created by 张明_ on 2018/8/29.
- * Email 741183142@qq.com
- */
-
 public class PsamBeen {
+    private int id;
 
+    //终端机编号16文件下读出卡号
 
-    private byte[] snr;//psam卡号
-    private byte[] termBumber;//终端机编号
-    private byte[] keyID;//秘钥索引
+    private byte[] termBumber;
+    //秘钥索引
+    private byte[] keyID;
 
-    public PsamBeen(byte[] snr, byte[] termBumber, byte[] keyID) {
-        this.snr = snr;
+    public PsamBeen(int id, byte[] termBumber, byte[] keyID) {
+        this.id = id;
         this.termBumber = termBumber;
         this.keyID = keyID;
     }
 
-    public byte[] getSnr() {
-        return snr;
+    public int getId() {
+        return id;
     }
 
-    public void setSnr(byte[] snr) {
-        this.snr = snr;
+    public void setId(int id) {
+        this.id = id;
     }
+
 
     public byte[] getTermBumber() {
         return termBumber;
@@ -44,5 +42,4 @@ public class PsamBeen {
     public void setKeyID(byte[] keyID) {
         this.keyID = keyID;
     }
-
 }

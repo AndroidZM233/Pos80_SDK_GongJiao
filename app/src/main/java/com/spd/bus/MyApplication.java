@@ -9,12 +9,10 @@ import android.widget.Toast;
 
 import com.example.test.yinlianbarcode.interfaces.OnBackListener;
 import com.example.test.yinlianbarcode.utils.ScanUtils;
-import com.honeywell.barcode.ActiveCamera;
 import com.honeywell.barcode.HSMDecodeComponent;
 import com.honeywell.barcode.HSMDecoder;
 import com.spd.base.database.BoxStorManage;
 import com.spd.bus.spdata.utils.PlaySound;
-
 
 import io.objectbox.android.AndroidObjectBrowser;
 
@@ -29,14 +27,15 @@ public class MyApplication extends Application {
     @Override
     public void onCreate() {
         super.onCreate();
+//        CrashReport.initCrashReport(getApplicationContext(),"ca2f83cd2c",true);
         PlaySound.initSoundPool(this);
         initScanBards();
         //objectbox数据库初始化 必须在 application中
-        BoxStorManage.init(this);
+//        BoxStorManage.init(MyApplication.this);
 
-        if (BuildConfig.DEBUG) {
-            new AndroidObjectBrowser(BoxStorManage.getInstance().getBoxDao()).start(this);
-        }
+//        if (BuildConfig.DEBUG) {
+//            new AndroidObjectBrowser(BoxStorManage.getInstance().getBoxDao()).start(this);
+//        }
 //        registerActivityLifecycleCallbacks(new ActivityLifecycleCallbacks() {
 //            @Override
 //            public void onActivityCreated(Activity activity, Bundle savedInstanceState) {

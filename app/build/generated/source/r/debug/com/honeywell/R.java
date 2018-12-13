@@ -8,16 +8,16 @@ package com.honeywell;
 
 public final class R {
     public static final class drawable {
-        public static final int hsm_speak = 0x7f07007a;
-        public static final int hsm_touch = 0x7f07007b;
+        public static final int hsm_speak = 0x7f07007b;
+        public static final int hsm_touch = 0x7f07007c;
     }
     public static final class id {
-        public static final int hsm_decodeComponent = 0x7f0800bd;
+        public static final int hsm_decodeComponent = 0x7f0800c1;
     }
     public static final class layout {
-        public static final int hsm_preview = 0x7f0a0043;
+        public static final int hsm_preview = 0x7f0b0045;
     }
     public static final class raw {
-        public static final int hsm_beep = 0x7f0d0002;
+        public static final int hsm_beep = 0x7f0e0002;
     }
 }

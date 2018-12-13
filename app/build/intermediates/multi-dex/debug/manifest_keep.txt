@@ -1,3 +1,0 @@
-# Referenced at D:\SpeedataDemo18\Pos80_SDK_GongJiao\app\build\intermediates\manifests\full\debug\AndroidManifest.xml:29
--keep class com.spd.bus.MyApplication { <init>(...); }
-

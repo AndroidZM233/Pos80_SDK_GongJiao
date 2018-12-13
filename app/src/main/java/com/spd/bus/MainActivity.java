@@ -19,7 +19,6 @@ import com.spd.bus.key.KeyManager;
 import com.spd.bus.pin.Pin;
 import com.spd.bus.print.PrinterManager;
 import com.spd.bus.readcard.ReadCardManager;
-import com.spd.bus.spdata.PsamIcActivity;
 import com.spd.bus.system.SystemActivity;
 
 /**
@@ -34,7 +33,7 @@ public class MainActivity extends Activity implements View.OnClickListener {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity);
+//        setContentView(R.layout.activity);
         context = this;
 
         app_title = (TextView) findViewById(R.id.txt_app_title);
@@ -85,7 +84,7 @@ public class MainActivity extends Activity implements View.OnClickListener {
         switch (v.getId()) {
             case R.id.btn_psam_ic:
                 //思必拓demo PSAM+IC 消费流程
-                intent = new Intent(context, PsamIcActivity.class);
+//                intent = new Intent(context, PsamIcActivity.class);
 //                intent = new Intent(context,Main2Activity.class);
                 break;
             case R.id.sys_Id:

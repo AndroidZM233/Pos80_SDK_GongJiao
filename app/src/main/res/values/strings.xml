@@ -1,5 +1,22 @@
 <resources xmlns:xliff="urn:oasis:names:tc:xliff:document:1.2">
     <string name="app_name">小拓公交</string>
+    <string name="main_title">产品编号:0123456789</string>
+    <string name="main_Circuit">公交线路:888路</string>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
     <string name="app_title">WPOS SDK Demo V</string>
     <string name="action_settings">Settings</string>
     <string name="title_activity_keyex">keyex</string>

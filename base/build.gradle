@@ -2,19 +2,16 @@ apply plugin: 'com.android.library'
 apply plugin: 'io.objectbox' // after applying Android plugin
 android {
     compileSdkVersion 28
-
-
-
     defaultConfig {
-        minSdkVersion 21
+        minSdkVersion 15
         targetSdkVersion 28
         versionCode 1
         versionName "1.0"
 
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
-        ndk {
-            abiFilters 'armeabi-v7a'
-        }
+//        ndk {
+//            abiFilters  'armeabi'
+//        }
     }
 
     buildTypes {
@@ -27,8 +24,7 @@ android {
 }
 
 dependencies {
-    api fileTree(dir: 'libs', include: ['*.jar'])
-
+    api fileTree(dir: 'libs', include: ['*.jar', '*.aar'])
     implementation 'com.android.support:appcompat-v7:28.0.0'
     testImplementation 'junit:junit:4.12'
     androidTestImplementation 'com.android.support.test:runner:1.0.2'
@@ -46,7 +42,9 @@ dependencies {
     api 'com.google.code.gson:gson:2.8.5'
     api 'org.apache.commons:commons-lang3:3.5'
     api 'commons-codec:commons-codec:1.10'
-    //腾讯bugly
-    api 'com.tencent.bugly:crashreport:latest.release' //其中latest.release指代最新Bugly SDK版本号，也可以指定明确的版本号，例如2.1.9
-    api 'com.tencent.bugly:nativecrashreport:latest.release' //其中latest.release指代最新Bugly NDK版本号，也可以指定明确的版本号，例如3.0
+//    //腾讯bugly
+//    api 'com.tencent.bugly:crashreport:latest.release'
+//    //其中latest.release指代最新Bugly SDK版本号，也可以指定明确的版本号，例如2.1.9
+//    api 'com.tencent.bugly:nativecrashreport:latest.release'
+//    //其中latest.release指代最新Bugly NDK版本号，也可以指定明确的版本号，例如3.0
 }

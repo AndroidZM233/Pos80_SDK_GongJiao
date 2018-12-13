@@ -1,3 +1,0 @@
-D:/SpeedataDemo18/Pos80_SDK_GongJiao/alipay/.externalNativeBuild/cmake/release/x86/CMakeFiles/alipay.dir
-D:/SpeedataDemo18/Pos80_SDK_GongJiao/alipay/.externalNativeBuild/cmake/release/x86/CMakeFiles/edit_cache.dir
-D:/SpeedataDemo18/Pos80_SDK_GongJiao/alipay/.externalNativeBuild/cmake/release/x86/CMakeFiles/rebuild_cache.dir
