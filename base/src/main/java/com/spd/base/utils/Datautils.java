@@ -1,4 +1,4 @@
-package com.spd.base;
+package com.spd.base.utils;
 
 import java.text.SimpleDateFormat;
 import java.util.Date;
@@ -405,5 +405,46 @@ public class Datautils {
         return (a < 0 ? a + 256 : a);
     }
 
+    //判断扫描的内容是否是UTF8的中文内容
+    public static boolean isUTF8(byte[] sx) {
+        //Log.d(TAG, "begian to set codeset");
+        boolean IsUtf8 = false;
+        for (int i = 0; i < sx.length; ) {
+            if (sx[i] < 0) {
+                if ((sx[i] >>> 5) == 0x7FFFFFE) {
+                    if (((i + 1) < sx.length) && ((sx[i + 1] >>> 6) == 0x3FFFFFE)) {
+                        i = i + 2;
+                        IsUtf8 = true;
+                    } else {
+                        if (IsUtf8) {
+                            return true;
+                        } else {
+                            return false;
+                        }
+                    }
+                } else if ((sx[i] >>> 4) == 0xFFFFFFE) {
+                    if (((i + 2) < sx.length) && ((sx[i + 1] >>> 6) == 0x3FFFFFE) && ((sx[i + 2] >>> 6) == 0x3FFFFFE)) {
+                        i = i + 3;
+                        IsUtf8 = true;
+                    } else {
+                        if (IsUtf8) {
+                            return true;
+                        } else {
+                            return false;
+                        }
+                    }
+                } else {
+                    if (IsUtf8) {
+                        return true;
+                    } else {
+                        return false;
+                    }
+                }
+            } else {
+                i++;
+            }
+        }
+        return true;
+    }
 }
 

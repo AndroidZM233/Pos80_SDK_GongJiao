@@ -44,7 +44,7 @@
             android:value="b8254759-295e-43c7-b4d1-0acb1f2a0c33" />
 
         <activity
-            android:name="com.spd.bus.spdata.test"
+            android:name="com.spd.bus.spdata.PsamIcActivity"
             android:screenOrientation="landscape"
             android:theme="@style/AppTheme.NoActionBar" >
             <intent-filter>

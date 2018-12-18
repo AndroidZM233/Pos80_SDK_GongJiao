@@ -12,9 +12,8 @@ import com.example.test.yinlianbarcode.utils.ScanUtils;
 import com.honeywell.barcode.HSMDecodeComponent;
 import com.honeywell.barcode.HSMDecoder;
 import com.spd.base.database.BoxStorManage;
+import com.spd.base.db.DbDaoManage;
 import com.spd.bus.spdata.utils.PlaySound;
-
-import io.objectbox.android.AndroidObjectBrowser;
 
 import static com.honeywell.barcode.Symbology.QR;
 
@@ -27,6 +26,7 @@ public class MyApplication extends Application {
     @Override
     public void onCreate() {
         super.onCreate();
+        DbDaoManage.initDb(this);
 //        CrashReport.initCrashReport(getApplicationContext(),"ca2f83cd2c",true);
         PlaySound.initSoundPool(this);
         initScanBards();
@@ -85,10 +85,10 @@ public class MyApplication extends Application {
      */
     private void initScanBards() {
         hsmDecoder = HSMDecoder.getInstance(this);
-        hsmDecoder.enableAimer(true);
-        hsmDecoder.setAimerColor(Color.RED);
-        hsmDecoder.setOverlayText("ceshi");
-        hsmDecoder.setOverlayTextColor(Color.RED);
+//        hsmDecoder.enableAimer(true);
+//        hsmDecoder.setAimerColor(Color.RED);
+//        hsmDecoder.setOverlayText("ceshi");
+//        hsmDecoder.setOverlayTextColor(Color.RED);
         hsmDecoder.enableSound(true);
         //初始为默认前置摄像头扫码
 //        hsmDecoder.setActiveCamera(ActiveCamera.FRONT_FACING);

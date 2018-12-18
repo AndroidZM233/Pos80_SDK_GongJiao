@@ -979,8 +979,8 @@ public final class R {
         public static final int notification_template_icon_low_bg = 0x7f07008c;
         public static final int notification_tile_bg = 0x7f07008d;
         public static final int notify_panel_notification_icon_bg = 0x7f07008e;
-        public static final int tooltip_frame_dark = 0x7f070095;
-        public static final int tooltip_frame_light = 0x7f070096;
+        public static final int tooltip_frame_dark = 0x7f070093;
+        public static final int tooltip_frame_light = 0x7f070094;
     }
     public static final class id {
         public static final int action_bar = 0x7f080007;
@@ -1263,13 +1263,13 @@ public final class R {
         public static final int fab_transformation_sheet_behavior = 0x7f0f005b;
         public static final int hide_bottom_view_on_scroll_behavior = 0x7f0f0066;
         public static final int mtrl_chip_close_icon_content_description = 0x7f0f007f;
-        public static final int password_toggle_content_description = 0x7f0f0083;
-        public static final int path_password_eye = 0x7f0f0084;
-        public static final int path_password_eye_mask_strike_through = 0x7f0f0085;
-        public static final int path_password_eye_mask_visible = 0x7f0f0086;
-        public static final int path_password_strike_through = 0x7f0f0087;
-        public static final int search_menu_title = 0x7f0f0095;
-        public static final int status_bar_notification_info_overflow = 0x7f0f0097;
+        public static final int password_toggle_content_description = 0x7f0f0081;
+        public static final int path_password_eye = 0x7f0f0082;
+        public static final int path_password_eye_mask_strike_through = 0x7f0f0083;
+        public static final int path_password_eye_mask_visible = 0x7f0f0084;
+        public static final int path_password_strike_through = 0x7f0f0085;
+        public static final int search_menu_title = 0x7f0f0093;
+        public static final int status_bar_notification_info_overflow = 0x7f0f0095;
     }
     public static final class style {
         public static final int AlertDialog_AppCompat = 0x7f100000;

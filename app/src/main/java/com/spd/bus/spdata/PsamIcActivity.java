@@ -23,13 +23,11 @@ import com.example.test.yinlianbarcode.utils.ValidationUtils;
 import com.honeywell.barcode.HSMDecodeResult;
 import com.honeywell.plugins.decode.DecodeResultListener;
 import com.spd.alipay.been.AliCodeinfoData;
-import com.spd.base.Datautils;
-import com.spd.base.been.AlipayDatabaseBeen;
+import com.spd.base.utils.Datautils;
 import com.spd.base.beenali.AlipayQrcodekey;
 import com.spd.base.beenbosi.BosiQrcodeKey;
 import com.spd.base.beenupload.QrcodeUpload;
 import com.spd.base.beenwechat.WechatQrcodeKey;
-import com.spd.base.database.BoxStorManage;
 import com.spd.bus.DataConversionUtils;
 import com.spd.bus.MyApplication;
 import com.spd.bus.R;
@@ -50,7 +48,6 @@ import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 
-import io.objectbox.Box;
 import wangpos.sdk4.libbasebinder.BankCard;
 import wangpos.sdk4.libbasebinder.Core;
 import wangpos.sdk4.libbasebinder.HEX;
@@ -1254,7 +1251,7 @@ public class PsamIcActivity extends com.spd.bus.spdata.mvp.MVPBaseActivity<SpdBu
             byte[] mac2 = cutBytes(respdata, 0, 8);
             byte[] PSAM_CHECK_MAC2 = checkPsamMac2(mac2);
 
-             retvalue = mBankCard.sendAPDU(BankCard.CARD_MODE_PSAM1_APDU, PSAM_CHECK_MAC2, PSAM_CHECK_MAC2.length, respdata, resplen);
+            retvalue = mBankCard.sendAPDU(BankCard.CARD_MODE_PSAM1_APDU, PSAM_CHECK_MAC2, PSAM_CHECK_MAC2.length, respdata, resplen);
             Log.d(TAG, "===psam卡 8072校验 send===: " + HEX.bytesToHex(PSAM_CHECK_MAC2) + "微智结果：" + retvalue);
             if (retvalue != 0) {
                 this.isFlag = 1;
@@ -1623,7 +1620,7 @@ public class PsamIcActivity extends com.spd.bus.spdata.mvp.MVPBaseActivity<SpdBu
     public void onHSMDecodeResult(HSMDecodeResult[] hsmDecodeResults) {
         if (hsmDecodeResults.length > 0) {
             HSMDecodeResult firstResult = hsmDecodeResults[0];
-            if (isUTF8(firstResult.getBarcodeDataBytes())) {
+            if (Datautils.isUTF8(firstResult.getBarcodeDataBytes())) {
                 Log.d(TAG, "is a utf8 string");
                 try {
                     decodeDate = new String(firstResult.getBarcodeDataBytes(), "utf8");
@@ -1690,48 +1687,7 @@ public class PsamIcActivity extends com.spd.bus.spdata.mvp.MVPBaseActivity<SpdBu
     String station_no = "000010";
     String lbs_info = "aaaa";
     String record_type = "BUS";
-    private boolean IsUtf8 = false;
 
-    //判断扫描的内容是否是UTF8的中文内容
-    private boolean isUTF8(byte[] sx) {
-        //Log.d(TAG, "begian to set codeset");
-        for (int i = 0; i < sx.length; ) {
-            if (sx[i] < 0) {
-                if ((sx[i] >>> 5) == 0x7FFFFFE) {
-                    if (((i + 1) < sx.length) && ((sx[i + 1] >>> 6) == 0x3FFFFFE)) {
-                        i = i + 2;
-                        IsUtf8 = true;
-                    } else {
-                        if (IsUtf8) {
-                            return true;
-                        } else {
-                            return false;
-                        }
-                    }
-                } else if ((sx[i] >>> 4) == 0xFFFFFFE) {
-                    if (((i + 2) < sx.length) && ((sx[i + 1] >>> 6) == 0x3FFFFFE) && ((sx[i + 2] >>> 6) == 0x3FFFFFE)) {
-                        i = i + 3;
-                        IsUtf8 = true;
-                    } else {
-                        if (IsUtf8) {
-                            return true;
-                        } else {
-                            return false;
-                        }
-                    }
-                } else {
-                    if (IsUtf8) {
-                        return true;
-                    } else {
-                        return false;
-                    }
-                }
-            } else {
-                i++;
-            }
-        }
-        return true;
-    }
 
     @Override
     public void success(String msg) {

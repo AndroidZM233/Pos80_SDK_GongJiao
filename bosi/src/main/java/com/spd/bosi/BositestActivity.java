@@ -9,7 +9,7 @@ import android.widget.TextView;
 import com.bluering.pos.sdk.qr.CertVerInfo;
 import com.bluering.pos.sdk.qr.PosQR;
 import com.bluering.pos.sdk.qr.QrCodeInfo;
-import com.spd.base.Datautils;
+import com.spd.base.utils.Datautils;
 
 public class BositestActivity extends Activity implements View.OnClickListener {
 

@@ -7,16 +7,15 @@ import com.spd.base.beenali.AlipayQrcodekey;
 import com.spd.base.beenbosi.BosiQrcodeKey;
 import com.spd.base.beenwechat.WechatQrcodeKey;
 
+import org.greenrobot.greendao.annotation.Entity;
+import org.greenrobot.greendao.annotation.Id;
+import org.greenrobot.greendao.annotation.Index;
+
 import java.lang.invoke.CallSite;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
-
-import io.objectbox.annotation.Convert;
-import io.objectbox.annotation.Entity;
-import io.objectbox.annotation.Id;
-import io.objectbox.annotation.Index;
-import io.objectbox.converter.PropertyConverter;
+import org.greenrobot.greendao.annotation.Generated;
 
 @Entity
 public class AlipayDatabaseBeen {
@@ -38,6 +37,15 @@ public class AlipayDatabaseBeen {
     }
 
     public AlipayDatabaseBeen(String keyType, int version, int keyId, String key) {
+        this.keyType = keyType;
+        this.version = version;
+        this.keyId = keyId;
+        this.key = key;
+    }
+
+    @Generated(hash = 1069355830)
+    public AlipayDatabaseBeen(long id, String keyType, int version, int keyId, String key) {
+        this.id = id;
         this.keyType = keyType;
         this.version = version;
         this.keyId = keyId;
@@ -85,6 +93,14 @@ public class AlipayDatabaseBeen {
 
     public void setVersion(int version) {
         this.version = version;
+    }
+
+    public long getId() {
+        return this.id;
+    }
+
+    public void setId(long id) {
+        this.id = id;
     }
 
 //    public static class RoleConverter implements PropertyConverter<List<AlipayQrcodekey.PublicKeyListBean>, String> {
