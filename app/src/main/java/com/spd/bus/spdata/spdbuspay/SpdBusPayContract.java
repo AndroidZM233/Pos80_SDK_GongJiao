@@ -1,5 +1,7 @@
 package com.spd.bus.spdata.spdbuspay;
 
+import android.content.Context;
+
 import com.spd.alipay.been.AliCodeinfoData;
 import com.spd.base.beenali.AlipayQrcodekey;
 import com.spd.base.beenbosi.BosiQrcodeKey;
@@ -9,6 +11,8 @@ import com.spd.bus.spdata.mvp.BasePresenter;
 import com.spd.bus.spdata.mvp.BaseView;
 
 import java.util.List;
+
+import io.reactivex.internal.schedulers.ImmediateThinScheduler;
 
 /**
  * MVPPlugin
@@ -44,7 +48,6 @@ public class SpdBusPayContract {
         void showBosiCerVersion(String vension);
 
         void showUpdataBosiKey(int state);
-
 
 
     }
@@ -84,15 +87,13 @@ public class SpdBusPayContract {
          * 博思二维码
          */
 
-        void bosiInitJin();
+        void bosiInitJin(Context context, String filePath);
 
         void getBosikey();
 
-        void setBosiCerPath();
+        int getBosiCerVersion();
 
-        void getBosiCerVersion();
-
-        void updataBosiKey(byte[] cer);
+        int updataBosiKey(String cer);
 
         void checkBosiQrCode(String qrcode);
 

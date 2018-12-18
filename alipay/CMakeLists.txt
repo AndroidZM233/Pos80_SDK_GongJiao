@@ -8,7 +8,7 @@ add_library(posoffline
            )
 set_target_properties(posoffline
                       PROPERTIES IMPORTED_LOCATION
-                      ${CMAKE_SOURCE_DIR}/src/main/jniLibs/armeabi-v7a/libposoffline.so)
+                      ${CMAKE_SOURCE_DIR}/src/main/jniLibs/armeabi/libposoffline.so)
 
 
 find_library( # Sets the name of the path variable.

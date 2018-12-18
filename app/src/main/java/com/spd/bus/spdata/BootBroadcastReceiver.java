@@ -35,7 +35,7 @@ public class BootBroadcastReceiver extends BroadcastReceiver {
     @Override
     public void onReceive(Context context, Intent intent) {
         if (intent.getAction().equals(action_boot)) {
-            Intent ootStartIntent = new Intent(context, test.class);
+            Intent ootStartIntent = new Intent(context, PsamIcActivity.class);
             ootStartIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
             context.startActivity(ootStartIntent);
         }

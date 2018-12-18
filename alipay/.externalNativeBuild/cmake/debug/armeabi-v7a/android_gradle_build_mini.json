@@ -15,7 +15,7 @@
     "posoffline-Debug-armeabi-v7a": {
       "artifactName": "posoffline",
       "abi": "armeabi-v7a",
-      "output": "D:\\SpeedataDemo18\\Pos80_SDK_GongJiao\\alipay\\src\\main\\jniLibs\\armeabi-v7a\\libposoffline.so"
+      "output": "D:\\SpeedataDemo18\\Pos80_SDK_GongJiao\\alipay\\src\\main\\jniLibs\\armeabi\\libposoffline.so"
     }
   }
 }

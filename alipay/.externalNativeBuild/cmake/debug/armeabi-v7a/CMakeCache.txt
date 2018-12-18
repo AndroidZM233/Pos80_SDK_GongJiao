@@ -18,13 +18,13 @@
 ANDROID_ABI:UNINITIALIZED=armeabi-v7a
 
 //No help, variable specified on the command line.
-ANDROID_NDK:UNINITIALIZED=C:\Users\42040\AppData\Local\Android\Sdk\ndk-bundle
+ANDROID_NDK:UNINITIALIZED=D:\Android_ndk\android-ndk-r16-beta1
 
 //No help, variable specified on the command line.
-ANDROID_PLATFORM:UNINITIALIZED=android-16
+ANDROID_PLATFORM:UNINITIALIZED=android-15
 
 //Archiver
-CMAKE_AR:FILEPATH=C:/Users/42040/AppData/Local/Android/Sdk/ndk-bundle/toolchains/arm-linux-androideabi-4.9/prebuilt/windows-x86_64/bin/arm-linux-androideabi-ar.exe
+CMAKE_AR:FILEPATH=D:/Android_ndk/android-ndk-r16-beta1/toolchains/arm-linux-androideabi-4.9/prebuilt/windows-x86_64/bin/arm-linux-androideabi-ar.exe
 
 //Flags used by the compiler during all build types.
 CMAKE_ASM_FLAGS:STRING=
@@ -56,7 +56,7 @@ CMAKE_CXX_FLAGS_RELEASE:STRING=
 CMAKE_CXX_FLAGS_RELWITHDEBINFO:STRING=-O2 -g -DNDEBUG
 
 //Libraries linked by default with all C++ applications.
-CMAKE_CXX_STANDARD_LIBRARIES:STRING=-latomic -lm "C:/Users/42040/AppData/Local/Android/Sdk/ndk-bundle/sources/cxx-stl/llvm-libc++/libs/armeabi-v7a/libc++_static.a" "C:/Users/42040/AppData/Local/Android/Sdk/ndk-bundle/sources/cxx-stl/llvm-libc++/libs/armeabi-v7a/libc++abi.a" "C:/Users/42040/AppData/Local/Android/Sdk/ndk-bundle/sources/cxx-stl/llvm-libc++/libs/armeabi-v7a/libandroid_support.a" "C:/Users/42040/AppData/Local/Android/Sdk/ndk-bundle/sources/cxx-stl/llvm-libc++/libs/armeabi-v7a/libunwind.a" "-ldl"
+CMAKE_CXX_STANDARD_LIBRARIES:STRING=-latomic -lm "D:/Android_ndk/android-ndk-r16-beta1/sources/cxx-stl/gnu-libstdc++/4.9/libs/armeabi-v7a/libgnustl_static.a"
 
 //Flags used by the compiler during all build types.
 CMAKE_C_FLAGS:STRING=
@@ -102,7 +102,7 @@ CMAKE_INSTALL_PREFIX:PATH=C:/Program Files (x86)/Project
 CMAKE_LIBRARY_OUTPUT_DIRECTORY:UNINITIALIZED=D:\SpeedataDemo18\Pos80_SDK_GongJiao\alipay\build\intermediates\cmake\debug\obj\armeabi-v7a
 
 //Path to a program.
-CMAKE_LINKER:FILEPATH=C:/Users/42040/AppData/Local/Android/Sdk/ndk-bundle/toolchains/arm-linux-androideabi-4.9/prebuilt/windows-x86_64/bin/arm-linux-androideabi-ld.exe
+CMAKE_LINKER:FILEPATH=D:/Android_ndk/android-ndk-r16-beta1/toolchains/arm-linux-androideabi-4.9/prebuilt/windows-x86_64/bin/arm-linux-androideabi-ld.exe
 
 //No help, variable specified on the command line.
 CMAKE_MAKE_PROGRAM:UNINITIALIZED=C:\Users\42040\AppData\Local\Android\Sdk\cmake\3.6.4111459\bin\ninja.exe
@@ -123,19 +123,19 @@ CMAKE_MODULE_LINKER_FLAGS_RELEASE:STRING=
 CMAKE_MODULE_LINKER_FLAGS_RELWITHDEBINFO:STRING=
 
 //Path to a program.
-CMAKE_NM:FILEPATH=C:/Users/42040/AppData/Local/Android/Sdk/ndk-bundle/toolchains/arm-linux-androideabi-4.9/prebuilt/windows-x86_64/bin/arm-linux-androideabi-nm.exe
+CMAKE_NM:FILEPATH=D:/Android_ndk/android-ndk-r16-beta1/toolchains/arm-linux-androideabi-4.9/prebuilt/windows-x86_64/bin/arm-linux-androideabi-nm.exe
 
 //Path to a program.
-CMAKE_OBJCOPY:FILEPATH=C:/Users/42040/AppData/Local/Android/Sdk/ndk-bundle/toolchains/arm-linux-androideabi-4.9/prebuilt/windows-x86_64/bin/arm-linux-androideabi-objcopy.exe
+CMAKE_OBJCOPY:FILEPATH=D:/Android_ndk/android-ndk-r16-beta1/toolchains/arm-linux-androideabi-4.9/prebuilt/windows-x86_64/bin/arm-linux-androideabi-objcopy.exe
 
 //Path to a program.
-CMAKE_OBJDUMP:FILEPATH=C:/Users/42040/AppData/Local/Android/Sdk/ndk-bundle/toolchains/arm-linux-androideabi-4.9/prebuilt/windows-x86_64/bin/arm-linux-androideabi-objdump.exe
+CMAKE_OBJDUMP:FILEPATH=D:/Android_ndk/android-ndk-r16-beta1/toolchains/arm-linux-androideabi-4.9/prebuilt/windows-x86_64/bin/arm-linux-androideabi-objdump.exe
 
 //Value Computed by CMake
 CMAKE_PROJECT_NAME:STATIC=Project
 
 //Ranlib
-CMAKE_RANLIB:FILEPATH=C:/Users/42040/AppData/Local/Android/Sdk/ndk-bundle/toolchains/arm-linux-androideabi-4.9/prebuilt/windows-x86_64/bin/arm-linux-androideabi-ranlib.exe
+CMAKE_RANLIB:FILEPATH=D:/Android_ndk/android-ndk-r16-beta1/toolchains/arm-linux-androideabi-4.9/prebuilt/windows-x86_64/bin/arm-linux-androideabi-ranlib.exe
 
 //Flags used by the linker during the creation of dll's.
 CMAKE_SHARED_LINKER_FLAGS:STRING=
@@ -175,10 +175,10 @@ CMAKE_STATIC_LINKER_FLAGS_RELEASE:STRING=
 CMAKE_STATIC_LINKER_FLAGS_RELWITHDEBINFO:STRING=
 
 //Path to a program.
-CMAKE_STRIP:FILEPATH=C:/Users/42040/AppData/Local/Android/Sdk/ndk-bundle/toolchains/arm-linux-androideabi-4.9/prebuilt/windows-x86_64/bin/arm-linux-androideabi-strip.exe
+CMAKE_STRIP:FILEPATH=D:/Android_ndk/android-ndk-r16-beta1/toolchains/arm-linux-androideabi-4.9/prebuilt/windows-x86_64/bin/arm-linux-androideabi-strip.exe
 
-//The CMake toolchain file
-CMAKE_TOOLCHAIN_FILE:FILEPATH=C:/Users/42040/AppData/Local/Android/Sdk/ndk-bundle/build/cmake/android.toolchain.cmake
+//No help, variable specified on the command line.
+CMAKE_TOOLCHAIN_FILE:UNINITIALIZED=D:\Android_ndk\android-ndk-r16-beta1\build\cmake\android.toolchain.cmake
 
 //If this value is on, makefiles will be generated without the
 // .SILENT directive, and all commands will be echoed to the console
@@ -196,7 +196,7 @@ Project_SOURCE_DIR:STATIC=D:/SpeedataDemo18/Pos80_SDK_GongJiao/alipay
 alipay_LIB_DEPENDS:STATIC=general;posoffline;
 
 //Path to a library.
-log-lib:FILEPATH=C:/Users/42040/AppData/Local/Android/Sdk/ndk-bundle/platforms/android-16/arch-arm/usr/lib/liblog.so
+log-lib:FILEPATH=D:/Android_ndk/android-ndk-r16-beta1/platforms/android-15/arch-arm/usr/lib/liblog.so
 
 
 ########################

@@ -18,29 +18,29 @@
 			[
 				
 				{
-					"flags" : "  --target=armv7-none-linux-androideabi16 --gcc-toolchain=C:/Users/42040/AppData/Local/Android/Sdk/ndk-bundle/toolchains/arm-linux-androideabi-4.9/prebuilt/windows-x86_64 --sysroot=C:/Users/42040/AppData/Local/Android/Sdk/ndk-bundle/sysroot -Dalipay_EXPORTS  -isystem C:/Users/42040/AppData/Local/Android/Sdk/ndk-bundle/sysroot/usr/include/arm-linux-androideabi -g -DANDROID -ffunction-sections -funwind-tables -fstack-protector-strong -no-canonical-prefixes -march=armv7-a -mfloat-abi=softfp -mfpu=vfpv3-d16 -mthumb -Wa,--noexecstack -Wformat -Werror=format-security  -O0 -fno-limit-debug-info  -fPIC      -c ",
+					"flags" : "  --target=armv7-none-linux-androideabi --gcc-toolchain=D:/Android_ndk/android-ndk-r16-beta1/toolchains/arm-linux-androideabi-4.9/prebuilt/windows-x86_64 --sysroot=D:/Android_ndk/android-ndk-r16-beta1/sysroot -Dalipay_EXPORTS  -isystem D:/Android_ndk/android-ndk-r16-beta1/sysroot/usr/include/arm-linux-androideabi -D__ANDROID_API__=15 -g -DANDROID -ffunction-sections -funwind-tables -fstack-protector-strong -no-canonical-prefixes -march=armv7-a -mfloat-abi=softfp -mfpu=vfpv3-d16 -fno-integrated-as -mthumb -Wa,--noexecstack -Wformat -Werror=format-security  -O0 -fno-limit-debug-info  -fPIC      -c ",
 					"src" : "D:/SpeedataDemo18/Pos80_SDK_GongJiao/alipay/src/main/cpp/alipay.c",
 					"workingDirectory" : "D:/SpeedataDemo18/Pos80_SDK_GongJiao/alipay/.externalNativeBuild/cmake/debug/armeabi-v7a"
 				}
 			],
 			"output" : "D:/SpeedataDemo18/Pos80_SDK_GongJiao/alipay/build/intermediates/cmake/debug/obj/armeabi-v7a/libalipay.so",
-			"toolchain" : "1701869593"
+			"toolchain" : "136330967"
 		},
 		"posoffline-Debug-armeabi-v7a" : 
 		{
 			"abi" : "armeabi-v7a",
 			"artifactName" : "posoffline",
 			"buildType" : "debug",
-			"output" : "D:/SpeedataDemo18/Pos80_SDK_GongJiao/alipay/src/main/jniLibs/armeabi-v7a/libposoffline.so",
-			"toolchain" : "1701869593"
+			"output" : "D:/SpeedataDemo18/Pos80_SDK_GongJiao/alipay/src/main/jniLibs/armeabi/libposoffline.so",
+			"toolchain" : "136330967"
 		}
 	},
 	"toolchains" : 
 	{
-		"1701869593" : 
+		"136330967" : 
 		{
-			"cCompilerExecutable" : "C:/Users/42040/AppData/Local/Android/Sdk/ndk-bundle/toolchains/llvm/prebuilt/windows-x86_64/bin/clang.exe",
-			"cppCompilerExecutable" : "C:/Users/42040/AppData/Local/Android/Sdk/ndk-bundle/toolchains/llvm/prebuilt/windows-x86_64/bin/clang++.exe"
+			"cCompilerExecutable" : "D:/Android_ndk/android-ndk-r16-beta1/toolchains/llvm/prebuilt/windows-x86_64/bin/clang.exe",
+			"cppCompilerExecutable" : "D:/Android_ndk/android-ndk-r16-beta1/toolchains/llvm/prebuilt/windows-x86_64/bin/clang++.exe"
 		}
 	}
 }

@@ -15,7 +15,7 @@ public final class R {
         public static final int hsm_decodeComponent = 0x7f0800c1;
     }
     public static final class layout {
-        public static final int hsm_preview = 0x7f0b0045;
+        public static final int hsm_preview = 0x7f0b0046;
     }
     public static final class raw {
         public static final int hsm_beep = 0x7f0e0002;

@@ -1,7 +1,9 @@
 package com.spd.bus.spdata.spdbuspay;
 
+import android.content.Context;
 import android.util.Log;
 
+import com.bluering.pos.sdk.qr.QrCodeInfo;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.spd.alipay.AlipayJni;
@@ -12,6 +14,7 @@ import com.spd.base.beenres.QrcodeUploadResult;
 import com.spd.base.beenupload.QrcodeUpload;
 import com.spd.base.beenwechat.WechatQrcodeKey;
 import com.spd.base.net.QrcodeApi;
+import com.spd.bosi.BosiQrManage;
 import com.spd.bus.spdata.been.ErroCode;
 import com.spd.bus.spdata.mvp.BasePresenterImpl;
 import com.tencent.wlxsdk.WlxSdk;
@@ -31,7 +34,7 @@ import okhttp3.RequestBody;
 public class SpdBusPayPresenter extends BasePresenterImpl<SpdBusPayContract.View> implements SpdBusPayContract.Presenter {
     private AlipayJni alipayJni;
     private WlxSdk wlxSdk;
-//    private BosiPayJni bosiPayJni;
+    //    private BosiPayJni bosiPayJni;
     private String TAG = "PsamIcActivity";
 
 
@@ -125,7 +128,7 @@ public class SpdBusPayPresenter extends BasePresenterImpl<SpdBusPayContract.View
 
     @Override
     public void releseAlipayJni() {
-        if (alipayJni!=null){
+        if (alipayJni != null) {
             int re = alipayJni.release();
         }
 //        mView.showReleseAlipayJni(re);
@@ -229,8 +232,9 @@ public class SpdBusPayPresenter extends BasePresenterImpl<SpdBusPayContract.View
     //=============博思二维码============
 
     @Override
-    public void bosiInitJin() {
-//        bosiPayJni = new BosiPayJni();
+    public void bosiInitJin(Context context, String filePath) {
+        //"/storage/sdcard0/bosicer/"
+        BosiQrManage.bosiQrInit(context, filePath);
     }
 
 
@@ -265,26 +269,19 @@ public class SpdBusPayPresenter extends BasePresenterImpl<SpdBusPayContract.View
                 });
     }
 
+
     @Override
-    public void setBosiCerPath() {
-//        int res = bosiPayJni.SetCertFilePath("/storage/sdcard0/bosi/");
-        mView.showSetBosiCerPath(0);
+    public int getBosiCerVersion() {
+        return BosiQrManage.bosiQrQueryCertVer();
     }
 
     @Override
-    public void getBosiCerVersion() {
-//        String vension = bosiPayJni.getCertVer();
-        mView.showBosiCerVersion("");
-    }
-
-    @Override
-    public void updataBosiKey(byte[] cer) {
-//        int res = bosiPayJni.UpdateCert(cer);
-        mView.showUpdataBosiKey(9);
+    public int updataBosiKey(String cer) {
+        return Integer.parseInt(BosiQrManage.bosiQrUpdateCert(cer));
     }
 
     @Override
     public void checkBosiQrCode(String qrcode) {
-//        int res = bosiPayJni.VerifyCode(qrcode);
+        QrCodeInfo qrCodeInfo = BosiQrManage.bosiQrVerifyCode(qrcode);
     }
 }
