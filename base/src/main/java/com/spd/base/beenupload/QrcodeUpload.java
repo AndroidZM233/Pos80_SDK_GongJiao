@@ -69,6 +69,7 @@ public class QrcodeUpload {
             private int chargeType;
             private String cardType;
             private String lineId;
+            //机具设备终端编号
             private String terminalId;
             private String acquirer;
             private String transSeqId;

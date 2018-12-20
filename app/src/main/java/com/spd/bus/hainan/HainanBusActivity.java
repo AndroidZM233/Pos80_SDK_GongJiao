@@ -8,9 +8,8 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
 
-import com.spd.bus.DataConversionUtils;
+import com.spd.base.utils.Datautils;
 import com.spd.bus.R;
-import com.spd.bus.spdata.utils.PlaySound;
 
 import java.util.Arrays;
 
@@ -87,24 +86,24 @@ public class HainanBusActivity extends AppCompatActivity implements View.OnClick
                     if (resultValue != 0) {
                         Log.e(TAG, "切换目录（00A4）失败");
                     }
-                    if (!Arrays.equals(APDU_RESULT_SUCCESS, DataConversionUtils.cutBytes(resultBytes, resultLen[0] - 2, 2))) {
-                        Log.e(TAG, "切换目录（00A4）非9000===" + DataConversionUtils.cutBytes(resultBytes, resultLen[0] - 2, 2));
+                    if (!Arrays.equals(APDU_RESULT_SUCCESS, Datautils.cutBytes(resultBytes, resultLen[0] - 2, 2))) {
+                        Log.e(TAG, "切换目录（00A4）非9000===" + Datautils.cutBytes(resultBytes, resultLen[0] - 2, 2));
                         return;
                     }
-                    byte[] result = DataConversionUtils.cutBytes(resultBytes, 0, resultLen[0] - 2);
-                    Log.i(TAG, "切换目录（00A4）===" + DataConversionUtils.byteArrayToString(result));
+                    byte[] result = Datautils.cutBytes(resultBytes, 0, resultLen[0] - 2);
+                    Log.i(TAG, "切换目录（00A4）===" + Datautils.byteArrayToString(result));
 
 
                     resultValue = mBankCard.sendAPDU(BankCard.CARD_MODE_PICC, READ_FILE17, READ_FILE17.length, resultBytes, resultLen);
                     if (resultValue != 0) {
                         Log.e(TAG, "读17（00B0）失败");
                     }
-                    if (!Arrays.equals(APDU_RESULT_SUCCESS, DataConversionUtils.cutBytes(resultBytes, resultLen[0] - 2, 2))) {
-                        Log.e(TAG, "读17（00B0）非9000===" + DataConversionUtils.cutBytes(resultBytes, resultLen[0] - 2, 2));
+                    if (!Arrays.equals(APDU_RESULT_SUCCESS, Datautils.cutBytes(resultBytes, resultLen[0] - 2, 2))) {
+                        Log.e(TAG, "读17（00B0）非9000===" + Datautils.cutBytes(resultBytes, resultLen[0] - 2, 2));
                         return;
                     }
-                    result = DataConversionUtils.cutBytes(resultBytes, 0, resultLen[0] - 2);
-                    Log.i(TAG, "读17（00B0）===" + DataConversionUtils.byteArrayToString(result));
+                    result = Datautils.cutBytes(resultBytes, 0, resultLen[0] - 2);
+                    Log.i(TAG, "读17（00B0）===" + Datautils.byteArrayToString(result));
                     switch (result[8]) {
                         case (byte) 0xF1:
                             //司机卡
@@ -112,8 +111,8 @@ public class HainanBusActivity extends AppCompatActivity implements View.OnClick
                             if (result == null) {
                                 return;
                             }
-                            String driverID = DataConversionUtils.byteArrayToString(DataConversionUtils.cutBytes(result, 0, 16));
-                            String runCode = DataConversionUtils.byteArrayToString(DataConversionUtils.cutBytes(result, 16, 24));
+                            String driverID = Datautils.byteArrayToString(Datautils.cutBytes(result, 0, 16));
+                            String runCode = Datautils.byteArrayToString(Datautils.cutBytes(result, 16, 24));
                             mTvShow.setText("司机ID：" + driverID + "\n运营公司代码：" + runCode);
                             break;
                         case (byte) 0xF2:
@@ -122,8 +121,8 @@ public class HainanBusActivity extends AppCompatActivity implements View.OnClick
                             if (result == null) {
                                 return;
                             }
-                            driverID = DataConversionUtils.byteArrayToString(DataConversionUtils.cutBytes(result, 0, 16));
-                            runCode = DataConversionUtils.byteArrayToString(DataConversionUtils.cutBytes(result, 16, 24));
+                            driverID = Datautils.byteArrayToString(Datautils.cutBytes(result, 0, 16));
+                            runCode = Datautils.byteArrayToString(Datautils.cutBytes(result, 16, 24));
                             mTvShow.setText("售票员ID：" + driverID + "\n运营公司代码：" + runCode);
                             break;
                         case (byte) 0xFF:
@@ -132,8 +131,8 @@ public class HainanBusActivity extends AppCompatActivity implements View.OnClick
                             if (result == null) {
                                 return;
                             }
-                            String lineNumber = DataConversionUtils.byteArrayToString(DataConversionUtils.cutBytes(result, 0, 3));
-                            runCode = DataConversionUtils.byteArrayToString(DataConversionUtils.cutBytes(result, 3, 11));
+                            String lineNumber = Datautils.byteArrayToString(Datautils.cutBytes(result, 0, 3));
+                            runCode = Datautils.byteArrayToString(Datautils.cutBytes(result, 3, 11));
                             mTvShow.setText("线路编号：" + lineNumber + "\n运营公司代码：" + runCode);
                             break;
                         default:
@@ -155,12 +154,12 @@ public class HainanBusActivity extends AppCompatActivity implements View.OnClick
                 Log.e(TAG, "读14（00B0）失败");
                 return null;
             }
-            if (!Arrays.equals(APDU_RESULT_SUCCESS, DataConversionUtils.cutBytes(resultBytes, resultLen[0] - 2, 2))) {
-                Log.e(TAG, "读14（00B0）非9000===" + DataConversionUtils.cutBytes(resultBytes, resultLen[0] - 2, 2));
+            if (!Arrays.equals(APDU_RESULT_SUCCESS, Datautils.cutBytes(resultBytes, resultLen[0] - 2, 2))) {
+                Log.e(TAG, "读14（00B0）非9000===" + Datautils.cutBytes(resultBytes, resultLen[0] - 2, 2));
                 return null;
             }
-            byte[] result = DataConversionUtils.cutBytes(resultBytes, 0, resultLen[0] - 2);
-            Log.i(TAG, "读14（00B0）===" + DataConversionUtils.byteArrayToString(result));
+            byte[] result = Datautils.cutBytes(resultBytes, 0, resultLen[0] - 2);
+            Log.i(TAG, "读14（00B0）===" + Datautils.byteArrayToString(result));
             return result;
         } catch (RemoteException e) {
             e.printStackTrace();

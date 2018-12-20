@@ -69,4 +69,12 @@ public class QrcodeApi {
         return service.alipayResUpload(body);
     }
 
+    public Observable<QrcodeUploadResult> weichatUpload(RequestBody body) {
+        return service.wechartResUpload(body);
+    }
+
+    public Observable<QrcodeUploadResult> bosiUpload(RequestBody body) {
+        return service.bosiResUpload(body);
+    }
+
 }

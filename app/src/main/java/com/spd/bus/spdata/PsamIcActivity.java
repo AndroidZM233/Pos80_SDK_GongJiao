@@ -17,18 +17,19 @@ import android.widget.CompoundButton;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.bluering.pos.sdk.qr.QrCodeInfo;
 import com.example.test.yinlianbarcode.entity.QrEntity;
 import com.example.test.yinlianbarcode.utils.Logcat;
 import com.example.test.yinlianbarcode.utils.ValidationUtils;
 import com.honeywell.barcode.HSMDecodeResult;
 import com.honeywell.plugins.decode.DecodeResultListener;
 import com.spd.alipay.been.AliCodeinfoData;
+import com.spd.base.db.DbDaoManage;
 import com.spd.base.utils.Datautils;
 import com.spd.base.beenali.AlipayQrcodekey;
 import com.spd.base.beenbosi.BosiQrcodeKey;
 import com.spd.base.beenupload.QrcodeUpload;
 import com.spd.base.beenwechat.WechatQrcodeKey;
-import com.spd.bus.DataConversionUtils;
 import com.spd.bus.MyApplication;
 import com.spd.bus.R;
 import com.spd.bus.spdata.been.ErroCode;
@@ -37,10 +38,11 @@ import com.spd.bus.spdata.been.PsamBeen;
 import com.spd.bus.spdata.been.TCommInfo;
 import com.spd.bus.spdata.spdbuspay.SpdBusPayContract;
 import com.spd.bus.spdata.spdbuspay.SpdBusPayPresenter;
-import com.spd.bus.spdata.utils.DataUtils;
+import com.spd.bus.spdata.utils.TimeDataUtils;
 import com.spd.bus.spdata.utils.PlaySound;
 
 import java.io.UnsupportedEncodingException;
+import java.lang.invoke.CallSite;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -59,6 +61,7 @@ import static com.spd.bus.spdata.been.ErroCode.SYSTEM_ERROR;
 public class PsamIcActivity extends com.spd.bus.spdata.mvp.MVPBaseActivity<SpdBusPayContract.View, SpdBusPayPresenter> implements SpdBusPayContract.View, DecodeResultListener {
     private BankCard mBankCard;
     private Core mCore;
+    private boolean isStart = true;
     /**
      * 普通交易（CAPP=0）或复合交易（CAPP=1）
      */
@@ -190,7 +193,7 @@ public class PsamIcActivity extends com.spd.bus.spdata.mvp.MVPBaseActivity<SpdBu
     @SuppressLint("SetTextI18n")
     private void initView() {
         mTvTitle = findViewById(R.id.tv_title);
-        mTvTitle.setText(getResources().getString(R.string.main_title) + "    " + DataUtils.getNowTime());
+        mTvTitle.setText(getResources().getString(R.string.main_title) + "    " + TimeDataUtils.getNowTime());
         mTvCircuit = findViewById(R.id.tv_circuit);
         mTvCircuit.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -232,12 +235,15 @@ public class PsamIcActivity extends com.spd.bus.spdata.mvp.MVPBaseActivity<SpdBu
                 mCore = new Core(getApplicationContext());
                 psam1Init();
                 psam2Init();
-                handler.postDelayed(runnable, 0);
+//                handler.postDelayed(runnable, 0);
+                startTimer(true);
             }
         }).start();
+
         //获取支付宝微信key
         mPresenter.getAliPubKey();
         mPresenter.getWechatPublicKey();
+        mPresenter.bosiInitJin(this, "/storage/sdcard0/bosicer/");
         mPresenter.getBosikey();
     }
 
@@ -250,7 +256,7 @@ public class PsamIcActivity extends com.spd.bus.spdata.mvp.MVPBaseActivity<SpdBu
         public void onReceive(Context context, Intent intent) {
             String action = intent.getAction();
             if (action.equals(Intent.ACTION_TIME_TICK)) {
-                mTvTitle.setText(getResources().getString(R.string.main_title) + "    " + DataUtils.getNowTime());
+                mTvTitle.setText(getResources().getString(R.string.main_title) + "    " + TimeDataUtils.getNowTime());
             }
         }
     };
@@ -397,6 +403,44 @@ public class PsamIcActivity extends com.spd.bus.spdata.mvp.MVPBaseActivity<SpdBu
 
     private long ltime = 0;
 
+    private void startTimer(boolean isStart) {
+        while (isStart) {
+            try {
+                //非接卡在位检测;
+                int result = mBankCard.piccDetect();
+                if (result == 0) {
+                    isFlag = 2;
+                } else if (result == 1 && isFlag == 2) {
+                    ltime = System.currentTimeMillis();
+                    Log.i("stw", "run: 开始本次读卡等待");
+                    //切换到非接卡读取
+                    retvalue = mBankCard.readCard(BankCard.CARD_TYPE_NORMAL, BankCard.CARD_MODE_PICC, 1, respdata, resplen, "app1");
+                    Log.i("stw", "ic结束寻卡===" + (System.currentTimeMillis() - ltime));
+                    if (retvalue != 0) {
+                        isFlag = 0;
+                    }
+                    //检测到非接IC卡
+                    if (respdata[0] == 0x07) {
+                        icExpance();//执行等待读卡消费
+                        if (isFlag == 1) {
+                            PlaySound.play(PlaySound.qingchongshua, 0);
+                        }
+                    } else if (respdata[0] == 0x37) {
+                        //检测到 M1-S50 卡
+                        Log.i("stw", "m1结束寻卡===" + (System.currentTimeMillis() - ltime));
+                        m1ICCard();
+                        if (isFlag == 1) {
+                            PlaySound.play(PlaySound.qingchongshua, 0);
+                        }
+                    } else if (respdata[0] == 0x47) {
+                        // 检测到 M1-S70 卡
+                    }
+                }
+            } catch (RemoteException e) {
+                e.printStackTrace();
+            }
+        }
+    }
 
     Runnable runnable = new Runnable() {
         @Override
@@ -557,11 +601,11 @@ public class PsamIcActivity extends com.spd.bus.spdata.mvp.MVPBaseActivity<SpdBu
             //扇区标识符
             secF = bytes01;
             //算秘钥指令
-            String sendCmd = "80FC010110" + HEX.bytesToHex(icCardBeen.getCityNr()) + DataConversionUtils.byteArrayToString(icCardBeen.getSnr()) + HEX.bytesToHex(cutBytes(icCardBeen.getIssueSnr(), 6, 2)) + HEX.bytesToHex(icCardBeen.getMackNr())
+            String sendCmd = "80FC010110" + HEX.bytesToHex(icCardBeen.getCityNr()) + Datautils.byteArrayToString(icCardBeen.getSnr()) + HEX.bytesToHex(cutBytes(icCardBeen.getIssueSnr(), 6, 2)) + HEX.bytesToHex(icCardBeen.getMackNr())
                     + HEX.bytesToHex(cutBytes(secF, 2, 2)) + HEX.bytesToHex(cutBytes(secF, 6, 2));
             Log.d(TAG, "===psam计算秘钥指令===" + sendCmd);
             //psam卡计算秘钥
-            retvalue = mBankCard.sendAPDU(BankCard.CARD_MODE_PSAM2_APDU, DataConversionUtils.HexString2Bytes(sendCmd), DataConversionUtils.HexString2Bytes(sendCmd).length, respdata, resplen);
+            retvalue = mBankCard.sendAPDU(BankCard.CARD_MODE_PSAM2_APDU, Datautils.HexString2Bytes(sendCmd), Datautils.HexString2Bytes(sendCmd).length, respdata, resplen);
             if (retvalue != 0) {
                 Log.e(TAG, "===psam计算秘钥指令错误===");
                 isFlag = 1;
@@ -702,7 +746,7 @@ public class PsamIcActivity extends com.spd.bus.spdata.mvp.MVPBaseActivity<SpdBu
                 return;
             }
             Log.i("stw", "===M1卡消费结束===" + (System.currentTimeMillis() - ltime));
-            handler.sendMessage(handler.obtainMessage(2, DataConversionUtils.byteArrayToInt(blance)));
+            handler.sendMessage(handler.obtainMessage(2, Datautils.byteArrayToInt(blance)));
             isFlag = 0;
         } catch (RemoteException e) {
             e.printStackTrace();
@@ -802,7 +846,7 @@ public class PsamIcActivity extends com.spd.bus.spdata.mvp.MVPBaseActivity<SpdBu
 
         CInfo.cPtr = (byte) (CInfo.cPtr == 8 ? 0 : CInfo.cPtr + 1);
         //获取UTC时间
-        byte[] ulDevUTC = DataConversionUtils.HexString2Bytes(DataUtils.getUTCtimes());
+        byte[] ulDevUTC = Datautils.HexString2Bytes(TimeDataUtils.getUTCtimes());
         // 写卡指令
         byte[] RcdToCard = new byte[16];
 
@@ -820,7 +864,7 @@ public class PsamIcActivity extends com.spd.bus.spdata.mvp.MVPBaseActivity<SpdBu
         //进程标志
         CInfo.fProc = 1;
         Log.d(TAG, "writeCardRcd: 本次交易记录指令：" + HEX.bytesToHex(RcdToCard));
-        int count = DataConversionUtils.byteArrayToInt(CInfo.iPurCount) + 1;
+        int count = Datautils.byteArrayToInt(CInfo.iPurCount) + 1;
         byte[] result = new byte[2];
         result[0] = (byte) ((count >> 8) & 0xFF);
         result[1] = (byte) (count & 0xFF);
@@ -875,7 +919,7 @@ public class PsamIcActivity extends com.spd.bus.spdata.mvp.MVPBaseActivity<SpdBu
                     return false;
                 }
                 //执行消费 将消费金额带入
-                int purSub = DataConversionUtils.byteArrayToInt(icCardBeen.getPurSub());
+                int purSub = Datautils.byteArrayToInt(icCardBeen.getPurSub());
                 retvalue = mBankCard.m1CardValueOperation(0x2D, 9, purSub, 9);
 
                 if (retvalue != 0) {
@@ -893,13 +937,13 @@ public class PsamIcActivity extends com.spd.bus.spdata.mvp.MVPBaseActivity<SpdBu
                 byte[] tempV = cutBytes(dtZ, 0, 4);
                 Log.d(TAG, "writeCardRcd:正本读09块返回：" + HEX.bytesToHex(dtZ));
                 //判断消费前金额-消费金额=消费后金额
-                int s = DataConversionUtils.byteArrayToInt(icCardBeen.getPurOriMoney(), false);
-                int s2 = DataConversionUtils.byteArrayToInt(tempV, false);
+                int s = Datautils.byteArrayToInt(icCardBeen.getPurOriMoney(), false);
+                int s2 = Datautils.byteArrayToInt(tempV, false);
                 if (s - purSub != s2) {
                     return false;
                 }
                 //step 6
-                retvalue = mBankCard.m1CardValueOperation(0x3E, 9, DataConversionUtils.byteArrayToInt(dtZ), 10);
+                retvalue = mBankCard.m1CardValueOperation(0x3E, 9, Datautils.byteArrayToInt(dtZ), 10);
                 if (retvalue != 0) {
                     Log.e(TAG, "writeCardRcd: 写10块错误");
                     return false;
@@ -1057,7 +1101,7 @@ public class PsamIcActivity extends com.spd.bus.spdata.mvp.MVPBaseActivity<SpdBu
         try {
             Log.d(TAG, "===读卡start=== ");
 //            retvalue = mBankCard.readCard(BankCard.CARD_TYPE_NORMAL, BankCard.CARD_MODE_PICC, 1, respdata, resplen, "app1");
-            Log.d(TAG, "===消费记录3031send=== " + DataConversionUtils.byteArrayToString(fuhe_tlv));
+            Log.d(TAG, "===消费记录3031send=== " + Datautils.byteArrayToString(fuhe_tlv));
             ltime = System.currentTimeMillis();
             retvalue = mBankCard.sendAPDU(BankCard.CARD_MODE_PICC, fuhe_tlv, fuhe_tlv.length, respdata, resplen);
             if (retvalue != 0) {
@@ -1088,7 +1132,7 @@ public class PsamIcActivity extends com.spd.bus.spdata.mvp.MVPBaseActivity<SpdBu
 //                    systemTime = getDateTime();
 //                    String select_ic = "00A4040008" + listTlv.get(i);
 //                    Log.d(TAG, "test: 解析到TLV发送0105 send：" + select_ic);
-//                    byte[] ELECT_DIANZIQIANBAO = DataConversionUtils.HexString2Bytes(select_ic);
+//                    byte[] ELECT_DIANZIQIANBAO = Datautils.HexString2Bytes(select_ic);
 //                    //选择电子钱包应用
 //                    retvalue = mBankCard.sendAPDU(BankCard.CARD_MODE_PICC, ELECT_DIANZIQIANBAO, ELECT_DIANZIQIANBAO.length, respdata, resplen);
 //                    break;
@@ -1150,7 +1194,7 @@ public class PsamIcActivity extends com.spd.bus.spdata.mvp.MVPBaseActivity<SpdBu
             }
 
             Log.d(TAG, "===IC读1E文件 00b2send===00B201F400");
-            retvalue = mBankCard.sendAPDU(BankCard.CARD_MODE_PICC, DataConversionUtils.HexString2Bytes("00B201F400"), DataConversionUtils.HexString2Bytes("00B201F400").length, respdata, resplen);
+            retvalue = mBankCard.sendAPDU(BankCard.CARD_MODE_PICC, Datautils.HexString2Bytes("00B201F400"), Datautils.HexString2Bytes("00B201F400").length, respdata, resplen);
             if (retvalue != 0) {
                 mBankCard.breakOffCommand();
                 this.isFlag = 1;
@@ -1164,7 +1208,7 @@ public class PsamIcActivity extends com.spd.bus.spdata.mvp.MVPBaseActivity<SpdBu
             }
 
             Log.d(TAG, "===IC余额)805c)send===  805C030204");
-            retvalue = mBankCard.sendAPDU(BankCard.CARD_MODE_PICC, DataConversionUtils.HexString2Bytes("805C030204"), DataConversionUtils.HexString2Bytes("805C030204").length, respdata, resplen);
+            retvalue = mBankCard.sendAPDU(BankCard.CARD_MODE_PICC, Datautils.HexString2Bytes("805C030204"), Datautils.HexString2Bytes("805C030204").length, respdata, resplen);
             if (retvalue != 0) {
                 mBankCard.breakOffCommand();
                 this.isFlag = 1;
@@ -1221,7 +1265,7 @@ public class PsamIcActivity extends com.spd.bus.spdata.mvp.MVPBaseActivity<SpdBu
             //80dc
 //            String ss = "80DC00F030060000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000";
 //            Log.d(TAG, "===更新1E文件 80dc  send===" + ss);
-//            retvalue = mBankCard.sendAPDU(BankCard.CARD_MODE_PICC, DataConversionUtils.HexString2Bytes(ss), DataConversionUtils.HexString2Bytes(ss).length, respdata, resplen);
+//            retvalue = mBankCard.sendAPDU(BankCard.CARD_MODE_PICC, Datautils.HexString2Bytes(ss), Datautils.HexString2Bytes(ss).length, respdata, resplen);
 //            if (retvalue != 0) {
 //                mBankCard.breakOffCommand();
 //                isFlag = 1;
@@ -1266,7 +1310,7 @@ public class PsamIcActivity extends com.spd.bus.spdata.mvp.MVPBaseActivity<SpdBu
             }
             this.isFlag = 0;
             Log.i("stw", "===消费结束===" + (System.currentTimeMillis() - ltime));
-            handler.sendMessage(handler.obtainMessage(1, DataConversionUtils.byteArrayToInt(blance)));
+            handler.sendMessage(handler.obtainMessage(1, Datautils.byteArrayToInt(blance)));
             mBankCard.breakOffCommand();
             Log.d("times", "icExpance:=====  消费完成=======");
         } catch (RemoteException e) {
@@ -1300,7 +1344,7 @@ public class PsamIcActivity extends com.spd.bus.spdata.mvp.MVPBaseActivity<SpdBu
                     mTvPrice.setTextSize(40);
                     mTvPrice.setText("票价：0.01元");
                     PlaySound.play(PlaySound.dang, 0);
-                    int blance = DataConversionUtils.byteArrayToInt(icCardBeen.getPurOriMoney(), false) - DataConversionUtils.byteArrayToInt(icCardBeen.getPurSub());
+                    int blance = Datautils.byteArrayToInt(icCardBeen.getPurOriMoney(), false) - Datautils.byteArrayToInt(icCardBeen.getPurSub());
                     mTvBalance.setVisibility(View.VISIBLE);
                     mTvBalance.setText("余额：" + (double) blance / 100 + "元");
 //                    handler.postDelayed(runnable, 3000);
@@ -1331,8 +1375,8 @@ public class PsamIcActivity extends com.spd.bus.spdata.mvp.MVPBaseActivity<SpdBu
         if (CAPP == 1) {
             stringBuilder.replace(5, 6, "3");
         }
-        stringBuilder.append(DataConversionUtils.byteArrayToString(psamKey)).append("00000002").append(DataConversionUtils.byteArrayToString(psamDatas.get(0).getTermBumber())).append("0F");
-        return DataConversionUtils.HexString2Bytes(stringBuilder.toString());
+        stringBuilder.append(Datautils.byteArrayToString(psamKey)).append("00000002").append(Datautils.byteArrayToString(psamDatas.get(0).getTermBumber())).append("0F");
+        return Datautils.HexString2Bytes(stringBuilder.toString());
     }
 
     /**
@@ -1398,8 +1442,8 @@ public class PsamIcActivity extends com.spd.bus.spdata.mvp.MVPBaseActivity<SpdBu
      * @return 返回 8072校验mac2
      */
     private byte[] checkPsamMac2(byte[] data) {
-        String psam_mac2 = "8072000004" + DataConversionUtils.byteArrayToString(cutBytes(data, 4, 4));
-        return DataConversionUtils.HexString2Bytes(psam_mac2);
+        String psam_mac2 = "8072000004" + Datautils.byteArrayToString(cutBytes(data, 4, 4));
+        return Datautils.HexString2Bytes(psam_mac2);
     }
 
     /**
@@ -1426,7 +1470,7 @@ public class PsamIcActivity extends com.spd.bus.spdata.mvp.MVPBaseActivity<SpdBu
         SimpleDateFormat dateFormat = new SimpleDateFormat("yyyyMMddHHmmss");
         String currentTime = dateFormat.format(now);
         // 赋值当前日期和时间
-        byte[] nowTimes = DataConversionUtils.HexString2Bytes(currentTime);
+        byte[] nowTimes = Datautils.HexString2Bytes(currentTime);
         return nowTimes;
     }
 
@@ -1450,7 +1494,8 @@ public class PsamIcActivity extends com.spd.bus.spdata.mvp.MVPBaseActivity<SpdBu
         mPresenter.releseAlipayJni();
         MyApplication.getHSMDecoder().removeResultListener(this);
         //停止巡卡
-        handler.removeCallbacks(runnable);
+        startTimer(false);
+//        handler.removeCallbacks(runnable);
         unregisterReceiver(receiver);
 //        try {
 //            mBankCard.breakOffCommand();
@@ -1489,14 +1534,14 @@ public class PsamIcActivity extends com.spd.bus.spdata.mvp.MVPBaseActivity<SpdBu
             CInfo.cPtr = (byte) (CInfoZ.cPtr == 0 ? 8 : (CInfoZ.cPtr - 1));
             CInfo.fProc = (byte) (CInfo.fProc + 1);
             if (CInfoZ.fProc == 1) {
-                int count = DataConversionUtils.byteArrayToInt(CInfoZ.iPurCount) - 1;
+                int count = Datautils.byteArrayToInt(CInfoZ.iPurCount) - 1;
                 byte[] result = new byte[2];
                 result[0] = (byte) ((count >> 8) & 0xFF);
                 result[1] = (byte) (count & 0xFF);
                 CInfo.iPurCount = result;
 
             } else {
-                int count = DataConversionUtils.byteArrayToInt(CInfoZ.iYueCount) - 1;
+                int count = Datautils.byteArrayToInt(CInfoZ.iYueCount) - 1;
                 byte[] result = new byte[2];
                 result[0] = (byte) ((count >> 8) & 0xFF);
                 result[1] = (byte) (count & 0xFF);
@@ -1566,7 +1611,7 @@ public class PsamIcActivity extends com.spd.bus.spdata.mvp.MVPBaseActivity<SpdBu
                 }
                 if (Arrays.equals(CardRcdOriMoney, icCardBeen.getPurOriMoney())) {
                     CInfo.cPtr = (byte) (CInfoZ.cPtr == 0 ? 8 : CInfoZ.cPtr - 1);
-                    int count = DataConversionUtils.byteArrayToInt(CInfoZ.iPurCount) - 1;
+                    int count = Datautils.byteArrayToInt(CInfoZ.iPurCount) - 1;
                     byte[] result = new byte[2];
                     result[0] = (byte) ((count >> 8) & 0xFF);
                     result[1] = (byte) (count & 0xFF);
@@ -1578,7 +1623,7 @@ public class PsamIcActivity extends com.spd.bus.spdata.mvp.MVPBaseActivity<SpdBu
                     if (!Modify_InfoArea(24)) {
                         return;
                     }
-                } else if (DataConversionUtils.byteArrayToInt(CardRcdOriMoney) - DataConversionUtils.byteArrayToInt(CardRcdSub) == DataConversionUtils.byteArrayToInt(icCardBeen.getPurOriMoney())) {
+                } else if (Datautils.byteArrayToInt(CardRcdOriMoney) - Datautils.byteArrayToInt(CardRcdSub) == Datautils.byteArrayToInt(icCardBeen.getPurOriMoney())) {
                     CInfo.fProc = (byte) (CInfo.fProc + 1);
                     if (!Modify_InfoArea(24)) {
                         return;
@@ -1630,7 +1675,7 @@ public class PsamIcActivity extends com.spd.bus.spdata.mvp.MVPBaseActivity<SpdBu
             } else {
                 Log.d(TAG, "is a gbk string");
 //                    decodeDate = new String(firstResult.getBarcodeDataBytes(), "gbk");
-                decodeDate = DataConversionUtils.byteArrayToString(firstResult.getBarcodeDataBytes());
+                decodeDate = Datautils.byteArrayToString(firstResult.getBarcodeDataBytes());
             }
 //            if (decodeDate.equals())
             Log.i(TAG, "二维码: " + decodeDate);
@@ -1641,6 +1686,7 @@ public class PsamIcActivity extends com.spd.bus.spdata.mvp.MVPBaseActivity<SpdBu
                     break;
                 case "BS":
                     //博思二维码
+                    mPresenter.checkBosiQrCode(decodeDate);
                     break;
                 case "Ah":
                     //银联二维码
@@ -1663,7 +1709,7 @@ public class PsamIcActivity extends com.spd.bus.spdata.mvp.MVPBaseActivity<SpdBu
                             pos_id, pos_mf_id, pos_sw_version,
                             merchant_type, currency, amount,
                             vehicle_id, plate_no, driver_id,
-                            line_info, station_no, lbs_info,
+                            lineNumber, station_no, lbs_info,
                             record_type);
                     break;
             }
@@ -1673,8 +1719,9 @@ public class PsamIcActivity extends com.spd.bus.spdata.mvp.MVPBaseActivity<SpdBu
 
     }
 
-    String record_id = "sh001_" + DataConversionUtils.getDefautCurrentTime() + "_000002";
+    String record_id = Datautils.getDefautCurrentTime() + "000002";
     String pos_id = "20170000000001";
+    //机具设备终端编号
     String pos_mf_id = "9998112123";
     String pos_sw_version = "2.6.14.03arm";
     String merchant_type = "22";
@@ -1683,7 +1730,7 @@ public class PsamIcActivity extends com.spd.bus.spdata.mvp.MVPBaseActivity<SpdBu
     String vehicle_id = "vid9702";
     String plate_no = "粤A 095852";
     String driver_id = "0236245394";
-    String line_info = "0";
+    String lineNumber = "0";
     String station_no = "000010";
     String lbs_info = "aaaa";
     String record_type = "BUS";
@@ -1701,23 +1748,22 @@ public class PsamIcActivity extends com.spd.bus.spdata.mvp.MVPBaseActivity<SpdBu
 
 
     @Override
-    public void showAliPublicKey(AlipayQrcodekey aliQrcodekey) {
-        List<AlipayQrcodekey.PublicKeyListBean> aliQrcodekeyList = aliQrcodekey.getPublicKeyList();
+    public void showAliPublicKey(int result) {
 
-        Collections.sort(aliQrcodekeyList);
-        if (aliQrcodekeyList != null) {
-//            Box<AlipayDatabaseBeen> beenBox = BoxStorManage.getInstance().getBoxDao().boxFor(AlipayDatabaseBeen.class);
-//            for (int i = 0; i < aliQrcodekeyList.size(); i++) {
-//                AlipayDatabaseBeen alipayDatabaseBeen = new AlipayDatabaseBeen(aliQrcodekey.getKeyType(), aliQrcodekey.getVersion(), aliQrcodekeyList.get(i).getKey_id(), aliQrcodekeyList.get(i).getPub_key());
-//                beenBox.put(alipayDatabaseBeen);
-//            }
-//            List<AlipayDatabaseBeen> dd = BoxStorManage.getInstance().getBoxDao().boxFor(AlipayDatabaseBeen.class).getAll();
-//            Log.i(TAG, "showAliPublicKey: " + dd.get(0).getKeyType() + dd.get(0).getKeyType() + dd.get(1).getKeyType());
-            mPresenter.aliPayInitJni(aliQrcodekeyList);
+        if (result == 0) {
+            List<AlipayQrcodekey> alipayQrcodekeyList = DbDaoManage.getDaoSession().getAlipayQrcodekeyDao().loadAll();
+            List<String> keyList = alipayQrcodekeyList.get(0).getPubkeyDbList();
+            AlipayQrcodekey.PublicKeyListBean publicKeyListBean = new AlipayQrcodekey.PublicKeyListBean();
+            for (int i = 0; i < keyList.size(); i++) {
+                publicKeyListBean.setKey_id(i);
+                publicKeyListBean.setPub_key(keyList.get(i));
+                alipayQrcodekeyList.get(0).getPublicKeyList().add(publicKeyListBean);
+            }
+            mPresenter.aliPayInitJni(alipayQrcodekeyList.get(0).getPublicKeyList());
+
         } else {
             Log.i(TAG, "获取支付宝key失败 ");
         }
-        Log.i(TAG, "支付宝key：：： " + aliQrcodekeyList.toString());
     }
 
     @Override
@@ -1756,12 +1802,13 @@ public class PsamIcActivity extends com.spd.bus.spdata.mvp.MVPBaseActivity<SpdBu
             QrcodeUpload.DataBean dataBean = new QrcodeUpload.DataBean();
             dataBean.setRecordType("ALIQR");
             List<QrcodeUpload.DataBean> dataBeans = new ArrayList<>();
-            QrcodeUpload.DataBean.RecordBean recordBean = new QrcodeUpload.DataBean.RecordBean("09", DataConversionUtils.getDefautCurrentTime(), "6410", 0, Datautils.byteArrayToAscii(codeinfoData.cardType), line_info, pos_mf_id, "6410001", record_id, Datautils.byteArrayToAscii(codeinfoData.userId), amount, driver_id, decodeDate, 1, Datautils.byteArrayToAscii(codeinfoData.cardNo), Datautils.byteArrayToAscii(codeinfoData.alipayResult), station_no, currency, record_type);
+            QrcodeUpload.DataBean.RecordBean recordBean = new QrcodeUpload.DataBean.RecordBean("09", Datautils.getDefautCurrentTime(), "6410", 0, Datautils.byteArrayToAscii(codeinfoData.cardType), lineNumber, pos_mf_id, "6410001", record_id, Datautils.byteArrayToAscii(codeinfoData.userId), amount, driver_id, decodeDate, 1, Datautils.byteArrayToAscii(codeinfoData.cardNo), Datautils.byteArrayToAscii(codeinfoData.alipayResult), station_no, currency, record_type);
             dataBean.setRecord(recordBean);
+            dataBeans.add(dataBean);
             qrcodeUpload.setData(dataBeans);
             mPresenter.uploadAlipayRe(qrcodeUpload);
         } else {
-            Log.i(TAG, "\n支付宝校验结果错误:：" + codeinfoData.inforState);
+            Log.i(TAG, "\n支付宝校验结果错误:" + codeinfoData.inforState);
         }
     }
 
@@ -1794,36 +1841,39 @@ public class PsamIcActivity extends com.spd.bus.spdata.mvp.MVPBaseActivity<SpdBu
 
     @Override
     public void showCheckWechatQrCode(int result, String wechatResult, String openId) {
-//        if (result == ErroCode.EC_SUCCESS) {
-//            Log.i(TAG, "微信结果: " + "openID" + openId + "结果" + wechatResult);
-//            AlipayUploadBeen alipayUploadBeen = new AlipayUploadBeen();
-//            alipayUploadBeen.setRecordType("TXQR");
-//            List<AlipayUploadBeen.RecordBean> recordBeans = new ArrayList<>();
-//            AlipayUploadBeen.RecordBean recordBean = new AlipayUploadBeen.RecordBean("6410001", "09", record_id, pos_mf_id, driver_id, DataConversionUtils.getDefautCurrentTime(), "6410", line_info, station_no, currency, 0, 1, 1, "0123456", record_type, "20181114032300", openId, decodeDate, wechatResult);
-//            recordBeans.add(recordBean);
-//            alipayUploadBeen.setRecord(recordBeans);
-//            mPresenter.uploadAlipayRe(alipayUploadBeen);
-//
-//        } else {
-//            Log.i(TAG, "微信校验结果错误 " + result);
-//
-//        }
+        if (result == ErroCode.EC_SUCCESS) {
+            Log.i(TAG, "微信结果: " + "openID" + openId + "结果" + wechatResult);
+            QrcodeUpload qrcodeUpload = new QrcodeUpload();
+            QrcodeUpload.DataBean dataBean = new QrcodeUpload.DataBean();
+            dataBean.setRecordType("WECHATQR");
+            List<QrcodeUpload.DataBean> dataBeans = new ArrayList<>();
+            QrcodeUpload.DataBean.RecordBean recordBean = new QrcodeUpload.DataBean.RecordBean("08", Datautils.getDefautCurrentTime(), "6410", 0, "00000000", lineNumber, pos_mf_id, "6410001", record_id, "00000000", amount, driver_id, decodeDate, 1, openId, wechatResult, station_no, currency, record_type);
+            dataBean.setRecord(recordBean);
+            dataBeans.add(dataBean);
+            qrcodeUpload.setData(dataBeans);
+            mPresenter.uploadWechatRe(qrcodeUpload);
+
+        } else {
+            Log.i(TAG, "微信校验结果错误 " + result);
+
+        }
     }
 
     @Override
     public void showBosikey(BosiQrcodeKey bosiQrcodeKey) {
         Log.i(TAG, "showBosikey: " + bosiQrcodeKey.toString());
-    }
-
-    @Override
-    public void showSetBosiCerPath(int state) {
-        if (state == 0) {
-            Log.i(TAG, "showSetBosiCerPath: 设置路径成功");
-        } else {
-            Log.i(TAG, "showSetBosiCerPath: 设置路径失败");
+        if (bosiQrcodeKey != null) {
+            for (int i = 0; i < bosiQrcodeKey.getKeyList().size(); i++) {
+                int re = mPresenter.updataBosiKey(bosiQrcodeKey.getKeyList().get(i).getCert());
+                if (re == 0) {
+                    Log.i(TAG, "showBosikey: 博思更新证书成功");
+                } else {
+                    Log.e(TAG, "showBosikey: 博思更新证书失败");
+                }
+            }
         }
-
     }
+
 
     @Override
     public void showBosiCerVersion(String vension) {
@@ -1832,13 +1882,29 @@ public class PsamIcActivity extends com.spd.bus.spdata.mvp.MVPBaseActivity<SpdBu
     }
 
     @Override
+    public void showCheckBosiQrCode(QrCodeInfo qrCodeInfo) {
+        if (qrCodeInfo != null) {
+            Log.i(TAG, "checkBosiQrCode: " + qrCodeInfo.toString());
+            Log.i(TAG, "checkBosiQrCode:n二维码具体信息 " + qrCodeInfo.toDetailString());
+            QrcodeUpload qrcodeUpload = new QrcodeUpload();
+            QrcodeUpload.DataBean dataBean = new QrcodeUpload.DataBean();
+            dataBean.setRecordType("BOSIQR");
+            List<QrcodeUpload.DataBean> dataBeans = new ArrayList<>();
+            QrcodeUpload.DataBean.RecordBean recordBean = new QrcodeUpload.DataBean.RecordBean("03", Datautils.getDefautCurrentTime(), "6410", 0, qrCodeInfo.getCardType(), lineNumber, pos_mf_id, "6410001", record_id, "00000000", amount, driver_id, decodeDate, 1, qrCodeInfo.getCardId(), Datautils.byteArrayToString(qrCodeInfo.getuTransactionData()), station_no, currency, record_type);
+            dataBean.setRecord(recordBean);
+            dataBeans.add(dataBean);
+            qrcodeUpload.setData(dataBeans);
+            Log.i(TAG, "showCheckBosiQrCode: " + recordBean.toString());
+            mPresenter.uploadBosiRe(qrcodeUpload);
+        }
+    }
+
+    @Override
     public void showUpdataBosiKey(int state) {
         if (state == 0) {
             Log.i(TAG, "showUpdataBosiKey: 更新证书成功");
         } else {
             Log.i(TAG, "showUpdataBosiKey: 更新证书失败");
-
         }
-
     }
 }

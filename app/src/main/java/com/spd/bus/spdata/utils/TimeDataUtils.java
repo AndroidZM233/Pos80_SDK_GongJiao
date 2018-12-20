@@ -15,7 +15,7 @@ import javax.net.ssl.SSLContext;
  * Email 741183142@qq.com
  */
 
-public class DataUtils {
+public class TimeDataUtils {
 
     public static String getUTCtimes() {
         long times = System.currentTimeMillis() / 1000L;

@@ -2,8 +2,9 @@ package com.spd.base.db;
 
 import android.app.Application;
 
-import com.spd.base.been.DaoMaster;
-import com.spd.base.been.DaoSession;
+
+import com.spd.base.beenwechat.DaoMaster;
+import com.spd.base.beenwechat.DaoSession;
 import com.spd.base.database.BoxStorManage;
 
 import org.greenrobot.greendao.database.Database;

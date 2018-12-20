@@ -49,9 +49,9 @@ Java_com_spd_alipay_AlipayJni_initdev(JNIEnv *env, jobject obj, jobject key_obj)
     jmethodID alist_size = (*env)->GetMethodID(env, jcs_alist, "size", "()I");
     jint len = (*env)->CallIntMethod(env, key_obj, alist_size);
     for (int i = 0; i < len; i++) {
-        //获取StuInfo对象
+        //获取对象
         jobject keystu_obj = (*env)->CallObjectMethod(env, key_obj, alist_get, i);
-        //获取StuInfo类
+        //获取类
         jclass key_cls = (*env)->GetObjectClass(env, keystu_obj);
 
         jmethodID keyId = (*env)->GetMethodID(env, key_cls, "getKey_id", "()I");

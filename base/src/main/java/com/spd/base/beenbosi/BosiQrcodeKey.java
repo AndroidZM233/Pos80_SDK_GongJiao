@@ -1,7 +1,16 @@
 package com.spd.base.beenbosi;
 
-import java.util.List;
+import com.spd.base.db.StringConverter;
 
+import org.greenrobot.greendao.annotation.Convert;
+import org.greenrobot.greendao.annotation.Entity;
+import org.greenrobot.greendao.annotation.Id;
+import org.greenrobot.greendao.annotation.Transient;
+import org.greenrobot.greendao.annotation.Unique;
+
+import java.util.List;
+import org.greenrobot.greendao.annotation.Generated;
+@Entity
 public class BosiQrcodeKey {
 
     /**
@@ -9,10 +18,30 @@ public class BosiQrcodeKey {
      * keyType : BoSi
      * version : 2
      */
-
+    @Id(autoincrement = true)
+    private Long id;
+    @Unique
     private String keyType;
+    @Unique
     private int version;
+
+    @Convert(columnType = String.class, converter = StringConverter.class)
+    private List<String> pubkeyDbList;
+    //不添加数据库
+    @Transient
     private List<KeyListBean> keyList;
+
+    @Generated(hash = 8021311)
+    public BosiQrcodeKey(Long id, String keyType, int version, List<String> pubkeyDbList) {
+        this.id = id;
+        this.keyType = keyType;
+        this.version = version;
+        this.pubkeyDbList = pubkeyDbList;
+    }
+
+    @Generated(hash = 882442181)
+    public BosiQrcodeKey() {
+    }
 
     public String getKeyType() {
         return keyType;
@@ -79,5 +108,21 @@ public class BosiQrcodeKey {
                 ", version=" + version +
                 ", keyList=" + keyList +
                 '}';
+    }
+
+    public Long getId() {
+        return this.id;
+    }
+
+    public void setId(Long id) {
+        this.id = id;
+    }
+
+    public List<String> getPubkeyDbList() {
+        return this.pubkeyDbList;
+    }
+
+    public void setPubkeyDbList(List<String> pubkeyDbList) {
+        this.pubkeyDbList = pubkeyDbList;
     }
 }

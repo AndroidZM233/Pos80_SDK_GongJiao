@@ -17,9 +17,7 @@ public class AlipayJni {
                                           String vehicleId, String plateNo, String driverId,
                                           String lineInfo, String stationNo, String lbsInfo,
                                           String recordType) {
-//        if (aliCodeinfoData == null) {
-//            Log.e("PsamIcActivity", "空空空: ");
-//        }
+
         return checkAliQrCodeJni(aliCodeinfoData, code, recordId,
                 posId, posMfId, posSwVersion,
                 merchantType, currency, amount,

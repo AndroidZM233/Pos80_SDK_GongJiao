@@ -17,7 +17,7 @@ import java.util.Arrays;
 import java.util.List;
 import org.greenrobot.greendao.annotation.Generated;
 
-@Entity
+//@Entity
 public class AlipayDatabaseBeen {
     @Id
     long id = 0;

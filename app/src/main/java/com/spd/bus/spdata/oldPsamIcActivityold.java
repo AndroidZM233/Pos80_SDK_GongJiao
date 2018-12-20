@@ -13,12 +13,12 @@ import android.widget.CheckBox;
 import android.widget.CompoundButton;
 import android.widget.TextView;
 
-import com.spd.bus.DataConversionUtils;
+import com.spd.base.utils.Datautils;
 import com.spd.bus.R;
 import com.spd.bus.spdata.been.IcCardBeen;
 import com.spd.bus.spdata.been.TCommInfo;
 import com.spd.bus.spdata.been.PsamBeen;
-import com.spd.bus.spdata.utils.DataUtils;
+import com.spd.bus.spdata.utils.TimeDataUtils;
 import com.spd.bus.util.TLV;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -176,7 +176,7 @@ public class oldPsamIcActivityold extends AppCompatActivity implements View.OnCl
                     retvalue = mBankCard.sendAPDU(BankCard.CARD_MODE_PSAM1_APDU, psam1_get_id, psam1_get_id.length, respdata, resplen);
                     if (retvalue == 0) {
                         Log.d(TAG, "交通部16文件：" + HEX.bytesToHex(cutBytes(respdata, 0, resplen[0])));
-                        if (DataConversionUtils.byteArrayToString(cutBytes(respdata, resplen[0] - 2, 2)).equals("9000")) {
+                        if (Datautils.byteArrayToString(cutBytes(respdata, resplen[0] - 2, 2)).equals("9000")) {
                             deviceCode = cutBytes(respdata, 0, resplen[0] - 2);//终端机编号
                             handler.sendMessage(handler.obtainMessage(1, "交通部PSAM卡终端机编号: " + HEX.bytesToHex(deviceCode)));
                             Log.d(TAG, "====交通部PSAM卡终端机编号==== " + HEX.bytesToHex(deviceCode) + "   " + retvalue);
@@ -251,7 +251,7 @@ public class oldPsamIcActivityold extends AppCompatActivity implements View.OnCl
                     retvalue = mBankCard.sendAPDU(BankCard.CARD_MODE_PSAM2_APDU, psam1_get_id, psam1_get_id.length, respdata, resplen);
                     if (retvalue == 0) {
                         Log.d(TAG, "住建部16文件return" + HEX.bytesToHex(cutBytes(respdata, 0, resplen[0])));
-                        if (DataConversionUtils.byteArrayToString(cutBytes(respdata, resplen[0] - 2, 2)).equals("9000")) {
+                        if (Datautils.byteArrayToString(cutBytes(respdata, resplen[0] - 2, 2)).equals("9000")) {
                             deviceCode = cutBytes(respdata, 0, resplen[0] - 2);//终端机编号
                             handler.sendMessage(handler.obtainMessage(1, "住建部PSAM卡终端机编号: " + HEX.bytesToHex(deviceCode)));
                             Log.d(TAG, "====住建部PSAM卡终端机编号==== " + HEX.bytesToHex(deviceCode) + "   " + retvalue);
@@ -269,7 +269,7 @@ public class oldPsamIcActivityold extends AppCompatActivity implements View.OnCl
                                             handler.sendMessage(handler.obtainMessage(1, "住建部秘钥索引: " + HEX.bytesToHex(psamKey) + "\n" + "PSAM初始化成功！！！请读消费卡\n"));
                                             psamDatas.add(new PsamBeen(1, deviceCode, psamKey));
                                             for (int i = 0; i < psamDatas.size(); i++) {
-                                                Log.d(TAG, "psamzhujianbuInit: 秘钥" + DataConversionUtils.byteArrayToString(psamDatas.get(i).getKeyID()) + "终端编号：" + DataConversionUtils.byteArrayToString(psamDatas.get(i).getTermBumber()));
+                                                Log.d(TAG, "psamzhujianbuInit: 秘钥" + Datautils.byteArrayToString(psamDatas.get(i).getKeyID()) + "终端编号：" + Datautils.byteArrayToString(psamDatas.get(i).getTermBumber()));
                                             }
                                             //切换等待读消费卡
                                         } else {
@@ -449,11 +449,11 @@ public class oldPsamIcActivityold extends AppCompatActivity implements View.OnCl
                 //扇区标识符
                 secF = bytes01;
                 //算秘钥指令
-                String sendCmd = "80fc010110" + HEX.bytesToHex(icCardBeen.getCityNr()) + DataConversionUtils.byteArrayToString(icCardBeen.getSnr()) + HEX.bytesToHex(cutBytes(icCardBeen.getIssueSnr(), 6, 2)) + HEX.bytesToHex(icCardBeen.getMackNr())
+                String sendCmd = "80fc010110" + HEX.bytesToHex(icCardBeen.getCityNr()) + Datautils.byteArrayToString(icCardBeen.getSnr()) + HEX.bytesToHex(cutBytes(icCardBeen.getIssueSnr(), 6, 2)) + HEX.bytesToHex(icCardBeen.getMackNr())
                         + HEX.bytesToHex(cutBytes(secF, 2, 2)) + HEX.bytesToHex(cutBytes(secF, 6, 2));
                 Log.d(TAG, "M1ICCard:  " + sendCmd);
                 //psam卡计算秘钥
-                retvalue = mBankCard.sendAPDU(BankCard.CARD_MODE_PSAM2_APDU, DataConversionUtils.HexString2Bytes(sendCmd), DataConversionUtils.HexString2Bytes(sendCmd).length, respdata, resplen);
+                retvalue = mBankCard.sendAPDU(BankCard.CARD_MODE_PSAM2_APDU, Datautils.HexString2Bytes(sendCmd), Datautils.HexString2Bytes(sendCmd).length, respdata, resplen);
                 if (retvalue != 0) {
                     m1Flag = 1;
                     return;
@@ -652,7 +652,7 @@ public class oldPsamIcActivityold extends AppCompatActivity implements View.OnCl
         }
         int blk = RcdBlkIndex[CInfo.cPtr];//当前交易记录块
         CInfo.cPtr = (byte) (CInfo.cPtr == 8 ? 0 : CInfo.cPtr + 1);//
-        byte[] ulDevUTC = DataConversionUtils.HexString2Bytes(DataUtils.getUTCtimes());//获取UTC时间
+        byte[] ulDevUTC = Datautils.HexString2Bytes(TimeDataUtils.getUTCtimes());//获取UTC时间
 //        if (tCardOpDu.ucSec != 2) {
 //            VarToArr( & RcdToCard[4], tCardOpDu.YueOriMoney, 4);
 //            VarToArr( & RcdToCard[8], tCardOpDu.YueSub, 3);
@@ -673,7 +673,7 @@ public class oldPsamIcActivityold extends AppCompatActivity implements View.OnCl
             count <<= 8;
             count += CInfo.iPurCount[i];
         }
-        int is = DataConversionUtils.byteArrayToInt(CInfo.iPurCount);
+        int is = Datautils.byteArrayToInt(CInfo.iPurCount);
         byte[] result = new byte[2];
 //        result[3] = (byte) ((is >> 24) & 0xFF);
 //        result[2] = (byte) ((is >> 16) & 0xFF);
@@ -744,7 +744,7 @@ public class oldPsamIcActivityold extends AppCompatActivity implements View.OnCl
 //            }
             try {
                 //执行消费 将消费金额带入
-                retvalue = mBankCard.m1CardValueOperation(0x2D, 0x09, DataConversionUtils.byteArrayToInt(dtZ), 0x09);
+                retvalue = mBankCard.m1CardValueOperation(0x2D, 0x09, Datautils.byteArrayToInt(dtZ), 0x09);
                 if (retvalue != 0) {
                     return false;
                 }
@@ -755,8 +755,8 @@ public class oldPsamIcActivityold extends AppCompatActivity implements View.OnCl
                 }
                 dtZ = cutBytes(respdata, 1, resplen[0] - 1);//本次消费后的原额
                 //判断消费前金额-消费金额=消费后金额
-                if (DataConversionUtils.byteArrayToInt(icCardBeen.getPurIncMoney()) - DataConversionUtils.byteArrayToInt(dtZ)
-                        == DataConversionUtils.byteArrayToInt(cutBytes(dtZ, 0, 4))) {
+                if (Datautils.byteArrayToInt(icCardBeen.getPurIncMoney()) - Datautils.byteArrayToInt(dtZ)
+                        == Datautils.byteArrayToInt(cutBytes(dtZ, 0, 4))) {
                 }
                 //step 6
                 retvalue = mBankCard.m1CardWriteBlockData(0x0A, dtZ.length, dtZ);
@@ -903,7 +903,7 @@ public class oldPsamIcActivityold extends AppCompatActivity implements View.OnCl
                 }
             }
 
-            Log.d(TAG, "fuhexiaofei: 消费记录 tlv 3031 send " + DataConversionUtils.byteArrayToString(fuhe_tlv));
+            Log.d(TAG, "fuhexiaofei: 消费记录 tlv 3031 send " + Datautils.byteArrayToString(fuhe_tlv));
             retvalue = mBankCard.sendAPDU(BankCard.CARD_MODE_PICC, fuhe_tlv, fuhe_tlv.length, respdata, resplen);
             if (retvalue == 0) {
                 byte[] testTlv = cutBytes(respdata, 0, resplen[0] - 2);
@@ -925,7 +925,7 @@ public class oldPsamIcActivityold extends AppCompatActivity implements View.OnCl
                             Log.d(TAG, "test: 解析到TLV发送0105 send：" + select_ic);
                             tvShowMsg.append("解析到TLV发送0105 send： " + select_ic + "\n");
 //                            handler.sendMessage(handler.obtainMessage(1, "解析到TLV发送0105 send： " + select_ic));
-                            byte[] ELECT_DIANZIQIANBAO = DataConversionUtils.HexString2Bytes(select_ic);
+                            byte[] ELECT_DIANZIQIANBAO = Datautils.HexString2Bytes(select_ic);
                             retvalue = mBankCard.sendAPDU(BankCard.CARD_MODE_PICC, ELECT_DIANZIQIANBAO, ELECT_DIANZIQIANBAO.length, respdata, resplen);//选择电子钱包应用
                         }
                     }
@@ -966,7 +966,7 @@ public class oldPsamIcActivityold extends AppCompatActivity implements View.OnCl
                                             tvShowMsg.append("IC读17文件返回：" + HEX.bytesToHex(cutBytes(respdata, 0, resplen[0])) + "\n");
 
                                             Log.d(TAG, "test: IC读1E文件 00b2 send  00B201F400");
-                                            retvalue = mBankCard.sendAPDU(BankCard.CARD_MODE_PICC, DataConversionUtils.HexString2Bytes("00B201F400"), DataConversionUtils.HexString2Bytes("00B201F400").length, respdata, resplen);
+                                            retvalue = mBankCard.sendAPDU(BankCard.CARD_MODE_PICC, Datautils.HexString2Bytes("00B201F400"), Datautils.HexString2Bytes("00B201F400").length, respdata, resplen);
                                             if (retvalue == 0) {
                                                 Log.d(TAG, "test: IC读1E文件 00b2 return：" + HEX.bytesToHex(cutBytes(respdata, 0, resplen[0])) + "维智" + retvalue + "\n");
                                                 if (Arrays.equals(APDU_RESULT_SUCCESS, cutBytes(respdata, resplen[0] - 2, 2))) {
@@ -974,7 +974,7 @@ public class oldPsamIcActivityold extends AppCompatActivity implements View.OnCl
 
 
                                                     Log.d(TAG, "===805c IC余额===  send   :805C030204");
-                                                    retvalue = mBankCard.sendAPDU(BankCard.CARD_MODE_PICC, DataConversionUtils.HexString2Bytes("805C030204"), DataConversionUtils.HexString2Bytes("805C030204").length, respdata, resplen);
+                                                    retvalue = mBankCard.sendAPDU(BankCard.CARD_MODE_PICC, Datautils.HexString2Bytes("805C030204"), Datautils.HexString2Bytes("805C030204").length, respdata, resplen);
                                                     if (retvalue == 0) {
                                                         Log.d(TAG, "===IC余额 (805c)===  return  :" + HEX.bytesToHex(respdata) + "维智" + retvalue);
                                                         if (Arrays.equals(APDU_RESULT_SUCCESS, cutBytes(respdata, resplen[0] - 2, 2))) {
@@ -1013,7 +1013,7 @@ public class oldPsamIcActivityold extends AppCompatActivity implements View.OnCl
                                                                             //80dc
                                                                             String ss = "80DC00F030060000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000";
                                                                             Log.d(TAG, ss.length() + "===更新1E文件 80dc  send===" + ss);
-                                                                            retvalue = mBankCard.sendAPDU(BankCard.CARD_MODE_PICC, DataConversionUtils.HexString2Bytes(ss), DataConversionUtils.HexString2Bytes(ss).length, respdata, resplen);
+                                                                            retvalue = mBankCard.sendAPDU(BankCard.CARD_MODE_PICC, Datautils.HexString2Bytes(ss), Datautils.HexString2Bytes(ss).length, respdata, resplen);
                                                                             if (retvalue == 0) {
                                                                                 Log.d(TAG, "===更新1E文件 return===" + HEX.bytesToHex(cutBytes(respdata, 0, resplen[0])) + "   " + retvalue);
                                                                                 if (Arrays.equals(APDU_RESULT_SUCCESS, cutBytes(respdata, resplen[0] - 2, 2))) {
@@ -1130,13 +1130,13 @@ public class oldPsamIcActivityold extends AppCompatActivity implements View.OnCl
             stringBuilder.replace(5, 6, "3");
 //            start = "805003020B";
         }
-        stringBuilder.append(DataConversionUtils.byteArrayToString(psamKey)).append("00000002").append(DataConversionUtils.byteArrayToString(deviceCode)).append("0F");
-//        String key = DataConversionUtils.byteArrayToString(psamKey);
+        stringBuilder.append(Datautils.byteArrayToString(psamKey)).append("00000002").append(Datautils.byteArrayToString(deviceCode)).append("0F");
+//        String key = Datautils.byteArrayToString(psamKey);
 //        String vanlce = "00000002";//金额固定
-//        String deviceID = DataConversionUtils.byteArrayToString(deviceCode);
+//        String deviceID = Datautils.byteArrayToString(deviceCode);
 //        String end = "0F";
 //        String initIC = start + key + vanlce + deviceID + end;
-        return DataConversionUtils.HexString2Bytes(stringBuilder.toString());
+        return Datautils.HexString2Bytes(stringBuilder.toString());
     }
 
     /**
@@ -1200,8 +1200,8 @@ public class oldPsamIcActivityold extends AppCompatActivity implements View.OnCl
      * @return 返回 8072校验mac2
      */
     private byte[] checkPsamMac2(byte[] data) {
-        String psam_mac2 = "8072000004" + DataConversionUtils.byteArrayToString(cutBytes(data, 4, 4));
-        return DataConversionUtils.HexString2Bytes(psam_mac2);
+        String psam_mac2 = "8072000004" + Datautils.byteArrayToString(cutBytes(data, 4, 4));
+        return Datautils.HexString2Bytes(psam_mac2);
     }
 
     private byte[] PSAM_ATC = new byte[4];
@@ -1231,7 +1231,7 @@ public class oldPsamIcActivityold extends AppCompatActivity implements View.OnCl
         SimpleDateFormat dateFormat = new SimpleDateFormat("yyyyMMddHHmmss");//可以方便地修改日期格式
         String currentTime = dateFormat.format(now);
         // 赋值当前日期和时间
-        byte[] nowTimes = DataConversionUtils.HexString2Bytes(currentTime);
+        byte[] nowTimes = Datautils.HexString2Bytes(currentTime);
         return nowTimes;
     }
 
