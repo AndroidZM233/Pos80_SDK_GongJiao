@@ -417,7 +417,8 @@ public class PsamIcActivity extends com.spd.bus.spdata.mvp.MVPBaseActivity<SpdBu
                     retvalue = mBankCard.readCard(BankCard.CARD_TYPE_NORMAL, BankCard.CARD_MODE_PICC, 1, respdata, resplen, "app1");
                     Log.i("stw", "ic结束寻卡===" + (System.currentTimeMillis() - ltime));
                     if (retvalue != 0) {
-                        isFlag = 0;
+                        isFlag = 1;
+                        return;
                     }
                     //检测到非接IC卡
                     if (respdata[0] == 0x07) {
@@ -1105,7 +1106,7 @@ public class PsamIcActivity extends com.spd.bus.spdata.mvp.MVPBaseActivity<SpdBu
             ltime = System.currentTimeMillis();
             retvalue = mBankCard.sendAPDU(BankCard.CARD_MODE_PICC, fuhe_tlv, fuhe_tlv.length, respdata, resplen);
             if (retvalue != 0) {
-                mBankCard.breakOffCommand();
+
                 isFlag = 1;
                 Log.e(TAG, "消费记录 tlv 3031 error");
                 return;
@@ -1116,7 +1117,7 @@ public class PsamIcActivity extends com.spd.bus.spdata.mvp.MVPBaseActivity<SpdBu
             if (Arrays.equals(cutBytes(respdata, resplen[0] - 2, 2), APDU_RESULT_FAILE)) {
 
             } else if (!Arrays.equals(APDU_RESULT_SUCCESS, cutBytes(respdata, resplen[0] - 2, 2))) {
-                mBankCard.breakOffCommand();
+
                 isFlag = 1;
             }
             boolean isFlag = true;
@@ -1146,14 +1147,14 @@ public class PsamIcActivity extends com.spd.bus.spdata.mvp.MVPBaseActivity<SpdBu
                 retvalue = mBankCard.sendAPDU(BankCard.CARD_MODE_PICC, ic_file, ic_file.length, respdata, resplen);
             }
             if (retvalue != 0) {
-                mBankCard.breakOffCommand();
+
                 Log.e(TAG, "icExpance: 获取交易时间错误");
                 this.isFlag = 1;
                 return;
             }
             Log.d(TAG, "===0105return===" + HEX.bytesToHex(cutBytes(respdata, 0, resplen[0])));
             if (!Arrays.equals(APDU_RESULT_SUCCESS, cutBytes(respdata, resplen[0] - 2, 2))) {
-                mBankCard.breakOffCommand();
+
                 this.isFlag = 1;
                 return;
             }
@@ -1161,13 +1162,13 @@ public class PsamIcActivity extends com.spd.bus.spdata.mvp.MVPBaseActivity<SpdBu
             //读应用下公共应用基本信息文件指令
             retvalue = mBankCard.sendAPDU(BankCard.CARD_MODE_PICC, ic_read_file, ic_read_file.length, respdata, resplen);
             if (retvalue != 0) {
-                mBankCard.breakOffCommand();
+
                 this.isFlag = 1;
                 return;
             }
             Log.d(TAG, "===IC读15文件 === retur:" + HEX.bytesToHex(cutBytes(respdata, 0, resplen[0])));
             if (!Arrays.equals(APDU_RESULT_SUCCESS, cutBytes(respdata, resplen[0] - 2, 2))) {
-                mBankCard.breakOffCommand();
+
                 this.isFlag = 1;
                 return;
             }
@@ -1182,13 +1183,13 @@ public class PsamIcActivity extends com.spd.bus.spdata.mvp.MVPBaseActivity<SpdBu
             Log.d(TAG, "===读17文件00b0send===" + HEX.bytesToHex(IC_READ17_FILE));
             retvalue = mBankCard.sendAPDU(BankCard.CARD_MODE_PICC, IC_READ17_FILE, IC_READ17_FILE.length, respdata, resplen);
             if (retvalue != 0) {
-                mBankCard.breakOffCommand();
+
                 this.isFlag = 1;
                 return;
             }
             Log.d(TAG, resplen[0] + "===IC读17文件return===" + HEX.bytesToHex(cutBytes(respdata, 0, resplen[0])) + "维智" + retvalue);
             if (!Arrays.equals(APDU_RESULT_SUCCESS, cutBytes(respdata, resplen[0] - 2, 2))) {
-                mBankCard.breakOffCommand();
+
                 this.isFlag = 1;
                 return;
             }
@@ -1196,13 +1197,13 @@ public class PsamIcActivity extends com.spd.bus.spdata.mvp.MVPBaseActivity<SpdBu
             Log.d(TAG, "===IC读1E文件 00b2send===00B201F400");
             retvalue = mBankCard.sendAPDU(BankCard.CARD_MODE_PICC, Datautils.HexString2Bytes("00B201F400"), Datautils.HexString2Bytes("00B201F400").length, respdata, resplen);
             if (retvalue != 0) {
-                mBankCard.breakOffCommand();
+
                 this.isFlag = 1;
                 return;
             }
             Log.d(TAG, "===IC读1E文件00b2return===" + HEX.bytesToHex(cutBytes(respdata, 0, resplen[0])) + "维智" + retvalue + "\n");
             if (!Arrays.equals(APDU_RESULT_SUCCESS, cutBytes(respdata, resplen[0] - 2, 2))) {
-                mBankCard.breakOffCommand();
+
                 this.isFlag = 1;
                 return;
             }
@@ -1210,13 +1211,13 @@ public class PsamIcActivity extends com.spd.bus.spdata.mvp.MVPBaseActivity<SpdBu
             Log.d(TAG, "===IC余额)805c)send===  805C030204");
             retvalue = mBankCard.sendAPDU(BankCard.CARD_MODE_PICC, Datautils.HexString2Bytes("805C030204"), Datautils.HexString2Bytes("805C030204").length, respdata, resplen);
             if (retvalue != 0) {
-                mBankCard.breakOffCommand();
+
                 this.isFlag = 1;
                 return;
             }
             Log.d(TAG, "===IC余额(805c)return===" + HEX.bytesToHex(respdata) + "维智" + retvalue);
             if (!Arrays.equals(APDU_RESULT_SUCCESS, cutBytes(respdata, resplen[0] - 2, 2))) {
-                mBankCard.breakOffCommand();
+
                 this.isFlag = 1;
                 return;
             }
@@ -1225,13 +1226,13 @@ public class PsamIcActivity extends com.spd.bus.spdata.mvp.MVPBaseActivity<SpdBu
             Log.d(TAG, "===IC卡初始化(8050)send===" + HEX.bytesToHex(INIT_IC_FILE));
             retvalue = mBankCard.sendAPDU(BankCard.CARD_MODE_PICC, INIT_IC_FILE, INIT_IC_FILE.length, respdata, resplen);
             if (retvalue != 0) {
-                mBankCard.breakOffCommand();
+
                 this.isFlag = 1;
                 return;
             }
             Log.d(TAG, "===IC卡初始化(8050)return=== " + HEX.bytesToHex(respdata));
             if (!Arrays.equals(APDU_RESULT_SUCCESS, cutBytes(respdata, resplen[0] - 2, 2))) {
-                mBankCard.breakOffCommand();
+
                 this.isFlag = 1;
                 return;
             }
@@ -1249,13 +1250,13 @@ public class PsamIcActivity extends com.spd.bus.spdata.mvp.MVPBaseActivity<SpdBu
             Log.d(TAG, "===获取MAC1(8070)send===" + HEX.bytesToHex(psam_mac1));
             retvalue = mBankCard.sendAPDU(BankCard.CARD_MODE_PSAM1_APDU, psam_mac1, psam_mac1.length, respdata, resplen);
             if (retvalue != 0) {
-                mBankCard.breakOffCommand();
+
                 this.isFlag = 1;
                 return;
             }
             Log.d(TAG, "===获取MAC18070return===" + HEX.bytesToHex(cutBytes(respdata, 0, resplen[0])) + "   " + retvalue);
             if (!Arrays.equals(APDU_RESULT_SUCCESS, cutBytes(respdata, resplen[0] - 2, 2))) {
-                mBankCard.breakOffCommand();
+
                 this.isFlag = 1;
                 return;
             }
@@ -1267,13 +1268,13 @@ public class PsamIcActivity extends com.spd.bus.spdata.mvp.MVPBaseActivity<SpdBu
 //            Log.d(TAG, "===更新1E文件 80dc  send===" + ss);
 //            retvalue = mBankCard.sendAPDU(BankCard.CARD_MODE_PICC, Datautils.HexString2Bytes(ss), Datautils.HexString2Bytes(ss).length, respdata, resplen);
 //            if (retvalue != 0) {
-//                mBankCard.breakOffCommand();
+//
 //                isFlag = 1;
 //                return;
 //            }
 //            Log.d(TAG, "===更新1E文件 return===" + HEX.bytesToHex(cutBytes(respdata, 0, resplen[0])) + "   " + retvalue);
 //            if (!Arrays.equals(APDU_RESULT_SUCCESS, cutBytes(respdata, resplen[0] - 2, 2))) {
-//                mBankCard.breakOffCommand();
+//
 //                isFlag = 1;
 //                return;
 //            }
@@ -1282,13 +1283,13 @@ public class PsamIcActivity extends com.spd.bus.spdata.mvp.MVPBaseActivity<SpdBu
             Log.d(TAG, "===IC卡(8054)消费发送===" + HEX.bytesToHex(cmd));
             retvalue = mBankCard.sendAPDU(BankCard.CARD_MODE_PICC, cmd, cmd.length, respdata, resplen);
             if (retvalue != 0) {
-                mBankCard.breakOffCommand();
+                Log.e(TAG, "===IC卡(8054)微智返回===" +retvalue);
                 this.isFlag = 1;
                 return;
             }
             Log.d(TAG, "===IC卡(8054)消费返回===" + HEX.bytesToHex(cutBytes(respdata, 0, resplen[0])) + " " + retvalue);
             if (!Arrays.equals(APDU_RESULT_SUCCESS, cutBytes(respdata, resplen[0] - 2, 2))) {
-                mBankCard.breakOffCommand();
+
                 this.isFlag = 1;
                 return;
             }
@@ -1299,28 +1300,24 @@ public class PsamIcActivity extends com.spd.bus.spdata.mvp.MVPBaseActivity<SpdBu
             Log.d(TAG, "===psam卡 8072校验 send===: " + HEX.bytesToHex(PSAM_CHECK_MAC2) + "微智结果：" + retvalue);
             if (retvalue != 0) {
                 this.isFlag = 1;
-                mBankCard.breakOffCommand();
+
                 return;
             }
             Log.d(TAG, "===psam卡 8072校验返回===: " + HEX.bytesToHex(cutBytes(respdata, 0, resplen[0])) + "微智结果：" + retvalue);
             if (!Arrays.equals(APDU_RESULT_SUCCESS, cutBytes(respdata, resplen[0] - 2, 2))) {
                 this.isFlag = 1;
-                mBankCard.breakOffCommand();
+
                 return;
             }
             this.isFlag = 0;
             Log.i("stw", "===消费结束===" + (System.currentTimeMillis() - ltime));
             handler.sendMessage(handler.obtainMessage(1, Datautils.byteArrayToInt(blance)));
-            mBankCard.breakOffCommand();
+
             Log.d("times", "icExpance:=====  消费完成=======");
         } catch (RemoteException e) {
             e.printStackTrace();
-            try {
-                isFlag = 1;
-                mBankCard.breakOffCommand();
-            } catch (RemoteException e1) {
-                e1.printStackTrace();
-            }
+            isFlag = 1;
+            return;
         }
     }
 
