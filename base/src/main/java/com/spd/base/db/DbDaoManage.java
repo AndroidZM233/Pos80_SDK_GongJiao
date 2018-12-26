@@ -3,11 +3,10 @@ package com.spd.base.db;
 import android.app.Application;
 
 
-import com.spd.base.beenwechat.DaoMaster;
-import com.spd.base.beenwechat.DaoSession;
-import com.spd.base.database.BoxStorManage;
+//
+import com.spd.base.beenali.DaoMaster;
+import com.spd.base.beenali.DaoSession;
 
-import org.greenrobot.greendao.database.Database;
 
 public class DbDaoManage {
 
@@ -24,8 +23,9 @@ public class DbDaoManage {
         DaoMaster daoMaster = new DaoMaster(devOpenHelper.getReadableDb());
         daoSession = daoMaster.newSession();
     }
-
+//
     public static DaoSession getDaoSession() {
         return daoSession;
+//        return (DaoSession) new Object();
     }
 }

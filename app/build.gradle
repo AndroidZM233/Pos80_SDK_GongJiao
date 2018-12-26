@@ -3,7 +3,7 @@ android {
     compileSdkVersion 28
     defaultConfig {
         applicationId "com.spd.bus"
-        minSdkVersion 21
+        minSdkVersion 15
         targetSdkVersion 28
         versionCode 1
         versionName "1.0"
@@ -46,5 +46,5 @@ dependencies {
     implementation project(':wechat')
     implementation project(':alipay')
     implementation project(':bosi')
+    implementation project(':face')
 }
-

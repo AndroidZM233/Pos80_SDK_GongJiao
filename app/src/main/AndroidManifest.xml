@@ -13,9 +13,7 @@
     <uses-permission
         android:name="android.permission.CHANGE_CONFIGURATION"
         tools:ignore="ProtectedPermissions" />
-    <uses-permission android:name="android.permission.PROCESS_OUTGOING_CALLS" />
-
-    <!-- 开机启动 -->
+    <uses-permission android:name="android.permission.PROCESS_OUTGOING_CALLS" /> <!-- 开机启动 -->
     <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED" />
     <uses-permission android:name="android.permission.CAMERA" />
 
@@ -28,18 +26,23 @@
         android:supportsRtl="true"
         android:theme="@style/AppTheme.NoActionBar"
         tools:replace="android:icon,android:theme,android:allowBackup">
-        <meta-data
-            android:name="companyId"
-            android:value="b8254759-295e-43c7-b4d1-0acb1f2a0c33" />
-        <activity
-            android:name=".spdata.PsamIcActivity"
-            android:screenOrientation="landscape"
-            android:theme="@style/AppTheme.NoActionBar">
+        <activity android:name=".spdata.FaceResultAct"
+            android:screenOrientation="landscape">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
+        </activity>
+
+        <meta-data
+            android:name="companyId"
+            android:value="b8254759-295e-43c7-b4d1-0acb1f2a0c33" />
+
+        <activity
+            android:name=".spdata.PsamIcActivity"
+            android:screenOrientation="landscape"
+            android:theme="@style/AppTheme.NoActionBar">
 
         </activity>
 

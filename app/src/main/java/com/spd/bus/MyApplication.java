@@ -1,6 +1,7 @@
 package com.spd.bus;
 
 import android.app.Application;
+import android.content.Intent;
 import android.graphics.Color;
 import android.os.Build;
 import android.support.annotation.RequiresApi;
@@ -14,6 +15,8 @@ import com.honeywell.barcode.HSMDecoder;
 import com.spd.base.database.BoxStorManage;
 import com.spd.base.db.DbDaoManage;
 import com.spd.bus.spdata.utils.PlaySound;
+
+import speedata.com.face.HttpService;
 
 import static com.honeywell.barcode.Symbology.QR;
 
@@ -30,6 +33,9 @@ public class MyApplication extends Application {
 //        CrashReport.initCrashReport(getApplicationContext(),"ca2f83cd2c",true);
         PlaySound.initSoundPool(this);
         initScanBards();
+
+        //开启HttpServer
+        startService(new Intent(this,HttpService.class));
         //objectbox数据库初始化 必须在 application中
 //        BoxStorManage.init(MyApplication.this);
 
@@ -74,6 +80,12 @@ public class MyApplication extends Application {
 //            }
 //        });
 
+    }
+
+    @Override
+    public void onTrimMemory(int level) {
+        super.onTrimMemory(level);
+        stopService(new Intent(this,HttpService.class));
     }
 
     public static HSMDecoder getHSMDecoder() {
