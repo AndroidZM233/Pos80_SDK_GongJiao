@@ -222,6 +222,7 @@ public class PsamIcActivity extends com.spd.bus.spdata.mvp.MVPBaseActivity<SpdBu
     }
 
     private void initCard() {
+        try{
         //解码库条码返回监听
         MyApplication.getHSMDecoder().addResultListener(this);
         //注册系统时间广播 只能动态注册
@@ -244,7 +245,9 @@ public class PsamIcActivity extends com.spd.bus.spdata.mvp.MVPBaseActivity<SpdBu
         mPresenter.getAliPubKey();
         mPresenter.getWechatPublicKey();
         mPresenter.bosiInitJin(this, "/storage/sdcard0/bosicer/");
-        mPresenter.getBosikey();
+        mPresenter.getBosikey();}catch (Exception e){
+
+        }
     }
 
 
