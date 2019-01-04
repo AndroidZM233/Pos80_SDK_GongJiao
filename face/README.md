@@ -31,5 +31,7 @@
 * cd /anytec/server/bus/ 进入到应用目录
 * rm -r db 删除数据库重新同步
 * curl -X POST http://192.168.10.129:10000/device/sync 同步人脸
-* findface-faceapi.toke  查看token
-* curl -H "Authorization:Token MKQt-2kCT" http://192.168.10.129:8000/v0/faces 查看所有录入人脸信息
+* findface-facenapi.token  查看token
+* curl -H "Authorization:Token HCyF-ZGA6" http://192.168.10.129:8000/v0/faces 查看所有录入人脸信息
+
+* 修改配置文件需要重启 sudo supervisorctl restart all
