@@ -43,7 +43,7 @@ public class FaceApi {
 
     private FaceApi(OkHttpClient okHttpClient) {
         Retrofit retrofit = new Retrofit.Builder()
-                .baseUrl("http://www.mskaikai.com:8080/")
+                .baseUrl("http://www.mskaikai.com:8081/")
                 .addCallAdapterFactory(RxJava2CallAdapterFactory.create())
                 .addConverterFactory(GsonConverterFactory.create())
                 .client(okHttpClient)

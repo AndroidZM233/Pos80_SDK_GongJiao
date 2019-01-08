@@ -2,7 +2,9 @@
 # 公交人脸识别（恩钛~乾海）
 ## 五部分
 
-* 路由器插4G卡 号段是192.168.10.1
+* 路由器插4G卡 号段是192.168.10.X
+
+
 * 摄像头
 * 工控机（主板服务器，跑jar包 连摄像头，人脸识别到后  通过http发送出来，发送地址需要编辑配置信息）
 * 本模块，作为httpServer 接收消息（faceid），接收到后 显示提示 组Json包发送到云服务器
@@ -27,9 +29,16 @@
 
 
 工控机调试指令 ssh远程 连接 同步人脸库  查看log等
+# 登陆
 * ssh n-tech-admin@192.168.10.129 密码n-tech123@
 * cd /anytec/server/bus/ 进入到应用目录
+
+# 数据同步
 * rm -r db 删除数据库重新同步
 * curl -X POST http://192.168.10.129:10000/device/sync 同步人脸
-* findface-faceapi.toke  查看token
-* curl -H "Authorization:Token MKQt-2kCT" http://192.168.10.129:8000/v0/faces 查看所有录入人脸信息
+* findface-facenapi.token  查看token
+* curl -H "Authorization:Token HCyF-ZGA6" http://192.168.10.129:8000/v0/faces 查看所有录入人脸信息
+
+# 修改配置
+* 查看配置文件 vim config/application.yml
+* 修改配置文件需要重启 sudo supervisorctl restart all
