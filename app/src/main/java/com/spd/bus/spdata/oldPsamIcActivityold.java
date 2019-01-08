@@ -20,6 +20,7 @@ import com.spd.bus.spdata.been.TCommInfo;
 import com.spd.bus.spdata.been.PsamBeen;
 import com.spd.bus.spdata.utils.TimeDataUtils;
 import com.spd.bus.util.TLV;
+
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -613,7 +614,6 @@ public class oldPsamIcActivityold extends AppCompatActivity implements View.OnCl
                 icCardBeen.setPurOriMoney(ActRemaining);
                 icCardBeen.setPurSub(new byte[]{0x00, 0x00, 0x00, 0x01});//定义消费金额
                 retvalue = mBankCard.m1CardValueOperation(0x2D, 0x09, 1, 0x09);
-
 
 
                 Log.d(TAG, "M1ICCard: " + HEX.bytesToHex(ActRemaining));

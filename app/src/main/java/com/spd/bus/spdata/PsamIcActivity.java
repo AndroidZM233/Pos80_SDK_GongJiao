@@ -9,7 +9,6 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
 import android.os.RemoteException;
-import android.os.SystemClock;
 import android.support.annotation.Nullable;
 import android.util.Log;
 import android.view.View;
@@ -63,26 +62,16 @@ import wangpos.sdk4.libbasebinder.Core;
 import static com.spd.bus.spdata.been.ErroCode.ILLEGAL_PARAM;
 import static com.spd.bus.spdata.been.ErroCode.NO_ENOUGH_MEMORY;
 import static com.spd.bus.spdata.been.ErroCode.SYSTEM_ERROR;
-import static com.spd.bus.spdata.utils.PlaySound.dang;
 import static com.spd.bus.spdata.utils.PlaySound.xiaofeiSuccse;
 
 public class PsamIcActivity extends MVPBaseActivity<SpdBusPayContract.View, SpdBusPayPresenter> implements SpdBusPayContract.View, DecodeResultListener {
     private BankCard mBankCard;
-    private Core mCore;
     private boolean isStart = true;
     /**
      * 普通交易（CAPP=0）或复合交易（CAPP=1）
      */
     private int CAPP = 1;
     private static final String TAG = "SPEEDATA_BUS";
-    /**
-     * 终端编号
-     */
-    private byte[] deviceCode;
-    /**
-     * 秘钥索引
-     */
-    private byte[] psamKey;
 
     private List<PsamBeen> psamDatas = new ArrayList<>();
     private byte[] blance = new byte[4];
@@ -106,9 +95,10 @@ public class PsamIcActivity extends MVPBaseActivity<SpdBusPayContract.View, SpdB
      */
     private final byte[] APDU_RESULT_SUCCESS = {(byte) 0x90, 0x00};
     /**
-     * 返回错误结果
+     * CPU卡黑名单结果
      */
     private final byte[] APDU_RESULT_FAILE = {(byte) 0x62, (byte) 0x83};
+
     /**
      * 微智接口返回数据
      */
@@ -126,41 +116,48 @@ public class PsamIcActivity extends MVPBaseActivity<SpdBusPayContract.View, SpdB
      */
     private byte[] systemTime;
 
-
     /**
      * //获取PSAM卡终端机编号指令
      */
-    private final byte[] psam1_get_id = {0x00, (byte) 0xB0, (byte) 0x96, 0x00, 0x06};
+    private final byte[] PSAN_GET_ID = {0x00, (byte) 0xB0, (byte) 0x96, 0x00, 0x06};
     /**
      * //交通部
      */
-    private final byte[] psam2_select_dir = {0x00, (byte) 0xA4, 0x00, 0x00, 0x02, (byte) 0x80, 0x11};
+    private final byte[] PSAM_SELECT_DIR = {0x00, (byte) 0xA4, 0x00, 0x00, 0x02, (byte) 0x80, 0x11};
+
+    /**
+     * //读取psam卡17文件
+     */
+    private final byte[] PSAM_GET_17FILE = {0x00, (byte) 0xB0, (byte) 0x97, 0x00, 0x01};
+
+    /**
+     * //选择PPSE支付环境
+     */
+    private final byte[] SELEC_PPSE = {0x00, (byte) 0xA4, 0x04, 0x00, 0x0e, 0x32, 0x50, 0x41, 0x59, 0x2e, 0x53, 0x59, 0x53, 0x2e,
+            0x44, 0x44, 0x46, 0x30, 0x31};
+
+    /**
+     * //选择电子钱包应用
+     */
+    private final byte[] SELECT_ICCARD_QIANBAO = {0x00, (byte) 0xA4, 0x04, 0x00, 0x08, (byte) 0xA0, 0x00, 0x00, 0x06, 0x32, 0x01, 0x01, 0x05};
+
+    /**
+     * //读CPU卡应用下公共应用基本信息文件指令 15文件
+     */
+    private final byte[] READ_ICCARD_15FILE = {0x00, (byte) 0xB0, (byte) 0x95, 0x00, 0x00};
+
+    /**
+     * 读CPU17文件
+     */
+
+    byte[] READ_ICCARD_17FILE = {0x00, (byte) 0xB0, (byte) 0x97, 0x00, 0x00};
 
     /**
      * //住建部
      */
     private final byte[] psamzhujian_select_dir = {0x00, (byte) 0xA4, 0x00, 0x00, 0x02, (byte) 0x10, 0x01};
 
-    /**
-     * //读取psam卡17文件
-     */
-    private final byte[] psam3_get_index = {0x00, (byte) 0xB0, (byte) 0x97, 0x00, 0x01};
 
-    /**
-     * //选择PPSE支付环境
-     */
-    private final byte[] fuhe_tlv = {0x00, (byte) 0xA4, 0x04, 0x00, 0x0e, 0x32, 0x50, 0x41, 0x59, 0x2e, 0x53, 0x59, 0x53, 0x2e,
-            0x44, 0x44, 0x46, 0x30, 0x31};
-
-    /**
-     * //选择电子钱包应用
-     */
-    private final byte[] ic_file = {0x00, (byte) 0xA4, 0x04, 0x00, 0x08, (byte) 0xA0, 0x00, 0x00, 0x06, 0x32, 0x01, 0x01, 0x05};
-
-    /**
-     * //读ic卡应用下公共应用基本信息文件指令 15文件
-     */
-    private final byte[] ic_read_file = {0x00, (byte) 0xB0, (byte) 0x95, 0x00, 0x00};
     /**
      * //扇区标识符
      */
@@ -231,18 +228,16 @@ public class PsamIcActivity extends MVPBaseActivity<SpdBusPayContract.View, SpdB
             filter.addAction(Contants.ACTION_RECE_FACE);
             filter.addAction(Contants.ACTION_UPLOAD_STATUS);
             registerReceiver(receiver, filter);
-            starttimeTask();
+            updateTime();
             new Thread(new Runnable() {
                 @Override
                 public void run() {
                     mBankCard = new BankCard(getApplicationContext());
-                    mCore = new Core(getApplicationContext());
                     psam1Init();
-//                    psam2Init();
+                    psam2Init();
                     startTimer(true);
                 }
             }).start();
-
             //获取支付宝微信key
             mPresenter.getAliPubKey();
             mPresenter.getWechatPublicKey();
@@ -255,16 +250,12 @@ public class PsamIcActivity extends MVPBaseActivity<SpdBusPayContract.View, SpdB
 
 
     /**
-     * 更新时间
+     * 人脸识别广播
      */
     private final BroadcastReceiver receiver = new BroadcastReceiver() {
         @Override
         public void onReceive(Context context, Intent intent) {
             String action = intent.getAction();
-            if (action.equals(Intent.ACTION_TIME_CHANGED)) {
-                mTvDate.setText(Datautils.getData());
-                mTvTime.setText(Datautils.getTime());
-            }
             if (action.equals(Contants.ACTION_RECE_FACE)) {
                 boolean isSuccess = intent.getBooleanExtra("issuccess", false);
                 if (isSuccess) {
@@ -297,7 +288,8 @@ public class PsamIcActivity extends MVPBaseActivity<SpdBusPayContract.View, SpdB
         }
     };
 
-    private void starttimeTask() {
+    @SuppressLint("CheckResult")
+    private void updateTime() {
         Flowable.interval(0, 1, TimeUnit.SECONDS)
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(new Consumer<Long>() {
@@ -329,49 +321,34 @@ public class PsamIcActivity extends MVPBaseActivity<SpdBusPayContract.View, SpdB
                 Log.e(TAG, "交通部psam初始化 读卡失败,请检查是否插入psam卡 " + Datautils.byteArrayToString(respdata));
                 isFlag = 1;
                 return;
-
             } else if (respdata[0] == (byte) 0x05) {
                 //IC卡已经插入
-                retvalue = mBankCard.sendAPDU(BankCard.CARD_MODE_PSAM1_APDU, psam1_get_id, psam1_get_id.length, respdata, resplen);
-                if (retvalue != 0) {
+                byte[] resultBytes = sendApdus(BankCard.CARD_MODE_PSAM1_APDU, PSAN_GET_ID);
+                if (resultBytes == null || resultBytes.length == 2) {
+                    Log.e(TAG, "===交通部获取16文件错误===" + Datautils.byteArrayToString(resultBytes));
                     isFlag = 1;
                     return;
                 }
-                Log.d(TAG, "===交通部16文件===" + Datautils.byteArrayToString(Datautils.cutBytes(respdata, 0, resplen[0])));
-                if (!checkResuleAPDU(respdata, resplen[0])) {
-                    Log.e(TAG, "交通部获取终端编号错误:" + Datautils.byteArrayToString(Datautils.cutBytes(respdata, resplen[0] - 2, 2)));
-                    isFlag = 1;
-                    return;
-                }
+                Log.d(TAG, "===交通部获取16文件===" + Datautils.byteArrayToString(resultBytes));
                 //终端机编号
-                deviceCode = Datautils.cutBytes(respdata, 0, resplen[0] - 2);
-                Log.d(TAG, "====交通部PSAM卡终端机编号==== " + Datautils.byteArrayToString(deviceCode) + "   " + retvalue);
+                byte[] deviceCode = resultBytes;
+                Log.d(TAG, "====交通部PSAM卡终端机编号==== " + Datautils.byteArrayToString(deviceCode));
 
-                retvalue = mBankCard.sendAPDU(BankCard.CARD_MODE_PSAM1_APDU, psam2_select_dir, psam2_select_dir.length, respdata, resplen);
-                if (retvalue != 0) {
+                resultBytes = sendApdus(BankCard.CARD_MODE_PSAM1_APDU, PSAM_SELECT_DIR);
+                if (resultBytes == null || resultBytes.length == 2) {
+                    Log.e(TAG, "===交通部(8011)错误===" + Datautils.byteArrayToString(resultBytes));
                     isFlag = 1;
                     return;
                 }
-                Log.d(TAG, "===交通部80 11 ====" + Datautils.byteArrayToString(Datautils.cutBytes(respdata, 0, resplen[0])) + "   " + retvalue);
-                if (!checkResuleAPDU(respdata, resplen[0])) {
-                    Log.e(TAG, "交通部切换8011错误:" + Datautils.byteArrayToString(Datautils.cutBytes(respdata, resplen[0] - 2, 2)));
+                Log.d(TAG, "===交通部(8011)===" + Datautils.byteArrayToString(resultBytes));
+                resultBytes = sendApdus(BankCard.CARD_MODE_PSAM1_APDU, PSAM_GET_17FILE);
+                if (resultBytes == null || resultBytes.length == 2) {
+                    Log.e(TAG, "===交通部获取17文件错误===" + Datautils.byteArrayToString(resultBytes));
                     isFlag = 1;
                     return;
                 }
-
-                retvalue = mBankCard.sendAPDU(BankCard.CARD_MODE_PSAM1_APDU, psam3_get_index, psam3_get_index.length, respdata, resplen);
-
-                if (retvalue != 0) {
-                    isFlag = 1;
-                    return;
-                }
-                Log.d(TAG, "===交通部读17文件获取秘钥索引===" + Datautils.byteArrayToString(Datautils.cutBytes(respdata, 0, resplen[0])));
-                if (!checkResuleAPDU(respdata, resplen[0])) {
-                    Log.e(TAG, "交通部获取秘钥索引错误:" + Datautils.byteArrayToString(Datautils.cutBytes(respdata, resplen[0] - 2, 2)));
-                    isFlag = 1;
-                    return;
-                }
-                psamKey = Datautils.cutBytes(respdata, 0, 1);
+                Log.d(TAG, "===交通部获取17文件===" + Datautils.byteArrayToString(resultBytes));
+                byte[] psamKey = Datautils.cutBytes(resultBytes, 0, 1);
                 Log.d(TAG, "===交通部秘钥索引=== " + Datautils.byteArrayToString(psamKey) + "\n" + "PSAM初始化成功！！！请读消费卡\n");
                 psamDatas.add(new PsamBeen(1, deviceCode, psamKey));
                 // TODO: 2018/12/4  初始化成功等待读消费卡
@@ -403,7 +380,7 @@ public class PsamIcActivity extends MVPBaseActivity<SpdBusPayContract.View, SpdB
 
             } else if (respdata[0] == (byte) 0x05) {
                 //IC卡已经插入
-                retvalue = mBankCard.sendAPDU(BankCard.CARD_MODE_PSAM2_APDU, psam1_get_id, psam1_get_id.length, respdata, resplen);
+                retvalue = mBankCard.sendAPDU(BankCard.CARD_MODE_PSAM2_APDU, PSAN_GET_ID, PSAN_GET_ID.length, respdata, resplen);
                 if (retvalue != 0) {
                     isFlag = 1;
                     return;
@@ -415,7 +392,7 @@ public class PsamIcActivity extends MVPBaseActivity<SpdBusPayContract.View, SpdB
                     return;
                 }
                 //终端机编号
-                deviceCode = Datautils.cutBytes(respdata, 0, resplen[0] - 2);
+                byte[] deviceCode = Datautils.cutBytes(respdata, 0, resplen[0] - 2);
                 Log.d(TAG, "====住建部PSAM卡终端机编号==== " + Datautils.byteArrayToString(deviceCode));
                 retvalue = mBankCard.sendAPDU(BankCard.CARD_MODE_PSAM2_APDU, psamzhujian_select_dir, psamzhujian_select_dir.length, respdata, resplen);
                 if (retvalue != 0) {
@@ -428,7 +405,7 @@ public class PsamIcActivity extends MVPBaseActivity<SpdBusPayContract.View, SpdB
                     isFlag = 1;
                     return;
                 }
-                retvalue = mBankCard.sendAPDU(BankCard.CARD_MODE_PSAM2_APDU, psam3_get_index, psam3_get_index.length, respdata, resplen);
+                retvalue = mBankCard.sendAPDU(BankCard.CARD_MODE_PSAM2_APDU, PSAM_GET_17FILE, PSAM_GET_17FILE.length, respdata, resplen);
                 if (retvalue != 0) {
                     isFlag = 1;
                     return;
@@ -437,7 +414,7 @@ public class PsamIcActivity extends MVPBaseActivity<SpdBusPayContract.View, SpdB
                 if (!checkResuleAPDU(respdata, resplen[0])) {
                     Log.e(TAG, "住建部获取秘钥索引错误:" + Datautils.byteArrayToString(Datautils.cutBytes(respdata, resplen[0] - 2, 2)));
                 }
-                psamKey = Datautils.cutBytes(respdata, 0, 1);
+                byte[] psamKey = Datautils.cutBytes(respdata, 0, 1);
                 Log.d(TAG, "===住建部秘钥索引===" + Datautils.byteArrayToString(psamKey) + "\n" + "PSAM初始化成功！！！请读消费卡\n");
                 psamDatas.add(new PsamBeen(2, deviceCode, psamKey));
                 // TODO: 2018/12/4  psam卡等待读消费卡
@@ -1142,11 +1119,11 @@ public class PsamIcActivity extends MVPBaseActivity<SpdBusPayContract.View, SpdB
         }
         return reBytes;
     }
-
+    private byte[] pursub = {0x00, 0x00, 0x00, 0x01};
     private void icExpance() {
         ltime = System.currentTimeMillis();
-        Log.d(TAG, "===start--消费记录3031send=== " + Datautils.byteArrayToString(fuhe_tlv));
-        byte[] resultBytes = sendApdus(BankCard.CARD_MODE_PICC, fuhe_tlv);
+        Log.d(TAG, "===start--消费记录3031send=== " + Datautils.byteArrayToString(SELEC_PPSE));
+        byte[] resultBytes = sendApdus(BankCard.CARD_MODE_PICC, SELEC_PPSE);
         if (resultBytes == null) {
             isFlag = 1;
             Log.d(TAG, "===消费记录3031error=== " + Datautils.byteArrayToString(resultBytes));
@@ -1159,18 +1136,18 @@ public class PsamIcActivity extends MVPBaseActivity<SpdBusPayContract.View, SpdB
         //获取交易时间
         systemTime = Datautils.getDateTime();
         if (listTlv.contains("A000000632010105")) {
-            Log.d(TAG, "test: 解析到TLV发送0105 send：" + ic_file);
+            Log.d(TAG, "test: 解析到TLV发送0105 send：" + Datautils.byteArrayToString(SELECT_ICCARD_QIANBAO));
             //选择电子钱包应用
-            resultBytes = sendApdus(BankCard.CARD_MODE_PICC, ic_file);
+            resultBytes = sendApdus(BankCard.CARD_MODE_PICC, SELECT_ICCARD_QIANBAO);
             if (resultBytes == null || resultBytes.length == 2) {
                 isFlag = 1;
                 Log.e(TAG, "===解析到TLV发送0105 return===" + Datautils.byteArrayToString(resultBytes));
                 return;
             }
         } else {
-            Log.d(TAG, "===默认发送0105send===" + Datautils.byteArrayToString(ic_file));
+            Log.d(TAG, "===默认发送0105send===" + Datautils.byteArrayToString(SELECT_ICCARD_QIANBAO));
             //选择电子钱包应用
-            resultBytes = sendApdus(BankCard.CARD_MODE_PICC, ic_file);
+            resultBytes = sendApdus(BankCard.CARD_MODE_PICC, SELECT_ICCARD_QIANBAO);
             if (resultBytes == null) {
                 Log.e(TAG, "icExpance: 获取交易时间错误");
                 isFlag = 1;
@@ -1178,9 +1155,9 @@ public class PsamIcActivity extends MVPBaseActivity<SpdBusPayContract.View, SpdB
             }
         }
         Log.d(TAG, "===0105 return===" + Datautils.byteArrayToString(resultBytes));
-        Log.d(TAG, "===读15文件send===" + Datautils.byteArrayToString(ic_read_file));
+        Log.d(TAG, "===读15文件send===" + Datautils.byteArrayToString(READ_ICCARD_15FILE));
         //读应用下公共应用基本信息文件指令
-        resultBytes = sendApdus(BankCard.CARD_MODE_PICC, ic_read_file);
+        resultBytes = sendApdus(BankCard.CARD_MODE_PICC, READ_ICCARD_15FILE);
         if (resultBytes == null || resultBytes.length == 2) {
             Log.e(TAG, "===读15文件error===" + Datautils.byteArrayToString(resultBytes));
             isFlag = 1;
@@ -1191,10 +1168,9 @@ public class PsamIcActivity extends MVPBaseActivity<SpdBusPayContract.View, SpdB
         System.arraycopy(resultBytes, 0, file15_8, 0, 8);
         System.arraycopy(resultBytes, 2, city, 0, 2);
         Log.d(TAG, "===卡应用序列号 ===" + Datautils.byteArrayToString(cardId));
-        //读17文件
-        byte[] IC_READ17_FILE = {0x00, (byte) 0xB0, (byte) 0x97, 0x00, 0x00};
-        Log.d(TAG, "===读17文件00b0send===" + Datautils.byteArrayToString(IC_READ17_FILE));
-        resultBytes = sendApdus(BankCard.CARD_MODE_PICC, IC_READ17_FILE);
+
+        Log.d(TAG, "===读17文件00b0send===" + Datautils.byteArrayToString(READ_ICCARD_17FILE));
+        resultBytes = sendApdus(BankCard.CARD_MODE_PICC, READ_ICCARD_17FILE);
         if (resultBytes == null || resultBytes.length == 2) {
             Log.e(TAG, "===读17文件error===" + Datautils.byteArrayToString(resultBytes));
             isFlag = 1;
@@ -1219,10 +1195,8 @@ public class PsamIcActivity extends MVPBaseActivity<SpdBusPayContract.View, SpdB
             return;
         }
         Log.d(TAG, "===IC余额(805c)return===" + Datautils.byteArrayToString(resultBytes));
-
-        byte[] INIT_IC_FILE = initICcard();
-        Log.d(TAG, "===IC卡初始化(8050)send===" + Datautils.byteArrayToString(INIT_IC_FILE));
-        resultBytes = sendApdus(BankCard.CARD_MODE_PICC, INIT_IC_FILE);
+        Log.d(TAG, "===IC卡初始化(8050)send===" + Datautils.byteArrayToString(cpuCardInit()));
+        resultBytes = sendApdus(BankCard.CARD_MODE_PICC, cpuCardInit());
         if (resultBytes == null || resultBytes.length == 2) {
             Log.e(TAG, "===IC卡初始化(8050)error===" + Datautils.byteArrayToString(resultBytes));
             isFlag = 1;
@@ -1234,10 +1208,18 @@ public class PsamIcActivity extends MVPBaseActivity<SpdBusPayContract.View, SpdB
         flag = resultBytes[10];
         System.arraycopy(resultBytes, 11, rondomCpu, 0, 4);
         Log.d(TAG, "===IC卡初始化(8050)return=== " + Datautils.byteArrayToString(resultBytes) + "\n" +
-                "===余额:" + Datautils.byteArrayToString(blance) + "\n" +
+                "===电子钱包余额:" + Datautils.byteArrayToString(blance) + "\n" +
                 "===CPU卡脱机交易序号:  " + Datautils.byteArrayToString(ATC) + "\n" +
                 "===密钥版本 : " + (int) flag + "\n" + "===随机数 : " + Datautils.byteArrayToString(rondomCpu));
-        byte[] psam_mac1 = initSamForPurchase();
+        // TODO: 2019/1/8  设定本次消费额
+        if ((Datautils.byteArrayToInt(blance) / 100) > 1000) {
+            // TODO: 2019/1/8  语音请投币  界面显示卡片已损坏
+        }
+        if ((Datautils.byteArrayToInt(blance) / 100) < 0.01) {
+            // TODO: 2019/1/8 语音/界面  余额不足
+        }
+        byte[] psam_mac1 = initSamForPurchase(pursub);
+
         Log.d(TAG, "===获取MAC1(8070)send===" + Datautils.byteArrayToString(psam_mac1));
         resultBytes = sendApdus(BankCard.CARD_MODE_PSAM1_APDU, psam_mac1);
         if (resultBytes == null || resultBytes.length == 2) {
@@ -1247,7 +1229,8 @@ public class PsamIcActivity extends MVPBaseActivity<SpdBusPayContract.View, SpdB
         }
         Log.d(TAG, "===获取MAC18070return===" + Datautils.byteArrayToString(resultBytes));
         praseMAC1(resultBytes);
-        //80dc
+        if (CAPP==1) {
+            //80dc
         String ss = "80DC00F030060000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000";
         Log.d(TAG, "===更新1E文件(80dc)send===" + ss);
         resultBytes = sendApdus(BankCard.CARD_MODE_PICC, Datautils.HexString2Bytes(ss));
@@ -1257,6 +1240,7 @@ public class PsamIcActivity extends MVPBaseActivity<SpdBusPayContract.View, SpdB
             return;
         }
         Log.d(TAG, "===更新1E文件return===" + Datautils.byteArrayToString(resultBytes));
+        }
 
 
         byte[] cmd = getIcPurchase();
@@ -1328,22 +1312,23 @@ public class PsamIcActivity extends MVPBaseActivity<SpdBusPayContract.View, SpdB
      *
      * @return 8050指令
      */
-    private byte[] initICcard() {
+    private byte[] cpuCardInit() {
         StringBuilder stringBuilder = new StringBuilder();
         stringBuilder.append("805001020B");
         if (CAPP == 1) {
             stringBuilder.replace(5, 6, "3");
         }
-        stringBuilder.append(Datautils.byteArrayToString(psamKey)).append("00000002").append(Datautils.byteArrayToString(psamDatas.get(0).getTermBumber())).append("0F");
+        stringBuilder.append(Datautils.byteArrayToString(psamDatas.get(0).getKeyID())).append(Datautils.byteArrayToString(pursub)).append(Datautils.byteArrayToString(psamDatas.get(0).getTermBumber())).append("0F");
         return Datautils.HexString2Bytes(stringBuilder.toString());
     }
 
     /**
      * PSAM 卡产生MAC1指令 8070
      *
+     * @param balance
      * @return 返回结果为：XXXXXXXX（终端脱机交易序号）XXXXXXXX（MAC1）
      */
-    private byte[] initSamForPurchase() {
+    private byte[] initSamForPurchase(byte[] balance) {
         byte[] cmd = new byte[42];
         cmd[0] = (byte) 0x80;
         cmd[1] = 0x70;
@@ -1352,11 +1337,7 @@ public class PsamIcActivity extends MVPBaseActivity<SpdBusPayContract.View, SpdB
         cmd[4] = 0x24;
         System.arraycopy(rondomCpu, 0, cmd, 5, 4);
         System.arraycopy(ATC, 0, cmd, 9, 2);
-        //交易金额
-        cmd[11] = 0x00;
-        cmd[12] = 0x00;
-        cmd[13] = 0x00;
-        cmd[14] = 0x02;
+        System.arraycopy(balance, 0, cmd, 11, 4);
         //是否为复合消费
         if (CAPP == 1) {
             cmd[15] = (byte) 0x09;

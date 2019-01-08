@@ -1,6 +1,7 @@
 package com.spd.bus;
 
 import android.app.Application;
+import android.content.Context;
 import android.content.Intent;
 import android.graphics.Color;
 import android.os.Build;
@@ -17,6 +18,7 @@ import com.spd.base.db.DbDaoManage;
 import com.spd.bus.spdata.utils.PlaySound;
 
 import speedata.com.face.HttpService;
+import wangpos.sdk4.libbasebinder.BankCard;
 
 import static com.honeywell.barcode.Symbology.QR;
 
@@ -24,6 +26,7 @@ public class MyApplication extends Application {
     String TAG = "PsamIcActivity";
     private static HSMDecoder hsmDecoder;
     private HSMDecodeComponent hsmDecodeComponent;
+    private static BankCard bankCard = null;
 
     @RequiresApi(api = Build.VERSION_CODES.ICE_CREAM_SANDWICH)
     @Override
@@ -35,7 +38,7 @@ public class MyApplication extends Application {
         initScanBards();
 
         //开启HttpServer
-        startService(new Intent(this,HttpService.class));
+        startService(new Intent(this, HttpService.class));
         //objectbox数据库初始化 必须在 application中
 //        BoxStorManage.init(MyApplication.this);
 
@@ -79,13 +82,26 @@ public class MyApplication extends Application {
 ////                hsmDecodeComponent.dispose();
 //            }
 //        });
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                bankCard = new BankCard(getApplicationContext());
+            }
+        }).start();
+    }
 
+    public static BankCard getBankCardInstance() {
+        if (bankCard != null) {
+            return bankCard;
+        } else {
+            return null;
+        }
     }
 
     @Override
     public void onTrimMemory(int level) {
         super.onTrimMemory(level);
-        stopService(new Intent(this,HttpService.class));
+        stopService(new Intent(this, HttpService.class));
     }
 
     public static HSMDecoder getHSMDecoder() {

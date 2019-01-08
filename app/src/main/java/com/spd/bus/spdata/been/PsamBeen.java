@@ -5,7 +5,6 @@ import java.util.List;
 
 public class PsamBeen {
     private int id;
-
     //终端机编号16文件下读出卡号
 
     private byte[] termBumber;

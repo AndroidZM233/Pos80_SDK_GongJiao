@@ -1,13 +1,11 @@
 package com.spd.bus.spdata.been;
 
 /**
- * Created by 张明_ on 2018/8/29.
- * Email 741183142@qq.com
+ * Created by on 2018/8/29.
  */
 
 public class IcCardBeen {
     private byte[] snr;//卡芯片号
-
     private byte[] issueSnr;//卡流水号
     private byte[] cityNr;//城市代码
     private byte[] vocCode;//行业代码
@@ -15,21 +13,15 @@ public class IcCardBeen {
     private byte[] mackNr;//卡认证码
     private byte[] fStartUse;//启用标志
     private int fBlackCard = 0;//黑名单标志
-
-
     private byte[] cardType;//卡类型
     private byte[] issueDate;//发行日期
     private byte[] endUserDate;//有效截止日期
     private byte[] startUserDate;//开始日期日期
     private byte[] purInNr;//钱包充值计数器
-
-
     private byte[] purIncUtc;//充值时间
     private byte[] purIncMoney;//充值金额
-
     private byte[] PurOriMoney;//原额
     private byte[] PurSub;//消费金额
-
 
 
     public byte[] getPurOriMoney() {
