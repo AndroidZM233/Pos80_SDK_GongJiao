@@ -2,10 +2,8 @@ package com.spd.base.db;
 
 import android.app.Application;
 
-
-//
-import com.spd.base.beenali.DaoMaster;
-import com.spd.base.beenali.DaoSession;
+import com.spd.base.been.DaoMaster;
+import com.spd.base.been.DaoSession;
 
 
 public class DbDaoManage {

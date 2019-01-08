@@ -1,43 +1,113 @@
-//package com.spd.bus.spdata;
-//
-//import android.app.Activity;
-//import android.os.Bundle;
-//import android.widget.TextView;
-//
-//import com.bluering.pos.sdk.qr.CertVerInfo;
-//import com.bluering.pos.sdk.qr.PosQR;
-//import com.bluering.pos.sdk.qr.QrCodeInfo;
-//import com.spd.bus.R;
-//
-//public class test extends Activity {
-//
-//    String code = "BSAQEBggD7Ua6TSnJ9e73HTRs8WpJJ7DqGWlwsK6onxI+gAk+xkBrwByIQeBp8aN3nbOfrZwZTNwXXaAVJt2Z24HXspOHKLd1MWpAL8SDcxKkNmCnvq4qIkdHRDRcEmsZqFNmIx7wUoe0vR/Qps0Ik1ChXaliuAhEj5QyconWNn2gj/80sPU96lCUjtTft39Opz8l0iFGdRk/JDWVBBRP5vp8zhk47ySloft3Uoq61PP/j0M7CHlDLVb1xqH3NH00yYlVY8jsQueYPi2Pb3tkKjmTc0eaaiIcfvRNeiSmHgM6XltkB6H5P95IVWlsmx5o9WJgqjp7p53WSCkHPZaC5fF4=";
-//    String key1 = "434552540102010101A174774F2DC46BA8EF744A7AE6833C2E9240FF118C541E5DF3E5708F44CEBDA6B0A598B7D1DBDEDD6AC917C04BABEDF83223ED4CE73C32002C3057AFE38AD3F4BE85C6395236CCAB004243A299B398923F7F598B90ACC68F2BA7C082D0A211B56B85A0892C2B48B6A6D42D6F4B8A2F69EBFB1C8DAED53C030B20AC0CE440BC451F8A7A3ECC15386B05889BFEB5901D8B444BEE18A1FF3984C5612FE037C378EC435D0405988D42AB4254B95C270B3B0F887659149B6E093C786EFA117656694E4480796038AD5E9CBE7E5F09F0074FE851265F4F36EED86F349E5DDB6650E64733C92D08EB21C828A385606F58AB05AF81682A89EB8719912F22A4215CE61C4D";
-//    String key2 = "434552540102010102E3535815BE52FDA6DA5D9D70B7E608AB4F0A9725F84F459CCD7AD090748111FA3DE5ED5F29CCECC1BA7CE457AB2E3055E9CBA15990C6936DC80BCA47563CC64DB180C2B027D882AA716AC18574129ABCBB2598A65C4872A134740CDD0BF285C8F92DF5817F7B9C1B6EFB67DC533EC9416CAFCECBDD6BFC2B65DC9E960E2EEAC1C45581CF134AE14441DC7B8383776D5BFFEA7517642CDF5E2912493CB1F2BE79968A3B966C68A08B3F3FECF46D0C5DCEC01CB268E76A75EF1A7A6683272F2C458C462DC03E55E9C5F290B79D87469B74207ACDAB92A47ECD0563D71E741C20224968854CE370F987ED6CE251A168459221FFC2DA30159A5A53DC87FDF0EB2F52";
-//    String key3 = "4345525401020101039B7CDA78675EEE5964ED6688AA309FF4CDE526FE83BFA710D1DDAEDA74E961114D275719A8732C57F49CBFA5A3936D467703453E7C4E438794482F1FDD868A1383B8AA14C4516879424E532ED23A0F56E09397E1F7D1F0B358B0CAC12F252E94D4915A34F4F1B0FF8645C9B84295848A7420D7FA8059E1A22EDEF2BF9052EE212A9D79E2C919A9C085C68B0217CC93C1777B342EDA00706CA930673FEEF144EEF01C5BB8F16FC9317C50F7853B94D7B52E3C5C9BF58B8D18AA74F07281E8A6CB347D8016BE87221A1D3CA7326DE7FA22F75272987CD6CDA3488392AA9A6365D0F24E5E0D4B4EFBD9830373583D902C19F699FBE2E13A0163954F9EF236B5FFE2";
-//    @Override
-//    protected void onCreate(Bundle savedInstanceState) {
-//        super.onCreate(savedInstanceState);
-//        setContentView(R.layout.layouttest);
-//        TextView textView = findViewById(R.id.tvshow);
-//        //初始化
-//        CertVerInfo certVerInfo = new CertVerInfo(null, "");
-//        PosQR.init(this, null);
-//        PosQR.init(this, "/storage/sdcard0/bosicer/");
-//        certVerInfo = PosQR.queryCertVer();
-//        textView.append("状态：" + certVerInfo.getResult() + "版本号：" + certVerInfo.getCertVerInfo());
-//        //更新证书
-//        String result = PosQR.updateCert(key1);
-//        textView.append("UpdateCert1:\n" + result);
-//        result = PosQR.updateCert(key2);
-//        textView.append("\nUpdateCert2:\n" + result);
-//        result = PosQR.updateCert(key3);
-//        textView.append("\nUpdateCert3:\n" + result);
-//        //验码
-//        QrCodeInfo qrCodeInfo = PosQR.verifyQrCode(code);
-//        textView.append(qrCodeInfo.toString());
-//        textView.append("\n\n二维码具体信息");
-//        textView.append(qrCodeInfo.toDetailString());
-//    }
-//}
-//
+package com.spd.bus.spdata;
+
+import android.app.Activity;
+import android.content.Context;
+import android.os.Build;
+import android.os.Bundle;
+import android.support.annotation.RequiresApi;
+import android.telephony.PhoneStateListener;
+import android.telephony.SignalStrength;
+import android.telephony.TelephonyManager;
+import android.util.Log;
+
+import com.spd.base.view.SignalView;
+import com.spd.bus.R;
+
+public class test extends BaseActivity {
+    private SignalView mSignalView;
+
+    @RequiresApi(api = Build.VERSION_CODES.JELLY_BEAN)
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setContentView(R.layout.spd_bus_layout);
+        mSignalView = (SignalView) findViewById(R.id.xinhao);
+        getCurrentNetDBM(this,mSignalView);
+    }
+
+    /**
+     * 得到当前的手机蜂窝网络信号强度
+     * 获取LTE网络和3G/2G网络的信号强度的方式有一点不同，
+     * LTE网络强度是通过解析字符串获取的，
+     * 3G/2G网络信号强度是通过API接口函数完成的。
+     * asu 与 dbm 之间的换算关系是 dbm=-113 + 2*asu
+     */
+    public void getCurrentNetDBM(Context context, SignalView mSignalView) {
+        final TelephonyManager tm = (TelephonyManager) context
+                .getSystemService(Context.TELEPHONY_SERVICE);
+        PhoneStateListener mylistener = new PhoneStateListener() {
+            @Override
+            public void onSignalStrengthsChanged(SignalStrength signalStrength) {
+                super.onSignalStrengthsChanged(signalStrength);
+                String signalInfo = signalStrength.toString();
+                String[] params = signalInfo.split(" ");
+
+                if (tm.getNetworkType() == TelephonyManager.NETWORK_TYPE_LTE) {
+                    //4G网络 最佳范围   >-90dBm 越大越好
+                    int Itedbm = Integer.parseInt(params[9]);
+//                    mTv.setText("信号：：：" + Itedbm);
+                    int sss = signalStrength.getCdmaDbm();
+                    int sss1 = signalStrength.getCdmaEcio();
+                    int sss2 = signalStrength.getEvdoDbm();
+                    int sss5 = signalStrength.getEvdoEcio();
+                    int sss7 = signalStrength.getEvdoSnr();
+                    int sss8 = signalStrength.getGsmBitErrorRate();
+                    int sss9 = signalStrength.getGsmBitErrorRate();
+
+                    Log.i("tws", "onSignalStrengthsChanged: " + sss);
+                    // 设置信号强度
+                    if (Itedbm > -100 && Itedbm < 0) {
+                        mSignalView.setSignalValue(5);
+                    } else if (Itedbm < -100 && Itedbm > -110) {
+                        mSignalView.setSignalValue(4);
+                    } else if (Itedbm < -110 && Itedbm > -115) {
+                        mSignalView.setSignalValue(3);
+                    } else if (Itedbm < -115) {
+                        mSignalView.setSignalValue(2);
+                    } else {
+                        mSignalView.setSignalValue(1);
+                    }
+//                    mSignalView.setSignalValue(0);
+                    // 设置信号类型
+//                    mSignalView.setSignalTypeText("×");
+                    mSignalView.setSignalTypeText("4G");
+
+                } else if (tm.getNetworkType() == TelephonyManager.NETWORK_TYPE_HSDPA ||
+                        tm.getNetworkType() == TelephonyManager.NETWORK_TYPE_HSPA ||
+                        tm.getNetworkType() == TelephonyManager.NETWORK_TYPE_HSUPA ||
+                        tm.getNetworkType() == TelephonyManager.NETWORK_TYPE_UMTS) {
+                    //3G网络最佳范围  >-90dBm  越大越好  ps:中国移动3G获取不到  返回的无效dbm值是正数（85dbm）
+                    //在这个范围的已经确定是3G，但不同运营商的3G有不同的获取方法，故在此需做判断 判断运营商与网络类型的工具类在最下方
+//                    String yys = IntenetUtil.getYYS(getApplication());//获取当前运营商
+//                    if (yys == "中国移动") {
+//                        setDBM(0 + "");//中国移动3G不可获取，故在此返回0
+//                    } else if (yys == "中国联通") {
+//                        int cdmaDbm = signalStrength.getCdmaDbm();
+//                        setDBM(cdmaDbm + "");
+//                    } else if (yys == "中国电信") {
+//                        int evdoDbm = signalStrength.getEvdoDbm();
+//                        setDBM(evdoDbm + "");
+//                    }
+                    // 设置信号强度
+                    mSignalView.setSignalValue(3);
+                    // 设置信号类型
+                    mSignalView.setSignalTypeText("3G");
+                } else {
+                    //2G网络最佳范围>-90dBm 越大越好
+                    int asu = signalStrength.getGsmSignalStrength();
+                    int dbm = -113 + 2 * asu;
+//                    setDBM(dbm + "");
+                    // 设置信号强度
+                    mSignalView.setSignalValue(0);
+                    // 设置信号类型
+//                    mSignalView.setSignalTypeText("2G");
+                    mSignalView.setSignalTypeText("×");
+                }
+
+            }
+        };
+        //开始监听
+        tm.listen(mylistener, PhoneStateListener.LISTEN_SIGNAL_STRENGTHS);
+    }
+
+}

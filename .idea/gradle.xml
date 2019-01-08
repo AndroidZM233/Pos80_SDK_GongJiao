@@ -13,6 +13,8 @@
             <option value="$PROJECT_DIR$/base" />
             <option value="$PROJECT_DIR$/bosi" />
             <option value="$PROJECT_DIR$/bosipay" />
+            <option value="$PROJECT_DIR$/cloudpay" />
+            <option value="$PROJECT_DIR$/face" />
             <option value="$PROJECT_DIR$/wechat" />
             <option value="$PROJECT_DIR$/yinlianbarcode" />
           </set>

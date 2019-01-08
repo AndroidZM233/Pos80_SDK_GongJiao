@@ -12,7 +12,7 @@ import com.example.test.yinlianbarcode.interfaces.OnBackListener;
 import com.example.test.yinlianbarcode.utils.ScanUtils;
 import com.honeywell.barcode.HSMDecodeComponent;
 import com.honeywell.barcode.HSMDecoder;
-import com.spd.base.database.BoxStorManage;
+
 import com.spd.base.db.DbDaoManage;
 import com.spd.bus.spdata.utils.PlaySound;
 
@@ -101,7 +101,7 @@ public class MyApplication extends Application {
 //        hsmDecoder.setAimerColor(Color.RED);
 //        hsmDecoder.setOverlayText("ceshi");
 //        hsmDecoder.setOverlayTextColor(Color.RED);
-        hsmDecoder.enableSound(true);
+        hsmDecoder.enableSound(false);
         //初始为默认前置摄像头扫码
 //        hsmDecoder.setActiveCamera(ActiveCamera.FRONT_FACING);
         hsmDecoder.enableSymbology(QR);
@@ -121,7 +121,7 @@ public class MyApplication extends Application {
 
             @Override
             public void onError(Throwable e) {
-//                hsmDecoder.enableSymbology(QR);
+                hsmDecoder.enableSymbology(QR);
 //                cameraManager.openCamera();
 //                hsmDecodeComponent.enableScanning(true);
                 Toast.makeText(getApplicationContext(), "激活失败！", Toast.LENGTH_SHORT).show();

@@ -2,87 +2,117 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:background="@drawable/background"
     android:orientation="vertical">
 
     <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="45dp"
-        android:layout_marginLeft="10dp"
-        android:layout_marginRight="10dp"
-        android:layout_marginTop="10dp"
+        android:layout_height="60dp"
         android:orientation="horizontal">
 
         <ImageView
+            android:layout_width="60dp"
+            android:layout_height="60dp"
+            android:background="@mipmap/launchers"
+            android:visibility="gone" />
+
+        <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_gravity="left"
-            android:background="@mipmap/launchers" />
+            android:text="海口公交"
+            android:textSize="35sp" />
 
         <View
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:layout_weight="1" />
 
-        <ImageView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:background="@mipmap/network4g"
-            android:gravity="right" />
+        <com.spd.base.view.SignalView
+            android:id="@+id/xinhao"
+            android:layout_width="45dp"
+            android:layout_height="25dp"
+            android:layout_marginRight="3dp" />
     </LinearLayout>
 
     <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginLeft="10dp"
-        android:layout_marginRight="10dp"
-        android:layout_marginTop="10dp"
+        android:layout_height="match_parent"
+        android:layout_weight="1"
         android:orientation="horizontal">
 
         <LinearLayout
+            android:id="@+id/layout_face"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:layout_weight="1"
+            android:orientation="vertical"
+            android:visibility="gone">
+
+            <ImageView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:layout_weight="1"
+                android:background="@mipmap/ic_face" />
+        </LinearLayout>
+
+        <LinearLayout
+            android:id="@+id/layout_line_info"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
             android:layout_weight="1"
             android:orientation="vertical">
 
             <TextView
+                android:id="@+id/tv_line"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_gravity="center"
-                android:text="636路" />
+                android:text="636路"
+                android:textSize="35sp" />
 
             <TextView
                 android:id="@+id/tv_time"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_gravity="center"
-                android:text="10:52:50" />
+                android:text="10:52:50"
+                android:textSize="20sp" />
 
             <TextView
                 android:id="@+id/tv_date"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_gravity="center"
-                android:text="2018年12月06日" />
+                android:text="2018年12月06日"
+                android:textSize="25sp" />
 
         </LinearLayout>
 
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:layout_gravity="center"
             android:layout_weight="1"
             android:orientation="vertical">
 
             <TextView
+                android:id="@+id/tv_balance_title"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_gravity="center"
-                android:text="票价" />
+                android:text="票价"
+                android:textSize="35sp" />
 
             <TextView
+                android:id="@+id/tv_balance"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_gravity="center"
-                android:text="1元" />
+                android:text="2.00元"
+                android:textSize="60sp" />
 
         </LinearLayout>
     </LinearLayout>
@@ -90,18 +120,16 @@
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginLeft="10dp"
-        android:layout_marginRight="10dp"
-        android:layout_marginTop="10dp"
         android:orientation="horizontal">
 
         <TextView
+            android:id="@+id/tv_device_message"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="
-            车辆号:123465
-            设备ID:123654987
-            版本:20181206" />
+            android:layout_gravity="center"
+            android:layout_marginLeft="3dp"
+            android:text="@string/_123465_id_123654987_20181206"
+            android:textSize="20sp" />
 
         <View
             android:layout_width="match_parent"
@@ -111,15 +139,15 @@
         <ImageView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_gravity="center"
+            android:layout_gravity="bottom"
+            android:layout_marginBottom="3dp"
             android:background="@mipmap/yinlian2" />
 
         <ImageView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_gravity="center"
+            android:layout_gravity="bottom"
             android:background="@mipmap/jiaotong" />
-
     </LinearLayout>
 
 </LinearLayout>

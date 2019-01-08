@@ -1,10 +1,7 @@
 package com.spd.base.db;
 
-import com.spd.base.beenali.AlipayQrcodekey;
-
 import org.greenrobot.greendao.converter.PropertyConverter;
 
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 

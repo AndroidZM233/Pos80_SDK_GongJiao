@@ -1,7 +1,7 @@
 package com.spd.alipay;
 
 import com.spd.alipay.been.AliCodeinfoData;
-import com.spd.base.beenali.AlipayQrcodekey;
+import com.spd.base.been.AlipayQrcodekey;
 
 import java.util.List;
 

@@ -1,18 +1,9 @@
 package speedata.com.face;
 
-import com.spd.base.been.AddTradeBean;
-import com.spd.base.beenali.AlipayQrcodekey;
-
-import java.util.HashMap;
-
 import io.reactivex.Observable;
-import okhttp3.RequestBody;
-import retrofit2.http.Body;
 import retrofit2.http.Field;
-import retrofit2.http.FieldMap;
 import retrofit2.http.FormUrlEncoded;
 import retrofit2.http.POST;
-import retrofit2.http.PartMap;
 import speedata.com.face.bean.ResponseData;
 
 /**

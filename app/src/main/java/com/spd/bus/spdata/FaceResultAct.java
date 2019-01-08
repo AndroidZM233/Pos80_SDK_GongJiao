@@ -39,6 +39,7 @@ public class FaceResultAct extends BaseActivity {
                 if (isSuccess) {
                     imgState.setImageDrawable(getResources().getDrawable(R.mipmap.ic_pass));
                     starttimeTask();
+                    PlaySound.play(xiaofeiSuccse, 0);
                 }
                 tvDebugMsg.setText(intent.getStringExtra("msg"));
             } else if (action.equals(Contants.ACTION_UPLOAD_STATUS)) {

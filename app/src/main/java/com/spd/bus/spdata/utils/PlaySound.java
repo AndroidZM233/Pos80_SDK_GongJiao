@@ -34,7 +34,7 @@ public class PlaySound {
         mapSRC = new HashMap<>();
         mapSRC.put(initerro, sp.load(context, R.raw.hsm_beep, 0));
         mapSRC.put(dang, sp.load(context, R.raw.dang, 0));
-        mapSRC.put(xiaofeiSuccse, sp.load(context, R.raw.xiaofeisucces, 0));
+        mapSRC.put(xiaofeiSuccse, sp.load(context, R.raw.test, 0));
         mapSRC.put(qingchongshua, sp.load(context, R.raw.qingchongshua, 0));
     }
 

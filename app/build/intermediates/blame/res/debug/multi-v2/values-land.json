@@ -4,7 +4,17 @@
             "outputFile": "D:\\SpeedataDemo18\\Pos80_SDK_GongJiao\\app\\build\\intermediates\\incremental\\mergeDebugResources\\merged.dir\\values-land\\values-land.xml",
             "map": [
                 {
-                    "source": "C:\\Users\\42040\\.gradle\\caches\\transforms-1\\files-1.1\\design-28.0.0.aar\\b2fd4929270920846f150b5d0a99f56e\\res\\values-land\\values-land.xml",
+                    "source": "C:\\Users\\42040\\.gradle\\caches\\transforms-1\\files-1.1\\appcompat-v7-28.0.0.aar\\e913825754145ab2f349e1ffeefb1d24\\res\\values-land\\values-land.xml",
+                    "from": {
+                        "startLines": "2,3,4",
+                        "startColumns": "4,4,4",
+                        "startOffsets": "55,125,196",
+                        "endColumns": "69,70,67",
+                        "endOffsets": "120,191,259"
+                    }
+                },
+                {
+                    "source": "C:\\Users\\42040\\.gradle\\caches\\transforms-1\\files-1.1\\design-28.0.0.aar\\4fc944e6d189ba7b22e36d349b67429b\\res\\values-land\\values-land.xml",
                     "from": {
                         "startLines": "2",
                         "startColumns": "4",
@@ -20,16 +30,6 @@
                         "endLines": "8",
                         "endColumns": "10",
                         "endOffsets": "431"
-                    }
-                },
-                {
-                    "source": "C:\\Users\\42040\\.gradle\\caches\\transforms-1\\files-1.1\\appcompat-v7-28.0.0.aar\\623067a1901bbce8994c1ea9f72047c6\\res\\values-land\\values-land.xml",
-                    "from": {
-                        "startLines": "2,3,4",
-                        "startColumns": "4,4,4",
-                        "startOffsets": "55,125,196",
-                        "endColumns": "69,70,67",
-                        "endOffsets": "120,191,259"
                     }
                 }
             ]

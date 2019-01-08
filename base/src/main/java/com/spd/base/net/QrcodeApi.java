@@ -1,11 +1,10 @@
 package com.spd.base.net;
 
 
-import com.spd.base.beenali.AlipayQrcodekey;
-import com.spd.base.beenbosi.BosiQrcodeKey;
-import com.spd.base.beenres.QrcodeUploadResult;
-import com.spd.base.beenupload.QrcodeUpload;
-import com.spd.base.beenwechat.WechatQrcodeKey;
+import com.spd.base.been.AlipayQrcodekey;
+import com.spd.base.been.BosiQrcodeKey;
+import com.spd.base.beenresult.QrcodeUploadResult;
+import com.spd.base.been.WechatQrcodeKey;
 
 import java.util.concurrent.TimeUnit;
 

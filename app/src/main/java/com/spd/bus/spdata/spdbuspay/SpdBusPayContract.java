@@ -4,16 +4,16 @@ import android.content.Context;
 
 import com.bluering.pos.sdk.qr.QrCodeInfo;
 import com.spd.alipay.been.AliCodeinfoData;
-import com.spd.base.beenali.AlipayQrcodekey;
-import com.spd.base.beenbosi.BosiQrcodeKey;
-import com.spd.base.beenupload.QrcodeUpload;
-import com.spd.base.beenwechat.WechatQrcodeKey;
+import com.spd.base.been.AlipayQrcodekey;
+import com.spd.base.been.BosiQrcodeKey;
+import com.spd.base.beenupload.AlipayQrCodeUpload;
+import com.spd.base.beenupload.BosiQrCodeUpload;
+import com.spd.base.beenupload.WeichatQrCodeUpload;
+import com.spd.base.been.WechatQrcodeKey;
 import com.spd.bus.spdata.mvp.BasePresenter;
 import com.spd.bus.spdata.mvp.BaseView;
 
 import java.util.List;
-
-import io.reactivex.internal.schedulers.ImmediateThinScheduler;
 
 /**
  * MVPPlugin
@@ -39,11 +39,11 @@ public class SpdBusPayContract {
 
         void showReleseAlipayJni(int result);
 
-        void showCheckWechatQrCode(int result, String wechatResult, String openId);
+        void showCheckWechatQrCode(int result, String wechatResult, String userId);
+
 
         //博思
         void showBosikey(BosiQrcodeKey bosiQrcodeKey);
-
 
         void showBosiCerVersion(String vension);
 
@@ -94,7 +94,7 @@ public class SpdBusPayContract {
          * 上传支付宝结果
          * @param qrcodeUpload
          */
-        void uploadAlipayRe(QrcodeUpload qrcodeUpload);
+        void uploadAlipayRe(AlipayQrCodeUpload qrcodeUpload);
 
         /**
          * 释放支付宝库
@@ -124,7 +124,7 @@ public class SpdBusPayContract {
          */
         void checkWechatQrCode(String code, List<WechatQrcodeKey.PubKeyListBean> pbKeyList, List<WechatQrcodeKey.MacKeyListBean> macKeyList, int payfee, byte scene, byte scantype, String posId, String posTrxId);
 
-        void uploadWechatRe(QrcodeUpload qrcodeUpload);
+        void uploadWechatRe(WeichatQrCodeUpload qrcodeUpload);
 
 
         /**
@@ -161,7 +161,7 @@ public class SpdBusPayContract {
          */
         void checkBosiQrCode(String qrcode);
 
-        void uploadBosiRe(QrcodeUpload qrcodeUpload);
+        void uploadBosiRe(BosiQrCodeUpload qrcodeUpload);
 
     }
 }

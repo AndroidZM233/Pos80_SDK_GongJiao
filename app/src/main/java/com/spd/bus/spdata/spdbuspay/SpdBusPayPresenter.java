@@ -8,12 +8,15 @@ import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.spd.alipay.AlipayJni;
 import com.spd.alipay.been.AliCodeinfoData;
-import com.spd.base.beenali.AlipayQrcodekey;
-import com.spd.base.beenali.AlipayQrcodekeyDao;
-import com.spd.base.beenbosi.BosiQrcodeKey;
-import com.spd.base.beenres.QrcodeUploadResult;
-import com.spd.base.beenupload.QrcodeUpload;
-import com.spd.base.beenwechat.WechatQrcodeKey;
+import com.spd.base.been.AlipayQrcodekey;
+
+import com.spd.base.been.AlipayQrcodekeyDao;
+import com.spd.base.been.BosiQrcodeKey;
+import com.spd.base.beenresult.QrcodeUploadResult;
+import com.spd.base.beenupload.AlipayQrCodeUpload;
+import com.spd.base.beenupload.BosiQrCodeUpload;
+import com.spd.base.beenupload.WeichatQrCodeUpload;
+import com.spd.base.been.WechatQrcodeKey;
 import com.spd.base.db.DbDaoManage;
 import com.spd.base.net.QrcodeApi;
 import com.spd.bosi.BosiQrManage;
@@ -108,10 +111,10 @@ public class SpdBusPayPresenter extends BasePresenterImpl<SpdBusPayContract.View
     }
 
     @Override
-    public void uploadAlipayRe(QrcodeUpload qrcodeUpload) {
+    public void uploadAlipayRe(AlipayQrCodeUpload qrcodeUpload) {
         final Gson gson = new GsonBuilder().serializeNulls().create();
         String rusultData = gson.toJson(qrcodeUpload);
-        Log.i("ddddddd", "uploadBosiRe: json=====" + rusultData);
+        Log.i("SPEEDATA_BUS", "uploadBosiRe: json=====" + rusultData);
         RequestBody requestBody = RequestBody.create(MediaType.parse("application/json; charset=utf-8"), rusultData);
         QrcodeApi.getInstance().alipayUpload(requestBody)
                 .subscribeOn(io.reactivex.schedulers.Schedulers.io())
@@ -231,7 +234,7 @@ public class SpdBusPayPresenter extends BasePresenterImpl<SpdBusPayContract.View
         }
         result = wlxSdk.verify(openId, pubKey, payfee, scene, scantype, posId, posTrxId, aesMacRoot);
         if (result != ErroCode.EC_SUCCESS) {
-            mView.showCheckWechatQrCode(result, "", "");
+            mView.showCheckWechatQrCode(result, wlxSdk.get_record(), "");
         }
         String record = wlxSdk.get_record();
         mView.showCheckWechatQrCode(result, record, openId);
@@ -241,10 +244,10 @@ public class SpdBusPayPresenter extends BasePresenterImpl<SpdBusPayContract.View
     }
 
     @Override
-    public void uploadWechatRe(QrcodeUpload qrcodeUpload) {
+    public void uploadWechatRe(WeichatQrCodeUpload qrcodeUpload) {
         final Gson gson = new GsonBuilder().serializeNulls().create();
         String rusultData = gson.toJson(qrcodeUpload);
-        Log.i("ddddddd", "uploadBosiRe: json=====" + rusultData);
+        Log.i("SPEEDATA_BUS", "uploadBosiRe: json=====" + rusultData);
         RequestBody requestBody = RequestBody.create(MediaType.parse("application/json; charset=utf-8"), rusultData);
         QrcodeApi.getInstance().weichatUpload(requestBody)
                 .subscribeOn(io.reactivex.schedulers.Schedulers.io())
@@ -332,10 +335,10 @@ public class SpdBusPayPresenter extends BasePresenterImpl<SpdBusPayContract.View
     }
 
     @Override
-    public void uploadBosiRe(QrcodeUpload qrcodeUpload) {
-        final Gson gson = new GsonBuilder().serializeNulls().create();
+    public void uploadBosiRe(BosiQrCodeUpload qrcodeUpload) {
+        final Gson gson = new GsonBuilder().disableHtmlEscaping().create();
         String rusultData = gson.toJson(qrcodeUpload);
-        Log.i("ddddddd", "uploadBosiRe: json=====" + rusultData);
+        Log.i("SPEEDATA_BUS", "uploadBosiRe: json=====" + rusultData);
         RequestBody requestBody = RequestBody.create(MediaType.parse("application/json; charset=utf-8"), rusultData);
         QrcodeApi.getInstance().bosiUpload(requestBody)
                 .subscribeOn(io.reactivex.schedulers.Schedulers.io())
