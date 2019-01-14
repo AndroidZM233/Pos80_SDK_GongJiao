@@ -40,7 +40,6 @@ import speedata.com.face.bean.ResponseData;
  */
 public class FaceApi {
     private IFaceApi service;
-
     private FaceApi(OkHttpClient okHttpClient) {
         Retrofit retrofit = new Retrofit.Builder()
                 .baseUrl("http://www.mskaikai.com:8081/")

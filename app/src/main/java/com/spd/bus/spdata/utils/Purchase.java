@@ -35,8 +35,7 @@ public class Purchase {
 
     private byte[] cpucount;
     private byte suanfaFlag;
-//    private
-
+    //  private
     // ”balance”:余额,
     // ”tradeTime”:”交易时间”,
     // ”ctc”:”卡计数”,

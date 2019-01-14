@@ -57,7 +57,6 @@ import io.reactivex.annotations.NonNull;
 import io.reactivex.functions.Consumer;
 import speedata.com.face.Contants;
 import wangpos.sdk4.libbasebinder.BankCard;
-import wangpos.sdk4.libbasebinder.Core;
 
 import static com.spd.bus.spdata.been.ErroCode.ILLEGAL_PARAM;
 import static com.spd.bus.spdata.been.ErroCode.NO_ENOUGH_MEMORY;
@@ -194,6 +193,15 @@ public class PsamIcActivity extends MVPBaseActivity<SpdBusPayContract.View, SpdB
     private TextView mTvDeviceMessage;
     private LinearLayout mLayoutFace;
     private LinearLayout mLayoutLineInfo;
+    /**
+     * 消费额
+     */
+    private TextView mTvXiaofeiTitle;
+    /**
+     * 0.99元
+     */
+    private TextView mTvXiaofeiMoney;
+    private LinearLayout mLayoutXiaofei;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -215,6 +223,9 @@ public class PsamIcActivity extends MVPBaseActivity<SpdBusPayContract.View, SpdB
         mTvDeviceMessage = (TextView) findViewById(R.id.tv_device_message);
         mLayoutFace = (LinearLayout) findViewById(R.id.layout_face);
         mLayoutLineInfo = (LinearLayout) findViewById(R.id.layout_line_info);
+        mTvXiaofeiTitle = (TextView) findViewById(R.id.tv_xiaofei_title);
+        mTvXiaofeiMoney = (TextView) findViewById(R.id.tv_xiaofei_money);
+        mLayoutXiaofei = (LinearLayout) findViewById(R.id.layout_xiaofei);
         Datautils.getCurrentNetDBM(this, mXinhao);
     }
 
@@ -234,7 +245,7 @@ public class PsamIcActivity extends MVPBaseActivity<SpdBusPayContract.View, SpdB
                 public void run() {
                     mBankCard = new BankCard(getApplicationContext());
                     psam1Init();
-                    psam2Init();
+//                    psam2Init();
                     startTimer(true);
                 }
             }).start();
@@ -283,6 +294,7 @@ public class PsamIcActivity extends MVPBaseActivity<SpdBusPayContract.View, SpdB
         public void run() {
             mLayoutLineInfo.setVisibility(View.VISIBLE);
             mLayoutFace.setVisibility(View.GONE);
+            mLayoutXiaofei.setVisibility(View.GONE);
             mTvBalanceTitle.setText("票价");
             mTvBalance.setText("2.00元");
         }
@@ -805,7 +817,7 @@ public class PsamIcActivity extends MVPBaseActivity<SpdBusPayContract.View, SpdB
             byte[] yue09 = Datautils.cutBytes(bytes09, 0, 4);
             icCardBeen.setPurOriMoney(yue09);
             //定义消费金额
-            icCardBeen.setPurSub(new byte[]{0x00, 0x00, 0x00, (byte) 0xEC});
+            icCardBeen.setPurSub(new byte[]{0x00, 0x00, 0x00, (byte) 0x01});
             Log.d(TAG, "===原额===" + Datautils.byteArrayToString(yue09));
             return true;
         } catch (RemoteException e) {
@@ -1119,7 +1131,9 @@ public class PsamIcActivity extends MVPBaseActivity<SpdBusPayContract.View, SpdB
         }
         return reBytes;
     }
+
     private byte[] pursub = {0x00, 0x00, 0x00, 0x01};
+
     private void icExpance() {
         ltime = System.currentTimeMillis();
         Log.d(TAG, "===start--消费记录3031send=== " + Datautils.byteArrayToString(SELEC_PPSE));
@@ -1136,7 +1150,7 @@ public class PsamIcActivity extends MVPBaseActivity<SpdBusPayContract.View, SpdB
         //获取交易时间
         systemTime = Datautils.getDateTime();
         if (listTlv.contains("A000000632010105")) {
-            Log.d(TAG, "test: 解析到TLV发送0105 send：" + Datautils.byteArrayToString(SELECT_ICCARD_QIANBAO));
+            Log.d(TAG, "xiaofeichenggong: 解析到TLV发送0105 send：" + Datautils.byteArrayToString(SELECT_ICCARD_QIANBAO));
             //选择电子钱包应用
             resultBytes = sendApdus(BankCard.CARD_MODE_PICC, SELECT_ICCARD_QIANBAO);
             if (resultBytes == null || resultBytes.length == 2) {
@@ -1208,7 +1222,7 @@ public class PsamIcActivity extends MVPBaseActivity<SpdBusPayContract.View, SpdB
         flag = resultBytes[10];
         System.arraycopy(resultBytes, 11, rondomCpu, 0, 4);
         Log.d(TAG, "===IC卡初始化(8050)return=== " + Datautils.byteArrayToString(resultBytes) + "\n" +
-                "===电子钱包余额:" + Datautils.byteArrayToString(blance) + "\n" +
+                "===电子钱包余额:" + Datautils.byteArrayToInt(blance) + "\n" +
                 "===CPU卡脱机交易序号:  " + Datautils.byteArrayToString(ATC) + "\n" +
                 "===密钥版本 : " + (int) flag + "\n" + "===随机数 : " + Datautils.byteArrayToString(rondomCpu));
         // TODO: 2019/1/8  设定本次消费额
@@ -1229,20 +1243,18 @@ public class PsamIcActivity extends MVPBaseActivity<SpdBusPayContract.View, SpdB
         }
         Log.d(TAG, "===获取MAC18070return===" + Datautils.byteArrayToString(resultBytes));
         praseMAC1(resultBytes);
-        if (CAPP==1) {
+        if (CAPP == 1) {
             //80dc
-        String ss = "80DC00F030060000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000";
-        Log.d(TAG, "===更新1E文件(80dc)send===" + ss);
-        resultBytes = sendApdus(BankCard.CARD_MODE_PICC, Datautils.HexString2Bytes(ss));
-        if (resultBytes == null || resultBytes.length == 2) {
-            Log.e(TAG, "===更新1E文件(80dc)error===" + Datautils.byteArrayToString(resultBytes));
-            isFlag = 1;
-            return;
+            String update80Dc = "80DC00F030060000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000";
+            Log.d(TAG, "===更新1E文件(80dc)send===" + update80Dc);
+            resultBytes = sendApdus(BankCard.CARD_MODE_PICC, Datautils.HexString2Bytes(update80Dc));
+            if (resultBytes == null || resultBytes.length == 2) {
+                Log.e(TAG, "===更新1E文件(80dc)error===" + Datautils.byteArrayToString(resultBytes));
+                isFlag = 1;
+                return;
+            }
+            Log.d(TAG, "===更新1E文件return===" + Datautils.byteArrayToString(resultBytes));
         }
-        Log.d(TAG, "===更新1E文件return===" + Datautils.byteArrayToString(resultBytes));
-        }
-
-
         byte[] cmd = getIcPurchase();
         Log.d(TAG, "===IC卡(8054)消费send===" + Datautils.byteArrayToString(cmd));
         resultBytes = sendApdus(BankCard.CARD_MODE_PICC, cmd);
@@ -1267,39 +1279,58 @@ public class PsamIcActivity extends MVPBaseActivity<SpdBusPayContract.View, SpdB
         Log.i("stw", "===消费结束===" + (System.currentTimeMillis() - ltime));
     }
 
+
+    public static byte[] double2Bytes(double d) {
+        long value = Double.doubleToRawLongBits(d);
+        byte[] byteRet = new byte[8];
+        for (int i = 0; i < 8; i++) {
+            byteRet[i] = (byte) ((value >> 8 * i) & 0xff);
+        }
+        return byteRet;
+    }
+
+    public static double bytes2Double(byte[] arr) {
+        long value = 0;
+        for (int i = 0; i < 8; i++) {
+            value |= ((long) (arr[i] & 0xff)) << (8 * i);
+        }
+        return Double.longBitsToDouble(value);
+    }
+
     @SuppressLint("HandlerLeak")
     Handler handler = new Handler() {
         @Override
         public void handleMessage(Message msg) {
             super.handleMessage(msg);
             switch (msg.what) {
-                case 1:
+                case 1: //CPU卡消费成功UI更新
+                    int balances = (int) msg.obj;
                     PlaySound.play(PlaySound.dang, 0);
-                    int blances = (int) msg.obj;
-//                    mTvPrice.setTextSize(40);
-////                    mTvPrice.setText("票价：0.01元");
-                    mTvBalance.setVisibility(View.VISIBLE);
-                    Log.i("yuee", "handleMessage:余额：： " + (double) blances / 100 + "元");
-                    mTvBalance.setText("余额：" + (double) blances / 100 + "元");
-//                    handler.postDelayed(runnable, 500);
+                    mLayoutLineInfo.setVisibility(View.GONE);
+                    mLayoutXiaofei.setVisibility(View.VISIBLE);
+                    mTvBalanceTitle.setText("余额");
+                    mTvXiaofeiMoney.setText("0.01元");
+                    Log.i("rerer", "余额：：：" + ((double) balances / 100));
+                    mTvBalance.setText(((double) balances / 100) + "元");
+                    handler.postDelayed(runnable, 2000);
                     break;
-                case 2:
-//                    mTvPrice.setTextSize(40);
-//                    mTvPrice.setText("票价：0.01元");
+                case 2: //M1卡消费成功
                     PlaySound.play(PlaySound.dang, 0);
                     int blance = Datautils.byteArrayToInt(icCardBeen.getPurOriMoney(), false) - Datautils.byteArrayToInt(icCardBeen.getPurSub());
                     mTvBalance.setVisibility(View.VISIBLE);
                     mTvBalance.setText("余额：" + (double) blance / 100 + "元");
-//                    handler.postDelayed(runnable, 3000);
+                    handler.postDelayed(runnable, 2000);
                     break;
-
-                case 5:
-//                    mTvPrice.setTextSize(35);
-//                    mTvPrice.setText("PSAM1初始化失败！");
+                case 3:
+                    //扫码支付成功
+                    mLayoutLineInfo.setVisibility(View.GONE);
+                    mTvBalance.setText("1.00元");
+                    mLayoutXiaofei.setVisibility(View.VISIBLE);
+                    mTvXiaofeiMoney.setVisibility(View.GONE);
+                    mTvXiaofeiTitle.setText("消费成功!");
+                    handler.postDelayed(runnable, 2000);
                     break;
                 case 6:
-//                    mTvPrice.setTextSize(35);
-//                    mTvPrice.append("\nPSAM2初始化失败！");
                     break;
                 default:
                     break;
@@ -1723,6 +1754,7 @@ public class PsamIcActivity extends MVPBaseActivity<SpdBusPayContract.View, SpdB
             dataBeans.add(dataBean);
             alipayQrCodeUpload.setData(dataBeans);
             mPresenter.uploadAlipayRe(alipayQrCodeUpload);
+            handler.sendMessage(handler.obtainMessage(3));
         } else {
             Log.i(TAG, "\n支付宝校验结果错误:" + codeinfoData.inforState);
         }
@@ -1768,7 +1800,7 @@ public class PsamIcActivity extends MVPBaseActivity<SpdBusPayContract.View, SpdB
             dataBeans.add(dataBean);
             weichatQrCodeUpload.setData(dataBeans);
             mPresenter.uploadWechatRe(weichatQrCodeUpload);
-
+            handler.sendMessage(handler.obtainMessage(3));
         } else {
             Log.i(TAG, "微信校验结果错误 " + result);
 
@@ -1811,6 +1843,7 @@ public class PsamIcActivity extends MVPBaseActivity<SpdBusPayContract.View, SpdB
             bosiQrCodeUpload.setData(dataBeans);
             Log.i(TAG, "showCheckBosiQrCode: " + recordBean.toString());
             mPresenter.uploadBosiRe(bosiQrCodeUpload);
+            handler.sendMessage(handler.obtainMessage(3));
         }
     }
 
@@ -1822,89 +1855,4 @@ public class PsamIcActivity extends MVPBaseActivity<SpdBusPayContract.View, SpdB
             Log.i(TAG, "showUpdataBosiKey: 更新证书失败");
         }
     }
-
-
-    /**
-     * 得到当前的手机蜂窝网络信号强度
-     * 获取LTE网络和3G/2G网络的信号强度的方式有一点不同，
-     * LTE网络强度是通过解析字符串获取的，
-     * 3G/2G网络信号强度是通过API接口函数完成的。
-     * asu 与 dbm 之间的换算关系是 dbm=-113 + 2*asu
-     */
-//    public void getCurrentNetDBM(Context context) {
-//
-//        final TelephonyManager tm = (TelephonyManager) context
-//                .getSystemService(Context.TELEPHONY_SERVICE);
-//        PhoneStateListener mylistener = new PhoneStateListener() {
-//            @Override
-//            public void onSignalStrengthsChanged(SignalStrength signalStrength) {
-//                super.onSignalStrengthsChanged(signalStrength);
-//                String signalInfo = signalStrength.toString();
-//                String[] params = signalInfo.split(" ");
-//
-//                if (tm.getNetworkType() == TelephonyManager.NETWORK_TYPE_LTE) {
-//                    //4G网络 最佳范围   >-90dBm 越大越好
-//                    int Itedbm = Integer.parseInt(params[9]);
-//                    mTv.setText("信号：：：" + Itedbm);
-//                    signalStrength.getCdmaDbm();
-//                    signalStrength.getCdmaEcio();
-//                    signalStrength.getEvdoDbm();
-//                    signalStrength.getEvdoEcio();
-//                    signalStrength.getEvdoSnr();
-//                    signalStrength.getGsmBitErrorRate();
-//                    signalStrength.getGsmBitErrorRate();
-//
-//                    Log.i("tws", "onSignalStrengthsChanged: " + Itedbm);
-//                    // 设置信号强度
-//                    if (Itedbm> -100 && Itedbm < 0) {
-//                        mSignalView.setSignalValue(5);
-//                    } else if (Itedbm < -100 && Itedbm > -110) {
-//                        mSignalView.setSignalValue(4);
-//                    } else if (Itedbm < -110 && Itedbm > -115) {
-//                        mSignalView.setSignalValue(3);
-//                    } else if (Itedbm < -115) {
-//                        mSignalView.setSignalValue(2);
-//                    } else {
-//                        mSignalView.setSignalValue(1);
-//                    }
-//
-//                    // 设置信号类型
-//                    mSignalView.setSignalTypeText("4G");
-//
-//                } else if (tm.getNetworkType() == TelephonyManager.NETWORK_TYPE_HSDPA ||
-//                        tm.getNetworkType() == TelephonyManager.NETWORK_TYPE_HSPA ||
-//                        tm.getNetworkType() == TelephonyManager.NETWORK_TYPE_HSUPA ||
-//                        tm.getNetworkType() == TelephonyManager.NETWORK_TYPE_UMTS) {
-//                    //3G网络最佳范围  >-90dBm  越大越好  ps:中国移动3G获取不到  返回的无效dbm值是正数（85dbm）
-//                    //在这个范围的已经确定是3G，但不同运营商的3G有不同的获取方法，故在此需做判断 判断运营商与网络类型的工具类在最下方
-////                    String yys = IntenetUtil.getYYS(getApplication());//获取当前运营商
-////                    if (yys == "中国移动") {
-////                        setDBM(0 + "");//中国移动3G不可获取，故在此返回0
-////                    } else if (yys == "中国联通") {
-////                        int cdmaDbm = signalStrength.getCdmaDbm();
-////                        setDBM(cdmaDbm + "");
-////                    } else if (yys == "中国电信") {
-////                        int evdoDbm = signalStrength.getEvdoDbm();
-////                        setDBM(evdoDbm + "");
-////                    }
-//                    // 设置信号强度
-//                    mSignalView.setSignalValue(3);
-//                    // 设置信号类型
-//                    mSignalView.setSignalTypeText("3G");
-//                } else {
-//                    //2G网络最佳范围>-90dBm 越大越好
-//                    int asu = signalStrength.getGsmSignalStrength();
-//                    int dbm = -113 + 2 * asu;
-////                    setDBM(dbm + "");
-//                    // 设置信号强度
-//                    mSignalView.setSignalValue(3);
-//                    // 设置信号类型
-//                    mSignalView.setSignalTypeText("2G");
-//                }
-//
-//            }
-//        };
-//        //开始监听
-//        tm.listen(mylistener, PhoneStateListener.LISTEN_SIGNAL_STRENGTHS);
-//    }
 }

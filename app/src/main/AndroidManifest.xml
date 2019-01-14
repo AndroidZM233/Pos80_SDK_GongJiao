@@ -25,7 +25,8 @@
         android:label="@string/app_name"
         android:supportsRtl="true"
         android:theme="@style/AppTheme.NoActionBar"
-        tools:replace="android:icon,android:theme,android:allowBackup">
+        tools:replace="android:icon,android:theme,android:allowBackup"
+        tools:ignore="GoogleAppIndexingWarning">
         <activity android:name=".spdata.PsamIcActivity"
             android:screenOrientation="landscape">
             <intent-filter>
@@ -92,7 +93,6 @@
         </receiver>
 
         <activity android:name=".MainActivity" />
-        <activity android:name=".spdata.oldPsamIcActivityold" />
     </application>
 
 </manifest>

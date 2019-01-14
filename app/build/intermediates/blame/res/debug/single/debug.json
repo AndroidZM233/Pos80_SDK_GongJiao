@@ -16,10 +16,6 @@
         "source": "C:\\Users\\42040\\.gradle\\caches\\transforms-1\\files-1.1\\appcompat-v7-28.0.0.aar\\e913825754145ab2f349e1ffeefb1d24\\res\\drawable-ldrtl-xxxhdpi-v17\\abc_ic_menu_copy_mtrl_am_alpha.png"
     },
     {
-        "merged": "D:\\SpeedataDemo18\\Pos80_SDK_GongJiao\\app\\build\\intermediates\\res\\merged\\debug\\raw_sofia.mp3.flat",
-        "source": "D:\\SpeedataDemo18\\Pos80_SDK_GongJiao\\app\\src\\main\\res\\raw\\sofia.mp3"
-    },
-    {
         "merged": "D:\\SpeedataDemo18\\Pos80_SDK_GongJiao\\app\\build\\intermediates\\res\\merged\\debug\\drawable-xxhdpi-v4_design_ic_visibility.png.flat",
         "source": "C:\\Users\\42040\\.gradle\\caches\\transforms-1\\files-1.1\\design-28.0.0.aar\\4fc944e6d189ba7b22e36d349b67429b\\res\\drawable-xxhdpi-v4\\design_ic_visibility.png"
     },
@@ -1012,10 +1008,6 @@
         "source": "C:\\Users\\42040\\.gradle\\caches\\transforms-1\\files-1.1\\appcompat-v7-28.0.0.aar\\e913825754145ab2f349e1ffeefb1d24\\res\\color-v23\\abc_color_highlight_material.xml"
     },
     {
-        "merged": "D:\\SpeedataDemo18\\Pos80_SDK_GongJiao\\app\\build\\intermediates\\res\\merged\\debug\\raw_test.wav.flat",
-        "source": "D:\\SpeedataDemo18\\Pos80_SDK_GongJiao\\app\\src\\main\\res\\raw\\test.wav"
-    },
-    {
         "merged": "D:\\SpeedataDemo18\\Pos80_SDK_GongJiao\\app\\build\\intermediates\\res\\merged\\debug\\color-v23_abc_btn_colored_text_material.xml.flat",
         "source": "C:\\Users\\42040\\.gradle\\caches\\transforms-1\\files-1.1\\appcompat-v7-28.0.0.aar\\e913825754145ab2f349e1ffeefb1d24\\res\\color-v23\\abc_btn_colored_text_material.xml"
     },
@@ -1884,6 +1876,10 @@
         "source": "C:\\Users\\42040\\.gradle\\caches\\transforms-1\\files-1.1\\design-28.0.0.aar\\4fc944e6d189ba7b22e36d349b67429b\\res\\anim\\design_bottom_sheet_slide_out.xml"
     },
     {
+        "merged": "D:\\SpeedataDemo18\\Pos80_SDK_GongJiao\\app\\build\\intermediates\\res\\merged\\debug\\raw_xiaofeichenggong.wav.flat",
+        "source": "D:\\SpeedataDemo18\\Pos80_SDK_GongJiao\\app\\src\\main\\res\\raw\\xiaofeichenggong.wav"
+    },
+    {
         "merged": "D:\\SpeedataDemo18\\Pos80_SDK_GongJiao\\app\\build\\intermediates\\res\\merged\\debug\\drawable_abc_btn_colored_material.xml.flat",
         "source": "C:\\Users\\42040\\.gradle\\caches\\transforms-1\\files-1.1\\appcompat-v7-28.0.0.aar\\e913825754145ab2f349e1ffeefb1d24\\res\\drawable\\abc_btn_colored_material.xml"
     },
@@ -1950,10 +1946,6 @@
     {
         "merged": "D:\\SpeedataDemo18\\Pos80_SDK_GongJiao\\app\\build\\intermediates\\res\\merged\\debug\\drawable-xhdpi-v4_abc_list_pressed_holo_dark.9.png.flat",
         "source": "C:\\Users\\42040\\.gradle\\caches\\transforms-1\\files-1.1\\appcompat-v7-28.0.0.aar\\e913825754145ab2f349e1ffeefb1d24\\res\\drawable-xhdpi-v4\\abc_list_pressed_holo_dark.9.png"
-    },
-    {
-        "merged": "D:\\SpeedataDemo18\\Pos80_SDK_GongJiao\\app\\build\\intermediates\\res\\merged\\debug\\raw_xiaofeisucces.wav.flat",
-        "source": "D:\\SpeedataDemo18\\Pos80_SDK_GongJiao\\app\\src\\main\\res\\raw\\xiaofeisucces.wav"
     },
     {
         "merged": "D:\\SpeedataDemo18\\Pos80_SDK_GongJiao\\app\\build\\intermediates\\res\\merged\\debug\\drawable-anydpi-v21_design_ic_visibility_off.xml.flat",

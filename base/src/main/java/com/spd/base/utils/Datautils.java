@@ -176,6 +176,8 @@ public class Datautils {
         }
         return value;
     }
+    public static void main(String[] args) {
+    }
 
     /**
      * 截取数组

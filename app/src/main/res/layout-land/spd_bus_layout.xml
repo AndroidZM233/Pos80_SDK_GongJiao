@@ -58,11 +58,37 @@
         </LinearLayout>
 
         <LinearLayout
-            android:id="@+id/layout_line_info"
+            android:id="@+id/layout_xiaofei"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_gravity="center"
             android:layout_weight="1"
+            android:orientation="vertical"
+            android:visibility="gone">
+
+            <TextView
+                android:id="@+id/tv_xiaofei_title"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:text="消费额"
+                android:textSize="35sp" />
+
+            <TextView
+                android:id="@+id/tv_xiaofei_money"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:text="0.99元"
+                android:textSize="60sp" />
+        </LinearLayout>
+
+        <LinearLayout
+            android:id="@+id/layout_line_info"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:gravity="center"
             android:orientation="vertical">
 
             <TextView
@@ -93,9 +119,9 @@
 
         <LinearLayout
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_gravity="center"
+            android:layout_height="match_parent"
             android:layout_weight="1"
+            android:gravity="center"
             android:orientation="vertical">
 
             <TextView
@@ -131,10 +157,11 @@
             android:text="@string/_123465_id_123654987_20181206"
             android:textSize="20sp" />
 
-        <View
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:layout_weight="1" />
+        <com.honeywell.barcode.HSMDecodeComponent
+            android:id="@+id/hsm_decodeComponent"
+            android:layout_width="119dp"
+            android:layout_height="match_parent" />
+
 
         <ImageView
             android:layout_width="wrap_content"

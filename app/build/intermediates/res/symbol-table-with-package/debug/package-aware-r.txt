@@ -1390,6 +1390,7 @@ id large_icon_uri
 id layout_cradno
 id layout_face
 id layout_line_info
+id layout_xiaofei
 id led
 id left
 id light
@@ -1547,6 +1548,8 @@ id tv_show
 id tv_show_msg
 id tv_time
 id tv_title
+id tv_xiaofei_money
+id tv_xiaofei_title
 id tvdockshow
 id tvshow
 id tvshowprinttips
@@ -1708,9 +1711,7 @@ raw dang
 raw error
 raw hsm_beep
 raw qingchongshua
-raw sofia
-raw test
-raw xiaofeisucces
+raw xiaofeichenggong
 string _123465_id_123654987_20181206
 string abc_action_bar_home_description
 string abc_action_bar_up_description
