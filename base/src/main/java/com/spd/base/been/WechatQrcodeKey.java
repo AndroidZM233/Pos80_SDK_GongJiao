@@ -11,50 +11,21 @@ import org.greenrobot.greendao.annotation.Unique;
 import java.util.List;
 import org.greenrobot.greendao.annotation.Generated;
 
-@Entity
 public class WechatQrcodeKey {
-
-
     /**
      * curVersion : 1
      * keyType : weChat
      * macKeyList : [{"mac_key":"E7BBD0BD7769B1BF73B5AE07A2D5D733","key_id":"1"},{"mac_key":"B431AF7CD446C6221ACF9395B50C8C8E","key_id":"2"},{"mac_key":"C3F6FD41C4A7F558AD5789DE4B474DE0","key_id":"3"},{"mac_key":"EF9BF841012ACDF8D09322873B24EA70","key_id":"4"},{"mac_key":"97CBB4CAB13D91D8AB73B9FA5641A9F6","key_id":"5"},{"mac_key":"7C040960A8794D8D6EA4FCD764FEDB73","key_id":"6"},{"mac_key":"43100ADE5632616F2629070779EB07E5","key_id":"7"},{"mac_key":"C5E2A32E8EC50CFDF1A8721D73C2F625","key_id":"8"}]
      * pubKeyList : [{"key_id":1,"pub_key":"0480A3D8999F4AC3F3CB2129B1DDD88CACFB1DEB041358F28FD9ECE108648B92878FB199B12FDFE412574D8E5BF664BC29FEF43E781FB4BA2D"},{"key_id":2,"pub_key":"0403142215E227D8B3B8EB9F73A713963C57313E318DD8C9ED81582E12DB8D2087DAA9E93E0E18C73031432842794B42694D57EA5C2FCDB38C"}]
      */
-    @Id(autoincrement = true)
-    private Long id;
 
-    @Unique
     private int curVersion;
 
-    @Unique
     private String keyType;
 
-    @Convert(columnType = String.class, converter = StringConverter.class)
-    private List<String> pubkeyDbList;
-
-    @Convert(columnType = String.class, converter = StringConverter.class)
-    private List<String> mackeyDbList;
-    //不添加数据库
-    @Transient
     private List<MacKeyListBean> macKeyList;
 
-    @Transient
     private List<PubKeyListBean> pubKeyList;
-
-
-    @Generated(hash = 2091984006)
-    public WechatQrcodeKey(Long id, int curVersion, String keyType, List<String> pubkeyDbList, List<String> mackeyDbList) {
-        this.id = id;
-        this.curVersion = curVersion;
-        this.keyType = keyType;
-        this.pubkeyDbList = pubkeyDbList;
-        this.mackeyDbList = mackeyDbList;
-    }
-
-    @Generated(hash = 1451029861)
-    public WechatQrcodeKey() {
-    }
 
 
     public int getCurVersion() {
@@ -159,27 +130,4 @@ public class WechatQrcodeKey {
                 '}';
     }
 
-    public Long getId() {
-        return this.id;
-    }
-
-    public void setId(Long id) {
-        this.id = id;
-    }
-
-    public List<String> getPubkeyDbList() {
-        return this.pubkeyDbList;
-    }
-
-    public void setPubkeyDbList(List<String> pubkeyDbList) {
-        this.pubkeyDbList = pubkeyDbList;
-    }
-
-    public List<String> getMackeyDbList() {
-        return this.mackeyDbList;
-    }
-
-    public void setMackeyDbList(List<String> mackeyDbList) {
-        this.mackeyDbList = mackeyDbList;
-    }
 }

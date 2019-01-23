@@ -1,4 +1,4 @@
-#Mon Jan 14 14:19:42 CST 2019
+#Wed Jan 23 19:00:56 CST 2019
 base.2=D\:\\SpeedataDemo18\\Pos80_SDK_GongJiao\\app\\build\\intermediates\\transforms\\dexMerger\\debug\\5
 base.1=D\:\\SpeedataDemo18\\Pos80_SDK_GongJiao\\app\\build\\intermediates\\transforms\\dexMerger\\debug\\8
 base.0=D\:\\SpeedataDemo18\\Pos80_SDK_GongJiao\\app\\build\\intermediates\\transforms\\dexMerger\\debug\\7

@@ -35,7 +35,7 @@ public class MyApplication extends Application {
         DbDaoManage.initDb(this);
 //        CrashReport.initCrashReport(getApplicationContext(),"ca2f83cd2c",true);
         PlaySound.initSoundPool(this);
-        initScanBards();
+//        initScanBards();
 
         //开启HttpServer
         startService(new Intent(this, HttpService.class));
@@ -117,15 +117,13 @@ public class MyApplication extends Application {
 //        hsmDecoder.setAimerColor(Color.RED);
 //        hsmDecoder.setOverlayText("ceshi");
 //        hsmDecoder.setOverlayTextColor(Color.RED);
-        hsmDecoder.enableSound(false);
+        hsmDecoder.enableSound(true);
         //初始为默认前置摄像头扫码
 //        hsmDecoder.setActiveCamera(ActiveCamera.FRONT_FACING);
         hsmDecoder.enableSymbology(QR);
-
 //        CameraManager cameraManager = CameraManager.getInstance(getApplicationContext());
 //        hsmDecodeComponent = new HSMDecodeComponent(getApplicationContext());
 //        cameraManager.closeCamera();
-
         ScanUtils.activateScan(this, new OnBackListener() {
             @Override
             public void onBack() {

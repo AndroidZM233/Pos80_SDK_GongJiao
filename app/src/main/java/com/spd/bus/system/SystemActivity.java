@@ -141,8 +141,9 @@ public class SystemActivity extends Activity {
                         String val = new String(BatteryLevel);
                         val = val.substring(0,1) + "." + val.substring(1,3) + "v";
                         tvResult.setText("Backup battery voltage: " + val);
-                    } else
+                    } else {
                         tvResult.setText("Get backup battery fail.");
+                    }
                 } catch (Exception e) {
                     e.printStackTrace();
                     tvResult.setText("Exception " + e.toString());

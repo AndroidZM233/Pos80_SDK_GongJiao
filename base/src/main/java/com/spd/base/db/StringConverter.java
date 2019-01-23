@@ -8,33 +8,31 @@ import java.util.List;
 /**
  * Created by lenovo-pc on 2017/8/29.
  */
+public class StringConverter implements PropertyConverter<List<String>, String> {
 
-    public class StringConverter implements PropertyConverter<List<String>, String> {
-
-        @Override
-        public List<String> convertToEntityProperty(String databaseValue) {
-            if (databaseValue == null) {
-                return null;
-            } else {
-                List<String> list = Arrays.asList(databaseValue.split(","));
-                return list;
-            }
+    @Override
+    public List<String> convertToEntityProperty(String databaseValue) {
+        if (databaseValue == null) {
+            return null;
+        } else {
+            List<String> list = Arrays.asList(databaseValue.split(","));
+            return list;
         }
+    }
 
-        @Override
-        public String convertToDatabaseValue(List<String> entityProperty) {
-            if(entityProperty==null){
-                return null;
+    @Override
+    public String convertToDatabaseValue(List<String> entityProperty) {
+        if (entityProperty == null) {
+            return null;
+        } else {
+            StringBuilder sb = new StringBuilder();
+            for (String link : entityProperty) {
+                sb.append(link);
+                sb.append(",");
             }
-            else{
-                StringBuilder sb= new StringBuilder();
-                for(String link:entityProperty){
-                    sb.append(link);
-                    sb.append(",");
-                }
-                return sb.toString();
-            }
+            return sb.toString();
         }
+    }
 
 }
 

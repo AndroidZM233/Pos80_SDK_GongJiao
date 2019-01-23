@@ -63,7 +63,7 @@ public class SpdBusPayContract {
          */
         void getAliPubKey();
 
-        void aliPayInitJni(List<AlipayQrcodekey.PublicKeyListBean> publicKeyListBeans);
+        void aliPayInitJni();
 
         /**
          * 校验支付宝二维码

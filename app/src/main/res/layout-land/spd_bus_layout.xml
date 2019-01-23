@@ -19,7 +19,7 @@
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="海口公交"
+            android:text="天津公交"
             android:textSize="35sp" />
 
         <View
@@ -157,10 +157,15 @@
             android:text="@string/_123465_id_123654987_20181206"
             android:textSize="20sp" />
 
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_weight="1" />
+
         <com.honeywell.barcode.HSMDecodeComponent
             android:id="@+id/hsm_decodeComponent"
-            android:layout_width="119dp"
-            android:layout_height="match_parent" />
+            android:layout_width="148dp"
+            android:layout_height="91dp" />
 
 
         <ImageView

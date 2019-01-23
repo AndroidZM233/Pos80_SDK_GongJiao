@@ -7,10 +7,7 @@ import com.spd.base.been.DaoSession;
 
 
 public class DbDaoManage {
-
-
     private static DaoSession daoSession;
-
     /**
      * 初始化数据库
      *
@@ -21,9 +18,7 @@ public class DbDaoManage {
         DaoMaster daoMaster = new DaoMaster(devOpenHelper.getReadableDb());
         daoSession = daoMaster.newSession();
     }
-//
     public static DaoSession getDaoSession() {
         return daoSession;
-//        return (DaoSession) new Object();
     }
 }

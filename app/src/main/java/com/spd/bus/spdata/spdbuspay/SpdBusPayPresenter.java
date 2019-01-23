@@ -10,7 +10,6 @@ import com.spd.alipay.AlipayJni;
 import com.spd.alipay.been.AliCodeinfoData;
 import com.spd.base.been.AlipayQrcodekey;
 
-import com.spd.base.been.AlipayQrcodekeyDao;
 import com.spd.base.been.BosiQrcodeKey;
 import com.spd.base.beenresult.QrcodeUploadResult;
 import com.spd.base.beenupload.AlipayQrCodeUpload;
@@ -18,11 +17,17 @@ import com.spd.base.beenupload.BosiQrCodeUpload;
 import com.spd.base.beenupload.WeichatQrCodeUpload;
 import com.spd.base.been.WechatQrcodeKey;
 import com.spd.base.db.DbDaoManage;
+import com.spd.base.dbbeen.AlipayKeyDb;
+import com.spd.base.dbbeen.AlipayKeyDbDao;
+import com.spd.base.dbbeen.WeichatKeyDb;
+import com.spd.base.dbbeen.WeichatKeyDbDao;
 import com.spd.base.net.QrcodeApi;
 import com.spd.bosi.BosiQrManage;
 import com.spd.bus.spdata.been.ErroCode;
 import com.spd.bus.spdata.mvp.BasePresenterImpl;
 import com.tencent.wlxsdk.WlxSdk;
+
+import org.greenrobot.greendao.annotation.Transient;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -44,7 +49,6 @@ public class SpdBusPayPresenter extends BasePresenterImpl<SpdBusPayContract.View
     //    private BosiPayJni bosiPayJni;
     private String TAG = "SPEEDATA_BUS";
 
-
     //===============支付宝二维码==============
 
     @Override
@@ -61,15 +65,13 @@ public class SpdBusPayPresenter extends BasePresenterImpl<SpdBusPayContract.View
 
                     @Override
                     public void onNext(AlipayQrcodekey aliQrcodekey) {
-                        List<String> pubKeyList = new ArrayList<>();
+                        AlipayKeyDbDao alipayKeyDbDao = DbDaoManage.getDaoSession().getAlipayKeyDbDao();
                         List<AlipayQrcodekey.PublicKeyListBean> publicKeyListBeans = aliQrcodekey.getPublicKeyList();
                         Collections.sort(publicKeyListBeans);
                         for (int i = 0; i < publicKeyListBeans.size(); i++) {
-                            pubKeyList.add(publicKeyListBeans.get(i).getPub_key());
+                            AlipayKeyDb alipayKeyDb = new AlipayKeyDb(aliQrcodekey.getVersion(), aliQrcodekey.getKeyType(), publicKeyListBeans.get(i).getKey_id() + "", publicKeyListBeans.get(i).getPub_key());
+                            alipayKeyDbDao.insertOrReplace(alipayKeyDb);
                         }
-                        aliQrcodekey.setPubkeyDbList(pubKeyList);
-                        AlipayQrcodekeyDao alipayQrcodekeyDao = DbDaoManage.getDaoSession().getAlipayQrcodekeyDao();
-                        alipayQrcodekeyDao.insertOrReplace(aliQrcodekey);
                         mView.showAliPublicKey(0);
                         mView.success("获取支付宝KEY成功");
                     }
@@ -89,9 +91,17 @@ public class SpdBusPayPresenter extends BasePresenterImpl<SpdBusPayContract.View
     }
 
     @Override
-    public void aliPayInitJni(List<AlipayQrcodekey.PublicKeyListBean> publicKeyListBeans) {
+    public void aliPayInitJni() {
+        List<AlipayKeyDb> alipayKeyDb = DbDaoManage.getDaoSession().getAlipayKeyDbDao().loadAll();
+        List<AlipayQrcodekey.PublicKeyListBean> publicKeyLists = new ArrayList<>();
+        if (alipayKeyDb != null) {
+            for (int i = 0; i < alipayKeyDb.size(); i++) {
+                AlipayQrcodekey.PublicKeyListBean keyListBean = new AlipayQrcodekey.PublicKeyListBean(Integer.parseInt(alipayKeyDb.get(i).getPubkeyId()), alipayKeyDb.get(i).getPubKey());
+                publicKeyLists.add(keyListBean);
+            }
+        }
         alipayJni = new AlipayJni();
-        int result = alipayJni.initAliDev(publicKeyListBeans);
+        int result = alipayJni.initAliDev(publicKeyLists);
         Log.e(TAG, "showAliPayInit: " + mView);
         mView.showAliPayInit(result);
     }
@@ -151,7 +161,12 @@ public class SpdBusPayPresenter extends BasePresenterImpl<SpdBusPayContract.View
         }
 //        mView.showReleseAlipayJni(re);
     }
-//===============腾讯（微信）二维码==============
+
+    //===============腾讯（微信）二维码==============
+    @Override
+    public void wechatInitJin() {
+        wlxSdk = new WlxSdk();
+    }
 
     @Override
     public void getWechatPublicKey() {
@@ -162,15 +177,24 @@ public class SpdBusPayPresenter extends BasePresenterImpl<SpdBusPayContract.View
                 .subscribe(new io.reactivex.Observer<WechatQrcodeKey>() {
                     @Override
                     public void onSubscribe(Disposable d) {
-
                     }
 
                     @Override
                     public void onNext(WechatQrcodeKey wechatQrcodeKey) {
+                        WeichatKeyDb weichatKeyDb = null;
+                        WeichatKeyDbDao weichatKeyDbDao = DbDaoManage.getDaoSession().getWeichatKeyDbDao();
+                        List<WechatQrcodeKey.MacKeyListBean> macKeyList = wechatQrcodeKey.getMacKeyList();
+                        for (int i = 0; i < macKeyList.size(); i++) {
+                            weichatKeyDb = new WeichatKeyDb(wechatQrcodeKey.getCurVersion(), wechatQrcodeKey.getKeyType(), macKeyList.get(i).getKey_id(), macKeyList.get(i).getMac_key(), "", "");
+                            weichatKeyDbDao.insertOrReplace(weichatKeyDb);
+                        }
+                        List<WechatQrcodeKey.PubKeyListBean> pubKeyList = wechatQrcodeKey.getPubKeyList();
+                        for (int i = 0; i < pubKeyList.size(); i++) {
+                            weichatKeyDbDao.insertOrReplace(new WeichatKeyDb(wechatQrcodeKey.getCurVersion(), wechatQrcodeKey.getKeyType(), "", "", pubKeyList.get(i).getKey_id() + "", pubKeyList.get(i).getPub_key()));
+                        }
                         mView.showWechatPublicKey(wechatQrcodeKey);
                         mView.success("微信获取key成功");
                     }
-
 
                     @Override
                     public void onError(Throwable e) {
@@ -185,10 +209,6 @@ public class SpdBusPayPresenter extends BasePresenterImpl<SpdBusPayContract.View
                 });
     }
 
-    @Override
-    public void wechatInitJin() {
-        wlxSdk = new WlxSdk();
-    }
 
     /**
      *
@@ -220,18 +240,35 @@ public class SpdBusPayPresenter extends BasePresenterImpl<SpdBusPayContract.View
         String openId = wlxSdk.get_open_id();
         String pubKey = "";
         String aesMacRoot = "";
-        for (int i = 0; i < pbKeyList.size(); i++) {
-            if (wlxSdk.get_key_id() == pbKeyList.get(i).getKey_id()) {
-                pubKey = pbKeyList.get(i).getPub_key();
-                break;
+        List<WeichatKeyDb> weichatKeyDbs = DbDaoManage.getDaoSession().getWeichatKeyDbDao().loadAll();
+        for (int i = 0; i < weichatKeyDbs.size(); i++) {
+            if (String.valueOf(wlxSdk.get_key_id()).equals(weichatKeyDbs.get(i).getPubkeyId())) {
+                pubKey = weichatKeyDbs.get(i).getPubKey();
+                continue;
+            }
+            if (String.valueOf(wlxSdk.get_mac_root_id()).equals(weichatKeyDbs.get(i).getMackeyId())) {
+                aesMacRoot = weichatKeyDbs.get(i).getMacKey();
+                continue;
             }
         }
-        for (int i = 0; i < macKeyList.size(); i++) {
-            if (String.valueOf(wlxSdk.get_mac_root_id()).equals(macKeyList.get(i).getKey_id())) {
-                aesMacRoot = macKeyList.get(i).getMac_key();
-                break;
-            }
-        }
+
+
+//        WeichatKeyDb weichatKeyDb = DbDaoManage.getDaoSession().getWeichatKeyDbDao().queryBuilder().where(WeichatKeyDbDao.Properties.PubkeyId.eq(String.valueOf(wlxSdk.get_key_id()))).build().unique();
+//        pubKey = weichatKeyDb.getPubKey();
+//        for (int i = 0; i < pbKeyList.size(); i++) {
+//            if (wlxSdk.get_key_id() == pbKeyList.get(i).getKey_id()) {
+//                pubKey = pbKeyList.get(i).getPub_key();
+//                break;
+//            }
+//        }
+//        WeichatKeyDb weichatKeyDb2 = DbDaoManage.getDaoSession().getWeichatKeyDbDao().queryBuilder().where(WeichatKeyDbDao.Properties.MackeyId.eq(wlxSdk.get_mac_root_id())).build().unique();
+//        pubKey = weichatKeyDb2.getMacKey();
+//        for (int i = 0; i < macKeyList.size(); i++) {
+//            if (String.valueOf(wlxSdk.get_mac_root_id()).equals(macKeyList.get(i).getKey_id())) {
+//                aesMacRoot = macKeyList.get(i).getMac_key();
+//                break;
+//            }
+//        }
         result = wlxSdk.verify(openId, pubKey, payfee, scene, scantype, posId, posTrxId, aesMacRoot);
         if (result != ErroCode.EC_SUCCESS) {
             mView.showCheckWechatQrCode(result, wlxSdk.get_record(), "");
