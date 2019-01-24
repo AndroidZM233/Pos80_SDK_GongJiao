@@ -182,15 +182,17 @@ public class SpdBusPayPresenter extends BasePresenterImpl<SpdBusPayContract.View
                     @Override
                     public void onNext(WechatQrcodeKey wechatQrcodeKey) {
                         WeichatKeyDb weichatKeyDb = null;
+                        String key = "key";
+                        int cont = 0;
                         WeichatKeyDbDao weichatKeyDbDao = DbDaoManage.getDaoSession().getWeichatKeyDbDao();
                         List<WechatQrcodeKey.MacKeyListBean> macKeyList = wechatQrcodeKey.getMacKeyList();
                         for (int i = 0; i < macKeyList.size(); i++) {
-                            weichatKeyDb = new WeichatKeyDb(wechatQrcodeKey.getCurVersion(), wechatQrcodeKey.getKeyType(), macKeyList.get(i).getKey_id(), macKeyList.get(i).getMac_key(), "", "");
+                            weichatKeyDb = new WeichatKeyDb(key + cont++, wechatQrcodeKey.getCurVersion(), wechatQrcodeKey.getKeyType(), macKeyList.get(i).getKey_id(), macKeyList.get(i).getMac_key(), "", "");
                             weichatKeyDbDao.insertOrReplace(weichatKeyDb);
                         }
                         List<WechatQrcodeKey.PubKeyListBean> pubKeyList = wechatQrcodeKey.getPubKeyList();
                         for (int i = 0; i < pubKeyList.size(); i++) {
-                            weichatKeyDbDao.insertOrReplace(new WeichatKeyDb(wechatQrcodeKey.getCurVersion(), wechatQrcodeKey.getKeyType(), "", "", pubKeyList.get(i).getKey_id() + "", pubKeyList.get(i).getPub_key()));
+                            weichatKeyDbDao.insertOrReplace(new WeichatKeyDb(key + cont++, wechatQrcodeKey.getCurVersion(), wechatQrcodeKey.getKeyType(), "", "", pubKeyList.get(i).getKey_id() + "", pubKeyList.get(i).getPub_key()));
                         }
                         mView.showWechatPublicKey(wechatQrcodeKey);
                         mView.success("微信获取key成功");

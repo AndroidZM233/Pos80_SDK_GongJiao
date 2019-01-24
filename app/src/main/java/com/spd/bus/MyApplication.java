@@ -11,9 +11,11 @@ import android.widget.Toast;
 
 import com.example.test.yinlianbarcode.interfaces.OnBackListener;
 import com.example.test.yinlianbarcode.utils.ScanUtils;
+import com.honeywell.barcode.ActiveCamera;
 import com.honeywell.barcode.HSMDecodeComponent;
 import com.honeywell.barcode.HSMDecoder;
 
+import com.honeywell.camera.CameraManager;
 import com.spd.base.db.DbDaoManage;
 import com.spd.bus.spdata.utils.PlaySound;
 
@@ -35,7 +37,7 @@ public class MyApplication extends Application {
         DbDaoManage.initDb(this);
 //        CrashReport.initCrashReport(getApplicationContext(),"ca2f83cd2c",true);
         PlaySound.initSoundPool(this);
-//        initScanBards();
+        initScanBards();
 
         //开启HttpServer
         startService(new Intent(this, HttpService.class));
@@ -82,12 +84,12 @@ public class MyApplication extends Application {
 ////                hsmDecodeComponent.dispose();
 //            }
 //        });
-        new Thread(new Runnable() {
-            @Override
-            public void run() {
-                bankCard = new BankCard(getApplicationContext());
-            }
-        }).start();
+//        new Thread(new Runnable() {
+//            @Override
+//            public void run() {
+//                bankCard = new BankCard(getApplicationContext());
+//            }
+//        }).start();
     }
 
     public static BankCard getBankCardInstance() {
@@ -112,16 +114,16 @@ public class MyApplication extends Application {
      * 初始化银联二维码支付
      */
     private void initScanBards() {
-        hsmDecoder = HSMDecoder.getInstance(this);
-//        hsmDecoder.enableAimer(true);
+        hsmDecoder = HSMDecoder.getInstance(getApplicationContext());
+        hsmDecoder.enableAimer(false);
 //        hsmDecoder.setAimerColor(Color.RED);
-//        hsmDecoder.setOverlayText("ceshi");
+        hsmDecoder.setOverlayText("");
 //        hsmDecoder.setOverlayTextColor(Color.RED);
-        hsmDecoder.enableSound(true);
+        hsmDecoder.enableSound(false);
         //初始为默认前置摄像头扫码
 //        hsmDecoder.setActiveCamera(ActiveCamera.FRONT_FACING);
         hsmDecoder.enableSymbology(QR);
-//        CameraManager cameraManager = CameraManager.getInstance(getApplicationContext());
+        CameraManager cameraManager = CameraManager.getInstance(getApplicationContext());
 //        hsmDecodeComponent = new HSMDecodeComponent(getApplicationContext());
 //        cameraManager.closeCamera();
         ScanUtils.activateScan(this, new OnBackListener() {

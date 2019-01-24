@@ -118,7 +118,6 @@
     <orderEntry type="library" name="Gradle: com.android.support:coordinatorlayout-28.0.0" level="project" />
     <orderEntry type="library" scope="TEST" name="Gradle: com.squareup:javawriter:2.1.1@jar" level="project" />
     <orderEntry type="library" name="Gradle: io.reactivex:rxandroid-1.2.0" level="project" />
-    <orderEntry type="library" name="Gradle: __local_aars__:C.\Users\42040\.gradle\caches\transforms-1\files-1.1\SwiftDecoderMobile.aar\30bd0454deb5499f51b842303f6e2658:unspecified@jar" level="project" />
     <orderEntry type="library" name="Gradle: com.android.support:swiperefreshlayout-28.0.0" level="project" />
     <orderEntry type="library" name="Gradle: io.reactivex:rxjava:1.1.4@jar" level="project" />
     <orderEntry type="library" name="Gradle: android.arch.lifecycle:livedata-1.1.1" level="project" />
@@ -127,6 +126,7 @@
     <orderEntry type="library" name="Gradle: com.android.support:versionedparcelable-28.0.0" level="project" />
     <orderEntry type="library" name="Gradle: org.greenrobot:greendao:3.2.2@jar" level="project" />
     <orderEntry type="library" name="Gradle: io.reactivex.rxjava2:rxandroid-2.1.0" level="project" />
+    <orderEntry type="library" name="Gradle: __local_aars__:C.\Users\42040\.gradle\caches\transforms-1\files-1.1\SwiftDecoderMobile.aar\caeb8517a66ffbd13b33cb31d5aa00c7:unspecified@jar" level="project" />
     <orderEntry type="library" name="Gradle: android.arch.core:runtime-1.1.1" level="project" />
     <orderEntry type="library" scope="TEST" name="Gradle: com.android.support.test:monitor-1.0.2" level="project" />
     <orderEntry type="library" name="Gradle: com.android.support:loader-28.0.0" level="project" />

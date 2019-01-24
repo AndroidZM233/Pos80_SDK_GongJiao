@@ -5,6 +5,7 @@ import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
+import android.hardware.Camera;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
@@ -18,10 +19,13 @@ import android.widget.Toast;
 
 import com.bluering.pos.sdk.qr.QrCodeInfo;
 import com.example.test.yinlianbarcode.entity.QrEntity;
+import com.example.test.yinlianbarcode.interfaces.OnBackListener;
 import com.example.test.yinlianbarcode.utils.Logcat;
+import com.example.test.yinlianbarcode.utils.ScanUtils;
 import com.example.test.yinlianbarcode.utils.ValidationUtils;
 import com.honeywell.barcode.HSMDecodeResult;
 import com.honeywell.barcode.HSMDecoder;
+import com.honeywell.camera.CameraManager;
 import com.honeywell.plugins.decode.DecodeResultListener;
 import com.spd.alipay.been.AliCodeinfoData;
 import com.spd.base.been.AlipayQrcodekey;
@@ -33,6 +37,7 @@ import com.spd.base.beenupload.WeichatQrCodeUpload;
 import com.spd.base.db.DbDaoManage;
 import com.spd.base.utils.Datautils;
 import com.spd.base.view.SignalView;
+import com.spd.bus.MainActivity;
 import com.spd.bus.MyApplication;
 import com.spd.bus.R;
 import com.spd.bus.spdata.been.ErroCode;
@@ -236,12 +241,7 @@ public class PsamIcActivity extends MVPBaseActivity<SpdBusPayContract.View, SpdB
 
     private void initCard() {
         try {
-            //解码库条码返回监听
-            hsmDecoder = HSMDecoder.getInstance(this);
-            hsmDecoder.enableSound(true);
-            hsmDecoder.enableSymbology(QR);
-            hsmDecoder.addResultListener(this);
-//            MyApplication.getHSMDecoder().addResultListener(this);
+            MyApplication.getHSMDecoder().addResultListener(PsamIcActivity.this);
             //注册系统时间广播 只能动态注册
             IntentFilter filter = new IntentFilter();
             filter.addAction(Intent.ACTION_TIME_TICK);
@@ -255,9 +255,9 @@ public class PsamIcActivity extends MVPBaseActivity<SpdBusPayContract.View, SpdB
                     mBankCard = new BankCard(getApplicationContext());
                     mCore = new Core(getApplicationContext());
                     psam1Init();
-                    psam2Init();
+//                    psam2Init();
                     startTimer(true);
-                    updateTime();
+
                 }
             }).start();
             //获取支付宝微信key
@@ -265,6 +265,7 @@ public class PsamIcActivity extends MVPBaseActivity<SpdBusPayContract.View, SpdB
             mPresenter.getWechatPublicKey();
             mPresenter.bosiInitJin(this, "/storage/sdcard0/bosicer/");
             mPresenter.getBosikey();
+            updateTime();
         } catch (Exception e) {
 
         }
@@ -317,7 +318,7 @@ public class PsamIcActivity extends MVPBaseActivity<SpdBusPayContract.View, SpdB
                 .subscribe(new Consumer<Long>() {
                     @Override
                     public void accept(@NonNull Long aLong) throws Exception {
-                        //设置sp时间
+//                        //设置sp时间
 //                        SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyyMMddHHmmss");
 //                        Date date = new Date(System.currentTimeMillis());
 //                        String str = simpleDateFormat.format(date);// 1971 < year < 2099
@@ -326,23 +327,23 @@ public class PsamIcActivity extends MVPBaseActivity<SpdBusPayContract.View, SpdB
 //                        } catch (Exception e) {
 //                            e.printStackTrace();
 //                        }
-                        byte[] dateTime = new byte[14];
-                        mCore.getDateTime(dateTime);
-                        try {
-                            // Get SP system clock in format ASCII14 yyyyMMddHHmmss
-                            mCore.getDateTime(dateTime);
-                            String strDate = new String(dateTime);
-                            String Date = strDate.substring(0, 4) + "-" + strDate.substring(4, 6) + "-" +
-                                    strDate.substring(6, 8);
-                            String times = strDate.substring(8, 10) + ":" +
-                                    strDate.substring(10, 12) + ":" + strDate.substring(12, 14);
-                            mTvDate.setText(Date);
-                            mTvTime.setText(times);
-                        } catch (RemoteException e) {
-                            e.printStackTrace();
-                        }
-//                        mTvDate.setText(Datautils.getData());
-//                        mTvTime.setText(Datautils.getTime());
+//                        try {
+//                            byte[] dateTime = new byte[14];
+//
+//                            // Get SP system clock in format ASCII14 yyyyMMddHHmmss
+//                            mCore.getDateTime(dateTime);
+//                            String strDate = new String(dateTime);
+//                            String Date = strDate.substring(0, 4) + "-" + strDate.substring(4, 6) + "-" +
+//                                    strDate.substring(6, 8);
+//                            String times = strDate.substring(8, 10) + ":" +
+//                                    strDate.substring(10, 12) + ":" + strDate.substring(12, 14);
+//                            mTvDate.setText(Date);
+//                            mTvTime.setText(times);
+//                        } catch (RemoteException e) {
+//                            e.printStackTrace();
+//                        }
+                        mTvDate.setText(Datautils.getData());
+                        mTvTime.setText(Datautils.getTime());
                     }
                 });
 
@@ -1357,6 +1358,7 @@ public class PsamIcActivity extends MVPBaseActivity<SpdBusPayContract.View, SpdB
                     break;
                 case 3:
                     //扫码支付成功
+                    PlaySound.play(PlaySound.xiaofeiSuccse, 0);
                     mLayoutLineInfo.setVisibility(View.GONE);
                     mTvBalance.setText("1.00元");
                     mLayoutXiaofei.setVisibility(View.VISIBLE);
@@ -1470,19 +1472,19 @@ public class PsamIcActivity extends MVPBaseActivity<SpdBusPayContract.View, SpdB
     protected void onDestroy() {
         super.onDestroy();
         mPresenter.releseAlipayJni();
-        hsmDecoder.removeResultListener(this);
-        HSMDecoder.disposeInstance();
-//        MyApplication.getHSMDecoder().removeResultListener(this);
+//        hsmDecoder.removeResultListener(this);
+//        HSMDecoder.disposeInstance();
+        MyApplication.getHSMDecoder().removeResultListener(this);
         //停止巡卡
         startTimer(false);
 //        handler.removeCallbacks(runnable);
         unregisterReceiver(receiver);
-//        try {
-//            mBankCard.breakOffCommand();
-//            mBankCard = null;
-//        } catch (RemoteException e) {
-//            e.printStackTrace();
-//        }
+        try {
+            mBankCard.breakOffCommand();
+            mBankCard = null;
+        } catch (RemoteException e) {
+            e.printStackTrace();
+        }
 //        try {
         //会闪退
 //            mBankCard.openCloseCardReader(BankCard.CARD_MODE_PSAM1,0x02);
@@ -1662,6 +1664,8 @@ public class PsamIcActivity extends MVPBaseActivity<SpdBusPayContract.View, SpdB
             }
             codes = decodeDate;
             Log.i(TAG, "二维码: " + decodeDate);
+            ltime = System.currentTimeMillis();
+            Log.e("stw", "微信解码：" + (System.currentTimeMillis() - ltime));
             switch (decodeDate.substring(0, 2)) {
                 case "TX":
                     //腾讯（微信）
@@ -1825,6 +1829,7 @@ public class PsamIcActivity extends MVPBaseActivity<SpdBusPayContract.View, SpdB
             dataBeans.add(dataBean);
             weichatQrCodeUpload.setData(dataBeans);
             mPresenter.uploadWechatRe(weichatQrCodeUpload);
+            Log.e("stw", "微信时间：" + (System.currentTimeMillis() - ltime));
             handler.sendMessage(handler.obtainMessage(3));
         } else {
             Log.i(TAG, "微信校验结果错误 " + result);

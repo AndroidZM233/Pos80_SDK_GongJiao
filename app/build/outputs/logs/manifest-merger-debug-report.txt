@@ -11,7 +11,7 @@ MERGED from [com.android.support.constraint:constraint-layout:1.1.3] C:\Users\42
 MERGED from [com.android.support:design:28.0.0] C:\Users\42040\.gradle\caches\transforms-1\files-1.1\design-28.0.0.aar\4fc944e6d189ba7b22e36d349b67429b\AndroidManifest.xml:17:1-24:12
 MERGED from [com.google.firebase:firebase-appindexing:17.1.0] C:\Users\42040\.gradle\caches\transforms-1\files-1.1\firebase-appindexing-17.1.0.aar\d8ead3a64497954a394abfc3c4b88c2c\AndroidManifest.xml:17:1-24:12
 MERGED from [:yinlianbarcode] D:\SpeedataDemo18\Pos80_SDK_GongJiao\yinlianbarcode\build\intermediates\merged_manifests\debug\processDebugManifest\merged\AndroidManifest.xml:2:1-11:12
-MERGED from [SwiftDecoderMobile.aar] C:\Users\42040\.gradle\caches\transforms-1\files-1.1\SwiftDecoderMobile.aar\30bd0454deb5499f51b842303f6e2658\AndroidManifest.xml:2:1-25:12
+MERGED from [SwiftDecoderMobile.aar] C:\Users\42040\.gradle\caches\transforms-1\files-1.1\SwiftDecoderMobile.aar\caeb8517a66ffbd13b33cb31d5aa00c7\AndroidManifest.xml:2:1-25:12
 MERGED from [:bosi] D:\SpeedataDemo18\Pos80_SDK_GongJiao\bosi\build\intermediates\merged_manifests\debug\processDebugManifest\merged\AndroidManifest.xml:2:1-13:12
 MERGED from [bluering-pos-qr-1.0.aar] C:\Users\42040\.gradle\caches\transforms-1\files-1.1\bluering-pos-qr-1.0.aar\cfa9c94eb623a1fdf5c6bebec20cac60\AndroidManifest.xml:2:1-14:12
 MERGED from [:face] D:\SpeedataDemo18\Pos80_SDK_GongJiao\face\build\intermediates\merged_manifests\debug\processDebugManifest\merged\AndroidManifest.xml:2:1-20:12
@@ -82,16 +82,16 @@ ADDED from D:\SpeedataDemo18\Pos80_SDK_GongJiao\app\src\main\AndroidManifest.xml
 		ADDED from D:\SpeedataDemo18\Pos80_SDK_GongJiao\app\src\main\AndroidManifest.xml:7:22-65
 uses-permission#android.permission.WRITE_EXTERNAL_STORAGE
 ADDED from D:\SpeedataDemo18\Pos80_SDK_GongJiao\app\src\main\AndroidManifest.xml:8:5-81
-MERGED from [SwiftDecoderMobile.aar] C:\Users\42040\.gradle\caches\transforms-1\files-1.1\SwiftDecoderMobile.aar\30bd0454deb5499f51b842303f6e2658\AndroidManifest.xml:16:5-81
-MERGED from [SwiftDecoderMobile.aar] C:\Users\42040\.gradle\caches\transforms-1\files-1.1\SwiftDecoderMobile.aar\30bd0454deb5499f51b842303f6e2658\AndroidManifest.xml:16:5-81
+MERGED from [SwiftDecoderMobile.aar] C:\Users\42040\.gradle\caches\transforms-1\files-1.1\SwiftDecoderMobile.aar\caeb8517a66ffbd13b33cb31d5aa00c7\AndroidManifest.xml:16:5-81
+MERGED from [SwiftDecoderMobile.aar] C:\Users\42040\.gradle\caches\transforms-1\files-1.1\SwiftDecoderMobile.aar\caeb8517a66ffbd13b33cb31d5aa00c7\AndroidManifest.xml:16:5-81
 MERGED from [bluering-pos-qr-1.0.aar] C:\Users\42040\.gradle\caches\transforms-1\files-1.1\bluering-pos-qr-1.0.aar\cfa9c94eb623a1fdf5c6bebec20cac60\AndroidManifest.xml:11:5-81
 MERGED from [bluering-pos-qr-1.0.aar] C:\Users\42040\.gradle\caches\transforms-1\files-1.1\bluering-pos-qr-1.0.aar\cfa9c94eb623a1fdf5c6bebec20cac60\AndroidManifest.xml:11:5-81
 	android:name
 		ADDED from D:\SpeedataDemo18\Pos80_SDK_GongJiao\app\src\main\AndroidManifest.xml:8:22-78
 uses-permission#android.permission.READ_EXTERNAL_STORAGE
 ADDED from D:\SpeedataDemo18\Pos80_SDK_GongJiao\app\src\main\AndroidManifest.xml:9:5-80
-MERGED from [SwiftDecoderMobile.aar] C:\Users\42040\.gradle\caches\transforms-1\files-1.1\SwiftDecoderMobile.aar\30bd0454deb5499f51b842303f6e2658\AndroidManifest.xml:17:5-80
-MERGED from [SwiftDecoderMobile.aar] C:\Users\42040\.gradle\caches\transforms-1\files-1.1\SwiftDecoderMobile.aar\30bd0454deb5499f51b842303f6e2658\AndroidManifest.xml:17:5-80
+MERGED from [SwiftDecoderMobile.aar] C:\Users\42040\.gradle\caches\transforms-1\files-1.1\SwiftDecoderMobile.aar\caeb8517a66ffbd13b33cb31d5aa00c7\AndroidManifest.xml:17:5-80
+MERGED from [SwiftDecoderMobile.aar] C:\Users\42040\.gradle\caches\transforms-1\files-1.1\SwiftDecoderMobile.aar\caeb8517a66ffbd13b33cb31d5aa00c7\AndroidManifest.xml:17:5-80
 MERGED from [bluering-pos-qr-1.0.aar] C:\Users\42040\.gradle\caches\transforms-1\files-1.1\bluering-pos-qr-1.0.aar\cfa9c94eb623a1fdf5c6bebec20cac60\AndroidManifest.xml:12:5-80
 MERGED from [bluering-pos-qr-1.0.aar] C:\Users\42040\.gradle\caches\transforms-1\files-1.1\bluering-pos-qr-1.0.aar\cfa9c94eb623a1fdf5c6bebec20cac60\AndroidManifest.xml:12:5-80
 	android:name
@@ -118,8 +118,8 @@ ADDED from D:\SpeedataDemo18\Pos80_SDK_GongJiao\app\src\main\AndroidManifest.xml
 		ADDED from D:\SpeedataDemo18\Pos80_SDK_GongJiao\app\src\main\AndroidManifest.xml:17:22-78
 uses-permission#android.permission.CAMERA
 ADDED from D:\SpeedataDemo18\Pos80_SDK_GongJiao\app\src\main\AndroidManifest.xml:18:5-65
-MERGED from [SwiftDecoderMobile.aar] C:\Users\42040\.gradle\caches\transforms-1\files-1.1\SwiftDecoderMobile.aar\30bd0454deb5499f51b842303f6e2658\AndroidManifest.xml:11:5-65
-MERGED from [SwiftDecoderMobile.aar] C:\Users\42040\.gradle\caches\transforms-1\files-1.1\SwiftDecoderMobile.aar\30bd0454deb5499f51b842303f6e2658\AndroidManifest.xml:11:5-65
+MERGED from [SwiftDecoderMobile.aar] C:\Users\42040\.gradle\caches\transforms-1\files-1.1\SwiftDecoderMobile.aar\caeb8517a66ffbd13b33cb31d5aa00c7\AndroidManifest.xml:11:5-65
+MERGED from [SwiftDecoderMobile.aar] C:\Users\42040\.gradle\caches\transforms-1\files-1.1\SwiftDecoderMobile.aar\caeb8517a66ffbd13b33cb31d5aa00c7\AndroidManifest.xml:11:5-65
 	android:name
 		ADDED from D:\SpeedataDemo18\Pos80_SDK_GongJiao\app\src\main\AndroidManifest.xml:18:22-62
 application
@@ -132,8 +132,8 @@ MERGED from [com.android.support:design:28.0.0] C:\Users\42040\.gradle\caches\tr
 MERGED from [com.android.support:design:28.0.0] C:\Users\42040\.gradle\caches\transforms-1\files-1.1\design-28.0.0.aar\4fc944e6d189ba7b22e36d349b67429b\AndroidManifest.xml:22:5-20
 MERGED from [com.google.firebase:firebase-appindexing:17.1.0] C:\Users\42040\.gradle\caches\transforms-1\files-1.1\firebase-appindexing-17.1.0.aar\d8ead3a64497954a394abfc3c4b88c2c\AndroidManifest.xml:22:5-20
 MERGED from [com.google.firebase:firebase-appindexing:17.1.0] C:\Users\42040\.gradle\caches\transforms-1\files-1.1\firebase-appindexing-17.1.0.aar\d8ead3a64497954a394abfc3c4b88c2c\AndroidManifest.xml:22:5-20
-MERGED from [SwiftDecoderMobile.aar] C:\Users\42040\.gradle\caches\transforms-1\files-1.1\SwiftDecoderMobile.aar\30bd0454deb5499f51b842303f6e2658\AndroidManifest.xml:21:5-23:19
-MERGED from [SwiftDecoderMobile.aar] C:\Users\42040\.gradle\caches\transforms-1\files-1.1\SwiftDecoderMobile.aar\30bd0454deb5499f51b842303f6e2658\AndroidManifest.xml:21:5-23:19
+MERGED from [SwiftDecoderMobile.aar] C:\Users\42040\.gradle\caches\transforms-1\files-1.1\SwiftDecoderMobile.aar\caeb8517a66ffbd13b33cb31d5aa00c7\AndroidManifest.xml:21:5-23:19
+MERGED from [SwiftDecoderMobile.aar] C:\Users\42040\.gradle\caches\transforms-1\files-1.1\SwiftDecoderMobile.aar\caeb8517a66ffbd13b33cb31d5aa00c7\AndroidManifest.xml:21:5-23:19
 MERGED from [:bosi] D:\SpeedataDemo18\Pos80_SDK_GongJiao\bosi\build\intermediates\merged_manifests\debug\processDebugManifest\merged\AndroidManifest.xml:11:5-20
 MERGED from [:bosi] D:\SpeedataDemo18\Pos80_SDK_GongJiao\bosi\build\intermediates\merged_manifests\debug\processDebugManifest\merged\AndroidManifest.xml:11:5-20
 MERGED from [:face] D:\SpeedataDemo18\Pos80_SDK_GongJiao\face\build\intermediates\merged_manifests\debug\processDebugManifest\merged\AndroidManifest.xml:13:5-18:19
@@ -172,8 +172,6 @@ MERGED from [com.android.support:versionedparcelable:28.0.0] C:\Users\42040\.gra
 		ADDED from D:\SpeedataDemo18\Pos80_SDK_GongJiao\app\src\main\AndroidManifest.xml:21:9-38
 activity#com.spd.bus.spdata.PsamIcActivity
 ADDED from D:\SpeedataDemo18\Pos80_SDK_GongJiao\app\src\main\AndroidManifest.xml:30:9-37:20
-	android:screenOrientation
-		ADDED from D:\SpeedataDemo18\Pos80_SDK_GongJiao\app\src\main\AndroidManifest.xml:31:13-50
 	android:name
 		ADDED from D:\SpeedataDemo18\Pos80_SDK_GongJiao\app\src\main\AndroidManifest.xml:30:19-56
 intent-filter#action:name:android.intent.action.MAIN+category:name:android.intent.category.LAUNCHER
@@ -352,8 +350,8 @@ MERGED from [com.google.firebase:firebase-appindexing:17.1.0] C:\Users\42040\.gr
 MERGED from [com.google.firebase:firebase-appindexing:17.1.0] C:\Users\42040\.gradle\caches\transforms-1\files-1.1\firebase-appindexing-17.1.0.aar\d8ead3a64497954a394abfc3c4b88c2c\AndroidManifest.xml:20:5-44
 MERGED from [:yinlianbarcode] D:\SpeedataDemo18\Pos80_SDK_GongJiao\yinlianbarcode\build\intermediates\merged_manifests\debug\processDebugManifest\merged\AndroidManifest.xml:7:5-9:41
 MERGED from [:yinlianbarcode] D:\SpeedataDemo18\Pos80_SDK_GongJiao\yinlianbarcode\build\intermediates\merged_manifests\debug\processDebugManifest\merged\AndroidManifest.xml:7:5-9:41
-MERGED from [SwiftDecoderMobile.aar] C:\Users\42040\.gradle\caches\transforms-1\files-1.1\SwiftDecoderMobile.aar\30bd0454deb5499f51b842303f6e2658\AndroidManifest.xml:7:5-9:41
-MERGED from [SwiftDecoderMobile.aar] C:\Users\42040\.gradle\caches\transforms-1\files-1.1\SwiftDecoderMobile.aar\30bd0454deb5499f51b842303f6e2658\AndroidManifest.xml:7:5-9:41
+MERGED from [SwiftDecoderMobile.aar] C:\Users\42040\.gradle\caches\transforms-1\files-1.1\SwiftDecoderMobile.aar\caeb8517a66ffbd13b33cb31d5aa00c7\AndroidManifest.xml:7:5-9:41
+MERGED from [SwiftDecoderMobile.aar] C:\Users\42040\.gradle\caches\transforms-1\files-1.1\SwiftDecoderMobile.aar\caeb8517a66ffbd13b33cb31d5aa00c7\AndroidManifest.xml:7:5-9:41
 MERGED from [:bosi] D:\SpeedataDemo18\Pos80_SDK_GongJiao\bosi\build\intermediates\merged_manifests\debug\processDebugManifest\merged\AndroidManifest.xml:7:5-9:41
 MERGED from [:bosi] D:\SpeedataDemo18\Pos80_SDK_GongJiao\bosi\build\intermediates\merged_manifests\debug\processDebugManifest\merged\AndroidManifest.xml:7:5-9:41
 MERGED from [bluering-pos-qr-1.0.aar] C:\Users\42040\.gradle\caches\transforms-1\files-1.1\bluering-pos-qr-1.0.aar\cfa9c94eb623a1fdf5c6bebec20cac60\AndroidManifest.xml:7:5-9:41
@@ -447,41 +445,41 @@ INJECTED from D:\SpeedataDemo18\Pos80_SDK_GongJiao\app\src\main\AndroidManifest.
 		ADDED from D:\SpeedataDemo18\Pos80_SDK_GongJiao\app\src\main\AndroidManifest.xml
 		INJECTED from D:\SpeedataDemo18\Pos80_SDK_GongJiao\app\src\main\AndroidManifest.xml
 uses-permission#android.permission.INTERNET
-ADDED from [SwiftDecoderMobile.aar] C:\Users\42040\.gradle\caches\transforms-1\files-1.1\SwiftDecoderMobile.aar\30bd0454deb5499f51b842303f6e2658\AndroidManifest.xml:12:5-67
+ADDED from [SwiftDecoderMobile.aar] C:\Users\42040\.gradle\caches\transforms-1\files-1.1\SwiftDecoderMobile.aar\caeb8517a66ffbd13b33cb31d5aa00c7\AndroidManifest.xml:12:5-67
 MERGED from [:face] D:\SpeedataDemo18\Pos80_SDK_GongJiao\face\build\intermediates\merged_manifests\debug\processDebugManifest\merged\AndroidManifest.xml:11:5-67
 MERGED from [:face] D:\SpeedataDemo18\Pos80_SDK_GongJiao\face\build\intermediates\merged_manifests\debug\processDebugManifest\merged\AndroidManifest.xml:11:5-67
 MERGED from [:base] D:\SpeedataDemo18\Pos80_SDK_GongJiao\base\build\intermediates\merged_manifests\debug\processDebugManifest\merged\AndroidManifest.xml:13:5-67
 MERGED from [:base] D:\SpeedataDemo18\Pos80_SDK_GongJiao\base\build\intermediates\merged_manifests\debug\processDebugManifest\merged\AndroidManifest.xml:13:5-67
 	android:name
-		ADDED from [SwiftDecoderMobile.aar] C:\Users\42040\.gradle\caches\transforms-1\files-1.1\SwiftDecoderMobile.aar\30bd0454deb5499f51b842303f6e2658\AndroidManifest.xml:12:22-64
+		ADDED from [SwiftDecoderMobile.aar] C:\Users\42040\.gradle\caches\transforms-1\files-1.1\SwiftDecoderMobile.aar\caeb8517a66ffbd13b33cb31d5aa00c7\AndroidManifest.xml:12:22-64
 uses-permission#android.permission.RECORD_AUDIO
-ADDED from [SwiftDecoderMobile.aar] C:\Users\42040\.gradle\caches\transforms-1\files-1.1\SwiftDecoderMobile.aar\30bd0454deb5499f51b842303f6e2658\AndroidManifest.xml:13:5-71
+ADDED from [SwiftDecoderMobile.aar] C:\Users\42040\.gradle\caches\transforms-1\files-1.1\SwiftDecoderMobile.aar\caeb8517a66ffbd13b33cb31d5aa00c7\AndroidManifest.xml:13:5-71
 	android:name
-		ADDED from [SwiftDecoderMobile.aar] C:\Users\42040\.gradle\caches\transforms-1\files-1.1\SwiftDecoderMobile.aar\30bd0454deb5499f51b842303f6e2658\AndroidManifest.xml:13:22-68
+		ADDED from [SwiftDecoderMobile.aar] C:\Users\42040\.gradle\caches\transforms-1\files-1.1\SwiftDecoderMobile.aar\caeb8517a66ffbd13b33cb31d5aa00c7\AndroidManifest.xml:13:22-68
 uses-permission#android.permission.ACCESS_WIFI_STATE
-ADDED from [SwiftDecoderMobile.aar] C:\Users\42040\.gradle\caches\transforms-1\files-1.1\SwiftDecoderMobile.aar\30bd0454deb5499f51b842303f6e2658\AndroidManifest.xml:14:5-76
+ADDED from [SwiftDecoderMobile.aar] C:\Users\42040\.gradle\caches\transforms-1\files-1.1\SwiftDecoderMobile.aar\caeb8517a66ffbd13b33cb31d5aa00c7\AndroidManifest.xml:14:5-76
 MERGED from [:base] D:\SpeedataDemo18\Pos80_SDK_GongJiao\base\build\intermediates\merged_manifests\debug\processDebugManifest\merged\AndroidManifest.xml:15:5-76
 MERGED from [:base] D:\SpeedataDemo18\Pos80_SDK_GongJiao\base\build\intermediates\merged_manifests\debug\processDebugManifest\merged\AndroidManifest.xml:15:5-76
 	android:name
-		ADDED from [SwiftDecoderMobile.aar] C:\Users\42040\.gradle\caches\transforms-1\files-1.1\SwiftDecoderMobile.aar\30bd0454deb5499f51b842303f6e2658\AndroidManifest.xml:14:22-73
+		ADDED from [SwiftDecoderMobile.aar] C:\Users\42040\.gradle\caches\transforms-1\files-1.1\SwiftDecoderMobile.aar\caeb8517a66ffbd13b33cb31d5aa00c7\AndroidManifest.xml:14:22-73
 uses-permission#android.permission.ACCESS_NETWORK_STATE
-ADDED from [SwiftDecoderMobile.aar] C:\Users\42040\.gradle\caches\transforms-1\files-1.1\SwiftDecoderMobile.aar\30bd0454deb5499f51b842303f6e2658\AndroidManifest.xml:15:5-79
+ADDED from [SwiftDecoderMobile.aar] C:\Users\42040\.gradle\caches\transforms-1\files-1.1\SwiftDecoderMobile.aar\caeb8517a66ffbd13b33cb31d5aa00c7\AndroidManifest.xml:15:5-79
 MERGED from [:base] D:\SpeedataDemo18\Pos80_SDK_GongJiao\base\build\intermediates\merged_manifests\debug\processDebugManifest\merged\AndroidManifest.xml:14:5-79
 MERGED from [:base] D:\SpeedataDemo18\Pos80_SDK_GongJiao\base\build\intermediates\merged_manifests\debug\processDebugManifest\merged\AndroidManifest.xml:14:5-79
 	android:name
-		ADDED from [SwiftDecoderMobile.aar] C:\Users\42040\.gradle\caches\transforms-1\files-1.1\SwiftDecoderMobile.aar\30bd0454deb5499f51b842303f6e2658\AndroidManifest.xml:15:22-76
+		ADDED from [SwiftDecoderMobile.aar] C:\Users\42040\.gradle\caches\transforms-1\files-1.1\SwiftDecoderMobile.aar\caeb8517a66ffbd13b33cb31d5aa00c7\AndroidManifest.xml:15:22-76
 uses-permission#android.permission.CHANGE_WIFI_STATE
-ADDED from [SwiftDecoderMobile.aar] C:\Users\42040\.gradle\caches\transforms-1\files-1.1\SwiftDecoderMobile.aar\30bd0454deb5499f51b842303f6e2658\AndroidManifest.xml:18:5-76
+ADDED from [SwiftDecoderMobile.aar] C:\Users\42040\.gradle\caches\transforms-1\files-1.1\SwiftDecoderMobile.aar\caeb8517a66ffbd13b33cb31d5aa00c7\AndroidManifest.xml:18:5-76
 	android:name
-		ADDED from [SwiftDecoderMobile.aar] C:\Users\42040\.gradle\caches\transforms-1\files-1.1\SwiftDecoderMobile.aar\30bd0454deb5499f51b842303f6e2658\AndroidManifest.xml:18:22-73
+		ADDED from [SwiftDecoderMobile.aar] C:\Users\42040\.gradle\caches\transforms-1\files-1.1\SwiftDecoderMobile.aar\caeb8517a66ffbd13b33cb31d5aa00c7\AndroidManifest.xml:18:22-73
 uses-permission#android.permission.WRITE_INTERNAL_STORAGE
-ADDED from [SwiftDecoderMobile.aar] C:\Users\42040\.gradle\caches\transforms-1\files-1.1\SwiftDecoderMobile.aar\30bd0454deb5499f51b842303f6e2658\AndroidManifest.xml:19:5-81
+ADDED from [SwiftDecoderMobile.aar] C:\Users\42040\.gradle\caches\transforms-1\files-1.1\SwiftDecoderMobile.aar\caeb8517a66ffbd13b33cb31d5aa00c7\AndroidManifest.xml:19:5-81
 	android:name
-		ADDED from [SwiftDecoderMobile.aar] C:\Users\42040\.gradle\caches\transforms-1\files-1.1\SwiftDecoderMobile.aar\30bd0454deb5499f51b842303f6e2658\AndroidManifest.xml:19:22-78
+		ADDED from [SwiftDecoderMobile.aar] C:\Users\42040\.gradle\caches\transforms-1\files-1.1\SwiftDecoderMobile.aar\caeb8517a66ffbd13b33cb31d5aa00c7\AndroidManifest.xml:19:22-78
 activity#com.honeywell.camera.HSMCameraPreview
-ADDED from [SwiftDecoderMobile.aar] C:\Users\42040\.gradle\caches\transforms-1\files-1.1\SwiftDecoderMobile.aar\30bd0454deb5499f51b842303f6e2658\AndroidManifest.xml:22:9-74
+ADDED from [SwiftDecoderMobile.aar] C:\Users\42040\.gradle\caches\transforms-1\files-1.1\SwiftDecoderMobile.aar\caeb8517a66ffbd13b33cb31d5aa00c7\AndroidManifest.xml:22:9-74
 	android:name
-		ADDED from [SwiftDecoderMobile.aar] C:\Users\42040\.gradle\caches\transforms-1\files-1.1\SwiftDecoderMobile.aar\30bd0454deb5499f51b842303f6e2658\AndroidManifest.xml:22:19-71
+		ADDED from [SwiftDecoderMobile.aar] C:\Users\42040\.gradle\caches\transforms-1\files-1.1\SwiftDecoderMobile.aar\caeb8517a66ffbd13b33cb31d5aa00c7\AndroidManifest.xml:22:19-71
 service#speedata.com.face.HttpService
 ADDED from [:face] D:\SpeedataDemo18\Pos80_SDK_GongJiao\face\build\intermediates\merged_manifests\debug\processDebugManifest\merged\AndroidManifest.xml:14:9-17:39
 	android:enabled
