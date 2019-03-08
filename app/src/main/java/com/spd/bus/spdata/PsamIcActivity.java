@@ -23,6 +23,7 @@ import com.example.test.yinlianbarcode.interfaces.OnBackListener;
 import com.example.test.yinlianbarcode.utils.Logcat;
 import com.example.test.yinlianbarcode.utils.ScanUtils;
 import com.example.test.yinlianbarcode.utils.ValidationUtils;
+import com.google.gson.Gson;
 import com.honeywell.barcode.HSMDecodeResult;
 import com.honeywell.barcode.HSMDecoder;
 import com.honeywell.camera.CameraManager;
@@ -40,6 +41,12 @@ import com.spd.base.view.SignalView;
 import com.spd.bus.MainActivity;
 import com.spd.bus.MyApplication;
 import com.spd.bus.R;
+import com.spd.bus.card.methods.JTBCardManager;
+import com.spd.bus.card.methods.bean.CardBackBean;
+import com.spd.bus.card.methods.bean.PosInfoBackBean;
+import com.spd.bus.card.methods.bean.UnqrkeyBackBean;
+import com.spd.bus.card.utils.HttpMethods;
+import com.spd.bus.card.utils.LogUtils;
 import com.spd.bus.spdata.been.ErroCode;
 import com.spd.bus.spdata.been.IcCardBeen;
 import com.spd.bus.spdata.been.PsamBeen;
@@ -56,12 +63,16 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.concurrent.TimeUnit;
 
 import io.reactivex.Flowable;
+import io.reactivex.Observer;
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.annotations.NonNull;
+import io.reactivex.disposables.Disposable;
 import io.reactivex.functions.Consumer;
 import speedata.com.face.Contants;
 import wangpos.sdk4.libbasebinder.BankCard;
@@ -219,6 +230,34 @@ public class PsamIcActivity extends MVPBaseActivity<SpdBusPayContract.View, SpdB
         setContentView(R.layout.spd_bus_layout);
         initView();
         initCard();
+
+        netTest();
+    }
+
+    private void netTest() {
+        Map<String, String> map = new HashMap<>();
+        map.put("data", "{\"deviceId\":\"17340086\"}");
+        HttpMethods.getInstance().unqrkey("", new Observer<UnqrkeyBackBean>() {
+            @Override
+            public void onSubscribe(Disposable d) {
+
+            }
+
+            @Override
+            public void onNext(UnqrkeyBackBean posInfoBackBean) {
+                LogUtils.e(new Gson().toJson(posInfoBackBean));
+            }
+
+            @Override
+            public void onError(Throwable e) {
+
+            }
+
+            @Override
+            public void onComplete() {
+
+            }
+        });
     }
 
     @SuppressLint("SetTextI18n")
@@ -239,6 +278,7 @@ public class PsamIcActivity extends MVPBaseActivity<SpdBusPayContract.View, SpdB
         Datautils.getCurrentNetDBM(this, mXinhao);
     }
 
+
     private void initCard() {
         try {
             MyApplication.getHSMDecoder().addResultListener(PsamIcActivity.this);
@@ -255,9 +295,8 @@ public class PsamIcActivity extends MVPBaseActivity<SpdBusPayContract.View, SpdB
                     mBankCard = new BankCard(getApplicationContext());
                     mCore = new Core(getApplicationContext());
                     psam1Init();
-//                    psam2Init();
+                    psam2Init();
                     startTimer(true);
-
                 }
             }).start();
             //获取支付宝微信key
@@ -495,10 +534,13 @@ public class PsamIcActivity extends MVPBaseActivity<SpdBusPayContract.View, SpdB
                     }
                     //检测到非接IC卡
                     if (respdata[0] == 0x07) {
-                        icExpance();//执行等待读卡消费
-                        if (isFlag == 1) {
-                            PlaySound.play(PlaySound.qingchongshua, 0);
-                        }
+                        CardBackBean cardBackBean = JTBCardManager.getInstance()
+                                .mainMethod(mBankCard, psamDatas, cpuCardInit(), pursub);
+                        isFlag = 0;
+//                        icExpance();//执行等待读卡消费
+//                        if (isFlag == 1) {
+//                            PlaySound.play(PlaySound.qingchongshua, 0);
+//                        }
                     } else if (respdata[0] == 0x37) {
                         //检测到 M1-S50 卡
                         Log.i("stw", "m1结束寻卡===" + (System.currentTimeMillis() - ltime));

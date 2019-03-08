@@ -1,162 +1,195 @@
-package speedata.com.tianjin.methods.bean;
+package com.spd.bus.card.methods.bean;
+
+import com.spd.base.utils.Datautils;
 
 /**
  * Created by 张明_ on 2019/2/19.
  * Email 741183142@qq.com
  */
 public class TCardOpDU {
+    public byte[] ucPsamATC = new byte[4];
+
     public byte[] ucDateTime = new byte[8];
     public byte ucRcdType;
     public byte ucCardClass;
     public byte ucCAPP;
-    public byte ucProcSec;
+    public byte ucProcSec;//消费类型标识 2钱包 7月票
     //CPU
-    private byte[] ucIssuerCode = new byte[2];//0,1
-    private byte[] ucCityCode = new byte[2];//2,3
-    private byte[] ucVocCode = new byte[2];//4,5
-    private byte[] ucRfu1 = new byte[2];//6,7
-    private byte ucAppTypeFlag;//8
-    private byte ucAppVer; //9
-    private byte[] ucAppSnr = new byte[10];//10-19
-    private byte[] ucAppStartDate = new byte[4];//20-23
-    private byte[] ucAppEndDate = new byte[4];//24-27
-    private byte[] ucRfu2 = new byte[2];//28-29
+    public byte[] ucFile15Top8 = new byte[8];
+    public byte[] ucIssuerCode = new byte[2];//0,1
+    public byte[] ucCityCode = new byte[2];//2,3
+    public byte[] ucVocCode = new byte[2];//4,5
+    public byte[] ucRfu1 = new byte[2];//6,7
+    public byte ucAppTypeFlag;//8
+    public byte ucAppVer; //9
+    public byte[] ucAppSnr = new byte[10];//10-19
+    public byte[] ucAppStartDate = new byte[4];//20-23
+    public byte[] ucAppEndDate = new byte[4];//24-27
+    public byte[] ucRfu2 = new byte[2];//28-29
 
-    private byte ucMainCardType;//30
-    private byte ucSubCardType;//31
-    private byte ucCardAppFlag;//32
-    private byte[] ucCheckDate = new byte[4];//33-36
-    private byte ucAppStartFlag;//37
-    private byte ucRadioInCard; //38
-    private char uiValidDays; //39-40
-    private byte ucTimeLimitInCard;//41
-    private byte[] ucRfu3 = new byte[6];//42-47
+    public byte ucMainCardType;//30
+    public byte ucSubCardType;//31
+    public byte ucCardAppFlag;//32
+    public byte[] ucCheckDate = new byte[4];//33-36
+    public byte ucAppStartFlag;//37
+    public byte ucRadioInCard; //38
+    public byte[] uiValidDays = new byte[2]; //39-40
+    public byte ucTimeLimitInCard;//41
+    public byte[] ucRfu3 = new byte[6];//42-47
     /////////////////////////////////////////////////////JT
 //Mifare
-    private byte[] ucBlk5 = new byte[16];
-    private byte[] ucBlk6 = new byte[16];
+    public byte[] ucBlk5 = new byte[16];
+    public byte[] ucBlk6 = new byte[16];
 
-    private byte ucfBLACK;
-    private byte ucPurStartFlag;
-    private byte[] ucIssueDate = new byte[4];
-    private byte ucBlackCard;
-    private byte[] PurIncApprovalNr = new byte[6];// 79-84: PurIncDev4+PurIncCount2
-    private byte[] YueIncApprovalNr = new byte[6];// 85-90: YueIncDev4+YueIncCount2
+    public byte ucfBLACK;
+    public byte ucPurStartFlag;
+    public byte[] ucIssueDate = new byte[4];
+    public byte ucBlackCard;
+    public byte[] purIncApprovalNr = new byte[6];// 79-84: PurIncDev4+PurIncCount2
+    public byte[] yueIncApprovalNr = new byte[6];// 85-90: YueIncDev4+YueIncCount2
 
     /////////////////////////////////////////////
-    private byte ucCardTicket;
-    private byte ucCardRadioP;
-    private byte fToCheck;//年检
-    private byte fPermit;//带人
-    private byte ucTickCnt;
-    private byte fInBus;
+    public byte ucCardTicket;
+    public byte ucCardRadioP;
+    public byte fToCheck;//年检
+    public byte fPermit;//带人
+    public byte ucTickCnt;
+    public byte fInBus;
 
-    private byte[] ucIncPurDev = new byte[4];
-    private char uiIncPurCount;
-    private byte[] ucIncPurDate = new byte[4];
+    public byte[] ucIncPurDev = new byte[4];
+    public byte[] uiIncPurCount = new byte[2];
+    public byte[] ucIncPurDate = new byte[4];
 
-    private int lPurOriMoney;
-    private int lPurSub;
-    private char uiPurCount;
+    public int lPurOriMoney;
+    public int lPurSub;
+    public byte[] lPurSubByte = new byte[4];
+    public byte[] uiPurCount = new byte[2];
 
-    private byte fYueAsPur;
-    private byte ucYueSec;
-    private byte ucYueFlag;
-    private byte[] ucIncYueDev = new byte[4];
-    private char uiIncYueCount;
-    private byte[] ucYueUsingDate = new byte[3];
-    private byte ucYuePosition;
-    private int ulYueBase;
-    private int[] ulYueBase2 = new int[4];
+    public byte fYueAsPur;
+    public byte ucYueSec;
+    public byte ucYueFlag;
+    public byte[] ucIncYueDev = new byte[4];
+    public byte[] uiIncYueCount = new byte[2];
+    public byte[] ucYueUsingDate = new byte[3];
+    public byte ucYuePosition;
+    public int ulYueBase;
+    public int[] ulYueBase2 = new int[4];
 
-    private int lYueOriMoney;
-    private int lActYueOriMoney;
-    private int lYueSub;
-    private int lActYueSub;
-    private char uiYueCount;
+    public int lYueOriMoney;
+    public int lActYueOriMoney;
+    public int lYueSub;
+    public int lActYueSub;
+    public byte[] uiYueCount = new byte[2];
 
-    private byte ucOtherCity;
-    private byte fUsePSAM;
-    private byte ucPSAMPOS;
-    private byte[] ucSafeAuthCode = new byte[9];
-    private byte ucDiv;
-    private byte ucKeyID;
+    public byte ucOtherCity;
+    public byte fUsePSAM;
+    public byte ucPSAMPOS;
+    public byte[] ucSafeAuthCode = new byte[9];
+    public byte ucDiv;
+    public byte[] ucKeyID = new byte[1];
 
 
-    private int ulTradeValue;
-    private int ulBalance;
-    private char uiOffLineCount;
-    private byte ucKeyVer;
-    private byte ucKeyAlg;
-    private byte[] ucPOSSnr = new byte[6];
-    private int ulPOSTradeCount;
-    private byte[] ucRandom = new byte[4];
-    private byte[] ucMAC1 = new byte[4];
-    private byte[] ucMAC2 = new byte[4];
-    private byte[] ucTAC = new byte[4];
+    public int ulTradeValue;
+    public byte[] ulTradeValueByte = new byte[4];
+    public int ulBalance;
+    public byte[] ulBalanceByte = new byte[4];
+    public byte[] uiOffLineCount = new byte[2];
+    public byte ucKeyVer;
+    public byte ucKeyAlg;
+    public byte[] rondomCpu = new byte[4];//伪随机数
+    public byte[] ucPOSSnr = new byte[6];
+    public int ulPOSTradeCount;
+    public byte[] ucRandom = new byte[4];
+    public byte[] ucMAC1 = new byte[4];
+    public byte[] ucMAC2 = new byte[4];
+    public byte[] ucTAC = new byte[4];
 
-    private byte[] ucDatToCard = new byte[150];
-    private byte[] ucDatInCard = new byte[150];
-    private byte[] ucFKDevNr = new byte[3];
-    private byte[] ucFKDriSnr = new byte[4];
-    private byte[] ucFKCorNr = new byte[4];
-    private byte[] ucFKLineNr = new byte[3];
-    private byte[] ucFKBusNr = new byte[3];
-    private byte fErr;
+    public byte[] ucDatToCard = new byte[150];
+    public byte[] ucDatInCard = new byte[150];
+    public byte[] ucFKDevNr = new byte[3];
+    public byte[] ucFKDriSnr = new byte[4];
+    public byte[] ucFKCorNr = new byte[4];
+    public byte[] ucFKLineNr = new byte[3];
+    public byte[] ucFKBusNr = new byte[3];
+    public byte fErr;
     //Use for Record
-    private byte[] ucRcdCorNr = new byte[4];
-    private byte[] ucRcdLineNr = new byte[4];
-    private byte[] ucRcdBusNr = new byte[4];
-    private byte[] ucRcdDevNr = new byte[4];
-    private byte ucRcdStopIDUp;
-    private byte ucRcdStopIDDn;
+    public byte[] ucRcdCorNr = new byte[4];
+    public byte[] ucRcdLineNr = new byte[4];
+    public byte[] ucRcdBusNr = new byte[4];
+    public byte[] ucRcdDevNr = new byte[4];
+    public byte ucRcdStopIDUp;
+    public byte ucRcdStopIDDn;
     //PBOC
-    private char uiATC;
-    private byte ucValue5F34;
+    public byte[] uiATC = new byte[2];
+    public byte ucValue5F34;
     //JTB
-    private byte ucSimple;
-    private byte ucLastTradeEnd;
-    private byte ucTradeType;
-    private int ulFKPurSub;
+    public byte ucSimple;
+    public byte ucLastTradeEnd;
+    public byte ucTradeType;
+    public int ulFKPurSub;
 
     //Other City
-    private byte fUseHC;//天津
-    private byte fHCSeg;
-    private byte fHC;
-    private byte ucHCRadioP;
+    public byte fUseHC;//天津
+    public byte fHCSeg;
+    public byte fHC;
+    public byte ucHCRadioP;
 
-    private int HCQYueSub;
-    private int HCQPurSub;
-    private byte ucHCRcdValid;
-    private int ulHCCadUTC;
-    private byte fHCInCard;
-    private byte fHCTradeMode;
-    private byte[] HCPsamNr = new byte[4];
-    private byte fHCMode;
+    public int hCQYueSub;
+    public int hCQPurSub;
+    public byte ucHCRcdValid;
+    public int ulHCCadUTC;
+    public byte fHCInCard;
+    public byte fHCTradeMode;
+    public byte[] hCPsamNr = new byte[4];
+    public byte fHCMode;
 
-    private byte First;
-    private byte YueSec;
+    public byte first;
+    public byte yueSec;
 
-    private byte[] ucYueStartDate = new byte[4];
-    private byte[] ucYueEndDate = new byte[4];
+    public byte[] ucYueStartDate = new byte[4];
+    public byte[] ucYueEndDate = new byte[4];
 
-    private byte DBYueFlag;
+    public byte dBYueFlag;
 
     //  uint8_t fTimeLimit;
-    private int ulHCUTC;
-    private char uiHCDUTC;
-    private int ulHCStartUTC;
-    private int ulHCOriMoney;
-    private int ulHCSub;
-    private char uiHCTimes;
-    private byte[] ucHCBusNr = new byte[3];
-    private byte[] ucHCPsamNevNo = new byte[6];
-    private byte[] ucHCLineNr = new byte[2];
-    private byte ucHCRcdType;
-    private char uiHCPrice;
-    private byte ucHCBusType;
+    public int ulHCUTC;
+    public byte[] uiHCDUTC = new byte[2];
+    public int ulHCStartUTC;
+    public int ulHCOriMoney;
+    public int ulHCSub;
+    public byte[] uiHCTimes = new byte[2];
+    public byte[] ucHCBusNr = new byte[3];
+    public byte[] ucHCPsamNevNo = new byte[6];
+    public byte[] ucHCLineNr = new byte[2];
+    public byte ucHCRcdType;
+    public byte[] uiHCPrice = new byte[2];
+    public byte ucHCBusType;
 
-    private byte ucCardVer;
+    public byte ucCardVer;
+
+    public void setDataStartUcIssuerCode(byte[] DBDat) {
+        ucIssuerCode = Datautils.cutBytes(DBDat, 0, 2);
+        ucCityCode = Datautils.cutBytes(DBDat, 2, 2);
+        ucVocCode = Datautils.cutBytes(DBDat, 4, 2);
+        ucRfu1 = Datautils.cutBytes(DBDat, 6, 2);
+        ucAppTypeFlag = Datautils.cutBytes(DBDat, 8, 1)[0];
+        ucAppVer = Datautils.cutBytes(DBDat, 9, 1)[0];
+        ucAppSnr = Datautils.cutBytes(DBDat, 10, 10);
+        ucAppStartDate = Datautils.cutBytes(DBDat, 20, 4);
+        ucAppEndDate = Datautils.cutBytes(DBDat, 24, 4);
+        ucRfu2 = Datautils.cutBytes(DBDat, 28, 2);
+    }
 
 
+    public void setDataStartUcMainCardType(byte[] DBDat) {
+        ucMainCardType = DBDat[0];
+        ucSubCardType = DBDat[1];
+        ucCardAppFlag = DBDat[2];
+        ucCheckDate = Datautils.cutBytes(DBDat, 3, 4);
+        ucAppStartFlag = DBDat[7];
+        ucRadioInCard = DBDat[8];
+        uiValidDays = Datautils.cutBytes(DBDat, 9, 2);
+        ucTimeLimitInCard = DBDat[10];
+        ucRfu3 = Datautils.cutBytes(DBDat, 11, 6);
+    }
 }

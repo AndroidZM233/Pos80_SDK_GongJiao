@@ -25,10 +25,10 @@
         android:label="@string/app_name"
         android:supportsRtl="true"
         android:theme="@style/AppTheme.NoActionBar"
-        tools:replace="android:icon,android:theme,android:allowBackup"
-        tools:ignore="GoogleAppIndexingWarning">
-        <activity android:name=".spdata.PsamIcActivity"
-          >
+        tools:ignore="GoogleAppIndexingWarning"
+        tools:replace="android:icon,android:theme,android:allowBackup">
+        <activity
+            android:name=".spdata.PsamIcActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 

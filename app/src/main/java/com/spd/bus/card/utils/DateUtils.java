@@ -1,10 +1,11 @@
-package speedata.com.tianjin.utils;
+package com.spd.bus.card.utils;
 
 import android.annotation.SuppressLint;
 
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
+
 /**
  * Created by 张明_ on 2019/2/18.
  * Email 741183142@qq.com

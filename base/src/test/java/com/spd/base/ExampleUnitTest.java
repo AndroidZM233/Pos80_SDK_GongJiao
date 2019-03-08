@@ -1,5 +1,7 @@
 package com.spd.base;
 
+import com.spd.base.utils.Datautils;
+
 import org.junit.Test;
 
 import static org.junit.Assert.*;
@@ -12,6 +14,11 @@ import static org.junit.Assert.*;
 public class ExampleUnitTest {
     @Test
     public void addition_isCorrect() {
-        assertEquals(4, 2 + 2);
+        byte[] id = new byte[2];
+        if (id == null) {
+            System.out.println("为空");
+        } else {
+            System.out.println("不为空" + Datautils.byteArrayToString(id));
+        }
     }
 }

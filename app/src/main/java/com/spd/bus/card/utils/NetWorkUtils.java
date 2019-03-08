@@ -1,4 +1,4 @@
-package speedata.com.tianjin.utils;
+package com.spd.bus.card.utils;
 
 import android.annotation.SuppressLint;
 import android.content.Context;

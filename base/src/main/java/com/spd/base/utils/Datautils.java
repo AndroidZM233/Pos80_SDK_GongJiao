@@ -9,10 +9,31 @@ import android.util.Log;
 import com.spd.base.view.SignalView;
 
 import java.text.SimpleDateFormat;
+import java.util.Arrays;
 import java.util.Date;
 
 public class Datautils {
 
+    /**
+     * 多个数组合并
+     *
+     * @param first
+     * @param rest
+     * @return
+     */
+    public static byte[] concatAll(byte[] first, byte[]... rest) {
+        int totalLength = first.length;
+        for (byte[] array : rest) {
+            totalLength += array.length;
+        }
+        byte[] result = Arrays.copyOf(first, totalLength);
+        int offset = first.length;
+        for (byte[] array : rest) {
+            System.arraycopy(array, 0, result, offset, array.length);
+            offset += array.length;
+        }
+        return result;
+    }
 
     /**
      * 将指定字符串src，以每两个字符分割转换为16进制形式 如："2B44EFD9" --> byte[]{0x2B, 0x44, 0xEF,
@@ -57,6 +78,17 @@ public class Datautils {
 
     }
 
+    public static byte[] charToByte(char c) {
+        byte[] b = new byte[2];
+        b[0] = (byte) ((c & 0xFF00) >> 8);
+        b[1] = (byte) (c & 0xFF);
+        return b;
+    }
+
+    public static char byteToChar(byte[] b) {
+        char c = (char) (((b[0] & 0xFF) << 8) | (b[1] & 0xFF));
+        return c;
+    }
 
     /**
      * hexString-byte[] "130632199104213021"->{0x13,0x06....,0x21}
@@ -176,6 +208,7 @@ public class Datautils {
         }
         return value;
     }
+
     public static void main(String[] args) {
     }
 
@@ -247,10 +280,15 @@ public class Datautils {
 
     public static byte[] intToByteArray1(int i) {
         byte[] result = new byte[4];
-        result[3] = (byte) ((i >> 24) & 0xFF);
-        result[2] = (byte) ((i >> 16) & 0xFF);
-        result[1] = (byte) ((i >> 8) & 0xFF);
-        result[0] = (byte) (i & 0xFF);
+//        result[3] = (byte) ((i >> 24) & 0xFF);
+//        result[2] = (byte) ((i >> 16) & 0xFF);
+//        result[1] = (byte) ((i >> 8) & 0xFF);
+//        result[0] = (byte) (i & 0xFF);
+
+        result[0] = (byte) ((i >> 24) & 0xFF);
+        result[1] = (byte) ((i >> 16) & 0xFF);
+        result[2] = (byte) ((i >> 8) & 0xFF);
+        result[3] = (byte) (i & 0xFF);
         return result;
     }
 

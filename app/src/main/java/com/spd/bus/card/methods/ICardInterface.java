@@ -1,4 +1,6 @@
-package speedata.com.tianjin.methods;
+package com.spd.bus.card.methods;
+
+import com.spd.bus.card.methods.bean.CardBackBean;
 
 import wangpos.sdk4.libbasebinder.BankCard;
 
@@ -7,6 +9,17 @@ import wangpos.sdk4.libbasebinder.BankCard;
  * Email 741183142@qq.com
  */
 interface ICardInterface {
-    //消费
+    CardBackBean mainMethod(BankCard mBankCard, byte[] cpuCard, byte[] lPurSub);
+
+    //3031  0105指令
+    int getFirst(BankCard mBankCard);
+
+    //15 17文件
     int getSnr(BankCard mBankCard);
+
+    //恢复
+    int doFSysSta(BankCard mBankCard);
+
+    //消费
+    CardBackBean consumption(BankCard mBankCard, byte[] cpuCard);
 }

@@ -1,6 +1,9 @@
-package speedata.com.tianjin.methods;
+package com.spd.bus.card.methods;
 
-import java.util.Observable;
+import android.os.Handler;
+import android.os.Looper;
+
+import com.spd.bus.card.methods.bean.CardBackBean;
 
 /**
  * Created by 张明_ on 2019/2/19.
@@ -9,13 +12,33 @@ import java.util.Observable;
 public class ReturnVal {
     public final static int CAD_READ = 1;
     public final static int CAD_EXPIRE = 2;
+    public final static int CAD_SELL = 3;
+    public final static int CAD_OK = 4;
+    public final static int CAD_BLK = 5;
+    public final static int CAD_MAC2 = 6;
+    public final static int CAD_MAC1 = 7;
+    public final static int CAD_RETRY = 8;
+    public final static int CAD_SETCOK = 9;
+    public final static int CAD_EMPTY = 10;
+    public final static int CAD_BROKEN = 11;
+    public final static int NO_SET = 12;
 
-    public static void doVal(int value) {
-
+    public static void doVal(CardBackBean cardBackBean) {
+        int value = cardBackBean.getBackValue();
         switch (value) {
             case CAD_READ:
                 break;
             case CAD_EXPIRE:
+                break;
+            case CAD_SELL:
+                break;
+            case CAD_OK:
+                break;
+            case CAD_BLK:
+                break;
+            case CAD_MAC2:
+                break;
+            default:
                 break;
         }
     }

@@ -106,8 +106,29 @@ public class SpdBusPayPresenter extends BasePresenterImpl<SpdBusPayContract.View
         mView.showAliPayInit(result);
     }
 
+    /**
+     * 验码
+     * @param code 扫描到的二维码
+     * @param recordId
+     * @param posId
+     * @param posMfId
+     * @param posSwVersion
+     * @param merchantType
+     * @param currency
+     * @param amount
+     * @param vehicleId
+     * @param plateNo
+     * @param driverId
+     * @param lineInfo
+     * @param stationNo
+     * @param lbsInfo
+     * @param recordType
+     */
     @Override
-    public void checkAliQrCode(String code, String recordId, String posId, String posMfId, String posSwVersion, String merchantType, String currency, int amount, String vehicleId, String plateNo, String driverId, String lineInfo, String stationNo, String lbsInfo, String recordType) {
+    public void checkAliQrCode(String code, String recordId, String posId, String posMfId
+            , String posSwVersion, String merchantType, String currency, int amount
+            , String vehicleId, String plateNo, String driverId, String lineInfo
+            , String stationNo, String lbsInfo, String recordType) {
         Log.e(TAG, "mView11111: " + mView);
         AliCodeinfoData aliCodeinfoData = new AliCodeinfoData();
         aliCodeinfoData = alipayJni.checkAliQrCode(aliCodeinfoData, code, recordId,
@@ -117,6 +138,7 @@ public class SpdBusPayPresenter extends BasePresenterImpl<SpdBusPayContract.View
                 lineInfo, stationNo, lbsInfo,
                 recordType);
         Log.e(TAG, "mView: " + mView);
+
         mView.showCheckAliQrCode(aliCodeinfoData);
     }
 

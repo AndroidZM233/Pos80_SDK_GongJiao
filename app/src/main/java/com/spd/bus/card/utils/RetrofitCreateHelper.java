@@ -1,4 +1,4 @@
-package speedata.com.tianjin.utils;
+package com.spd.bus.card.utils;
 
 import java.util.concurrent.TimeUnit;
 
