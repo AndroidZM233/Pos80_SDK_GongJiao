@@ -1,14 +1,15 @@
 package com.spd.bus.card.utils;
 
-import com.spd.bus.card.methods.bean.AliWhiteBlackBackBean;
-import com.spd.bus.card.methods.bean.AppSercetBackBean;
-import com.spd.bus.card.methods.bean.BaseInfoBackBean;
-import com.spd.bus.card.methods.bean.GetMacBackBean;
-import com.spd.bus.card.methods.bean.GetPublicBackBean;
-import com.spd.bus.card.methods.bean.NetBackBean;
-import com.spd.bus.card.methods.bean.PosInfoBackBean;
-import com.spd.bus.card.methods.bean.PosKeysBackBean;
-import com.spd.bus.card.methods.bean.UnqrkeyBackBean;
+import com.spd.base.been.tianjin.AliWhiteBlackBackBean;
+import com.spd.base.been.tianjin.AppSercetBackBean;
+import com.spd.base.been.tianjin.BaseInfoBackBean;
+import com.spd.base.been.tianjin.GetMacBackBean;
+import com.spd.base.been.tianjin.GetPublicBackBean;
+import com.spd.base.been.tianjin.GetZhiFuBaoKey;
+import com.spd.base.been.tianjin.NetBackBean;
+import com.spd.base.been.tianjin.PosInfoBackBean;
+import com.spd.base.been.tianjin.PosKeysBackBean;
+import com.spd.base.been.tianjin.UnqrkeyBackBean;
 
 import java.util.Map;
 
@@ -17,7 +18,6 @@ import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.schedulers.Schedulers;
 import okhttp3.MediaType;
 import okhttp3.RequestBody;
-import retrofit2.http.FieldMap;
 
 /**
  * Created by 张明_ on 2019/2/18.
@@ -49,7 +49,7 @@ public class HttpMethods {
     public void produce(String sendData, Observer<NetBackBean> observer) {
         RequestBody requestBody = RequestBody.create(
                 MediaType.parse("application/json;charset=UTF-8"), sendData);
-        RetrofitCreateHelper.createApi(ApiService.class, BASE_URL)
+        RetrofitCreateHelper.createApi(ApiService.class, PRODUCE_URL)
                 .produce(requestBody)
                 .subscribeOn(Schedulers.io())
                 .unsubscribeOn(Schedulers.io())
@@ -88,16 +88,31 @@ public class HttpMethods {
     }
 
     /**
+     * 支付宝秘钥
+     *
+     * @param observer
+     */
+    public void publicKey(Observer<GetZhiFuBaoKey> observer) {
+        RetrofitCreateHelper.createApi(ApiService.class, BASE_URL)
+                .publicKey()
+                .subscribeOn(Schedulers.io())
+                .unsubscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(observer);
+    }
+
+
+    /**
      * 银联二维码秘钥
      *
      * @param sendData
      * @param observer
      */
-    public void unqrkey(String sendData, Observer<UnqrkeyBackBean> observer) {
-        RequestBody requestBody = RequestBody.create(
-                MediaType.parse("application/json;charset=UTF-8"), sendData);
+    public void unqrkey(Observer<UnqrkeyBackBean> observer) {
+//        RequestBody requestBody = RequestBody.create(
+//                MediaType.parse("application/json;charset=UTF-8"), sendData);
         RetrofitCreateHelper.createApi(ApiService.class, BASE_URL)
-                .unqrkey(requestBody)
+                .unqrkey()
                 .subscribeOn(Schedulers.io())
                 .unsubscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
@@ -110,11 +125,11 @@ public class HttpMethods {
      * @param sendData
      * @param observer
      */
-    public void posKeys(String sendData, Observer<PosKeysBackBean> observer) {
-        RequestBody requestBody = RequestBody.create(
-                MediaType.parse("application/json;charset=UTF-8"), sendData);
+    public void posKeys(Observer<PosKeysBackBean> observer) {
+//        RequestBody requestBody = RequestBody.create(
+//                MediaType.parse("application/json;charset=UTF-8"), sendData);
         RetrofitCreateHelper.createApi(ApiService.class, BASE_URL)
-                .posKeys(requestBody)
+                .posKeys()
                 .subscribeOn(Schedulers.io())
                 .unsubscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())

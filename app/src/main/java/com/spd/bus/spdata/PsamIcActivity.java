@@ -5,7 +5,6 @@ import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
-import android.hardware.Camera;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
@@ -15,38 +14,24 @@ import android.util.Log;
 import android.view.View;
 import android.widget.LinearLayout;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.bluering.pos.sdk.qr.QrCodeInfo;
-import com.example.test.yinlianbarcode.entity.QrEntity;
-import com.example.test.yinlianbarcode.interfaces.OnBackListener;
-import com.example.test.yinlianbarcode.utils.Logcat;
-import com.example.test.yinlianbarcode.utils.ScanUtils;
-import com.example.test.yinlianbarcode.utils.ValidationUtils;
-import com.google.gson.Gson;
 import com.honeywell.barcode.HSMDecodeResult;
 import com.honeywell.barcode.HSMDecoder;
-import com.honeywell.camera.CameraManager;
 import com.honeywell.plugins.decode.DecodeResultListener;
 import com.spd.alipay.been.AliCodeinfoData;
-import com.spd.base.been.AlipayQrcodekey;
+import com.spd.alipay.been.TianjinAlipayRes;
 import com.spd.base.been.BosiQrcodeKey;
 import com.spd.base.been.WechatQrcodeKey;
-import com.spd.base.beenupload.AlipayQrCodeUpload;
 import com.spd.base.beenupload.BosiQrCodeUpload;
-import com.spd.base.beenupload.WeichatQrCodeUpload;
-import com.spd.base.db.DbDaoManage;
 import com.spd.base.utils.Datautils;
 import com.spd.base.view.SignalView;
-import com.spd.bus.MainActivity;
 import com.spd.bus.MyApplication;
 import com.spd.bus.R;
 import com.spd.bus.card.methods.JTBCardManager;
-import com.spd.bus.card.methods.bean.CardBackBean;
-import com.spd.bus.card.methods.bean.PosInfoBackBean;
-import com.spd.bus.card.methods.bean.UnqrkeyBackBean;
-import com.spd.bus.card.utils.HttpMethods;
-import com.spd.bus.card.utils.LogUtils;
+import com.spd.base.been.tianjin.CardBackBean;
+import com.spd.bus.card.methods.M1CardManager;
+import com.spd.bus.card.utils.DateUtils;
 import com.spd.bus.spdata.been.ErroCode;
 import com.spd.bus.spdata.been.IcCardBeen;
 import com.spd.bus.spdata.been.PsamBeen;
@@ -56,29 +41,23 @@ import com.spd.bus.spdata.spdbuspay.SpdBusPayContract;
 import com.spd.bus.spdata.spdbuspay.SpdBusPayPresenter;
 import com.spd.bus.spdata.utils.PlaySound;
 import com.spd.bus.spdata.utils.TimeDataUtils;
+import com.spd.bus.util.SaveDataUtils;
 import com.spd.bus.util.TLV;
 
 import java.io.UnsupportedEncodingException;
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Date;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 import java.util.concurrent.TimeUnit;
 
 import io.reactivex.Flowable;
-import io.reactivex.Observer;
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.annotations.NonNull;
-import io.reactivex.disposables.Disposable;
 import io.reactivex.functions.Consumer;
 import speedata.com.face.Contants;
 import wangpos.sdk4.libbasebinder.BankCard;
 import wangpos.sdk4.libbasebinder.Core;
 
-import static com.honeywell.barcode.Symbology.QR;
 import static com.spd.bus.spdata.been.ErroCode.ILLEGAL_PARAM;
 import static com.spd.bus.spdata.been.ErroCode.NO_ENOUGH_MEMORY;
 import static com.spd.bus.spdata.been.ErroCode.SYSTEM_ERROR;
@@ -230,38 +209,12 @@ public class PsamIcActivity extends MVPBaseActivity<SpdBusPayContract.View, SpdB
         setContentView(R.layout.spd_bus_layout);
         initView();
         initCard();
-
-        netTest();
     }
 
-    private void netTest() {
-        Map<String, String> map = new HashMap<>();
-        map.put("data", "{\"deviceId\":\"17340086\"}");
-        HttpMethods.getInstance().unqrkey("", new Observer<UnqrkeyBackBean>() {
-            @Override
-            public void onSubscribe(Disposable d) {
-
-            }
-
-            @Override
-            public void onNext(UnqrkeyBackBean posInfoBackBean) {
-                LogUtils.e(new Gson().toJson(posInfoBackBean));
-            }
-
-            @Override
-            public void onError(Throwable e) {
-
-            }
-
-            @Override
-            public void onComplete() {
-
-            }
-        });
-    }
 
     @SuppressLint("SetTextI18n")
     private void initView() {
+
         mTvBalance = findViewById(R.id.tv_balance);
         mXinhao = (SignalView) findViewById(R.id.xinhao);
         mTvLine = (TextView) findViewById(R.id.tv_line);
@@ -300,10 +253,16 @@ public class PsamIcActivity extends MVPBaseActivity<SpdBusPayContract.View, SpdB
                 }
             }).start();
             //获取支付宝微信key
-            mPresenter.getAliPubKey();
-            mPresenter.getWechatPublicKey();
-            mPresenter.bosiInitJin(this, "/storage/sdcard0/bosicer/");
-            mPresenter.getBosikey();
+//            mPresenter.getAliPubKey();
+            mPresenter.getZhiFuBaoAppSercet(getApplicationContext());
+            mPresenter.getZhiFuBaoBlack(getApplicationContext());
+            mPresenter.getZhiFuBaoWhite(getApplicationContext());
+            mPresenter.getAliPubKeyTianJin();
+            mPresenter.getYinLianPubKey();
+//            mPresenter.getWechatPublicKey();
+//            mPresenter.bosiInitJin(this, "/storage/sdcard0/bosicer/");
+//            mPresenter.getBosikey();
+            mPresenter.getWechatPublicKeyTianJin();
             updateTime();
         } catch (Exception e) {
 
@@ -544,12 +503,22 @@ public class PsamIcActivity extends MVPBaseActivity<SpdBusPayContract.View, SpdB
                     } else if (respdata[0] == 0x37) {
                         //检测到 M1-S50 卡
                         Log.i("stw", "m1结束寻卡===" + (System.currentTimeMillis() - ltime));
-                        m1ICCard();
+//                        m1ICCard();
+                        try {
+                            M1CardManager.getInstance().mainMethod(mBankCard, M1CardManager.M150, 0);
+                        } catch (Exception e) {
+                            e.printStackTrace();
+                        }
                         if (isFlag == 1) {
                             PlaySound.play(PlaySound.qingchongshua, 0);
                         }
                     } else if (respdata[0] == 0x47) {
                         // 检测到 M1-S70 卡
+                        try {
+                            M1CardManager.getInstance().mainMethod(mBankCard, M1CardManager.M150, 0);
+                        } catch (Exception e) {
+                            e.printStackTrace();
+                        }
                     }
                 }
             } catch (RemoteException e) {
@@ -892,9 +861,9 @@ public class PsamIcActivity extends MVPBaseActivity<SpdBusPayContract.View, SpdB
             }
             //原额
             byte[] yue09 = Datautils.cutBytes(bytes09, 0, 4);
-            icCardBeen.setPurOriMoney(yue09);
+            icCardBeen.setPurorimoney(yue09);
             //定义消费金额
-            icCardBeen.setPurSub(new byte[]{0x00, 0x00, 0x00, (byte) 0x01});
+            icCardBeen.setPursub(new byte[]{0x00, 0x00, 0x00, (byte) 0x01});
             Log.d(TAG, "===原额===" + Datautils.byteArrayToString(yue09));
             return true;
         } catch (RemoteException e) {
@@ -928,9 +897,9 @@ public class PsamIcActivity extends MVPBaseActivity<SpdBusPayContract.View, SpdB
 
         System.arraycopy(ulDevUTC, 0, RcdToCard, 0, 4);
         //获取消费前原额
-        System.arraycopy(icCardBeen.getPurOriMoney(), 0, RcdToCard, 4, 4);
+        System.arraycopy(icCardBeen.getPurorimoney(), 0, RcdToCard, 4, 4);
         //获取本次消费金额
-        System.arraycopy(icCardBeen.getPurSub(), 1, RcdToCard, 8, 3);
+        System.arraycopy(icCardBeen.getPursub(), 1, RcdToCard, 8, 3);
         RcdToCard[11] = 1;
         //设备号写死
         RcdToCard[12] = 0x64;
@@ -995,7 +964,7 @@ public class PsamIcActivity extends MVPBaseActivity<SpdBusPayContract.View, SpdB
                     return false;
                 }
                 //执行消费 将消费金额带入
-                int purSub = Datautils.byteArrayToInt(icCardBeen.getPurSub());
+                int purSub = Datautils.byteArrayToInt(icCardBeen.getPursub());
                 retvalue = mBankCard.m1CardValueOperation(0x2D, 9, purSub, 9);
 
                 if (retvalue != 0) {
@@ -1013,7 +982,7 @@ public class PsamIcActivity extends MVPBaseActivity<SpdBusPayContract.View, SpdB
                 byte[] tempV = Datautils.cutBytes(dtZ, 0, 4);
                 Log.d(TAG, "writeCardRcd:正本读09块返回：" + Datautils.byteArrayToString(dtZ));
                 //判断消费前金额-消费金额=消费后金额
-                int s = Datautils.byteArrayToInt(icCardBeen.getPurOriMoney(), false);
+                int s = Datautils.byteArrayToInt(icCardBeen.getPurorimoney(), false);
                 int s2 = Datautils.byteArrayToInt(tempV, false);
                 if (s - purSub != s2) {
                     return false;
@@ -1393,7 +1362,7 @@ public class PsamIcActivity extends MVPBaseActivity<SpdBusPayContract.View, SpdB
                     break;
                 case 2: //M1卡消费成功
                     PlaySound.play(PlaySound.dang, 0);
-                    int blance = Datautils.byteArrayToInt(icCardBeen.getPurOriMoney(), false) - Datautils.byteArrayToInt(icCardBeen.getPurSub());
+                    int blance = Datautils.byteArrayToInt(icCardBeen.getPurorimoney(), false) - Datautils.byteArrayToInt(icCardBeen.getPursub());
                     mTvBalance.setVisibility(View.VISIBLE);
                     mTvBalance.setText("余额：" + (double) blance / 100 + "元");
                     handler.postDelayed(runnable, 2000);
@@ -1629,11 +1598,11 @@ public class PsamIcActivity extends MVPBaseActivity<SpdBusPayContract.View, SpdB
                     return;  //_dt and _backup are all wrong
                 }
                 //原额倒叙 操作
-                actRemaining = icCardBeen.getPurOriMoney();
+                actRemaining = icCardBeen.getPurorimoney();
                 if (CardRcdSec == 2) {
-                    icCardBeen.setPurOriMoney(actRemaining);
+                    icCardBeen.setPurorimoney(actRemaining);
                 }
-                if (Arrays.equals(CardRcdOriMoney, icCardBeen.getPurOriMoney())) {
+                if (Arrays.equals(CardRcdOriMoney, icCardBeen.getPurorimoney())) {
                     CInfo.cPtr = (byte) (CInfoZ.cPtr == 0 ? 8 : CInfoZ.cPtr - 1);
                     int count = Datautils.byteArrayToInt(CInfoZ.iPurCount) - 1;
                     byte[] result = new byte[2];
@@ -1647,7 +1616,7 @@ public class PsamIcActivity extends MVPBaseActivity<SpdBusPayContract.View, SpdB
                     if (!Modify_InfoArea(24)) {
                         return;
                     }
-                } else if (Datautils.byteArrayToInt(CardRcdOriMoney) - Datautils.byteArrayToInt(CardRcdSub) == Datautils.byteArrayToInt(icCardBeen.getPurOriMoney())) {
+                } else if (Datautils.byteArrayToInt(CardRcdOriMoney) - Datautils.byteArrayToInt(CardRcdSub) == Datautils.byteArrayToInt(icCardBeen.getPurorimoney())) {
                     CInfo.fProc = (byte) (CInfo.fProc + 1);
                     if (!Modify_InfoArea(24)) {
                         return;
@@ -1712,26 +1681,15 @@ public class PsamIcActivity extends MVPBaseActivity<SpdBusPayContract.View, SpdB
                 case "TX":
                     //腾讯（微信）
 //                    decodeDate = "TXACn3tk21bPvjQAMBT3ZQdwY0NjAxMDATMzEwNTAwOTkwMTAwMDU1NjgyNQEFAAIQAABhIGG7Yu9CGRVcLW/QXDaqUADmAAALuAAAAAAAAAQCXtB3JtUiF/DEjJ4Gsxh2CUhK5MLNgU TzJbr8K7DzSQrLVzUtVteLeGsJvsixWimDyvzkMIg71PQAXC19rv+rQKkAAAAA3pVPmg\u003d\u003d";
-                    mPresenter.checkWechatQrCode(decodeDate, pubKeyListBeans, macKeyListBeans, 1, (byte) 1, (byte) 1, "17430597", "12");
+                    mPresenter.checkWechatTianJin(decodeDate, 1, (byte) 1, (byte) 1
+                            , "17430597", "12");
                     break;
                 case "BS":
                     //博思二维码
                     mPresenter.checkBosiQrCode(decodeDate);
                     break;
                 case "Ah":
-                    //银联二维码
-                    QrEntity qrEntity = new QrEntity(decodeDate);
-                    try {
-                        boolean validation = ValidationUtils.validation(qrEntity);
-                        Logcat.d(validation);
-                        if (validation) {
-                            Toast.makeText(this, "验证通过", Toast.LENGTH_SHORT).show();
-                        } else {
-                            Toast.makeText(this, "验证失败", Toast.LENGTH_SHORT).show();
-                        }
-                    } catch (Exception e) {
-                        e.printStackTrace();
-                    }
+                    mPresenter.checkYinLianCode(getApplicationContext(), decodeDate);
                     break;
                 default:
                     //支付宝 二维码
@@ -1804,30 +1762,44 @@ public class PsamIcActivity extends MVPBaseActivity<SpdBusPayContract.View, SpdB
         }
     }
 
-    private AliCodeinfoData codeinfoData;
+    private TianjinAlipayRes codeinfoData;
 
     @Override
-    public void showCheckAliQrCode(AliCodeinfoData aliCodeinfoData) {
-        codeinfoData = aliCodeinfoData;
+    public void showCheckAliQrCode(TianjinAlipayRes tianjinAlipayRes) {
+        codeinfoData = tianjinAlipayRes;
         Log.e(TAG, "checkAliQrCode:不为空 ");
-        if (codeinfoData.inforState == ErroCode.SUCCESS) {
-            Log.i(TAG, "\n支付宝校验结果:：" + codeinfoData.inforState +
-                    "\n卡类型:：" + Datautils.byteArrayToAscii(codeinfoData.cardType) +
-                    "\n卡号：:" + Datautils.byteArrayToAscii(codeinfoData.cardNo) +
-                    "\nuserId:：" + Datautils.byteArrayToAscii(codeinfoData.userId) +
-                    "\n支付宝sdk返回:：" + Datautils.byteArrayToAscii(codeinfoData.alipayResult));
-            AlipayQrCodeUpload alipayQrCodeUpload = new AlipayQrCodeUpload();
-            AlipayQrCodeUpload.DataBean dataBean = new AlipayQrCodeUpload.DataBean();
-            dataBean.setRecordType("ALIQR");
-            List<AlipayQrCodeUpload.DataBean> dataBeans = new ArrayList<>();
-            AlipayQrCodeUpload.DataBean.RecordBean recordBean = new AlipayQrCodeUpload.DataBean.RecordBean("09", "6410001", "1234567890", "123456789123", "12345678912345678912", "98765432198765432198", Datautils.getDefautCurrentTime(), "6410", "0", "12", "156", 0, 1, 1, Datautils.byteArrayToAscii(codeinfoData.userId), "", "BUS", Datautils.byteArrayToAscii(codeinfoData.cardType), Datautils.byteArrayToAscii(codeinfoData.cardNo), Datautils.byteArrayToAscii(codeinfoData.alipayResult), "", "", decodeDate);
-            dataBean.setRecord(recordBean);
-            dataBeans.add(dataBean);
-            alipayQrCodeUpload.setData(dataBeans);
-            mPresenter.uploadAlipayRe(alipayQrCodeUpload);
+        if (codeinfoData.result == ErroCode.SUCCESS) {
+            // TODO: 2019/3/11 存储天津公交需要的数据
+            try {
+                SaveDataUtils.saveZhiFuBaoReqDataBean(tianjinAlipayRes);
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+
+
+//            AlipayQrCodeUpload alipayQrCodeUpload = new AlipayQrCodeUpload();
+//            AlipayQrCodeUpload.DataBean dataBean = new AlipayQrCodeUpload.DataBean();
+//            dataBean.setRecordType("ALIQR");
+//            List<AlipayQrCodeUpload.DataBean> dataBeans = new ArrayList<>();
+//            AlipayQrCodeUpload.DataBean.RecordBean recordBean = new AlipayQrCodeUpload.DataBean
+//                    .RecordBean("09", "6410001", "1234567890",
+//                    "123456789123", "12345678912345678912",
+//                    "98765432198765432198", Datautils.getDefautCurrentTime(),
+//                    "6410", "0", "12", "156", 0,
+//                    1, 1, Datautils.byteArrayToAscii(codeinfoData.userId),
+//                    "", "BUS", Datautils.byteArrayToAscii(codeinfoData
+//                    .cardType), Datautils.byteArrayToAscii(codeinfoData.cardNo),
+//                    Datautils.byteArrayToAscii(codeinfoData.alipayResult), "",
+//                    "", decodeDate);
+//            dataBean.setRecord(recordBean);
+//            dataBeans.add(dataBean);
+//            alipayQrCodeUpload.setData(dataBeans);
+//            mPresenter.uploadAlipayRe(alipayQrCodeUpload);
+
+            mPresenter.uploadAlipayRe();
             handler.sendMessage(handler.obtainMessage(3));
         } else {
-            Log.i(TAG, "\n支付宝校验结果错误:" + codeinfoData.inforState);
+            Log.i(TAG, "\n支付宝校验结果错误:" + codeinfoData.result);
         }
     }
 
@@ -1862,15 +1834,15 @@ public class PsamIcActivity extends MVPBaseActivity<SpdBusPayContract.View, SpdB
     public void showCheckWechatQrCode(int result, String wechatResult, String openId) {
         if (result == ErroCode.EC_SUCCESS) {
             Log.i(TAG, "微信结果: " + "openID" + openId + "结果" + wechatResult);
-            WeichatQrCodeUpload weichatQrCodeUpload = new WeichatQrCodeUpload();
-            WeichatQrCodeUpload.DataBean dataBean = new WeichatQrCodeUpload.DataBean();
-            dataBean.setRecordType("WECHATQR");
-            List<WeichatQrCodeUpload.DataBean> dataBeans = new ArrayList<>();
-            WeichatQrCodeUpload.DataBean.RecordBean recordBean = new WeichatQrCodeUpload.DataBean.RecordBean("08", "6410001", "1234567890", "123456789123", "12345678912345678912", "98765432198765432198", Datautils.getDefautCurrentTime(), "6410", "0", "12", "156", 0, 1, 1, openId, wechatResult, decodeDate);
-            dataBean.setRecord(recordBean);
-            dataBeans.add(dataBean);
-            weichatQrCodeUpload.setData(dataBeans);
-            mPresenter.uploadWechatRe(weichatQrCodeUpload);
+//            WeichatQrCodeUpload weichatQrCodeUpload = new WeichatQrCodeUpload();
+//            WeichatQrCodeUpload.DataBean dataBean = new WeichatQrCodeUpload.DataBean();
+//            dataBean.setRecordType("WECHATQR");
+//            List<WeichatQrCodeUpload.DataBean> dataBeans = new ArrayList<>();
+//            WeichatQrCodeUpload.DataBean.RecordBean recordBean = new WeichatQrCodeUpload.DataBean.RecordBean("08", "6410001", "1234567890", "123456789123", "12345678912345678912", "98765432198765432198", Datautils.getDefautCurrentTime(), "6410", "0", "12", "156", 0, 1, 1, openId, wechatResult, decodeDate);
+//            dataBean.setRecord(recordBean);
+//            dataBeans.add(dataBean);
+//            weichatQrCodeUpload.setData(dataBeans);
+            mPresenter.uploadWechatRe();
             Log.e("stw", "微信时间：" + (System.currentTimeMillis() - ltime));
             handler.sendMessage(handler.obtainMessage(3));
         } else {
@@ -1926,5 +1898,10 @@ public class PsamIcActivity extends MVPBaseActivity<SpdBusPayContract.View, SpdB
         } else {
             Log.i(TAG, "showUpdataBosiKey: 更新证书失败");
         }
+    }
+
+    @Override
+    public void doCheckWechatTianJin() {
+
     }
 }

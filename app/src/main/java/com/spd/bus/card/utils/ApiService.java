@@ -1,14 +1,15 @@
 package com.spd.bus.card.utils;
 
-import com.spd.bus.card.methods.bean.AppSercetBackBean;
-import com.spd.bus.card.methods.bean.AliWhiteBlackBackBean;
-import com.spd.bus.card.methods.bean.BaseInfoBackBean;
-import com.spd.bus.card.methods.bean.GetMacBackBean;
-import com.spd.bus.card.methods.bean.GetPublicBackBean;
-import com.spd.bus.card.methods.bean.NetBackBean;
-import com.spd.bus.card.methods.bean.PosInfoBackBean;
-import com.spd.bus.card.methods.bean.PosKeysBackBean;
-import com.spd.bus.card.methods.bean.UnqrkeyBackBean;
+import com.spd.base.been.tianjin.AppSercetBackBean;
+import com.spd.base.been.tianjin.AliWhiteBlackBackBean;
+import com.spd.base.been.tianjin.BaseInfoBackBean;
+import com.spd.base.been.tianjin.GetMacBackBean;
+import com.spd.base.been.tianjin.GetPublicBackBean;
+import com.spd.base.been.tianjin.GetZhiFuBaoKey;
+import com.spd.base.been.tianjin.NetBackBean;
+import com.spd.base.been.tianjin.PosInfoBackBean;
+import com.spd.base.been.tianjin.PosKeysBackBean;
+import com.spd.base.been.tianjin.UnqrkeyBackBean;
 
 import java.util.Map;
 
@@ -40,13 +41,18 @@ public interface ApiService {
     @POST("pos/posInfo")
     Observable<PosInfoBackBean> posInfo(@FieldMap Map<String, String> params);
 
+    //支付宝秘钥
+    @GET("pos/publicKey")
+    Observable<GetZhiFuBaoKey> publicKey();
+
+
     //银联二维码秘钥
-    @POST("pos/unqrkey")
-    Observable<UnqrkeyBackBean> unqrkey(@Body RequestBody route);
+    @GET("pos/unqrkey")
+    Observable<UnqrkeyBackBean> unqrkey();
 
     //银联双免POSKEY
-    @POST("pos/posKeys?data=17510418")
-    Observable<PosKeysBackBean> posKeys(@Body RequestBody route);
+    @GET("pos/posKeys?data=17510418")
+    Observable<PosKeysBackBean> posKeys();
 
     //微信秘钥
     @POST("pos/wxPay/getPublic")

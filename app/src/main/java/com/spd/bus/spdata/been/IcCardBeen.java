@@ -20,24 +20,26 @@ public class IcCardBeen {
     private byte[] purInNr;//钱包充值计数器
     private byte[] purIncUtc;//充值时间
     private byte[] purIncMoney;//充值金额
-    private byte[] PurOriMoney;//原额
-    private byte[] PurSub;//消费金额
+    private byte[] purorimoney;//原额
+    private byte[] pursub;//消费金额
+
+    public byte cardClass;
 
 
-    public byte[] getPurOriMoney() {
-        return PurOriMoney;
+    public byte[] getPurorimoney() {
+        return purorimoney;
     }
 
-    public void setPurOriMoney(byte[] purOriMoney) {
-        PurOriMoney = purOriMoney;
+    public void setPurorimoney(byte[] purorimoney) {
+        this.purorimoney = purorimoney;
     }
 
-    public byte[] getPurSub() {
-        return PurSub;
+    public byte[] getPursub() {
+        return pursub;
     }
 
-    public void setPurSub(byte[] purSub) {
-        PurSub = purSub;
+    public void setPursub(byte[] pursub) {
+        this.pursub = pursub;
     }
 
     public int getfBlackCard() {

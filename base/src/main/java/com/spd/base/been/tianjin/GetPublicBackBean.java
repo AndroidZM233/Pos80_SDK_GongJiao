@@ -1,9 +1,14 @@
-package com.spd.bus.card.methods.bean;
+package com.spd.base.been.tianjin;
+
+import org.greenrobot.greendao.annotation.Entity;
+import org.greenrobot.greendao.annotation.Id;
+import org.greenrobot.greendao.annotation.Generated;
 
 /**
  * Created by 张明_ on 2019/2/21.
  * Email 741183142@qq.com
  */
+@Entity
 public class GetPublicBackBean {
 
     /**
@@ -19,44 +24,46 @@ public class GetPublicBackBean {
     private int cache;
     private String pubkeyList;
     private long insertTime;
-
-    public int getId() {
-        return id;
+    @Generated(hash = 1147966492)
+    public GetPublicBackBean(int id, int num, int cache, String pubkeyList, long insertTime) {
+        this.id = id;
+        this.num = num;
+        this.cache = cache;
+        this.pubkeyList = pubkeyList;
+        this.insertTime = insertTime;
     }
-
+    @Generated(hash = 930813960)
+    public GetPublicBackBean() {
+    }
+    public int getId() {
+        return this.id;
+    }
     public void setId(int id) {
         this.id = id;
     }
-
     public int getNum() {
-        return num;
+        return this.num;
     }
-
     public void setNum(int num) {
         this.num = num;
     }
-
     public int getCache() {
-        return cache;
+        return this.cache;
     }
-
     public void setCache(int cache) {
         this.cache = cache;
     }
-
     public String getPubkeyList() {
-        return pubkeyList;
+        return this.pubkeyList;
     }
-
     public void setPubkeyList(String pubkeyList) {
         this.pubkeyList = pubkeyList;
     }
-
     public long getInsertTime() {
-        return insertTime;
+        return this.insertTime;
     }
-
     public void setInsertTime(long insertTime) {
         this.insertTime = insertTime;
     }
+
 }

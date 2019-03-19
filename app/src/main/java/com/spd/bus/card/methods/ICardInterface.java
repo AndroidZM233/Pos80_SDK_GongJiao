@@ -1,6 +1,6 @@
 package com.spd.bus.card.methods;
 
-import com.spd.bus.card.methods.bean.CardBackBean;
+import com.spd.base.been.tianjin.CardBackBean;
 
 import wangpos.sdk4.libbasebinder.BankCard;
 

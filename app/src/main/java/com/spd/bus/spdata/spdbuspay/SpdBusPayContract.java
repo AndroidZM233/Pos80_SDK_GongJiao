@@ -4,6 +4,7 @@ import android.content.Context;
 
 import com.bluering.pos.sdk.qr.QrCodeInfo;
 import com.spd.alipay.been.AliCodeinfoData;
+import com.spd.alipay.been.TianjinAlipayRes;
 import com.spd.base.been.AlipayQrcodekey;
 import com.spd.base.been.BosiQrcodeKey;
 import com.spd.base.beenupload.AlipayQrCodeUpload;
@@ -35,7 +36,7 @@ public class SpdBusPayContract {
 
         void showWechatPublicKey(WechatQrcodeKey wechatQrcodeKey);
 
-        void showCheckAliQrCode(AliCodeinfoData aliCodeinfoData);
+        void showCheckAliQrCode(TianjinAlipayRes tianjinAlipayRes);
 
         void showReleseAlipayJni(int result);
 
@@ -51,10 +52,11 @@ public class SpdBusPayContract {
 
         void showUpdataBosiKey(int state);
 
-
+        void doCheckWechatTianJin();
     }
 
     interface Presenter extends BasePresenter<View> {
+        void produce();
         /**
          * 支付宝二维码
          */
@@ -63,10 +65,21 @@ public class SpdBusPayContract {
          */
         void getAliPubKey();
 
+        void getAliPubKeyTianJin();
+
         void aliPayInitJni();
+
+        void getZhiFuBaoAppSercet(Context context);
+
+        void getZhiFuBaoPosInfo(Context context);
+
+        void getZhiFuBaoBlack(Context context);
+
+        void getZhiFuBaoWhite(Context context);
 
         /**
          * 校验支付宝二维码
+         *
          * @param code
          * @param recordId
          * @param posId
@@ -92,9 +105,10 @@ public class SpdBusPayContract {
 
         /**
          * 上传支付宝结果
+         *
          * @param qrcodeUpload
          */
-        void uploadAlipayRe(AlipayQrCodeUpload qrcodeUpload);
+        void uploadAlipayRe();
 
         /**
          * 释放支付宝库
@@ -107,12 +121,27 @@ public class SpdBusPayContract {
         void getWechatPublicKey();
 
         /**
+         * 获取微信秘钥
+         */
+        void getWechatPublicKeyTianJin();
+
+        /**
+         * 获取微信mac
+         */
+        void getWechatMacTianJin();
+
+
+        void checkWechatTianJin(String code, int payfee, byte scene,
+                                byte scantype, String posId, String posTrxId);
+
+        /**
          * 初始化微信库
          */
         void wechatInitJin();
 
         /**
          * 校验博思二维码
+         *
          * @param code
          * @param pbKeyList
          * @param macKeyList
@@ -124,16 +153,15 @@ public class SpdBusPayContract {
          */
         void checkWechatQrCode(String code, List<WechatQrcodeKey.PubKeyListBean> pbKeyList, List<WechatQrcodeKey.MacKeyListBean> macKeyList, int payfee, byte scene, byte scantype, String posId, String posTrxId);
 
-        void uploadWechatRe(WeichatQrCodeUpload qrcodeUpload);
+        void uploadWechatRe();
 
 
         /**
          * 博思二维码
          */
         /**
-         *
          * @param context  上下文对象
-         * @param filePath  保存证书key路径
+         * @param filePath 保存证书key路径
          */
         void bosiInitJin(Context context, String filePath);
 
@@ -144,12 +172,14 @@ public class SpdBusPayContract {
 
         /**
          * 获取证书key版本
+         *
          * @return 证书版本号
          */
         int getBosiCerVersion();
 
         /**
          * 更新证书key
+         *
          * @param cer
          * @return
          */
@@ -157,11 +187,15 @@ public class SpdBusPayContract {
 
         /**
          * 校验博思码
+         *
          * @param qrcode
          */
         void checkBosiQrCode(String qrcode);
 
         void uploadBosiRe(BosiQrCodeUpload qrcodeUpload);
 
+        void getYinLianPubKey();
+
+        void checkYinLianCode(Context context,String qrcode);
     }
 }

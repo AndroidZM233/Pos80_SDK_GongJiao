@@ -1,4 +1,4 @@
-package com.spd.bus.card.methods.bean.produce;
+package com.spd.base.been.tianjin.produce;
 
 /**
  * Created by 张明_ on 2019/3/7.

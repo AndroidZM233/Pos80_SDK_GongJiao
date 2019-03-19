@@ -1,4 +1,4 @@
-package com.spd.bus.card.methods.bean;
+package com.spd.base.been.tianjin;
 
 import com.spd.base.utils.Datautils;
 
@@ -69,7 +69,7 @@ public class TCardOpDU {
     public byte ucYueSec;
     public byte ucYueFlag;
     public byte[] ucIncYueDev = new byte[4];
-    public byte[] uiIncYueCount = new byte[2];
+    public byte[] uiIncYueCount;
     public byte[] ucYueUsingDate = new byte[3];
     public byte ucYuePosition;
     public int ulYueBase;
@@ -129,9 +129,9 @@ public class TCardOpDU {
     public int ulFKPurSub;
 
     //Other City
-    public byte fUseHC;//天津
-    public byte fHCSeg;
-    public byte fHC;
+    public int fUseHC;//天津
+    public int fHCSeg;
+    public int fHC;
     public byte ucHCRadioP;
 
     public int hCQYueSub;
@@ -144,7 +144,7 @@ public class TCardOpDU {
     public byte fHCMode;
 
     public byte first;
-    public byte yueSec;
+    public int yueSec;
 
     public byte[] ucYueStartDate = new byte[4];
     public byte[] ucYueEndDate = new byte[4];
@@ -166,6 +166,44 @@ public class TCardOpDU {
     public byte ucHCBusType;
 
     public byte ucCardVer;
+
+    //天津M1卡
+    public byte fStartUsePur;
+    public byte[] snr;//卡芯片号
+    public byte[] issueSnr;//卡流水号
+    public byte[] cityNr;//城市代码
+    public byte[] vocCode;//行业代码
+    public byte[] issueCode;//发行流水号
+    public byte[] mackNr;//卡认证码
+    public byte[] fStartUse;//启用标志
+    public boolean fBlackCard;//黑名单标志
+    public byte cardType;//卡类型
+    public byte[] issueDate;//发行日期
+    public byte[] endUserDate;//有效截止日期
+    public byte[] startUserDate;//开始日期日期
+    public byte[] purInNr;//钱包充值计数器
+    public byte[] purIncUtc;//充值时间
+    public byte[] purIncMoney;//充值金额
+    public int purIncMoneyInt;//充值金额
+    public byte[] purorimoney;//原额
+    public int purorimoneyInt;//原额
+    public byte[] pursub;//消费金额
+    public int pursubInt;//消费金额
+    public byte cardClass;
+    public byte[] purCount;
+    public int procSec;
+
+    public byte subType;
+    public byte[] yueBase;
+    public byte[] yueUsingDate;
+    public byte yuePosition;
+    public int yueFlag;
+    public int yuePositionInt;
+    public int actYueOriMoney;
+    public int yueSub;
+    public int yueOriMoney;
+    public int actYueSub;
+
 
     public void setDataStartUcIssuerCode(byte[] DBDat) {
         ucIssuerCode = Datautils.cutBytes(DBDat, 0, 2);
@@ -191,5 +229,149 @@ public class TCardOpDU {
         uiValidDays = Datautils.cutBytes(DBDat, 9, 2);
         ucTimeLimitInCard = DBDat[10];
         ucRfu3 = Datautils.cutBytes(DBDat, 11, 6);
+    }
+
+    public byte getfStartUsePur() {
+        return fStartUsePur;
+    }
+
+    public void setfStartUsePur(byte fStartUsePur) {
+        this.fStartUsePur = fStartUsePur;
+    }
+
+    public byte[] getSnr() {
+        return snr;
+    }
+
+    public void setSnr(byte[] snr) {
+        this.snr = snr;
+    }
+
+    public byte[] getIssueSnr() {
+        return issueSnr;
+    }
+
+    public void setIssueSnr(byte[] issueSnr) {
+        this.issueSnr = issueSnr;
+    }
+
+    public byte[] getCityNr() {
+        return cityNr;
+    }
+
+    public void setCityNr(byte[] cityNr) {
+        this.cityNr = cityNr;
+    }
+
+    public byte[] getVocCode() {
+        return vocCode;
+    }
+
+    public void setVocCode(byte[] vocCode) {
+        this.vocCode = vocCode;
+    }
+
+    public byte[] getIssueCode() {
+        return issueCode;
+    }
+
+    public void setIssueCode(byte[] issueCode) {
+        this.issueCode = issueCode;
+    }
+
+    public byte[] getMackNr() {
+        return mackNr;
+    }
+
+    public void setMackNr(byte[] mackNr) {
+        this.mackNr = mackNr;
+    }
+
+    public byte[] getfStartUse() {
+        return fStartUse;
+    }
+
+    public void setfStartUse(byte[] fStartUse) {
+        this.fStartUse = fStartUse;
+    }
+
+    public boolean isfBlackCard() {
+        return fBlackCard;
+    }
+
+    public void setfBlackCard(boolean fBlackCard) {
+        this.fBlackCard = fBlackCard;
+    }
+
+    public byte getCardType() {
+        return cardType;
+    }
+
+    public void setCardType(byte cardType) {
+        this.cardType = cardType;
+    }
+
+    public byte[] getIssueDate() {
+        return issueDate;
+    }
+
+    public void setIssueDate(byte[] issueDate) {
+        this.issueDate = issueDate;
+    }
+
+    public byte[] getEndUserDate() {
+        return endUserDate;
+    }
+
+    public void setEndUserDate(byte[] endUserDate) {
+        this.endUserDate = endUserDate;
+    }
+
+    public byte[] getStartUserDate() {
+        return startUserDate;
+    }
+
+    public void setStartUserDate(byte[] startUserDate) {
+        this.startUserDate = startUserDate;
+    }
+
+    public byte[] getPurInNr() {
+        return purInNr;
+    }
+
+    public void setPurInNr(byte[] purInNr) {
+        this.purInNr = purInNr;
+    }
+
+    public byte[] getPurIncUtc() {
+        return purIncUtc;
+    }
+
+    public void setPurIncUtc(byte[] purIncUtc) {
+        this.purIncUtc = purIncUtc;
+    }
+
+    public byte[] getPurIncMoney() {
+        return purIncMoney;
+    }
+
+    public void setPurIncMoney(byte[] purIncMoney) {
+        this.purIncMoney = purIncMoney;
+    }
+
+    public byte[] getPurorimoney() {
+        return purorimoney;
+    }
+
+    public void setPurorimoney(byte[] purorimoney) {
+        this.purorimoney = purorimoney;
+    }
+
+    public byte[] getPursub() {
+        return pursub;
+    }
+
+    public void setPursub(byte[] pursub) {
+        this.pursub = pursub;
     }
 }

@@ -1,13 +1,10 @@
 package com.spd.bus.card.methods;
 
-import android.util.Log;
-
 import com.spd.base.db.DbDaoManage;
 import com.spd.base.dbbeen.RunParaFile;
 import com.spd.base.utils.Datautils;
-import com.spd.bus.card.methods.bean.CardBackBean;
-import com.spd.bus.card.methods.bean.TCardOpDU;
-import com.spd.bus.card.methods.bean.TPCardDU;
+import com.spd.base.been.tianjin.CardBackBean;
+import com.spd.base.been.tianjin.TCardOpDU;
 import com.spd.bus.card.utils.LogUtils;
 import com.spd.bus.spdata.been.PsamBeen;
 import com.spd.bus.spdata.utils.PlaySound;
@@ -17,7 +14,6 @@ import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
 
@@ -32,7 +28,6 @@ public class JTBCardManager {
     private static final Object LOCK = new Object();
     private static JTBCardManager jtbCardManager;
     private TCardOpDU tCardOpDU;
-    private TPCardDU cardDU;
     private final int METHOD_OK = 99;
     private byte[] problemIssueCode;
     //是否恢复
@@ -56,8 +51,7 @@ public class JTBCardManager {
     public CardBackBean mainMethod(BankCard mBankCard, List<PsamBeen> psamDatas, byte[] cpuCard, byte[] lPurSub) {
         long ltime = System.currentTimeMillis();
         tCardOpDU = new TCardOpDU();
-        cardDU = new TPCardDU();
-        cardDU.cardClass = (byte) 0x07;
+        tCardOpDU.cardClass = (byte) 0x07;
         tCardOpDU.lPurSubByte = lPurSub;
         //复合交易
         tCardOpDU.ucCAPP = 1;
@@ -126,7 +120,7 @@ public class JTBCardManager {
      */
     public int getSnr(BankCard mBankCard) {
         byte[] resultBytes;
-        cardDU.cardClass = (byte) 0x07;
+        tCardOpDU.cardClass = (byte) 0x07;
         tCardOpDU.fInBus = (byte) 0x01;
         //系统时间
         byte[] systemTime = Datautils.getDateTime();
@@ -293,7 +287,7 @@ public class JTBCardManager {
 
         byte[] resultBytes;
         if (tCardOpDU.ucProcSec == 2) {
-            int ret = CardMethods.fIsUsePur(cardDU, tCardOpDU, runParaFile);    //判断钱包权限
+            int ret = CardMethods.fIsUsePur(tCardOpDU, runParaFile);    //判断钱包权限
 
             if ((tCardOpDU.ucOtherCity == 0) && (tCardOpDU.ucMainCardType == 0x01
                     || tCardOpDU.ucMainCardType == 0x11) && (ret == 0)) {
@@ -306,7 +300,7 @@ public class JTBCardManager {
             }
 
         }
-        cardDU.fUseHC = 0;
+        tCardOpDU.fUseHC = 0;
         //本地 老年卡 残疾人卡  第一次刷
         if ((tCardOpDU.ucOtherCity == 0) && (tCardOpDU.ucMainCardType == 0x01
                 || tCardOpDU.ucMainCardType == 0x11) && (fOldDisable == 0)) {
@@ -402,7 +396,7 @@ public class JTBCardManager {
         if ((tCardOpDU.ulBalance / 100) < 0.01) {
             // TODO: 2019/1/8 语音/界面  余额不足
         }
-        byte[] psamMac1 = CardMethods.initSamForPurchase(cardDU, tCardOpDU);
+        byte[] psamMac1 = CardMethods.initSamForPurchase(tCardOpDU);
 
         LogUtils.d("===获取MAC1(8070)send===" + Datautils.byteArrayToString(psamMac1));
         resultBytes = CardMethods.sendApdus(mBankCard, BankCard.CARD_MODE_PSAM1_APDU, psamMac1);

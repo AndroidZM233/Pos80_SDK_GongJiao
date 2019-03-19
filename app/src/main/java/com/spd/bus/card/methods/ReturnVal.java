@@ -1,9 +1,6 @@
 package com.spd.bus.card.methods;
 
-import android.os.Handler;
-import android.os.Looper;
-
-import com.spd.bus.card.methods.bean.CardBackBean;
+import com.spd.base.been.tianjin.CardBackBean;
 
 /**
  * Created by 张明_ on 2019/2/19.
@@ -22,6 +19,12 @@ public class ReturnVal {
     public final static int CAD_EMPTY = 10;
     public final static int CAD_BROKEN = 11;
     public final static int NO_SET = 12;
+    public final static int CAD_TEST_C = 13;
+    public final static int CAD_KEYSETIN = 14;
+    public final static int CAD_ACCESS = 15;
+    public final static int CAD_LOGON = 16;
+    public final static int CAD_SETCERR = 17;
+    public final static int CAD_WRITE = 18;
 
     public static void doVal(CardBackBean cardBackBean) {
         int value = cardBackBean.getBackValue();

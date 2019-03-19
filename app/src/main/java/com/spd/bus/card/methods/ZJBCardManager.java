@@ -1,12 +1,9 @@
 package com.spd.bus.card.methods;
 
-import com.example.test.yinlianbarcode.utils.SharedXmlUtil;
 import com.spd.base.db.DbDaoManage;
 import com.spd.base.utils.Datautils;
 import com.spd.base.dbbeen.RunParaFile;
-import com.spd.bus.card.methods.bean.CardBackBean;
-import com.spd.bus.card.methods.bean.TCardOpDU;
-import com.spd.bus.card.methods.bean.TPCardDU;
+import com.spd.base.been.tianjin.TCardOpDU;
 import com.spd.bus.card.utils.LogUtils;
 import com.spd.bus.spdata.been.PsamBeen;
 import com.spd.bus.spdata.utils.PlaySound;
@@ -17,7 +14,6 @@ import java.text.SimpleDateFormat;
 import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
-import java.util.Map;
 
 import wangpos.sdk4.libbasebinder.BankCard;
 
@@ -30,7 +26,6 @@ public class ZJBCardManager {
     private static final Object LOCK = new Object();
     private static ZJBCardManager jtbCardManager;
     private TCardOpDU tCardOpDU;
-    private TPCardDU cardDU;
     private final int METHOD_OK = 99;
     private byte[] problemIssueCode;
     //是否恢复
@@ -54,8 +49,7 @@ public class ZJBCardManager {
     public int mainMethod(BankCard mBankCard, PsamBeen psamBeen) {
         long ltime = System.currentTimeMillis();
         tCardOpDU = new TCardOpDU();
-        cardDU = new TPCardDU();
-        cardDU.cardClass = (byte) 0x03;
+        tCardOpDU.cardClass = (byte) 0x03;
         byte[] resultBytes = CardMethods.sendApdus(mBankCard, BankCard.CARD_MODE_PICC
                 , new byte[]{(byte) 0x00, (byte) 0xA4, (byte) 0x00, (byte) 0x00, (byte) 0x02,
                         (byte) 0x3f, (byte) 0x00});
@@ -250,7 +244,7 @@ public class ZJBCardManager {
         // TODO: 2019/2/27
 
         if (tCardOpDU.ucProcSec != (byte) 0x02) {
-            int ret = CardMethods.fIsUseYue(cardDU, tCardOpDU, runParaFile);//判断月票权限
+            int ret = CardMethods.fIsUseYue(tCardOpDU, runParaFile);//判断月票权限
             if (ret == 1)        //月票有效
             {
                 resultBytes = CardMethods.sendApdus(mBankCard, BankCard.CARD_MODE_PICC
@@ -271,7 +265,7 @@ public class ZJBCardManager {
                         return ReturnVal.CAD_READ;
                     }
 
-                    ret = CardMethods.cpuCardGetYueBasePos(systemTime, cardDU, resultBytes);
+                    ret = CardMethods.cpuCardGetYueBasePos(systemTime, tCardOpDU, resultBytes);
                     if (ret == 0) {
                         tCardOpDU.ucProcSec = 2;
                     }
@@ -292,7 +286,7 @@ public class ZJBCardManager {
     public int CPUPurse(BankCard mBankCard) {
         byte[] resultBytes;
         if (tCardOpDU.ucProcSec == 2) {
-            int ret = CardMethods.fIsUsePur(cardDU, tCardOpDU, runParaFile);    //判断钱包权限
+            int ret = CardMethods.fIsUsePur( tCardOpDU, runParaFile);    //判断钱包权限
 
             if (ret == 0)        //没有权限
             {
@@ -310,7 +304,7 @@ public class ZJBCardManager {
                 return ReturnVal.CAD_READ;
             }
         }
-        cardDU.fUseHC = 0;
+        tCardOpDU.fUseHC = 0;
 
         if ((tCardOpDU.ucOtherCity == 0) && (tCardOpDU.ucProcSec == 2) && (tCardOpDU.fPermit == 0)) {
             resultBytes = CardMethods.sendApdus(mBankCard, BankCard.CARD_MODE_PICC
@@ -333,7 +327,7 @@ public class ZJBCardManager {
             }
             if (CardMethods.fIsUseHC(tCardOpDU, runParaFile) == 1)//换乘权限判断
             {
-                cardDU.fUseHC = 1;
+                tCardOpDU.fUseHC = 1;
                 tCardOpDU.ucCAPP = (byte) 0x01;
                 byte[] utcBytes = Datautils.cutBytes(tCardOpDU.ucDatInCard, 24, 4);
                 String utcHexString = Datautils.byteArrayToString(utcBytes);
@@ -374,9 +368,9 @@ public class ZJBCardManager {
                             ((ulHCUTC - Integer.parseInt(ucJamTimeStr2) < 0))) {
                         if ((ulDevUTC - Integer.parseInt(ucJamTimeStr1) >= 0) &&
                                 ((ulDevUTC - Integer.parseInt(ucJamTimeStr2) < 0))) {
-                            cardDU.fHCSeg = 1;
+                            tCardOpDU.fHCSeg = 1;
                         } else {
-                            cardDU.fHCSeg = 0;
+                            tCardOpDU.fHCSeg = 0;
                         }
                     } else if ((ulHCUTC - Integer.parseInt(ucJamTimeStr3) >= 0) &&
                             ((ulHCUTC - Integer.parseInt(ucJamTimeStr4) < 0)))    //高峰时间
@@ -384,34 +378,34 @@ public class ZJBCardManager {
                         if ((ulDevUTC - Integer.parseInt(ucJamTimeStr3) >= 0) &&
                                 ((ulDevUTC - Integer.parseInt(ucJamTimeStr4) < 0)))    //高峰时间
                         {
-                            cardDU.fHCSeg = 2;
+                            tCardOpDU.fHCSeg = 2;
                         } else {
-                            cardDU.fHCSeg = 0;
+                            tCardOpDU.fHCSeg = 0;
                         }
                     } else {
-                        cardDU.fHCSeg = 0;
+                        tCardOpDU.fHCSeg = 0;
                     }
                 } else {
-                    cardDU.fHCSeg = 0;
+                    tCardOpDU.fHCSeg = 0;
                 }
-                if (cardDU.fHCSeg == 0) {
+                if (tCardOpDU.fHCSeg == 0) {
                     ulHCUTC = ulDevUTC;
-                    cardDU.fHC = 0;
+                    tCardOpDU.fHC = 0;
                 } else {
                     byte[] ucTransferCntLimit = runParaFile.getUcTransferCntLimit();
                     byte[] ucTransferTimeLong = runParaFile.getUcTransferTimeLong();
                     if (ulDevUTC < ulHCUTC + Integer.parseInt(Datautils.byteArrayToString(ucTransferTimeLong))) {
-                        cardDU.fHC = Integer.parseInt(Datautils.byteArrayToString(new byte[]{tCardOpDU.ucDatInCard[28]}));
-                        if (cardDU.fHC < 255) {
-                            cardDU.fHC++;
+                        tCardOpDU.fHC = Integer.parseInt(Datautils.byteArrayToString(new byte[]{tCardOpDU.ucDatInCard[28]}));
+                        if (tCardOpDU.fHC < 255) {
+                            tCardOpDU.fHC++;
                         }
-                        if (cardDU.fHC > Integer.parseInt(Datautils.byteArrayToString(ucTransferCntLimit))) {
-                            cardDU.fUseHC = 0;
+                        if (tCardOpDU.fHC > Integer.parseInt(Datautils.byteArrayToString(ucTransferCntLimit))) {
+                            tCardOpDU.fUseHC = 0;
                             tCardOpDU.ucCAPP = 0;
                         }
                     } else {
                         ulHCUTC = ulDevUTC;
-                        cardDU.fHC = 0;
+                        tCardOpDU.fHC = 0;
                     }
                 }
             }
@@ -441,14 +435,14 @@ public class ZJBCardManager {
             int yueSub = tCardOpDU.lYueSub;
 
 
-            uiYear = 2000 + cardDU.yueUsingDate[0] & 0xFF;
-            ucMonth = cardDU.yueUsingDate[1] & 0xFF;
+            uiYear = 2000 + tCardOpDU.yueUsingDate[0] & 0xFF;
+            ucMonth = tCardOpDU.yueUsingDate[1] & 0xFF;
             ulHi = ((~uiYear) & 0x0fff);
             ulHi <<= 4;
             ulHi += ((~ucMonth) & 0x0f);
             ulHi <<= 8;
             ulLo = ulHi;
-            int yueBase = Datautils.byteArrayToInt(cardDU.yueBase);
+            int yueBase = Datautils.byteArrayToInt(tCardOpDU.yueBase);
             ulHi += yueBase;
 
             if (money <= ulLo)   // 月票计数器调整
@@ -477,7 +471,7 @@ public class ZJBCardManager {
 
             tCardOpDU.lPurOriMoney = actRemaining;
 
-            tCardOpDU.lPurSub = CardMethods.getRadioPurSub(cardDU, tCardOpDU, runParaFile);
+            tCardOpDU.lPurSub = CardMethods.getRadioPurSub( tCardOpDU, runParaFile);
             tCardOpDU.lPurSubByte=Datautils.intToByteArray1(tCardOpDU.lPurSub);
 
             if (tCardOpDU.lPurOriMoney > CardMethods.MAXVALUE) {
@@ -515,7 +509,7 @@ public class ZJBCardManager {
         tCardOpDU.ucRcdType = tCardOpDU.ucProcSec == (byte) 0x02 ? (byte) 0x00 : (byte) 0x02;
 
         byte[] first;
-        if (cardDU.fUseHC == 1) {
+        if (tCardOpDU.fUseHC == 1) {
             first = new byte[]{(byte) 0x80, (byte) 0x50, (byte) 0x03, (byte) 0x02, (byte) 0x0b};
         } else {
             first = new byte[]{(byte) 0x80, (byte) 0x50, (byte) 0x01, (byte) 0x02, (byte) 0x0b};
@@ -538,7 +532,7 @@ public class ZJBCardManager {
         tCardOpDU.rondomCpu = Datautils.cutBytes(resultBytes, 11, 4);
 
 
-        byte[] psamMac1 = CardMethods.initSamForPurchase(cardDU,tCardOpDU);
+        byte[] psamMac1 = CardMethods.initSamForPurchase(tCardOpDU);
         LogUtils.d("===获取MAC1(8070)send===" + Datautils.byteArrayToString(psamMac1));
         resultBytes = CardMethods.sendApdus(mBankCard, BankCard.CARD_MODE_PSAM2_APDU, psamMac1);
         if (resultBytes == null || resultBytes.length == 2) {
@@ -555,7 +549,7 @@ public class ZJBCardManager {
 
 
         ////////////////////////////////////////////
-        if ((tCardOpDU.ucCAPP ==(byte) 0x01) || (cardDU.fUseHC == 1)) {
+        if ((tCardOpDU.ucCAPP ==(byte) 0x01) || (tCardOpDU.fUseHC == 1)) {
             byte[] bytesFirst = Datautils.concatAll(new byte[]{(byte) 0x80, (byte) 0xDC, (byte) 0x01, (byte) 0xB8
                             , (byte) 0x30, (byte) 0x01, (byte) 0x2E, (byte) 0x00, (byte) 0x01, (byte) 0x00}
                     , tCardOpDU.ucPOSSnr, ulDevUTCByte);
@@ -569,7 +563,7 @@ public class ZJBCardManager {
             }
 
             byte[] bytesThird = Datautils.concatAll(new byte[]{(byte) 0x01, (byte) 0x00, (byte) 0x00}
-                    , Datautils.intToByteArray1(ulHCUTC), Datautils.intToByteArray1(cardDU.fHC)
+                    , Datautils.intToByteArray1(ulHCUTC), Datautils.intToByteArray1(tCardOpDU.fHC)
                     , new byte[]{tCardOpDU.ucHCRadioP},
                     Datautils.cutBytes(tCardOpDU.ucDatInCard, 0, 18));
             resultBytes = CardMethods.sendApdus(mBankCard, BankCard.CARD_MODE_PICC

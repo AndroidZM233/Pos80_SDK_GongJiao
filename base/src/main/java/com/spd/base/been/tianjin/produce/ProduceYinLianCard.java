@@ -1,4 +1,4 @@
-package com.spd.bus.card.methods.bean.produce;
+package com.spd.base.been.tianjin.produce;
 
 import java.util.List;
 
@@ -6,7 +6,7 @@ import java.util.List;
  * Created by 张明_ on 2019/3/7.
  * Email 741183142@qq.com
  */
-public class ProduceYinLian {
+public class ProduceYinLianCard {
 
     private List<PayinfoBean> payinfo;
 
@@ -42,43 +42,25 @@ public class ProduceYinLian {
          * scan_confirm_type : 1
          */
 
-        //车辆号
         private String busNo;
-        //交易流水号
         private String trans_seq;
-        //APPID
         private String app_id;
-        //业务标识
         private String service_id;
-        //扫码时间
         private String scan_time;
         private String trip_no;
-        //司机号
         private String driver;
-        //线路号
         private String line_no;
-        //金额
         private String amount;
-        //路队
         private String team;
-        //线路号
         private String route;
-        //机具号
         private String posId;
-        //用户凭证类型
         private String voucher_type;
-        //机具号
         private String terminal_no;
-        //公司号
         private String dept;
         private String voucher_no;
-        //用户标识
         private String user_id;
-        //二级码原数据
         private String qrcode_data;
-        //生成时间
         private String create_time;
-        //扫码确认类型
         private String scan_confirm_type;
 
         public String getBusNo() {

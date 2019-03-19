@@ -1,9 +1,14 @@
-package com.spd.bus.card.methods.bean;
+package com.spd.base.been.tianjin;
+
+import org.greenrobot.greendao.annotation.Entity;
+import org.greenrobot.greendao.annotation.Id;
+import org.greenrobot.greendao.annotation.Generated;
 
 /**
  * Created by 张明_ on 2019/2/21.
  * Email 741183142@qq.com
  */
+@Entity
 public class GetMacBackBean {
 
     /**
@@ -17,35 +22,37 @@ public class GetMacBackBean {
     private int num;
     private String macKeyList;
     private long insertTime;
-
-    public int getId() {
-        return id;
+    @Generated(hash = 455519378)
+    public GetMacBackBean(int id, int num, String macKeyList, long insertTime) {
+        this.id = id;
+        this.num = num;
+        this.macKeyList = macKeyList;
+        this.insertTime = insertTime;
     }
-
+    @Generated(hash = 1173030565)
+    public GetMacBackBean() {
+    }
+    public int getId() {
+        return this.id;
+    }
     public void setId(int id) {
         this.id = id;
     }
-
     public int getNum() {
-        return num;
+        return this.num;
     }
-
     public void setNum(int num) {
         this.num = num;
     }
-
     public String getMacKeyList() {
-        return macKeyList;
+        return this.macKeyList;
     }
-
     public void setMacKeyList(String macKeyList) {
         this.macKeyList = macKeyList;
     }
-
     public long getInsertTime() {
-        return insertTime;
+        return this.insertTime;
     }
-
     public void setInsertTime(long insertTime) {
         this.insertTime = insertTime;
     }

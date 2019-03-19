@@ -32,6 +32,14 @@ unsigned char hex_of_char(char c);
 
 static void print_info_response(INFO_RESPONSE *response);
 
+/**
+ * mock一个用户传入的二维码数据qrcode
+ * 此处是使用QRCODE_HEX_DATA mock出的用户二维码数据
+ * 开发者测试时请使用二维码工具生成一个新的QRCODE_HEX_DATA后
+ * 装入宏定义中QRCODE_HEX_DATA，再执行mock
+ */
+void mock_qrcode(char *qrcode_hex, unsigned char *qrcode, int *qrcode_len) ;
+
 typedef struct pubkey {
     int key_id;
     char *pub_key;
@@ -59,7 +67,7 @@ Java_com_spd_alipay_AlipayJni_initdev(JNIEnv *env, jobject obj, jobject key_obj)
         jint Id = (*env)->CallIntMethod(env, keystu_obj, keyId);
         publicKey[i].key_id = Id;
         jstring classStr = (jstring) (*env)->CallObjectMethod(env, keystu_obj, pubKey);
-        char *pubkey = (char*)(*env)->GetStringUTFChars(env, classStr, 0);
+        char *pubkey = (char *) (*env)->GetStringUTFChars(env, classStr, 0);
         publicKey[i].pub_key = pubkey;
     }
 
@@ -71,13 +79,18 @@ JNIEXPORT jint JNICALL Java_com_spd_alipay_AlipayJni_release(JNIEnv *env, jobjec
 }
 
 JNIEXPORT jobject JNICALL
-Java_com_spd_alipay_AlipayJni_checkAliQrCodeJni(JNIEnv *env, jobject obj, jobject classInfo, jstring Qrcode,
-                                     jstring record_id,
-                                     jstring pos_id, jstring pos_mf_id, jstring pos_sw_version,
-                                     jstring merchant_type, jstring currency, jint amount,
-                                     jstring vehicle_id, jstring plate_no, jstring driver_id,
-                                     jstring line_info, jstring station_no, jstring lbs_info,
-                                     jstring record_type) {
+Java_com_spd_alipay_AlipayJni_checkAliQrCodeJni(JNIEnv *env, jobject obj, jobject classInfo,
+                                                jstring Qrcode,
+                                                jstring record_id,
+                                                jstring pos_id, jstring pos_mf_id,
+                                                jstring pos_sw_version,
+                                                jstring merchant_type, jstring currency,
+                                                jint amount,
+                                                jstring vehicle_id, jstring plate_no,
+                                                jstring driver_id,
+                                                jstring line_info, jstring station_no,
+                                                jstring lbs_info,
+                                                jstring record_type) {
     const char *qrcode;
     qrcode = (*env)->GetStringUTFChars(env, Qrcode, 0);
     int ret;
@@ -216,20 +229,23 @@ check_qrcode_demo(char *qrcode_hex, char *record, int *recordLen, JNIEnv *env, j
     char *aaa = info_response.code_info->alipay_code_info.user_id;
     //cha* 转jbyteArray
     jbyteArray data1 = (*env)->NewByteArray(env,
-                                            (jsize)strlen(info_response.code_info->alipay_code_info.user_id));
+                                            (jsize) strlen(
+                                                    info_response.code_info->alipay_code_info.user_id));
     (*env)->SetByteArrayRegion(env, data1, 0,
-                               (jsize)strlen(info_response.code_info->alipay_code_info.user_id),
+                               (jsize) strlen(info_response.code_info->alipay_code_info.user_id),
                                (jbyte *) info_response.code_info->alipay_code_info.user_id);
 //    char *ttt = "123123132";
 //    jbyteArray data1 = (*env)->NewByteArray(env,9);
 //    (*env)->SetByteArrayRegion(env, data1, 0, 9, ttt);
     jbyteArray data2 = (*env)->NewByteArray(env,
-                                            (jsize)strlen(info_response.code_info->alipay_code_info.card_type));
+                                            (jsize) strlen(
+                                                    info_response.code_info->alipay_code_info.card_type));
     (*env)->SetByteArrayRegion(env, data2, 0,
                                (jsize) strlen(info_response.code_info->alipay_code_info.card_type),
                                (jbyte *) info_response.code_info->alipay_code_info.card_type);
     jbyteArray data3 = (*env)->NewByteArray(env,
-                                            (jsize)strlen(info_response.code_info->alipay_code_info.card_no));
+                                            (jsize) strlen(
+                                                    info_response.code_info->alipay_code_info.card_no));
     (*env)->SetByteArrayRegion(env, data3, 0,
                                (jsize) strlen(info_response.code_info->alipay_code_info.card_no),
                                (jbyte *) info_response.code_info->alipay_code_info.card_no);
@@ -383,8 +399,8 @@ check_qrcode_demo(char *qrcode_hex, char *record, int *recordLen, JNIEnv *env, j
      * 3.商户需要根据卡类型、卡号、卡数据 综合判断该卡的合法性、以及是否受理该卡
      * 请商户保留 可受理 的脱机记录
      */
-    jbyteArray data4 = (*env)->NewByteArray(env,(jsize) strlen(verify_response.record));
-    (*env)->SetByteArrayRegion(env, data4, 0, (jsize)strlen(verify_response.record),
+    jbyteArray data4 = (*env)->NewByteArray(env, (jsize) strlen(verify_response.record));
+    (*env)->SetByteArrayRegion(env, data4, 0, (jsize) strlen(verify_response.record),
                                (jbyte *) verify_response.record);
     (*env)->SetObjectField(env, classInfo, alipayResult, data4);
     free(verify_response.record);
@@ -559,4 +575,195 @@ void hexToString(char *hex, char *str, int len) {
         str[2 * i + 1] = concertbuf[hex[i] & 0x0f];
     }
 
+}
+/**
+ * 天津二维码初始化
+ * @param env
+ * @param instance
+ * @param pubkeyJson_   公钥 json格式
+ * @param cardTypeJson_  cardtype json格式
+ * @return  非 1 错误
+ */
+JNIEXPORT jint JNICALL
+Java_com_spd_alipay_AlipayJni_initTJDev(JNIEnv *env, jobject instance, jstring pubkeyJson_,
+                                        jstring cardTypeJson_) {
+    const char *pubkeyJson = (*env)->GetStringUTFChars(env, pubkeyJson_, 0);
+    const char *cardTypeJson = (*env)->GetStringUTFChars(env, cardTypeJson_, 0);
+    // TODO
+    int ret = init_pos_verify(pubkeyJson, cardTypeJson);
+    if (ret != SUCCESS) {
+//		LOGE("mydebug", "初始化POS失败！");
+        switch (ret) {
+            case ILLEGAL_PARAM:
+//				LOGE("mydebug", "初始化参数格式错误！请检查参数是否符合json列表格式且各字段正确。");
+                break;
+            case NO_ENOUGH_MEMORY:
+//				LOGE("mydebug", "内存不足，极端错误，请检查程序运行空间是否足够。\n");
+                break;
+            case SYSTEM_ERROR:
+//				LOGE("mydebug", "系统异常！请联系支付宝技术人员。");
+                break;
+            default:
+                break;
+        }
+    }
+    (*env)->ReleaseStringUTFChars(env, pubkeyJson_, pubkeyJson);
+    (*env)->ReleaseStringUTFChars(env, cardTypeJson_, cardTypeJson);
+    return ret;
+}
+/**
+ * 天津二维码验码
+ * @param env
+ * @param instance
+ * @param tianjinAlipayRes   返回对象
+ * @param qrCode_  二维码
+ * @param deviceNum_   pos_id	(商户下唯一的pos号) subject	(脱机记录标题，建议放入公交路线)
+ * @param linNum_  (脱机记录标题，建议放入公交路线)
+ * @param money  消费金额
+ * @param type_ (脱机记录标题，建议放入公交路线)
+ * @param recordId_ (记录id，商户下本次脱机记录唯一id号，record_id必须保证商户唯一，建议通过POS，时间等信息拼装)
+ * @return
+ */
+JNIEXPORT jobject JNICALL
+Java_com_spd_alipay_AlipayJni_checkTJAliQrCodeJni(JNIEnv *env, jobject instance,
+                                                  jobject tianjinAlipayRes, jstring qrCode_,
+                                                  jstring deviceNum_, jstring linNum_, jint money,
+                                                  jstring type_, jstring recordId_) {
+    const char *qrCodes = (*env)->GetStringUTFChars(env, qrCode_, 0);
+    const char *deviceNum = (*env)->GetStringUTFChars(env, deviceNum_, 0);
+    const char *linNum = (*env)->GetStringUTFChars(env, linNum_, 0);
+    const char *type = (*env)->GetStringUTFChars(env, type_, 0);
+    const char *recordIds = (*env)->GetStringUTFChars(env, recordId_, 0);
+
+    //返回一个结构体
+    jclass objectClass = (*env)->FindClass(env, "com/spd/alipay/been/TianjinAlipayRes");
+    jfieldID result = (*env)->GetFieldID(env, objectClass, "result", "I");
+    jfieldID uid = (*env)->GetFieldID(env, objectClass, "uid", "Ljava/lang/String;");
+    jfieldID uid_len = (*env)->GetFieldID(env, objectClass, "uidLen", "I");
+    jfieldID record = (*env)->GetFieldID(env, objectClass, "record", "Ljava/lang/String;");
+    jfieldID record_len = (*env)->GetFieldID(env, objectClass, "recordLen", "I");
+    jfieldID card_no = (*env)->GetFieldID(env, objectClass, "cardNo", "Ljava/lang/String;");
+    jfieldID card_no_len = (*env)->GetFieldID(env, objectClass, "cardNoLen", "I");
+    jfieldID card_data = (*env)->GetFieldID(env, objectClass, "cardData", "[B");
+    jfieldID card_data_len = (*env)->GetFieldID(env, objectClass, "cardDataLen", "I");
+    jfieldID card_type = (*env)->GetFieldID(env, objectClass, "cardType", "Ljava/lang/String;");
+    jfieldID card_type_len = (*env)->GetFieldID(env, objectClass, "cardTypeLen", "I");
+    int qrcodeLen = 0;
+    unsigned char qrcode[1024] = {0};
+    char pos_param[1024] = {0};
+    unsigned char recordId[100] = {0};
+    mock_qrcode((char *) qrCodes, qrcode, &qrcodeLen);
+    /**
+     * pos_param中填入商户pos相关信息 至少包括：
+     *		- pos_id	(商户下唯一的pos号)
+     *		- type		(脱机记录类型，只刷一次闸机计费的场景下，类型为"SINGLE")
+     * 		- subject	(脱机记录标题，建议放入公交路线)
+     *		- record_id	(记录id，商户下本次脱机记录唯一id号，record_id必须保证商户唯一，建议通过POS，时间等信息拼装)
+     * 注意：pos_param的长度不能大于1024字节！
+     */
+    sprintf(pos_param,
+            "{\"pos_id\":\"%s\",\"type\":\"%s\",\"subject\":\"%s\",\"record_id\":\"%s\"}",
+            deviceNum, type, linNum, recordIds);
+    //拼装验证请求
+    VERIFY_REQUEST_V2 verify_request;
+    //装入二进制格式的二维码
+    verify_request.qrcode = (const unsigned char *) qrcode;
+    //装入二进制二维码长度
+    verify_request.qrcode_len = qrcodeLen;
+    //装入pos_param
+    verify_request.pos_param = pos_param;
+    //装入本次消费金额 如果生成脱机记录时还无法确定消费金额 装入0（单位：分）
+    verify_request.amount_cent = money;
+    VERIFY_RESPONSE_V2 verify_response;
+    verify_response.uid = (char *) malloc(17);
+    verify_response.uid_len = 17;
+    verify_response.record = (char *) malloc(2048);
+    verify_response.record_len = 2048;
+    verify_response.card_no = (char *) malloc(32);
+    verify_response.card_no_len = 32;
+    verify_response.card_data = (unsigned char *) malloc(128);
+    verify_response.card_data_len = 128;
+    verify_response.card_type = (char *) malloc(16);
+    verify_response.card_type_len = 16;
+    /**
+     * 调用接口验证二维码的有效性
+     */
+    int ret = verify_qrcode_v2(&verify_request, &verify_response);
+    /**
+     * 处理返回的结果
+     */
+    if (ret != SUCCESS) {
+        free(verify_response.uid);
+        free(verify_response.record);
+        free(verify_response.card_no);
+        free(verify_response.card_data);
+        free(verify_response.card_type);
+        (*env)->ReleaseStringUTFChars(env, deviceNum_, deviceNum);
+        (*env)->ReleaseStringUTFChars(env, linNum_, linNum);
+        (*env)->ReleaseStringUTFChars(env, type_, type);
+        (*env)->ReleaseStringUTFChars(env, recordId_, recordIds);
+        (*env)->ReleaseStringUTFChars(env, qrCode_, qrCodes);
+        (*env)->SetIntField(env, tianjinAlipayRes, result, ret);
+        return tianjinAlipayRes;
+    }
+
+    (*env)->SetIntField(env, tianjinAlipayRes, result, ret);
+    (*env)->SetObjectField(env, tianjinAlipayRes, uid,
+                           (*env)->NewStringUTF(env, verify_response.uid));
+    (*env)->SetIntField(env, tianjinAlipayRes, uid_len, verify_response.uid_len);
+    (*env)->SetObjectField(env, tianjinAlipayRes, record,
+                           (*env)->NewStringUTF(env, verify_response.record));
+    (*env)->SetIntField(env, tianjinAlipayRes, record_len, verify_response.record_len);
+    (*env)->SetObjectField(env, tianjinAlipayRes, card_no,
+                           (*env)->NewStringUTF(env, verify_response.card_no));
+    (*env)->SetIntField(env, tianjinAlipayRes, card_no_len, verify_response.card_no_len);
+    jbyteArray data1 = (*env)->NewByteArray(env, (jsize) strlen(verify_response.card_data));
+    (*env)->SetByteArrayRegion(env, data1, 0, (jsize) strlen(verify_response.card_data),
+                               (jbyte *) verify_response.card_data);
+    (*env)->SetObjectField(env, tianjinAlipayRes, card_data, data1);
+    (*env)->SetIntField(env, tianjinAlipayRes, card_data_len, verify_response.card_data_len);
+    (*env)->SetObjectField(env, tianjinAlipayRes, card_type,
+                           (*env)->NewStringUTF(env, verify_response.card_type));
+    (*env)->SetIntField(env, tianjinAlipayRes, card_type_len, verify_response.card_type_len);
+    /**
+     * 1.商户可以根据uid判断是否为同一用户重复交易
+     */
+
+    /**
+     * 2.商户可以根据qrcode判断是否为重复二维码
+     *   此判断也可以放在校验二维码前执行，商户可以自行选择
+     */
+
+    /**
+     * 3.商户需要根据卡类型、卡号、卡数据 综合判断该卡的合法性、以及是否受理该卡
+     * 请商户保留 可受理 的脱机记录
+     */
+
+    free(verify_response.uid);
+    free(verify_response.record);
+    free(verify_response.card_no);
+    free(verify_response.card_data);
+    free(verify_response.card_type);
+    (*env)->ReleaseStringUTFChars(env, deviceNum_, deviceNum);
+    (*env)->ReleaseStringUTFChars(env, linNum_, linNum);
+    (*env)->ReleaseStringUTFChars(env, type_, type);
+    (*env)->ReleaseStringUTFChars(env, recordId_, recordIds);
+    (*env)->ReleaseStringUTFChars(env, qrCode_, qrCodes);
+//	LOGE("mydebug", "===========验证成功，请放行！=================");
+//	LOGE("mydebug", "===========验证二维码例程 结束================");
+    return tianjinAlipayRes;
+}
+
+/**
+ * mock一个用户传入的二维码数据qrcode
+ * 此处是使用QRCODE_HEX_DATA mock出的用户二维码数据
+ * 开发者测试时请使用二维码工具生成一个新的QRCODE_HEX_DATA后
+ * 装入宏定义中QRCODE_HEX_DATA，再执行mock
+ */
+void mock_qrcode(char *qrcode_hex, unsigned char *qrcode, int *qrcode_len) {
+
+//	char qrcode_hex[] = QRCODE_HEX_DATA;
+    int qrcode_hex_len = strlen(qrcode_hex);
+    *qrcode_len = strlen(qrcode_hex) / 2;
+    hex_string_to_bytes(qrcode_hex, qrcode_hex_len, qrcode, *qrcode_len);
 }
