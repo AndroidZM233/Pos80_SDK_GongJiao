@@ -52,12 +52,12 @@ public class TCardOpDU {
     public byte ucCardTicket;
     public byte ucCardRadioP;
     public byte fToCheck;//年检
-    public byte fPermit;//带人
+    public int fPermit;//带人
     public byte ucTickCnt;
     public byte fInBus;
 
     public byte[] ucIncPurDev = new byte[4];
-    public byte[] uiIncPurCount = new byte[2];
+    public int uiIncPurCount;
     public byte[] ucIncPurDate = new byte[4];
 
     public int lPurOriMoney;
@@ -190,7 +190,7 @@ public class TCardOpDU {
     public byte[] pursub;//消费金额
     public int pursubInt;//消费金额
     public byte cardClass;
-    public byte[] purCount;
+    public int purCount;
     public int procSec;
 
     public byte subType;
@@ -203,6 +203,8 @@ public class TCardOpDU {
     public int yueSub;
     public int yueOriMoney;
     public int actYueSub;
+    public int yueCount;
+    public byte[] ucRcdToCard;
 
 
     public void setDataStartUcIssuerCode(byte[] DBDat) {

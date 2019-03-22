@@ -531,272 +531,272 @@ public class PsamIcActivity extends MVPBaseActivity<SpdBusPayContract.View, SpdB
 
 
     private void m1ICCard() {
-        ltime = System.currentTimeMillis();
-        CInfoF = new TCommInfo();
-        CInfoZ = new TCommInfo();
-        CInfo = new TCommInfo();
-        try {
-            Log.d(TAG, "===m1卡消费开始===");
-            //读取非接卡 SN(UID)信息
-            retvalue = mBankCard.getCardSNFunction(respdata, resplen);
-            if (retvalue != 0) {
-                isFlag = 1;
-                Log.e(TAG, "===获取UID失败===");
-                return;
-            }
-            snUid = Datautils.cutBytes(respdata, 0, resplen[0]);
-            icCardBeen.setSnr(snUid);
-            Log.d(TAG, "===getUID===" + Datautils.byteArrayToString(snUid));
-            byte[] key = new byte[6];
-            System.arraycopy(snUid, 0, key, 0, 4);
-            System.arraycopy(snUid, 0, key, 4, 2);
-            //认证1扇区第4块
-            retvalue = mBankCard.m1CardKeyAuth(0x41, 0x04, key.length, key, snUid.length, snUid);
-            if (retvalue != 0) {
-                isFlag = 1;
-                Log.e(TAG, "===认证1扇区第4块失败===");
-                return;
-            }
-            retvalue = mBankCard.m1CardReadBlockData(0x04, respdata, resplen);
-            if (retvalue != 0) {
-                isFlag = 1;
-                Log.e(TAG, "=== 读取1扇区第4块失败==");
-                return;
-            }
-            byte[] bytes04 = Datautils.cutBytes(respdata, 1, resplen[0] - 1);
-            Log.d(TAG, "===读取1扇区第4块返回===" + Datautils.byteArrayToString(bytes04));
-            icCardBeen.setIssueSnr(Datautils.cutBytes(bytes04, 0, 8));
-            icCardBeen.setCityNr(Datautils.cutBytes(bytes04, 0, 2));
-            icCardBeen.setVocCode(Datautils.cutBytes(bytes04, 2, 2));
-            icCardBeen.setIssueCode(Datautils.cutBytes(bytes04, 4, 4));
-            icCardBeen.setMackNr(Datautils.cutBytes(bytes04, 8, 4));
-            icCardBeen.setfStartUse(Datautils.cutBytes(bytes04, 12, 1));
-            //卡类型判断表格中没有return
-            icCardBeen.setCardType(Datautils.cutBytes(bytes04, 13, 1));
-            //黑名单
-            icCardBeen.setfBlackCard(0);
-            //判断启用标志
-            switch (icCardBeen.getfStartUse()[0]) {
-                //未启用
-                case (byte) 0x01:
-                    Log.e(TAG, "m1ICCard: 启用标志未启用");
-                    isFlag = 1;
-                    return;
-                //正常
-                case (byte) 0x02:
-                    // TODO: 2018/8/29
-                    break;
-                //停用
-                case (byte) 0x03:
-                    Log.e(TAG, "m1ICCard: 启用标志停用");
-                    isFlag = 1;
-                    return;
-                //黑名单
-                case (byte) 0x04:
-                    Log.e(TAG, "m1ICCard: 启用标志黑名单");
-                    isFlag = 1;
-                    icCardBeen.setfBlackCard(1);
-                    return;
-                default:
-                    break;
-            }
-            //读1扇区05块数据
-            retvalue = mBankCard.m1CardReadBlockData(0x05, respdata, resplen);
-            if (retvalue != 0) {
-                isFlag = 1;
-                Log.e(TAG, "===读1扇区05块数据失败====");
-                return;
-            }
-            byte[] bytes05 = Datautils.cutBytes(respdata, 1, resplen[0] - 1);
-            Log.d(TAG, "===读1扇区05块数据===" + Datautils.byteArrayToString(bytes05));
-            icCardBeen.setIssueDate(Datautils.cutBytes(bytes05, 0, 4));
-            icCardBeen.setEndUserDate(Datautils.cutBytes(bytes05, 4, 4));
-            icCardBeen.setStartUserDate(Datautils.cutBytes(bytes05, 8, 4));
-
-            //读1扇区06块数据
-            retvalue = mBankCard.m1CardReadBlockData(0x06, respdata, resplen);
-            if (retvalue != 0) {
-                Log.e(TAG, "===读1扇区06块数据失败==");
-                isFlag = 1;
-                return;
-            }
-            byte[] bytes06 = Datautils.cutBytes(respdata, 1, resplen[0] - 1);
-            Log.d(TAG, "===读1扇区06块数据返回===" + Datautils.byteArrayToString(bytes06));
-            //转UTC时间
-            icCardBeen.setPurIncUtc(Datautils.cutBytes(bytes06, 0, 6));
-            icCardBeen.setPurIncMoney(Datautils.cutBytes(bytes06, 9, 2));
-            //第0扇区 01块认证
-            retvalue = mBankCard.m1CardKeyAuth(0x41, 0x01,
-                    6, new byte[]{(byte) 0xA0, (byte) 0xA1, (byte) 0xA2, (byte) 0xA3, (byte) 0xA4, (byte) 0xA5}, snUid.length, snUid);
-            if (retvalue != 0) {
-                Log.e(TAG, "===第0扇区01块认证失败==");
-                isFlag = 1;
-                return;
-            }
-            //读第0扇区第一块秘钥
-            retvalue = mBankCard.m1CardReadBlockData(0x01, respdata, resplen);
-            if (retvalue != 0) {
-                Log.e(TAG, "m1ICCard: 读第0扇区01块失败");
-                isFlag = 1;
-                return;
-            }
-
-            byte[] bytes01 = Datautils.cutBytes(respdata, 1, resplen[0] - 1);
-            Log.d(TAG, "m1ICCard: 读第0扇区01块：" + Datautils.byteArrayToString(bytes01));
-            //扇区标识符
-            secF = bytes01;
-            //算秘钥指令
-            String sendCmd = "80FC010110" + Datautils.byteArrayToString(icCardBeen.getCityNr()) + Datautils.byteArrayToString(icCardBeen.getSnr()) + Datautils.byteArrayToString(Datautils.cutBytes(icCardBeen.getIssueSnr(), 6, 2)) + Datautils.byteArrayToString(icCardBeen.getMackNr())
-                    + Datautils.byteArrayToString(Datautils.cutBytes(secF, 2, 2)) + Datautils.byteArrayToString(Datautils.cutBytes(secF, 6, 2));
-            Log.d(TAG, "===psam计算秘钥指令===" + sendCmd);
-            //psam卡计算秘钥
-            retvalue = mBankCard.sendAPDU(BankCard.CARD_MODE_PSAM2_APDU, Datautils.HexString2Bytes(sendCmd), Datautils.HexString2Bytes(sendCmd).length, respdata, resplen);
-            if (retvalue != 0) {
-                Log.e(TAG, "===psam计算秘钥指令错误===");
-                isFlag = 1;
-                return;
-            }
-            if (!Arrays.equals(APDU_RESULT_SUCCESS, Datautils.cutBytes(respdata, resplen[0] - 2, 2))) {
-                Log.e(TAG, "=== psam计算秘钥指令错误非9000===");
-                isFlag = 1;
-                return;
-            }
-            byte[] result = Datautils.cutBytes(respdata, 0, resplen[0] - 2);
-            Log.d(TAG, "m1ICCard: psam计算秘钥返回：" + Datautils.byteArrayToString(result));
-            //3/4/5扇区秘钥相同
-            // 第2扇区秘钥
-            lodkey[2] = Datautils.cutBytes(result, 0, 6);
-            //第3扇区秘钥
-            lodkey[3] = Datautils.cutBytes(result, 6, 6);
-            //第4扇区秘钥
-            lodkey[4] = Datautils.cutBytes(result, 6, 6);
-            //第5扇区秘钥
-            lodkey[5] = Datautils.cutBytes(result, 6, 6);
-            //第6扇区秘钥
-            lodkey[6] = Datautils.cutBytes(result, 12, 6);
-            //第7扇区秘钥
-            lodkey[7] = Datautils.cutBytes(result, 18, 6);
-            //第6扇区24 块认证
-            byte[] lodKey6 = lodkey[6];
-            retvalue = mBankCard.m1CardKeyAuth(0x41, 24, lodKey6.length, lodKey6, snUid.length, snUid);
-            if (retvalue != 0) {
-                Log.e(TAG, "===第6扇区24 块认证错误===");
-                isFlag = 1;
-                return;
-            }
-            //读6扇区第24块
-            retvalue = mBankCard.m1CardReadBlockData(24, respdata, resplen);
-            if (retvalue != 0) {
-                Log.e(TAG, "===读6扇区第24块失败===");
-                isFlag = 1;
-                return;
-            }
-            byte[] bytes24 = Datautils.cutBytes(respdata, 1, resplen[0] - 1);
-
-//            System.arraycopy(new byte[]{(byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x00}, 0, bytes24, 0, 8);
-//            System.arraycopy(new byte[]{(byte) 0xff, (byte) 0xff, (byte) 0xff, (byte) 0xff, (byte) 0xff, (byte) 0xff, (byte) 0xff}, 0, bytes24, 8, 7);
-//            retvalue = mBankCard.m1CardWriteBlockData(24, bytes24.length, bytes24);
-//            retvalue = mBankCard.m1CardWriteBlockData(25, bytes24.length, bytes24);
-//            retvalue = mBankCard.m1CardReadBlockData(24, respdata, resplen);
+//        ltime = System.currentTimeMillis();
+//        CInfoF = new TCommInfo();
+//        CInfoZ = new TCommInfo();
+//        CInfo = new TCommInfo();
+//        try {
+//            Log.d(TAG, "===m1卡消费开始===");
+//            //读取非接卡 SN(UID)信息
+//            retvalue = mBankCard.getCardSNFunction(respdata, resplen);
 //            if (retvalue != 0) {
-//                Log.e(TAG, "m1ICCard: 读6扇区第24块失败");
+//                isFlag = 1;
+//                Log.e(TAG, "===获取UID失败===");
+//                return;
+//            }
+//            snUid = Datautils.cutBytes(respdata, 0, resplen[0]);
+//            icCardBeen.setSnr(snUid);
+//            Log.d(TAG, "===getUID===" + Datautils.byteArrayToString(snUid));
+//            byte[] key = new byte[6];
+//            System.arraycopy(snUid, 0, key, 0, 4);
+//            System.arraycopy(snUid, 0, key, 4, 2);
+//            //认证1扇区第4块
+//            retvalue = mBankCard.m1CardKeyAuth(0x41, 0x04, key.length, key, snUid.length, snUid);
+//            if (retvalue != 0) {
+//                isFlag = 1;
+//                Log.e(TAG, "===认证1扇区第4块失败===");
+//                return;
+//            }
+//            retvalue = mBankCard.m1CardReadBlockData(0x04, respdata, resplen);
+//            if (retvalue != 0) {
+//                isFlag = 1;
+//                Log.e(TAG, "=== 读取1扇区第4块失败==");
+//                return;
+//            }
+//            byte[] bytes04 = Datautils.cutBytes(respdata, 1, resplen[0] - 1);
+//            Log.d(TAG, "===读取1扇区第4块返回===" + Datautils.byteArrayToString(bytes04));
+//            icCardBeen.setIssueSnr(Datautils.cutBytes(bytes04, 0, 8));
+//            icCardBeen.setCityNr(Datautils.cutBytes(bytes04, 0, 2));
+//            icCardBeen.setVocCode(Datautils.cutBytes(bytes04, 2, 2));
+//            icCardBeen.setIssueCode(Datautils.cutBytes(bytes04, 4, 4));
+//            icCardBeen.setMackNr(Datautils.cutBytes(bytes04, 8, 4));
+//            icCardBeen.setfStartUse(Datautils.cutBytes(bytes04, 12, 1));
+//            //卡类型判断表格中没有return
+//            icCardBeen.setCardType(Datautils.cutBytes(bytes04, 13, 1));
+//            //黑名单
+//            icCardBeen.setfBlackCard(0);
+//            //判断启用标志
+//            switch (icCardBeen.getfStartUse()[0]) {
+//                //未启用
+//                case (byte) 0x01:
+//                    Log.e(TAG, "m1ICCard: 启用标志未启用");
+//                    isFlag = 1;
+//                    return;
+//                //正常
+//                case (byte) 0x02:
+//                    // TODO: 2018/8/29
+//                    break;
+//                //停用
+//                case (byte) 0x03:
+//                    Log.e(TAG, "m1ICCard: 启用标志停用");
+//                    isFlag = 1;
+//                    return;
+//                //黑名单
+//                case (byte) 0x04:
+//                    Log.e(TAG, "m1ICCard: 启用标志黑名单");
+//                    isFlag = 1;
+//                    icCardBeen.setfBlackCard(1);
+//                    return;
+//                default:
+//                    break;
+//            }
+//            //读1扇区05块数据
+//            retvalue = mBankCard.m1CardReadBlockData(0x05, respdata, resplen);
+//            if (retvalue != 0) {
+//                isFlag = 1;
+//                Log.e(TAG, "===读1扇区05块数据失败====");
+//                return;
+//            }
+//            byte[] bytes05 = Datautils.cutBytes(respdata, 1, resplen[0] - 1);
+//            Log.d(TAG, "===读1扇区05块数据===" + Datautils.byteArrayToString(bytes05));
+//            icCardBeen.setIssueDate(Datautils.cutBytes(bytes05, 0, 4));
+//            icCardBeen.setEndUserDate(Datautils.cutBytes(bytes05, 4, 4));
+//            icCardBeen.setStartUserDate(Datautils.cutBytes(bytes05, 8, 4));
+//
+//            //读1扇区06块数据
+//            retvalue = mBankCard.m1CardReadBlockData(0x06, respdata, resplen);
+//            if (retvalue != 0) {
+//                Log.e(TAG, "===读1扇区06块数据失败==");
 //                isFlag = 1;
 //                return;
 //            }
-//            bytes24 = Datautils.cutBytes(respdata, 1, resplen[0] - 1);
-
-            Log.d(TAG, "===读6扇区第24块返回===" + Datautils.byteArrayToString(bytes24));
-            byte[] dtZ = bytes24;
-            byte chk = 0;
-            //异或操作
-            for (int i = 0; i < 16; i++) {
-                chk ^= dtZ[i];
-            }
-            //判断8-15是否都等于0xff
-            if (Arrays.equals(Datautils.cutBytes(dtZ, 8, 7),
-                    new byte[]{(byte) 0xff, (byte) 0xff, (byte) 0xff, (byte) 0xff, (byte) 0xff, (byte) 0xff, (byte) 0xff}) && chk == 0) {
-                CInfoZ.fValid = 1;
-            }
-            if (Arrays.equals(Datautils.cutBytes(dtZ, 0, 8), new byte[]{(byte) 0xff, (byte) 0xff, (byte) 0xff,
-                    (byte) 0xff, (byte) 0xff, (byte) 0xff, (byte) 0xff, (byte) 0xff})) {
-                CInfoZ.fValid = 0;
-            }
-            if (dtZ[0] > 8) {
-                CInfoZ.fValid = 0;
-            }
-            //交易记录指针
-            CInfoZ.cPtr = dtZ[0];
-            //钱包计数,2,3
-            CInfoZ.iPurCount = Datautils.cutBytes(dtZ, 1, 2);
-            //进程标志
-            CInfoZ.fProc = dtZ[3];
-            CInfoZ.iYueCount = Datautils.cutBytes(dtZ, 4, 2);
-            CInfoZ.fBlack = dtZ[6];
-            CInfoZ.fFileNr = dtZ[7];
-            //副本  有效性
-            //读6扇区第25块
-            retvalue = mBankCard.m1CardReadBlockData(25, respdata, resplen);
-            if (retvalue != 0) {
-                Log.e(TAG, "===读6扇区第25块失败===");
-                isFlag = 1;
-                return;
-            }
-            byte[] bytes25 = Datautils.cutBytes(respdata, 1, resplen[0] - 1);
-            byte[] dtF = bytes25;
-            for (int i = 0; i < 16; i++) {
-                chk ^= dtF[i];
-            }
-            if (Arrays.equals(Datautils.cutBytes(dtF, 8, 7),
-                    new byte[]{(byte) 0xff, (byte) 0xff, (byte) 0xff, (byte) 0xff, (byte) 0xff, (byte) 0xff, (byte) 0xff,}) && chk == 0) {
-                CInfoF.fValid = 1;
-            }
-            if (Arrays.equals(Datautils.cutBytes(dtF, 0, 8), new byte[]{(byte) 0xff, (byte) 0xff, (byte) 0xff,
-                    (byte) 0xff, (byte) 0xff, (byte) 0xff, (byte) 0xff, (byte) 0xff})) {
-                CInfoF.fValid = 0;
-            }
-            if (dtF[0] > 8) {
-                CInfoF.fValid = 0;
-            }
-            CInfoF.cPtr = dtF[0];
-            CInfoF.iPurCount = Datautils.cutBytes(dtF, 1, 2);
-            CInfoF.fProc = dtF[3];
-            CInfoF.iYueCount = Datautils.cutBytes(dtF, 4, 2);
-            CInfoF.fBlack = dtF[6];
-            CInfoF.fFileNr = dtF[7];
-
-            if (CInfoZ.fValid == 1) {
-                CInfo = CInfoZ;
-            } else if (CInfoF.fValid == 1) {
-                CInfo = CInfoF;
-            } else {
-                Log.e(TAG, "===24 25块有效标志错误 返回0===");
-                isFlag = 1;
-                return;
-            }
-
-            if ((CInfoZ.fValid == 1 && (CInfoZ.fBlack == 4)) || (CInfoF.fValid == 1 && (CInfoF.fBlack == 4))) {
-                //黑名单 报语音
-                icCardBeen.setfBlackCard(1);
-                Log.e(TAG, "m1ICCard: 黑名单");
-                isFlag = 1;
-                return;
-            }
-            //比对 9块 10块数据
-            if (!BackupManage(8)) {
-                isFlag = 1;
-                return;
-            }
-            if (!writeCardRcd()) {
-                isFlag = 1;
-                return;
-            }
-            Log.i("stw", "===M1卡消费结束===" + (System.currentTimeMillis() - ltime));
-            handler.sendMessage(handler.obtainMessage(2, Datautils.byteArrayToInt(blance)));
-            isFlag = 0;
-        } catch (RemoteException e) {
-            e.printStackTrace();
-
-        }
+//            byte[] bytes06 = Datautils.cutBytes(respdata, 1, resplen[0] - 1);
+//            Log.d(TAG, "===读1扇区06块数据返回===" + Datautils.byteArrayToString(bytes06));
+//            //转UTC时间
+//            icCardBeen.setPurIncUtc(Datautils.cutBytes(bytes06, 0, 6));
+//            icCardBeen.setPurIncMoney(Datautils.cutBytes(bytes06, 9, 2));
+//            //第0扇区 01块认证
+//            retvalue = mBankCard.m1CardKeyAuth(0x41, 0x01,
+//                    6, new byte[]{(byte) 0xA0, (byte) 0xA1, (byte) 0xA2, (byte) 0xA3, (byte) 0xA4, (byte) 0xA5}, snUid.length, snUid);
+//            if (retvalue != 0) {
+//                Log.e(TAG, "===第0扇区01块认证失败==");
+//                isFlag = 1;
+//                return;
+//            }
+//            //读第0扇区第一块秘钥
+//            retvalue = mBankCard.m1CardReadBlockData(0x01, respdata, resplen);
+//            if (retvalue != 0) {
+//                Log.e(TAG, "m1ICCard: 读第0扇区01块失败");
+//                isFlag = 1;
+//                return;
+//            }
+//
+//            byte[] bytes01 = Datautils.cutBytes(respdata, 1, resplen[0] - 1);
+//            Log.d(TAG, "m1ICCard: 读第0扇区01块：" + Datautils.byteArrayToString(bytes01));
+//            //扇区标识符
+//            secF = bytes01;
+//            //算秘钥指令
+//            String sendCmd = "80FC010110" + Datautils.byteArrayToString(icCardBeen.getCityNr()) + Datautils.byteArrayToString(icCardBeen.getSnr()) + Datautils.byteArrayToString(Datautils.cutBytes(icCardBeen.getIssueSnr(), 6, 2)) + Datautils.byteArrayToString(icCardBeen.getMackNr())
+//                    + Datautils.byteArrayToString(Datautils.cutBytes(secF, 2, 2)) + Datautils.byteArrayToString(Datautils.cutBytes(secF, 6, 2));
+//            Log.d(TAG, "===psam计算秘钥指令===" + sendCmd);
+//            //psam卡计算秘钥
+//            retvalue = mBankCard.sendAPDU(BankCard.CARD_MODE_PSAM2_APDU, Datautils.HexString2Bytes(sendCmd), Datautils.HexString2Bytes(sendCmd).length, respdata, resplen);
+//            if (retvalue != 0) {
+//                Log.e(TAG, "===psam计算秘钥指令错误===");
+//                isFlag = 1;
+//                return;
+//            }
+//            if (!Arrays.equals(APDU_RESULT_SUCCESS, Datautils.cutBytes(respdata, resplen[0] - 2, 2))) {
+//                Log.e(TAG, "=== psam计算秘钥指令错误非9000===");
+//                isFlag = 1;
+//                return;
+//            }
+//            byte[] result = Datautils.cutBytes(respdata, 0, resplen[0] - 2);
+//            Log.d(TAG, "m1ICCard: psam计算秘钥返回：" + Datautils.byteArrayToString(result));
+//            //3/4/5扇区秘钥相同
+//            // 第2扇区秘钥
+//            lodkey[2] = Datautils.cutBytes(result, 0, 6);
+//            //第3扇区秘钥
+//            lodkey[3] = Datautils.cutBytes(result, 6, 6);
+//            //第4扇区秘钥
+//            lodkey[4] = Datautils.cutBytes(result, 6, 6);
+//            //第5扇区秘钥
+//            lodkey[5] = Datautils.cutBytes(result, 6, 6);
+//            //第6扇区秘钥
+//            lodkey[6] = Datautils.cutBytes(result, 12, 6);
+//            //第7扇区秘钥
+//            lodkey[7] = Datautils.cutBytes(result, 18, 6);
+//            //第6扇区24 块认证
+//            byte[] lodKey6 = lodkey[6];
+//            retvalue = mBankCard.m1CardKeyAuth(0x41, 24, lodKey6.length, lodKey6, snUid.length, snUid);
+//            if (retvalue != 0) {
+//                Log.e(TAG, "===第6扇区24 块认证错误===");
+//                isFlag = 1;
+//                return;
+//            }
+//            //读6扇区第24块
+//            retvalue = mBankCard.m1CardReadBlockData(24, respdata, resplen);
+//            if (retvalue != 0) {
+//                Log.e(TAG, "===读6扇区第24块失败===");
+//                isFlag = 1;
+//                return;
+//            }
+//            byte[] bytes24 = Datautils.cutBytes(respdata, 1, resplen[0] - 1);
+//
+////            System.arraycopy(new byte[]{(byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x00}, 0, bytes24, 0, 8);
+////            System.arraycopy(new byte[]{(byte) 0xff, (byte) 0xff, (byte) 0xff, (byte) 0xff, (byte) 0xff, (byte) 0xff, (byte) 0xff}, 0, bytes24, 8, 7);
+////            retvalue = mBankCard.m1CardWriteBlockData(24, bytes24.length, bytes24);
+////            retvalue = mBankCard.m1CardWriteBlockData(25, bytes24.length, bytes24);
+////            retvalue = mBankCard.m1CardReadBlockData(24, respdata, resplen);
+////            if (retvalue != 0) {
+////                Log.e(TAG, "m1ICCard: 读6扇区第24块失败");
+////                isFlag = 1;
+////                return;
+////            }
+////            bytes24 = Datautils.cutBytes(respdata, 1, resplen[0] - 1);
+//
+//            Log.d(TAG, "===读6扇区第24块返回===" + Datautils.byteArrayToString(bytes24));
+//            byte[] dtZ = bytes24;
+//            byte chk = 0;
+//            //异或操作
+//            for (int i = 0; i < 16; i++) {
+//                chk ^= dtZ[i];
+//            }
+//            //判断8-15是否都等于0xff
+//            if (Arrays.equals(Datautils.cutBytes(dtZ, 8, 7),
+//                    new byte[]{(byte) 0xff, (byte) 0xff, (byte) 0xff, (byte) 0xff, (byte) 0xff, (byte) 0xff, (byte) 0xff}) && chk == 0) {
+//                CInfoZ.fValid = 1;
+//            }
+//            if (Arrays.equals(Datautils.cutBytes(dtZ, 0, 8), new byte[]{(byte) 0xff, (byte) 0xff, (byte) 0xff,
+//                    (byte) 0xff, (byte) 0xff, (byte) 0xff, (byte) 0xff, (byte) 0xff})) {
+//                CInfoZ.fValid = 0;
+//            }
+//            if (dtZ[0] > 8) {
+//                CInfoZ.fValid = 0;
+//            }
+//            //交易记录指针
+//            CInfoZ.cPtr = dtZ[0];
+//            //钱包计数,2,3
+//            CInfoZ.iPurCount = Datautils.cutBytes(dtZ, 1, 2);
+//            //进程标志
+//            CInfoZ.fProc = dtZ[3];
+//            CInfoZ.iYueCount = Datautils.cutBytes(dtZ, 4, 2);
+//            CInfoZ.fBlack = dtZ[6];
+//            CInfoZ.fFileNr = dtZ[7];
+//            //副本  有效性
+//            //读6扇区第25块
+//            retvalue = mBankCard.m1CardReadBlockData(25, respdata, resplen);
+//            if (retvalue != 0) {
+//                Log.e(TAG, "===读6扇区第25块失败===");
+//                isFlag = 1;
+//                return;
+//            }
+//            byte[] bytes25 = Datautils.cutBytes(respdata, 1, resplen[0] - 1);
+//            byte[] dtF = bytes25;
+//            for (int i = 0; i < 16; i++) {
+//                chk ^= dtF[i];
+//            }
+//            if (Arrays.equals(Datautils.cutBytes(dtF, 8, 7),
+//                    new byte[]{(byte) 0xff, (byte) 0xff, (byte) 0xff, (byte) 0xff, (byte) 0xff, (byte) 0xff, (byte) 0xff,}) && chk == 0) {
+//                CInfoF.fValid = 1;
+//            }
+//            if (Arrays.equals(Datautils.cutBytes(dtF, 0, 8), new byte[]{(byte) 0xff, (byte) 0xff, (byte) 0xff,
+//                    (byte) 0xff, (byte) 0xff, (byte) 0xff, (byte) 0xff, (byte) 0xff})) {
+//                CInfoF.fValid = 0;
+//            }
+//            if (dtF[0] > 8) {
+//                CInfoF.fValid = 0;
+//            }
+//            CInfoF.cPtr = dtF[0];
+//            CInfoF.iPurCount = Datautils.cutBytes(dtF, 1, 2);
+//            CInfoF.fProc = dtF[3];
+//            CInfoF.iYueCount = Datautils.cutBytes(dtF, 4, 2);
+//            CInfoF.fBlack = dtF[6];
+//            CInfoF.fFileNr = dtF[7];
+//
+//            if (CInfoZ.fValid == 1) {
+//                CInfo = CInfoZ;
+//            } else if (CInfoF.fValid == 1) {
+//                CInfo = CInfoF;
+//            } else {
+//                Log.e(TAG, "===24 25块有效标志错误 返回0===");
+//                isFlag = 1;
+//                return;
+//            }
+//
+//            if ((CInfoZ.fValid == 1 && (CInfoZ.fBlack == 4)) || (CInfoF.fValid == 1 && (CInfoF.fBlack == 4))) {
+//                //黑名单 报语音
+//                icCardBeen.setfBlackCard(1);
+//                Log.e(TAG, "m1ICCard: 黑名单");
+//                isFlag = 1;
+//                return;
+//            }
+//            //比对 9块 10块数据
+//            if (!BackupManage(8)) {
+//                isFlag = 1;
+//                return;
+//            }
+//            if (!writeCardRcd()) {
+//                isFlag = 1;
+//                return;
+//            }
+//            Log.i("stw", "===M1卡消费结束===" + (System.currentTimeMillis() - ltime));
+//            handler.sendMessage(handler.obtainMessage(2, Datautils.byteArrayToInt(blance)));
+//            isFlag = 0;
+//        } catch (RemoteException e) {
+//            e.printStackTrace();
+//
+//        }
     }
 
     private boolean BackupManage(int blk) {
@@ -880,154 +880,154 @@ public class PsamIcActivity extends MVPBaseActivity<SpdBusPayContract.View, SpdB
     private byte RcdBlkIndex[] = {12, 13, 14, 16, 17, 18, 20, 21, 22};
 
     public boolean writeCardRcd() {
-        //step 0//文件标识
-        CInfo.fFileNr = secF[2];
-        if (CInfo.cPtr > 8) {
-            CInfo.cPtr = 0;
-        }
-        //当前交易记录块
-        int blk = RcdBlkIndex[CInfo.cPtr];
-        Log.d(TAG, "writeCardRcd: 当前交易记录块：" + blk);
-
-        CInfo.cPtr = (byte) (CInfo.cPtr == 8 ? 0 : CInfo.cPtr + 1);
-        //获取UTC时间
-        byte[] ulDevUTC = Datautils.HexString2Bytes(TimeDataUtils.getUTCtimes());
-        // 写卡指令
-        byte[] RcdToCard = new byte[16];
-
-        System.arraycopy(ulDevUTC, 0, RcdToCard, 0, 4);
-        //获取消费前原额
-        System.arraycopy(icCardBeen.getPurorimoney(), 0, RcdToCard, 4, 4);
-        //获取本次消费金额
-        System.arraycopy(icCardBeen.getPursub(), 1, RcdToCard, 8, 3);
-        RcdToCard[11] = 1;
-        //设备号写死
-        RcdToCard[12] = 0x64;
-        RcdToCard[13] = 0x10;
-        RcdToCard[14] = 0x00;
-        RcdToCard[15] = 0x01;
-        //进程标志
-        CInfo.fProc = 1;
-        Log.d(TAG, "writeCardRcd: 本次交易记录指令：" + Datautils.byteArrayToString(RcdToCard));
-        int count = Datautils.byteArrayToInt(CInfo.iPurCount) + 1;
-        byte[] result = new byte[2];
-        result[0] = (byte) ((count >> 8) & 0xFF);
-        result[1] = (byte) (count & 0xFF);
-        CInfo.iPurCount = result;
-
-        for (; ; ) {
-            try {
-                //step 1 改写24 25块数据
-                if (!Modify_InfoArea(24)) {
-                    Log.e(TAG, "writeCardRcd: 改写24块错误");
-                    return false;
-                }
-                //step 2//blk/4 区    blk块
-                if (!m1CardKeyAuth(blk, blk / 4)) {
-                    return false;
-                }
-                //写卡  将消费记录写入消费记录区
-                retvalue = mBankCard.m1CardWriteBlockData(blk, RcdToCard.length, RcdToCard);
-                if (retvalue != 0) {
-                    Log.e(TAG, "writeCardRcd: 将消费记录写入消费记录区错误 块为" + blk);
-                    return false;
-                }
-                //消费记录区读取
-                retvalue = mBankCard.m1CardReadBlockData(blk, respdata, resplen);
-                if (retvalue != 0) {
-                    Log.e(TAG, "writeCardRcd: 读取消费记录区错误");
-                    return false;
-                }
-                byte[] RcdInCard = Datautils.cutBytes(respdata, 1, resplen[0] - 1);
-                Log.d(TAG, "writeCardRcd: 读当前消费记录区数据：" + Datautils.byteArrayToString(RcdInCard));
-                if (!Arrays.equals(RcdInCard, RcdToCard)) {
-                    Log.e(TAG, "writeCardRcd: 读数据不等于消费返回错误");
-                    return false;
-                }
-                byte[] bytes = new byte[16];
-                //判断是否 读回==00
-                if (Arrays.equals(RcdInCard, bytes)) {
-                    Log.e(TAG, "writeCardRcd: 读数据不等于消费返回0错误");
-                    return false;
-                }
-
-                //step 3
-//            PrepareRecord(tCardOpDu.ucSec == 2 ? 1 : 3);   1代表 钱包灰记录 3 月票灰记录
-                fErr = 1;
-                if (!Modify_InfoArea(25)) {
-                    Log.e(TAG, "writeCardRcd: 改写25块错误");
-                    // 改写25块，不成功退出
-                    return false;
-                }
-                //step 4//认证2扇区8块
-                if (!m1CardKeyAuth(8, 2)) {
-                    return false;
-                }
-                //执行消费 将消费金额带入
-                int purSub = Datautils.byteArrayToInt(icCardBeen.getPursub());
-                retvalue = mBankCard.m1CardValueOperation(0x2D, 9, purSub, 9);
-
-                if (retvalue != 0) {
-                    Log.e(TAG, "writeCardRcd: 执行消费错误");
-                    return false;
-                }
-                //执行 读出 现在原额
-                retvalue = mBankCard.m1CardReadBlockData(9, respdata, resplen);
-                if (retvalue != 0) {
-                    Log.e(TAG, "writeCardRcd: 读原额错误");
-                    return false;
-                }
-                //本次消费后的原额;
-                byte[] dtZ = Datautils.cutBytes(respdata, 1, resplen[0] - 1);
-                byte[] tempV = Datautils.cutBytes(dtZ, 0, 4);
-                Log.d(TAG, "writeCardRcd:正本读09块返回：" + Datautils.byteArrayToString(dtZ));
-                //判断消费前金额-消费金额=消费后金额
-                int s = Datautils.byteArrayToInt(icCardBeen.getPurorimoney(), false);
-                int s2 = Datautils.byteArrayToInt(tempV, false);
-                if (s - purSub != s2) {
-                    return false;
-                }
-                //step 6
-                retvalue = mBankCard.m1CardValueOperation(0x3E, 9, Datautils.byteArrayToInt(dtZ), 10);
-                if (retvalue != 0) {
-                    Log.e(TAG, "writeCardRcd: 写10块错误");
-                    return false;
-                }
-                retvalue = mBankCard.m1CardReadBlockData(10, respdata, resplen);
-                if (retvalue != 0) {
-                    Log.e(TAG, "writeCardRcd: 读10块错误");
-                    return false;
-                }
-                //本次消费后的原额
-                byte[] dtF = Datautils.cutBytes(respdata, 1, resplen[0] - 1);
-                Log.d(TAG, "writeCardRcd: 副本读10块返回：" + Datautils.byteArrayToString(dtF));
-                if (!Arrays.equals(dtF, dtZ)) {
-                    Log.d(TAG, "writeCardRcd: 正副本判断返回");
-                    return false;
-                }
-                //step 7
-                CInfo.fProc += 1;
-                if (!Modify_InfoArea(24)) {
-                    Log.e(TAG, "writeCardRcd: 改写24错误");
-                    return false;
-                }
-                //step 8
-                fErr = 0;
-                if (!Modify_InfoArea(25)) {
-                    Log.e(TAG, "writeCardRcd: 改写25错误");
-                    return false;
-                }
-                break;
-            } catch (RemoteException e) {
-                e.printStackTrace();
-                return false;
-            }
-        }
-        if (fErr == 1) {
-            //添加灰记录 报语音请重刷
-            return false;
-        }
-        //添加正常交易记录 报语音显示界面
+//        //step 0//文件标识
+//        CInfo.fFileNr = secF[2];
+//        if (CInfo.cPtr > 8) {
+//            CInfo.cPtr = 0;
+//        }
+//        //当前交易记录块
+//        int blk = RcdBlkIndex[CInfo.cPtr];
+//        Log.d(TAG, "writeCardRcd: 当前交易记录块：" + blk);
+//
+//        CInfo.cPtr = (byte) (CInfo.cPtr == 8 ? 0 : CInfo.cPtr + 1);
+//        //获取UTC时间
+//        byte[] ulDevUTC = Datautils.HexString2Bytes(TimeDataUtils.getUTCtimes());
+//        // 写卡指令
+//        byte[] RcdToCard = new byte[16];
+//
+//        System.arraycopy(ulDevUTC, 0, RcdToCard, 0, 4);
+//        //获取消费前原额
+//        System.arraycopy(icCardBeen.getPurorimoney(), 0, RcdToCard, 4, 4);
+//        //获取本次消费金额
+//        System.arraycopy(icCardBeen.getPursub(), 1, RcdToCard, 8, 3);
+//        RcdToCard[11] = 1;
+//        //设备号写死
+//        RcdToCard[12] = 0x64;
+//        RcdToCard[13] = 0x10;
+//        RcdToCard[14] = 0x00;
+//        RcdToCard[15] = 0x01;
+//        //进程标志
+//        CInfo.fProc = 1;
+//        Log.d(TAG, "writeCardRcd: 本次交易记录指令：" + Datautils.byteArrayToString(RcdToCard));
+//        int count = Datautils.byteArrayToInt(CInfo.iPurCount) + 1;
+//        byte[] result = new byte[2];
+//        result[0] = (byte) ((count >> 8) & 0xFF);
+//        result[1] = (byte) (count & 0xFF);
+//        CInfo.iPurCount = result;
+//
+//        for (; ; ) {
+//            try {
+//                //step 1 改写24 25块数据
+//                if (!Modify_InfoArea(24)) {
+//                    Log.e(TAG, "writeCardRcd: 改写24块错误");
+//                    return false;
+//                }
+//                //step 2//blk/4 区    blk块
+//                if (!m1CardKeyAuth(blk, blk / 4)) {
+//                    return false;
+//                }
+//                //写卡  将消费记录写入消费记录区
+//                retvalue = mBankCard.m1CardWriteBlockData(blk, RcdToCard.length, RcdToCard);
+//                if (retvalue != 0) {
+//                    Log.e(TAG, "writeCardRcd: 将消费记录写入消费记录区错误 块为" + blk);
+//                    return false;
+//                }
+//                //消费记录区读取
+//                retvalue = mBankCard.m1CardReadBlockData(blk, respdata, resplen);
+//                if (retvalue != 0) {
+//                    Log.e(TAG, "writeCardRcd: 读取消费记录区错误");
+//                    return false;
+//                }
+//                byte[] RcdInCard = Datautils.cutBytes(respdata, 1, resplen[0] - 1);
+//                Log.d(TAG, "writeCardRcd: 读当前消费记录区数据：" + Datautils.byteArrayToString(RcdInCard));
+//                if (!Arrays.equals(RcdInCard, RcdToCard)) {
+//                    Log.e(TAG, "writeCardRcd: 读数据不等于消费返回错误");
+//                    return false;
+//                }
+//                byte[] bytes = new byte[16];
+//                //判断是否 读回==00
+//                if (Arrays.equals(RcdInCard, bytes)) {
+//                    Log.e(TAG, "writeCardRcd: 读数据不等于消费返回0错误");
+//                    return false;
+//                }
+//
+//                //step 3
+////            PrepareRecord(tCardOpDu.ucSec == 2 ? 1 : 3);   1代表 钱包灰记录 3 月票灰记录
+//                fErr = 1;
+//                if (!Modify_InfoArea(25)) {
+//                    Log.e(TAG, "writeCardRcd: 改写25块错误");
+//                    // 改写25块，不成功退出
+//                    return false;
+//                }
+//                //step 4//认证2扇区8块
+//                if (!m1CardKeyAuth(8, 2)) {
+//                    return false;
+//                }
+//                //执行消费 将消费金额带入
+//                int purSub = Datautils.byteArrayToInt(icCardBeen.getPursub());
+//                retvalue = mBankCard.m1CardValueOperation(0x2D, 9, purSub, 9);
+//
+//                if (retvalue != 0) {
+//                    Log.e(TAG, "writeCardRcd: 执行消费错误");
+//                    return false;
+//                }
+//                //执行 读出 现在原额
+//                retvalue = mBankCard.m1CardReadBlockData(9, respdata, resplen);
+//                if (retvalue != 0) {
+//                    Log.e(TAG, "writeCardRcd: 读原额错误");
+//                    return false;
+//                }
+//                //本次消费后的原额;
+//                byte[] dtZ = Datautils.cutBytes(respdata, 1, resplen[0] - 1);
+//                byte[] tempV = Datautils.cutBytes(dtZ, 0, 4);
+//                Log.d(TAG, "writeCardRcd:正本读09块返回：" + Datautils.byteArrayToString(dtZ));
+//                //判断消费前金额-消费金额=消费后金额
+//                int s = Datautils.byteArrayToInt(icCardBeen.getPurorimoney(), false);
+//                int s2 = Datautils.byteArrayToInt(tempV, false);
+//                if (s - purSub != s2) {
+//                    return false;
+//                }
+//                //step 6
+//                retvalue = mBankCard.m1CardValueOperation(0x3E, 9, Datautils.byteArrayToInt(dtZ), 10);
+//                if (retvalue != 0) {
+//                    Log.e(TAG, "writeCardRcd: 写10块错误");
+//                    return false;
+//                }
+//                retvalue = mBankCard.m1CardReadBlockData(10, respdata, resplen);
+//                if (retvalue != 0) {
+//                    Log.e(TAG, "writeCardRcd: 读10块错误");
+//                    return false;
+//                }
+//                //本次消费后的原额
+//                byte[] dtF = Datautils.cutBytes(respdata, 1, resplen[0] - 1);
+//                Log.d(TAG, "writeCardRcd: 副本读10块返回：" + Datautils.byteArrayToString(dtF));
+//                if (!Arrays.equals(dtF, dtZ)) {
+//                    Log.d(TAG, "writeCardRcd: 正副本判断返回");
+//                    return false;
+//                }
+//                //step 7
+//                CInfo.fProc += 1;
+//                if (!Modify_InfoArea(24)) {
+//                    Log.e(TAG, "writeCardRcd: 改写24错误");
+//                    return false;
+//                }
+//                //step 8
+//                fErr = 0;
+//                if (!Modify_InfoArea(25)) {
+//                    Log.e(TAG, "writeCardRcd: 改写25错误");
+//                    return false;
+//                }
+//                break;
+//            } catch (RemoteException e) {
+//                e.printStackTrace();
+//                return false;
+//            }
+//        }
+//        if (fErr == 1) {
+//            //添加灰记录 报语音请重刷
+//            return false;
+//        }
+//        //添加正常交易记录 报语音显示界面
         return true;
     }
 
@@ -1507,144 +1507,144 @@ public class PsamIcActivity extends MVPBaseActivity<SpdBusPayContract.View, SpdB
 
     public void test(int blk) {
         ///////////////////////Start Consuming//////////////////////////
-        int fJudge = 0;
-        if ((CInfoZ.fValid) == 1 && (CInfoF.fValid) == 1 &&
-                ((CInfoZ.fProc & 0x01) == 0) && ((CInfoF.fProc & 0x01) == 0)) {
-
-        } else if ((CInfoZ.fValid == 1) && (CInfoF.fValid == 1) &&
-                ((CInfoF.fProc & 0x01) == 0)) {
-            if (!Modify_InfoArea(24)) {
-                return;
-            }
-        } else if ((CInfoZ.fValid == 1) && (CInfoF.fValid == 1) &&
-                ((CInfoZ.fProc & 0x01) == 1) && ((CInfoF.fProc & 0x01) == 0)) {
-
-            CInfo = CInfoF;
-            if (!Modify_InfoArea(24)) {
-                return;
-            }
-        } else if ((CInfoZ.fValid == 1) && (CInfoF.fValid == 0) && ((CInfoZ.fProc & 0x01) == 1)) {
-            CInfo.cPtr = (byte) (CInfoZ.cPtr == 0 ? 8 : (CInfoZ.cPtr - 1));
-            CInfo.fProc = (byte) (CInfo.fProc + 1);
-            if (CInfoZ.fProc == 1) {
-                int count = Datautils.byteArrayToInt(CInfoZ.iPurCount) - 1;
-                byte[] result = new byte[2];
-                result[0] = (byte) ((count >> 8) & 0xFF);
-                result[1] = (byte) (count & 0xFF);
-                CInfo.iPurCount = result;
-
-            } else {
-                int count = Datautils.byteArrayToInt(CInfoZ.iYueCount) - 1;
-                byte[] result = new byte[2];
-                result[0] = (byte) ((count >> 8) & 0xFF);
-                result[1] = (byte) (count & 0xFF);
-                CInfoZ.iYueCount = result;
-            }
-            if (!Modify_InfoArea(25)) {
-                return;
-            }
-            if (!Modify_InfoArea(24)) {
-                return;
-            }
-        } else if ((CInfoZ.fValid == 1) && (CInfoF.fValid == 1) && ((CInfoZ.fProc & 0x01) == 1) && ((CInfoF.fProc & 0x01) == 1)) {
-            fJudge = 1;
-        } else if ((CInfoZ.fValid == 0) && (CInfoF.fValid == 1) && ((CInfoF.fProc & 0x01) == 1)) {
-            CInfo.fProc = (byte) (CInfo.fProc + 1);
-            if (!Modify_InfoArea(24)) {
-                return;
-            }
-            if (!Modify_InfoArea(25)) {
-                return;
-            }
-        } else if ((CInfoZ.fValid == 1) && (CInfoF.fValid == 1) && ((CInfoZ.fProc & 0x01) == 0) && ((CInfoF.fProc & 0x01) == 1)) {
-            if (!Modify_InfoArea(25)) {
-                return;
-            }
-        } else if ((CInfoZ.fValid == 1) && (CInfoF.fValid == 0) && ((CInfoZ.fProc & 0x01) == 0)) {
-            if (!Modify_InfoArea(25)) {
-                return;
-            }
-        } else {
-            return;
-        }
-/////////////////////////////////////////////////////////////
-        try {
-            if (fJudge == 1) {
-                byte CardRcdDateTime[] = new byte[8];
-                byte[] CardRcdOriMoney = new byte[4];
-                byte[] CardRcdSub = new byte[4];
-                //代表扇区 2为钱包区 7为月票区
-                int CardRcdSec = 0;
-                blk = RcdBlkIndex[CInfo.cPtr == 0 ? 8 : CInfo.cPtr - 1];
-                if (!m1CardKeyAuth(blk, blk / 4)) {
-                    return;
-                }
-                retvalue = mBankCard.m1CardReadBlockData(blk, respdata, resplen);
-                if (retvalue != 0) {
-                    return;
-                }
-                byte[] RcdInCard = Datautils.cutBytes(respdata, 1, resplen[0] - 1);
-                //todo utc时间转bcd时间 UTCtoBCDTime(ArrToVar( & RcdInCard[0], 4), CardRcdDateTime);
-                byte[] UTCTimes = Datautils.cutBytes(RcdInCard, 0, 4);
-                CardRcdOriMoney = Datautils.cutBytes(RcdInCard, 4, 4);
-                CardRcdSub = Datautils.cutBytes(RcdInCard, 8, 3);
-                if (RcdInCard[11] == 0x02) {
-                    CardRcdSec = 7;
-                } else {
-                    CardRcdSec = 2;
-                }
-                //比对 9 块10块
-                if (!BackupManage(CardRcdSec)) {
-                    return;  //_dt and _backup are all wrong
-                }
-                //原额倒叙 操作
-                actRemaining = icCardBeen.getPurorimoney();
-                if (CardRcdSec == 2) {
-                    icCardBeen.setPurorimoney(actRemaining);
-                }
-                if (Arrays.equals(CardRcdOriMoney, icCardBeen.getPurorimoney())) {
-                    CInfo.cPtr = (byte) (CInfoZ.cPtr == 0 ? 8 : CInfoZ.cPtr - 1);
-                    int count = Datautils.byteArrayToInt(CInfoZ.iPurCount) - 1;
-                    byte[] result = new byte[2];
-                    result[0] = (byte) ((count >> 8) & 0xFF);
-                    result[1] = (byte) (count & 0xFF);
-                    CInfo.iPurCount = result;
-                    CInfo.fProc = (byte) (CInfo.fProc + 1);
-                    if (!Modify_InfoArea(25)) {
-                        return;
-                    }
-                    if (!Modify_InfoArea(24)) {
-                        return;
-                    }
-                } else if (Datautils.byteArrayToInt(CardRcdOriMoney) - Datautils.byteArrayToInt(CardRcdSub) == Datautils.byteArrayToInt(icCardBeen.getPurorimoney())) {
-                    CInfo.fProc = (byte) (CInfo.fProc + 1);
-                    if (!Modify_InfoArea(24)) {
-                        return;
-                    }
-                    if (!Modify_InfoArea(25)) {
-                        return;
-                    }
-                } else {
-                    CInfo.fProc = (byte) (CInfo.fProc + 1);
-                    if (!Modify_InfoArea(25)) {
-                        return;
-                    }
-                    if (!Modify_InfoArea(24)) {
-                        return;
-                    }
-                }
-            } else {
-                CInfo.fProc = (byte) (CInfo.fProc + 1);
-                if (!Modify_InfoArea(25)) {
-                    return;
-                }
-                if (!Modify_InfoArea(24)) {
-                    return;
-                }
-            }
-        } catch (RemoteException e) {
-            e.printStackTrace();
-        }
+//        int fJudge = 0;
+//        if ((CInfoZ.fValid) == 1 && (CInfoF.fValid) == 1 &&
+//                ((CInfoZ.fProc & 0x01) == 0) && ((CInfoF.fProc & 0x01) == 0)) {
+//
+//        } else if ((CInfoZ.fValid == 1) && (CInfoF.fValid == 1) &&
+//                ((CInfoF.fProc & 0x01) == 0)) {
+//            if (!Modify_InfoArea(24)) {
+//                return;
+//            }
+//        } else if ((CInfoZ.fValid == 1) && (CInfoF.fValid == 1) &&
+//                ((CInfoZ.fProc & 0x01) == 1) && ((CInfoF.fProc & 0x01) == 0)) {
+//
+//            CInfo = CInfoF;
+//            if (!Modify_InfoArea(24)) {
+//                return;
+//            }
+//        } else if ((CInfoZ.fValid == 1) && (CInfoF.fValid == 0) && ((CInfoZ.fProc & 0x01) == 1)) {
+//            CInfo.cPtr = (byte) (CInfoZ.cPtr == 0 ? 8 : (CInfoZ.cPtr - 1));
+//            CInfo.fProc = (byte) (CInfo.fProc + 1);
+//            if (CInfoZ.fProc == 1) {
+//                int count = Datautils.byteArrayToInt(CInfoZ.iPurCount) - 1;
+//                byte[] result = new byte[2];
+//                result[0] = (byte) ((count >> 8) & 0xFF);
+//                result[1] = (byte) (count & 0xFF);
+//                CInfo.iPurCount = result;
+//
+//            } else {
+//                int count = Datautils.byteArrayToInt(CInfoZ.iYueCount) - 1;
+//                byte[] result = new byte[2];
+//                result[0] = (byte) ((count >> 8) & 0xFF);
+//                result[1] = (byte) (count & 0xFF);
+//                CInfoZ.iYueCount = result;
+//            }
+//            if (!Modify_InfoArea(25)) {
+//                return;
+//            }
+//            if (!Modify_InfoArea(24)) {
+//                return;
+//            }
+//        } else if ((CInfoZ.fValid == 1) && (CInfoF.fValid == 1) && ((CInfoZ.fProc & 0x01) == 1) && ((CInfoF.fProc & 0x01) == 1)) {
+//            fJudge = 1;
+//        } else if ((CInfoZ.fValid == 0) && (CInfoF.fValid == 1) && ((CInfoF.fProc & 0x01) == 1)) {
+//            CInfo.fProc = (byte) (CInfo.fProc + 1);
+//            if (!Modify_InfoArea(24)) {
+//                return;
+//            }
+//            if (!Modify_InfoArea(25)) {
+//                return;
+//            }
+//        } else if ((CInfoZ.fValid == 1) && (CInfoF.fValid == 1) && ((CInfoZ.fProc & 0x01) == 0) && ((CInfoF.fProc & 0x01) == 1)) {
+//            if (!Modify_InfoArea(25)) {
+//                return;
+//            }
+//        } else if ((CInfoZ.fValid == 1) && (CInfoF.fValid == 0) && ((CInfoZ.fProc & 0x01) == 0)) {
+//            if (!Modify_InfoArea(25)) {
+//                return;
+//            }
+//        } else {
+//            return;
+//        }
+///////////////////////////////////////////////////////////////
+//        try {
+//            if (fJudge == 1) {
+//                byte CardRcdDateTime[] = new byte[8];
+//                byte[] CardRcdOriMoney = new byte[4];
+//                byte[] CardRcdSub = new byte[4];
+//                //代表扇区 2为钱包区 7为月票区
+//                int CardRcdSec = 0;
+//                blk = RcdBlkIndex[CInfo.cPtr == 0 ? 8 : CInfo.cPtr - 1];
+//                if (!m1CardKeyAuth(blk, blk / 4)) {
+//                    return;
+//                }
+//                retvalue = mBankCard.m1CardReadBlockData(blk, respdata, resplen);
+//                if (retvalue != 0) {
+//                    return;
+//                }
+//                byte[] RcdInCard = Datautils.cutBytes(respdata, 1, resplen[0] - 1);
+//                //todo utc时间转bcd时间 UTCtoBCDTime(ArrToVar( & RcdInCard[0], 4), CardRcdDateTime);
+//                byte[] UTCTimes = Datautils.cutBytes(RcdInCard, 0, 4);
+//                CardRcdOriMoney = Datautils.cutBytes(RcdInCard, 4, 4);
+//                CardRcdSub = Datautils.cutBytes(RcdInCard, 8, 3);
+//                if (RcdInCard[11] == 0x02) {
+//                    CardRcdSec = 7;
+//                } else {
+//                    CardRcdSec = 2;
+//                }
+//                //比对 9 块10块
+//                if (!BackupManage(CardRcdSec)) {
+//                    return;  //_dt and _backup are all wrong
+//                }
+//                //原额倒叙 操作
+//                actRemaining = icCardBeen.getPurorimoney();
+//                if (CardRcdSec == 2) {
+//                    icCardBeen.setPurorimoney(actRemaining);
+//                }
+//                if (Arrays.equals(CardRcdOriMoney, icCardBeen.getPurorimoney())) {
+//                    CInfo.cPtr = (byte) (CInfoZ.cPtr == 0 ? 8 : CInfoZ.cPtr - 1);
+//                    int count = Datautils.byteArrayToInt(CInfoZ.iPurCount) - 1;
+//                    byte[] result = new byte[2];
+//                    result[0] = (byte) ((count >> 8) & 0xFF);
+//                    result[1] = (byte) (count & 0xFF);
+//                    CInfo.iPurCount = result;
+//                    CInfo.fProc = (byte) (CInfo.fProc + 1);
+//                    if (!Modify_InfoArea(25)) {
+//                        return;
+//                    }
+//                    if (!Modify_InfoArea(24)) {
+//                        return;
+//                    }
+//                } else if (Datautils.byteArrayToInt(CardRcdOriMoney) - Datautils.byteArrayToInt(CardRcdSub) == Datautils.byteArrayToInt(icCardBeen.getPurorimoney())) {
+//                    CInfo.fProc = (byte) (CInfo.fProc + 1);
+//                    if (!Modify_InfoArea(24)) {
+//                        return;
+//                    }
+//                    if (!Modify_InfoArea(25)) {
+//                        return;
+//                    }
+//                } else {
+//                    CInfo.fProc = (byte) (CInfo.fProc + 1);
+//                    if (!Modify_InfoArea(25)) {
+//                        return;
+//                    }
+//                    if (!Modify_InfoArea(24)) {
+//                        return;
+//                    }
+//                }
+//            } else {
+//                CInfo.fProc = (byte) (CInfo.fProc + 1);
+//                if (!Modify_InfoArea(25)) {
+//                    return;
+//                }
+//                if (!Modify_InfoArea(24)) {
+//                    return;
+//                }
+//            }
+//        } catch (RemoteException e) {
+//            e.printStackTrace();
+//        }
     }
 
     private String decodeDate = null;

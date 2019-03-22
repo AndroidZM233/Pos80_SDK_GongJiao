@@ -65,7 +65,7 @@ public class ZJBCardManager {
         if (Arrays.equals(resultBytes, CardMethods.APDU_RESULT_FAILE_6283) ||
                 Arrays.equals(resultBytes, CardMethods.APDU_RESULT_FAILE_6A81)) {
             // TODO: 2019/1/3  查数据库黑名单报语音
-            return ReturnVal.CAD_BLK;
+            return ReturnVal.CAD_BL1;
         } else if (resultBytes == null || resultBytes.length == 2) {
             LogUtils.e("===0701error===" + Datautils.byteArrayToString(resultBytes));
             return ReturnVal.CAD_READ;
@@ -220,7 +220,7 @@ public class ZJBCardManager {
         List<RunParaFile> runParaFiles = DbDaoManage.getDaoSession()
                 .getRunParaFileDao().loadAll();
         if (runParaFiles.size() < 1) {
-            return ReturnVal.NO_SET;
+            return ReturnVal.CAD_ERR1;
         }
         runParaFile = runParaFiles.get(0);
         //判断启用标志
@@ -286,7 +286,7 @@ public class ZJBCardManager {
     public int CPUPurse(BankCard mBankCard) {
         byte[] resultBytes;
         if (tCardOpDU.ucProcSec == 2) {
-            int ret = CardMethods.fIsUsePur( tCardOpDU, runParaFile);    //判断钱包权限
+            int ret = CardMethods.fIsUsePur(tCardOpDU, runParaFile);    //判断钱包权限
 
             if (ret == 0)        //没有权限
             {
@@ -471,8 +471,8 @@ public class ZJBCardManager {
 
             tCardOpDU.lPurOriMoney = actRemaining;
 
-            tCardOpDU.lPurSub = CardMethods.getRadioPurSub( tCardOpDU, runParaFile);
-            tCardOpDU.lPurSubByte=Datautils.intToByteArray1(tCardOpDU.lPurSub);
+            tCardOpDU.lPurSub = CardMethods.getRadioPurSub(tCardOpDU, runParaFile);
+            tCardOpDU.lPurSubByte = Datautils.intToByteArray1(tCardOpDU.lPurSub);
 
             if (tCardOpDU.lPurOriMoney > CardMethods.MAXVALUE) {
                 return ReturnVal.CAD_BROKEN;
@@ -549,12 +549,12 @@ public class ZJBCardManager {
 
 
         ////////////////////////////////////////////
-        if ((tCardOpDU.ucCAPP ==(byte) 0x01) || (tCardOpDU.fUseHC == 1)) {
+        if ((tCardOpDU.ucCAPP == (byte) 0x01) || (tCardOpDU.fUseHC == 1)) {
             byte[] bytesFirst = Datautils.concatAll(new byte[]{(byte) 0x80, (byte) 0xDC, (byte) 0x01, (byte) 0xB8
                             , (byte) 0x30, (byte) 0x01, (byte) 0x2E, (byte) 0x00, (byte) 0x01, (byte) 0x00}
                     , tCardOpDU.ucPOSSnr, ulDevUTCByte);
             byte[] bytesSecond;
-            if (tCardOpDU.ucProcSec ==(byte) 0x02) {
+            if (tCardOpDU.ucProcSec == (byte) 0x02) {
                 bytesSecond = Datautils.concatAll(Datautils.intToByteArray1(tCardOpDU.lPurOriMoney)
                         , Datautils.intToByteArray1(tCardOpDU.lPurSub));
             } else {

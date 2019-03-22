@@ -107,7 +107,7 @@ public class JTBCardManager {
                 Arrays.equals(resultBytes, CardMethods.APDU_RESULT_FAILE_6284) ||
                 Arrays.equals(resultBytes, CardMethods.APDU_RESULT_FAILE3_9303)) {
             // TODO: 2019/1/3  查数据库黑名单报语音
-            return ReturnVal.CAD_BLK;
+            return ReturnVal.CAD_BL1;
         } else {
             return ZJBCardManager.getInstance().mainMethod(mBankCard, psamBeen);
         }
@@ -275,13 +275,13 @@ public class JTBCardManager {
             // TODO: 2019/2/20
 //            PrepareRecord(0xE0);
 //            OnAppendRecord(0xE0);
-            return ReturnVal.CAD_BLK;
+            return ReturnVal.CAD_BL1;
         }
 
         List<RunParaFile> runParaFiles = DbDaoManage.getDaoSession()
                 .getRunParaFileDao().loadAll();
         if (runParaFiles.size() < 1) {
-            return ReturnVal.NO_SET;
+            return ReturnVal.CAD_ERR1;
         }
         runParaFile = runParaFiles.get(0);
 
