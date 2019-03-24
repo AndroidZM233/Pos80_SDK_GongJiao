@@ -1,6 +1,7 @@
 package com.spd.bus.card.methods;
 
 import com.spd.base.been.tianjin.CardBackBean;
+import com.spd.bus.spdata.utils.PlaySound;
 
 /**
  * Created by 张明_ on 2019/2/19.
@@ -60,24 +61,6 @@ public class ReturnVal {
 //    public final static int CAD_PAUSEB		 	0xFB
 //    public final static int CAD_PAUSEC			0xFC
 //    public final static int CAD_GRAYLOCK		0xFD
-
-    public static void doVal(CardBackBean cardBackBean) {
-        int value = cardBackBean.getBackValue();
-        switch (value) {
-            case CAD_READ:
-                break;
-            case CAD_EXPIRE:
-                break;
-            case CAD_SELL:
-                break;
-            case CAD_OK:
-                break;
-            case CAD_MAC2:
-                break;
-            default:
-                break;
-        }
-    }
 
 
 }

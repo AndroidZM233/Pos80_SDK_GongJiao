@@ -5,6 +5,7 @@ import com.spd.base.dbbeen.RunParaFile;
 import com.spd.base.utils.Datautils;
 import com.spd.base.been.tianjin.CardBackBean;
 import com.spd.base.been.tianjin.TCardOpDU;
+import com.spd.bus.card.utils.DateUtils;
 import com.spd.bus.card.utils.LogUtils;
 import com.spd.bus.spdata.been.PsamBeen;
 import com.spd.bus.spdata.utils.PlaySound;
@@ -48,37 +49,37 @@ public class JTBCardManager {
     }
 
 
-    public CardBackBean mainMethod(BankCard mBankCard, List<PsamBeen> psamDatas, byte[] cpuCard, byte[] lPurSub) {
+    public CardBackBean mainMethod(BankCard mBankCard, List<PsamBeen> psamBeenList, byte[] cpuCard, byte[] lPurSub) {
         long ltime = System.currentTimeMillis();
         tCardOpDU = new TCardOpDU();
         tCardOpDU.cardClass = (byte) 0x07;
         tCardOpDU.lPurSubByte = lPurSub;
         //复合交易
         tCardOpDU.ucCAPP = 1;
-        int first = getFirst(mBankCard, psamDatas.get(1));
-        if (first != METHOD_OK) {
-            return new CardBackBean(first, 0);
+        CardBackBean first = getFirst(mBankCard, psamBeenList);
+        if (first.getBackValue() != METHOD_OK) {
+            return new CardBackBean(first.getBackValue(), tCardOpDU);
         }
         int snr = getSnr(mBankCard);
         if (snr != METHOD_OK) {
-            return new CardBackBean(snr, 0);
+            return new CardBackBean(snr, tCardOpDU);
         }
 
         int fSysSta = doFSysSta(mBankCard);
         if (fSysSta != METHOD_OK) {
-            return new CardBackBean(fSysSta, 0);
+            return new CardBackBean(fSysSta, tCardOpDU);
         }
         CardBackBean cardBackBean = consumption(mBankCard, cpuCard);
         LogUtils.i("===消费结束===" + (System.currentTimeMillis() - ltime));
-
+        CardMethods.onAppendRecordTrade((byte) 0x00, tCardOpDU, runParaFile, psamBeenList);
         return cardBackBean;
     }
 
-    public int getFirst(BankCard mBankCard, PsamBeen psamBeen) {
+    public CardBackBean getFirst(BankCard mBankCard, List<PsamBeen> psamBeenList) {
         byte[] resultBytes = CardMethods.sendApdus(mBankCard, BankCard.CARD_MODE_PICC, CardMethods.SELEC_PPSE);
         if (resultBytes == null || resultBytes.length == 2) {
             LogUtils.e("===消费记录3031error=== " + Datautils.byteArrayToString(resultBytes));
-            return mustToSend(mBankCard, psamBeen);
+            return mustToSend(mBankCard, psamBeenList);
         } else {
             List<String> listTlv = new ArrayList<>();
             TLV.anaTagSpeedata(resultBytes, listTlv);
@@ -87,29 +88,29 @@ public class JTBCardManager {
                 resultBytes = CardMethods.sendApdus(mBankCard, BankCard.CARD_MODE_PICC, CardMethods.SELECT_ICCARD_QIANBAO);
                 if (resultBytes == null || resultBytes.length == 2) {
                     LogUtils.e("===解析到TLV发送0105 return===" + Datautils.byteArrayToString(resultBytes));
-                    return ReturnVal.CAD_READ;
+                    return new CardBackBean(ReturnVal.CAD_READ, tCardOpDU);
                 }
             } else {
-                return mustToSend(mBankCard, psamBeen);
+                return mustToSend(mBankCard, psamBeenList);
 
             }
         }
-        return METHOD_OK;
+        return new CardBackBean(METHOD_OK, tCardOpDU);
     }
 
-    private int mustToSend(BankCard mBankCard, PsamBeen psamBeen) {
+    private CardBackBean mustToSend(BankCard mBankCard, List<PsamBeen> psamBeenList) {
         byte[] resultBytes;//选择电子钱包应用
         resultBytes = CardMethods.sendApdus(mBankCard, BankCard.CARD_MODE_PICC, CardMethods.SELECT_ICCARD_QIANBAO);
         if (resultBytes == null) {
             LogUtils.e("icExpance: 获取交易时间错误");
-            return ReturnVal.CAD_READ;
+            return new CardBackBean(ReturnVal.CAD_READ, tCardOpDU);
         } else if (Arrays.equals(resultBytes, CardMethods.APDU_RESULT_FAILE_6283) ||
                 Arrays.equals(resultBytes, CardMethods.APDU_RESULT_FAILE_6284) ||
                 Arrays.equals(resultBytes, CardMethods.APDU_RESULT_FAILE3_9303)) {
             // TODO: 2019/1/3  查数据库黑名单报语音
-            return ReturnVal.CAD_BL1;
+            return new CardBackBean(ReturnVal.CAD_BL1, tCardOpDU);
         } else {
-            return ZJBCardManager.getInstance().mainMethod(mBankCard, psamBeen);
+            return ZJBCardManager.getInstance().mainMethod(mBankCard, psamBeenList);
         }
     }
 
@@ -125,6 +126,10 @@ public class JTBCardManager {
         //系统时间
         byte[] systemTime = Datautils.getDateTime();
         tCardOpDU.ucDateTime = systemTime;
+        Long timeToLong = DateUtils.convertTimeToLong(DateUtils.FORMAT_yyyyMMddHHmmss
+                , Datautils.byteArrayToString(tCardOpDU.ucDateTime));
+        String ulUTCString = Long.toHexString(timeToLong / 1000).toUpperCase();
+        tCardOpDU.ucDateTimeUTC = Datautils.HexString2Bytes(ulUTCString);
         tCardOpDU.ucCardClass = CardMethods.JTBCARD;
         tCardOpDU.ucCheckDate = new byte[]{(byte) 0x20, (byte) 0x99, (byte) 0x12, (byte) 0x31};
         tCardOpDU.ucOtherCity = (byte) 0x00;
@@ -363,21 +368,21 @@ public class JTBCardManager {
         byte[] resultBytes = CardMethods.sendApdus(mBankCard, BankCard.CARD_MODE_PICC, Datautils.HexString2Bytes("00B201F400"));
         if (resultBytes == null || resultBytes.length == 2) {
             LogUtils.e("===IC读1E文件error===" + Datautils.byteArrayToString(resultBytes));
-            return new CardBackBean(ReturnVal.CAD_READ, 0);
+            return new CardBackBean(ReturnVal.CAD_READ, tCardOpDU);
         }
         LogUtils.d("===IC读1E文件00b2return===" + Datautils.byteArrayToString(resultBytes));
         LogUtils.d("===IC余额(805c)send===  805C030204");
         resultBytes = CardMethods.sendApdus(mBankCard, BankCard.CARD_MODE_PICC, Datautils.HexString2Bytes("805C030204"));
         if (resultBytes == null || resultBytes.length == 2) {
             LogUtils.e("===IC卡初始化(8050)error===" + Datautils.byteArrayToString(resultBytes));
-            return new CardBackBean(ReturnVal.CAD_READ, 0);
+            return new CardBackBean(ReturnVal.CAD_READ, tCardOpDU);
         }
         LogUtils.d("===IC余额(805c)return===" + Datautils.byteArrayToString(resultBytes));
         LogUtils.d("===IC卡初始化(8050)send===" + Datautils.byteArrayToString(cpuCard));
         resultBytes = CardMethods.sendApdus(mBankCard, BankCard.CARD_MODE_PICC, cpuCard);
         if (resultBytes == null || resultBytes.length == 2) {
             LogUtils.e("===IC卡初始化(8050)error===" + Datautils.byteArrayToString(resultBytes));
-            return new CardBackBean(ReturnVal.CAD_READ, 0);
+            return new CardBackBean(ReturnVal.CAD_READ, tCardOpDU);
         }
         tCardOpDU.ulBalanceByte = Datautils.cutBytes(resultBytes, 0, 4);
         tCardOpDU.ulBalance = Datautils.byteArrayToInt(tCardOpDU.ulBalanceByte);
@@ -402,14 +407,15 @@ public class JTBCardManager {
         resultBytes = CardMethods.sendApdus(mBankCard, BankCard.CARD_MODE_PSAM1_APDU, psamMac1);
         if (resultBytes == null || resultBytes.length == 2) {
             LogUtils.e("===获取MAC1(8070)error===" + Datautils.byteArrayToString(resultBytes));
-            return new CardBackBean(ReturnVal.CAD_READ, 0);
+            return new CardBackBean(ReturnVal.CAD_READ, tCardOpDU);
         }
         LogUtils.d("===获取MAC18070return===" + Datautils.byteArrayToString(resultBytes));
         if (resultBytes.length <= 2) {
             LogUtils.e("===获取MAC1失败===" + Datautils.byteArrayToString(resultBytes));
-            return new CardBackBean(ReturnVal.CAD_READ, 0);
+            return new CardBackBean(ReturnVal.CAD_READ, tCardOpDU);
         }
-        tCardOpDU.ucPsamATC = Datautils.cutBytes(resultBytes, 0, 4);
+        tCardOpDU.ulPOSTradeCountByte = Datautils.cutBytes(resultBytes, 0, 4);
+        tCardOpDU.ulPOSTradeCount = Datautils.byteArrayToInt(tCardOpDU.ulPOSTradeCountByte);
         tCardOpDU.ucMAC1 = Datautils.cutBytes(resultBytes, 4, 4);
 
         if (tCardOpDU.ucCAPP == 1) {
@@ -432,7 +438,7 @@ public class JTBCardManager {
                     , concatAll);
             if (resultBytes == null || resultBytes.length == 2) {
                 LogUtils.e("===更新1E文件(80dc)error===" + Datautils.byteArrayToString(resultBytes));
-                return new CardBackBean(ReturnVal.CAD_READ, 0);
+                return new CardBackBean(ReturnVal.CAD_READ, tCardOpDU);
             }
             LogUtils.d("===更新1E文件return===" + Datautils.byteArrayToString(resultBytes));
         }
@@ -440,14 +446,14 @@ public class JTBCardManager {
         LogUtils.d("===IC卡(8054)消费send===" + Datautils.byteArrayToString(cmd));
         resultBytes = CardMethods.sendApdus(mBankCard, BankCard.CARD_MODE_PICC, cmd);
         if (Arrays.equals(resultBytes, CardMethods.APDU_8054_FAILE)) {
-            return new CardBackBean(ReturnVal.CAD_MAC1, 0);
+            return new CardBackBean(ReturnVal.CAD_MAC1, tCardOpDU);
         }
         if (resultBytes == null || resultBytes.length == 2) {
             LogUtils.e("===IC卡(8054)消费error===" + Datautils.byteArrayToString(resultBytes));
             fSysSta = true;
             problemIssueCode = Datautils.concatAll(tCardOpDU.ucAppSnr, tCardOpDU.uiOffLineCount,
                     tCardOpDU.lPurSubByte, tCardOpDU.ulBalanceByte, new byte[]{tCardOpDU.ucCAPP});
-            return new CardBackBean(ReturnVal.CAD_RETRY, 0);
+            return new CardBackBean(ReturnVal.CAD_RETRY, tCardOpDU);
         }
 
         LogUtils.d("===IC卡(8054)消费返回===" + Datautils.byteArrayToString(resultBytes));
@@ -458,10 +464,10 @@ public class JTBCardManager {
         resultBytes = CardMethods.sendApdus(mBankCard, BankCard.CARD_MODE_PSAM1_APDU, psamCheckMac2);
         if (resultBytes == null || resultBytes.length == 2) {
             LogUtils.e("===psam卡(8072)校验error===");
-            return new CardBackBean(ReturnVal.CAD_READ, 0);
+            return new CardBackBean(ReturnVal.CAD_READ, tCardOpDU);
         }
         LogUtils.d("===psam卡 8072校验返回===: " + Datautils.byteArrayToString(resultBytes));
-        PlaySound.play(PlaySound.xiaofeiSuccse, 0);
-        return new CardBackBean(ReturnVal.CAD_OK, tCardOpDU.ulBalance);
+//        PlaySound.play(PlaySound.xiaofeiSuccse, 0);
+        return new CardBackBean(ReturnVal.CAD_OK, tCardOpDU);
     }
 }

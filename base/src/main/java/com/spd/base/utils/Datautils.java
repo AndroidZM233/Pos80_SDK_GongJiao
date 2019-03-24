@@ -204,7 +204,7 @@ public class Datautils {
         //   低位在前
         for (int i = 0; i < bytes.length; i++) {
             int shift = (bytes.length - 1 - i) * 8;
-            value += (bytes[i] & 0x000000FF) << shift;// 往高位游
+            value += (bytes[i] & 0xFF) << shift;// 往高位游
         }
         return value;
     }

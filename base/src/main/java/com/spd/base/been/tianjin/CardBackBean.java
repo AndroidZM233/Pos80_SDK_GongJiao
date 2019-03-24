@@ -6,11 +6,19 @@ package com.spd.base.been.tianjin;
  */
 public class CardBackBean {
     private int backValue;
-    private int blance;
+    private TCardOpDU cardOpDU;
 
-    public CardBackBean(int backValue, int blance) {
+    public CardBackBean(int backValue, TCardOpDU cardOpDU) {
         this.backValue = backValue;
-        this.blance = blance;
+        this.cardOpDU = cardOpDU;
+    }
+
+    public TCardOpDU getCardOpDU() {
+        return cardOpDU;
+    }
+
+    public void setCardOpDU(TCardOpDU cardOpDU) {
+        this.cardOpDU = cardOpDU;
     }
 
     public int getBackValue() {
@@ -21,11 +29,4 @@ public class CardBackBean {
         this.backValue = backValue;
     }
 
-    public int getBlance() {
-        return blance;
-    }
-
-    public void setBlance(int blance) {
-        this.blance = blance;
-    }
 }

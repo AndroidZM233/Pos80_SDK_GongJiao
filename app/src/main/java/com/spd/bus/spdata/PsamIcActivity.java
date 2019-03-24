@@ -23,6 +23,7 @@ import com.spd.alipay.been.AliCodeinfoData;
 import com.spd.alipay.been.TianjinAlipayRes;
 import com.spd.base.been.BosiQrcodeKey;
 import com.spd.base.been.WechatQrcodeKey;
+import com.spd.base.been.tianjin.TCardOpDU;
 import com.spd.base.beenupload.BosiQrCodeUpload;
 import com.spd.base.utils.Datautils;
 import com.spd.base.view.SignalView;
@@ -31,6 +32,7 @@ import com.spd.bus.R;
 import com.spd.bus.card.methods.JTBCardManager;
 import com.spd.base.been.tianjin.CardBackBean;
 import com.spd.bus.card.methods.M1CardManager;
+import com.spd.bus.card.methods.ReturnVal;
 import com.spd.bus.card.utils.DateUtils;
 import com.spd.bus.spdata.been.ErroCode;
 import com.spd.bus.spdata.been.IcCardBeen;
@@ -115,6 +117,11 @@ public class PsamIcActivity extends MVPBaseActivity<SpdBusPayContract.View, SpdB
      */
     private byte[] systemTime;
 
+
+    /**
+     * //获取PSAM卡序列号
+     */
+    private final byte[] PSAM_15FILE = {0x00, (byte) 0xB0, (byte) 0x95, 0x00, 0x0A};
     /**
      * //获取PSAM卡终端机编号指令
      */
@@ -367,8 +374,15 @@ public class PsamIcActivity extends MVPBaseActivity<SpdBusPayContract.View, SpdB
                 isFlag = 1;
                 return;
             } else if (respdata[0] == (byte) 0x05) {
+                byte[] resultBytes = sendApdus(BankCard.CARD_MODE_PSAM1_APDU, PSAM_15FILE);
+                if (resultBytes == null || resultBytes.length == 2) {
+                    Log.e(TAG, "===交通部获取15文件错误===" + Datautils.byteArrayToString(resultBytes));
+                    isFlag = 1;
+                    return;
+                }
+                byte[] snr = resultBytes;
                 //IC卡已经插入
-                byte[] resultBytes = sendApdus(BankCard.CARD_MODE_PSAM1_APDU, PSAN_GET_ID);
+                resultBytes = sendApdus(BankCard.CARD_MODE_PSAM1_APDU, PSAN_GET_ID);
                 if (resultBytes == null || resultBytes.length == 2) {
                     Log.e(TAG, "===交通部获取16文件错误===" + Datautils.byteArrayToString(resultBytes));
                     isFlag = 1;
@@ -395,7 +409,7 @@ public class PsamIcActivity extends MVPBaseActivity<SpdBusPayContract.View, SpdB
                 Log.d(TAG, "===交通部获取17文件===" + Datautils.byteArrayToString(resultBytes));
                 byte[] psamKey = Datautils.cutBytes(resultBytes, 0, 1);
                 Log.d(TAG, "===交通部秘钥索引=== " + Datautils.byteArrayToString(psamKey) + "\n" + "PSAM初始化成功！！！请读消费卡\n");
-                psamDatas.add(new PsamBeen(1, deviceCode, psamKey));
+                psamDatas.add(new PsamBeen(1, deviceCode, psamKey, snr));
                 // TODO: 2018/12/4  初始化成功等待读消费卡
             } else {
                 Log.e(TAG, "交通部psam初始化失败 " + Datautils.byteArrayToString(Datautils.cutBytes(respdata, 0, resplen[0])));
@@ -424,6 +438,13 @@ public class PsamIcActivity extends MVPBaseActivity<SpdBusPayContract.View, SpdB
                 return;
 
             } else if (respdata[0] == (byte) 0x05) {
+                byte[] resultBytes = sendApdus(BankCard.CARD_MODE_PSAM2_APDU, PSAM_15FILE);
+                if (resultBytes == null || resultBytes.length == 2) {
+                    Log.e(TAG, "===交通部获取15文件错误===" + Datautils.byteArrayToString(resultBytes));
+                    isFlag = 1;
+                    return;
+                }
+                byte[] snr = resultBytes;
                 //IC卡已经插入
                 retvalue = mBankCard.sendAPDU(BankCard.CARD_MODE_PSAM2_APDU, PSAN_GET_ID, PSAN_GET_ID.length, respdata, resplen);
                 if (retvalue != 0) {
@@ -461,7 +482,7 @@ public class PsamIcActivity extends MVPBaseActivity<SpdBusPayContract.View, SpdB
                 }
                 byte[] psamKey = Datautils.cutBytes(respdata, 0, 1);
                 Log.d(TAG, "===住建部秘钥索引===" + Datautils.byteArrayToString(psamKey) + "\n" + "PSAM初始化成功！！！请读消费卡\n");
-                psamDatas.add(new PsamBeen(2, deviceCode, psamKey));
+                psamDatas.add(new PsamBeen(2, deviceCode, psamKey, snr));
                 // TODO: 2018/12/4  psam卡等待读消费卡
             } else {
                 Log.e(TAG, "住建部psam初始化 读卡失败,请检查是否插入psam卡 " + Datautils.byteArrayToString(respdata));
@@ -495,6 +516,7 @@ public class PsamIcActivity extends MVPBaseActivity<SpdBusPayContract.View, SpdB
                     if (respdata[0] == 0x07) {
                         CardBackBean cardBackBean = JTBCardManager.getInstance()
                                 .mainMethod(mBankCard, psamDatas, cpuCardInit(), pursub);
+                        doVal(cardBackBean);
                         isFlag = 0;
 //                        icExpance();//执行等待读卡消费
 //                        if (isFlag == 1) {
@@ -505,20 +527,26 @@ public class PsamIcActivity extends MVPBaseActivity<SpdBusPayContract.View, SpdB
                         Log.i("stw", "m1结束寻卡===" + (System.currentTimeMillis() - ltime));
 //                        m1ICCard();
                         try {
-                            M1CardManager.getInstance().mainMethod(mBankCard, M1CardManager.M150, 0);
+                            CardBackBean cardBackBean = M1CardManager.getInstance()
+                                    .mainMethod(mBankCard, M1CardManager.M150, 0, psamDatas);
+                            doVal(cardBackBean);
                         } catch (Exception e) {
                             e.printStackTrace();
                         }
-                        if (isFlag == 1) {
-                            PlaySound.play(PlaySound.qingchongshua, 0);
-                        }
+                        isFlag = 0;
+//                        if (isFlag == 1) {
+//                            PlaySound.play(PlaySound.qingchongshua, 0);
+//                        }
                     } else if (respdata[0] == 0x47) {
                         // 检测到 M1-S70 卡
                         try {
-                            M1CardManager.getInstance().mainMethod(mBankCard, M1CardManager.M150, 0);
+                            CardBackBean cardBackBean = M1CardManager.getInstance()
+                                    .mainMethod(mBankCard, M1CardManager.M170, 0, psamDatas);
+                            doVal(cardBackBean);
                         } catch (Exception e) {
                             e.printStackTrace();
                         }
+                        isFlag = 0;
                     }
                 }
             } catch (RemoteException e) {
@@ -526,6 +554,46 @@ public class PsamIcActivity extends MVPBaseActivity<SpdBusPayContract.View, SpdB
             }
         }
     }
+
+
+    private void doVal(CardBackBean cardBackBean) {
+        runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                int value = cardBackBean.getBackValue();
+                switch (value) {
+                    case ReturnVal.CAD_READ:
+                        break;
+                    case ReturnVal.CAD_EXPIRE:
+                        break;
+                    case ReturnVal.CAD_SELL:
+                        break;
+                    case ReturnVal.CAD_OK:
+                        PlaySound.play(PlaySound.xiaofeiSuccse, 0);
+                        TCardOpDU cardOpDU = cardBackBean.getCardOpDU();
+                        if (cardOpDU.procSec != 2) {
+
+                        } else {
+                            mLayoutLineInfo.setVisibility(View.GONE);
+                            mLayoutXiaofei.setVisibility(View.VISIBLE);
+                            mTvBalanceTitle.setText("余额");
+                            mTvXiaofeiMoney.setText(((double) cardOpDU.pursubInt / 100) + "元");
+                        }
+                        handler.postDelayed(runnable, 2000);
+                        break;
+                    case ReturnVal.CAD_MAC2:
+                        break;
+                    case ReturnVal.CAD_RETRY:
+                        PlaySound.play(PlaySound.qingchongshua, 0);
+                        break;
+                    default:
+                        break;
+                }
+            }
+        });
+
+    }
+
 
     private IcCardBeen icCardBeen = new IcCardBeen();
 

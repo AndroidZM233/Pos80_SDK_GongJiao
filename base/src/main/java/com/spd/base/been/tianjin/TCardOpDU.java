@@ -7,9 +7,8 @@ import com.spd.base.utils.Datautils;
  * Email 741183142@qq.com
  */
 public class TCardOpDU {
-    public byte[] ucPsamATC = new byte[4];
-
     public byte[] ucDateTime = new byte[8];
+    public byte[] ucDateTimeUTC = new byte[4];
     public byte ucRcdType;
     public byte ucCardClass;
     public byte ucCAPP;
@@ -57,7 +56,7 @@ public class TCardOpDU {
     public byte fInBus;
 
     public byte[] ucIncPurDev = new byte[4];
-    public int uiIncPurCount;
+    public byte[] uiIncPurCount;
     public byte[] ucIncPurDate = new byte[4];
 
     public int lPurOriMoney;
@@ -69,7 +68,7 @@ public class TCardOpDU {
     public byte ucYueSec;
     public byte ucYueFlag;
     public byte[] ucIncYueDev = new byte[4];
-    public byte[] uiIncYueCount;
+    public int uiIncYueCount;
     public byte[] ucYueUsingDate = new byte[3];
     public byte ucYuePosition;
     public int ulYueBase;
@@ -99,6 +98,7 @@ public class TCardOpDU {
     public byte[] rondomCpu = new byte[4];//伪随机数
     public byte[] ucPOSSnr = new byte[6];
     public int ulPOSTradeCount;
+    public byte[] ulPOSTradeCountByte = new byte[4];
     public byte[] ucRandom = new byte[4];
     public byte[] ucMAC1 = new byte[4];
     public byte[] ucMAC2 = new byte[4];
@@ -204,7 +204,7 @@ public class TCardOpDU {
     public int yueOriMoney;
     public int actYueSub;
     public int yueCount;
-    public byte[] ucRcdToCard;
+    public byte[] ucRcdToCard = new byte[16];
 
 
     public void setDataStartUcIssuerCode(byte[] DBDat) {

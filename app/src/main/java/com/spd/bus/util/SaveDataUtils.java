@@ -8,6 +8,7 @@ import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.spd.alipay.been.AliCodeinfoData;
 import com.spd.alipay.been.TianjinAlipayRes;
+import com.spd.base.been.tianjin.TStaffTb;
 import com.spd.base.been.tianjin.produce.ProducePost;
 import com.spd.base.been.tianjin.produce.weixin.PayinfoBean;
 import com.spd.base.been.tianjin.produce.weixin.ProduceWeiXin;
@@ -39,6 +40,12 @@ public class SaveDataUtils {
     public static void saveZhiFuBaoReqDataBean(TianjinAlipayRes aliCodeinfoData) throws Exception {
         List<RunParaFile> runParaFiles = DbDaoManage.getDaoSession().getRunParaFileDao().loadAll();
         RunParaFile runParaFile = runParaFiles.get(0);
+        List<TStaffTb> tStaffTbs = DbDaoManage.getDaoSession().getTStaffTbDao().loadAll();
+        TStaffTb tStaffTb = null;
+        if (tStaffTbs.size() > 0) {
+            tStaffTb = tStaffTbs.get(0);
+        }
+
         UploadInfoZFBDB reqDataBean = new UploadInfoZFBDB();
         String currentTimeMillis = DateUtils.getCurrentTimeMillis(DateUtils.FORMAT_YMDHMS);
         // 交易流水
@@ -46,7 +53,8 @@ public class SaveDataUtils {
         // 设备号
         reqDataBean.setDeviceId("17430805");
         // 司机卡号
-        reqDataBean.setDriverCardNo("300000015165068000");
+        reqDataBean.setDriverCardNo(tStaffTb == null ? "300000015165068000"
+                : Datautils.byteArrayToString(tStaffTb.getUcAppSnr()));
         // 卡类型
         reqDataBean.setCardType(aliCodeinfoData.cardType);
         // 用户号
@@ -66,7 +74,8 @@ public class SaveDataUtils {
         // 机具内扫码序号
         reqDataBean.setSeq("001");
         // 司机签到时间
-        reqDataBean.setDriverSignTime("20190313113100");
+        reqDataBean.setDriverSignTime(tStaffTb == null ? "20190313113100"
+                : Datautils.byteArrayToString(tStaffTb.getUlBCD()));
         // 区域号
         reqDataBean.setAreaCode(Datautils.byteArrayToString(runParaFile.getAreaNr()));
         // 票价
@@ -91,16 +100,24 @@ public class SaveDataUtils {
     public static void saveWeiXinDataBean(WlxSdk wlxSdk) throws Exception {
         List<RunParaFile> runParaFiles = DbDaoManage.getDaoSession().getRunParaFileDao().loadAll();
         RunParaFile runParaFile = runParaFiles.get(0);
+        List<TStaffTb> tStaffTbs = DbDaoManage.getDaoSession().getTStaffTbDao().loadAll();
+        TStaffTb tStaffTb = null;
+        if (tStaffTbs.size() > 0) {
+            tStaffTb = tStaffTbs.get(0);
+        }
+
         UploadInfoDB payinfoBean = new UploadInfoDB();
         payinfoBean.setOpen_id(wlxSdk.get_open_id());
-        payinfoBean.setDriverSignTime("");
+        payinfoBean.setDriverSignTime(tStaffTb == null ? "20190313113100"
+                : Datautils.byteArrayToString(tStaffTb.getUlBCD()));
         payinfoBean.setTeam(Datautils.byteArrayToString(runParaFile.getTeamNr()));
         payinfoBean.setRoute("");
         payinfoBean.setAccount(Datautils.byteArrayToInt(runParaFile.getKeyV1()) + "");
         payinfoBean.setDept(Datautils.byteArrayToString(runParaFile.getCorNr()));
         payinfoBean.setIn_station_time(DateUtils.getCurrentTimeMillis(DateUtils.FORMAT_YMDHMS));
         payinfoBean.setBus_no(Datautils.byteArrayToString(runParaFile.getBusN()));
-        payinfoBean.setDriver("");
+        payinfoBean.setDriver(tStaffTb == null ? "300000015165068000"
+                : Datautils.byteArrayToString(tStaffTb.getUcAppSnr()));
         payinfoBean.setPos_id("");
         payinfoBean.setRecord_in(wlxSdk.get_record());
         payinfoBean.setIsUpload(false);
@@ -110,6 +127,12 @@ public class SaveDataUtils {
     public static void saveYinLianDataBean(Context context, String code, QrEntity qrEntity) throws Exception {
         List<RunParaFile> runParaFiles = DbDaoManage.getDaoSession().getRunParaFileDao().loadAll();
         RunParaFile runParaFile = runParaFiles.get(0);
+        List<TStaffTb> tStaffTbs = DbDaoManage.getDaoSession().getTStaffTbDao().loadAll();
+        TStaffTb tStaffTb = null;
+        if (tStaffTbs.size() > 0) {
+            tStaffTb = tStaffTbs.get(0);
+        }
+
         UploadInfoYinLianDB payinfoBean = new UploadInfoYinLianDB();
         //车辆号
         payinfoBean.setBusNo(Datautils.byteArrayToString(runParaFile.getBusN()));
@@ -131,7 +154,8 @@ public class SaveDataUtils {
         String customData = qrEntity.getCustomData().substring(20, 36);
         payinfoBean.setTrip_no(customData);
         //司机号
-        payinfoBean.setDriver("300000015165068000");
+        payinfoBean.setDriver(tStaffTb == null ? "300000015165068000"
+                : Datautils.byteArrayToString(tStaffTb.getUcAppSnr()));
         //线路号
         payinfoBean.setLine_no(Datautils.byteArrayToString(runParaFile.getLineNr()));
         //金额

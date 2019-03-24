@@ -3,12 +3,17 @@ package com.spd.bus.card.methods;
 import android.os.RemoteException;
 import android.util.Log;
 
+import com.spd.base.been.tianjin.CardRecord;
+import com.spd.base.been.tianjin.CardRecordDao;
+import com.spd.base.db.DbDaoManage;
 import com.spd.base.dbbeen.RunParaFile;
 import com.spd.base.utils.Datautils;
 import com.spd.base.been.tianjin.TCardOpDU;
+import com.spd.bus.spdata.been.PsamBeen;
 import com.spd.bus.spdata.been.TCommInfo;
 
 import java.util.Arrays;
+import java.util.List;
 
 import wangpos.sdk4.libbasebinder.BankCard;
 
@@ -196,7 +201,7 @@ public class CardMethods {
         cmd[2] = (byte) 0x01;
         cmd[3] = (byte) 0x00;
         cmd[4] = (byte) 0x0F;
-        System.arraycopy(tCardOpDU.ucPsamATC, 0, cmd, 5, 4);
+        System.arraycopy(tCardOpDU.ulPOSTradeCountByte, 0, cmd, 5, 4);
         //PSAM_ATC 4 //系统时间
         System.arraycopy(tCardOpDU.ucDateTime, 0, cmd, 9, 7);
         System.arraycopy(tCardOpDU.ucMAC1, 0, cmd, 16, 4);
@@ -280,7 +285,7 @@ public class CardMethods {
     }
 
     public static int cpuCardGetYueBasePos(byte[] pAppDateTime, TCardOpDU carddu, byte[] ucDat) {
-        carddu.uiIncYueCount = new byte[]{ucDat[19]};
+        carddu.uiIncYueCount = ucDat[19];
         //月票启用标志
         if (ucDat[1] != (byte) 0x01) {
             return 0;
@@ -517,14 +522,19 @@ public class CardMethods {
          */
         int retvalue = -1;
 
+        CInfo.ucPurCount[0] = (byte) (CInfo.iPurCount >> 8);
+        CInfo.ucPurCount[1] = (byte) CInfo.iPurCount;
+        CInfo.ucYueCount[0] = (byte) (CInfo.iYueCount >> 8);
+        CInfo.ucYueCount[1] = (byte) CInfo.iYueCount;
+
         byte[] info = new byte[16];
         byte[] tpdt = new byte[16];
         byte chk;
         int i;
         info[0] = CInfo.cPtr;
-        System.arraycopy(CInfo.iPurCount, 0, info, 1, 2);
+        System.arraycopy(CInfo.ucPurCount, 0, info, 1, 2);
         info[3] = CInfo.fProc;
-        System.arraycopy(CInfo.iYueCount, 0, info, 4, 2);
+        System.arraycopy(CInfo.ucYueCount, 0, info, 4, 2);
         info[6] = CInfo.fBlack;
         info[7] = CInfo.fFileNr;
 
@@ -563,5 +573,259 @@ public class CardMethods {
             return false;
         }
         return true;
+    }
+
+
+    /********************************************************************
+     *            OnAppendRecordSelf() : 自动生成司机上班记录            *
+     *           =============================================           *
+     *  主要函数模块功能：                                               *
+     ********************************************************************/
+    public static void onAppendRecordSelf(byte exchType, TCardOpDU cardOpDU
+            , RunParaFile runParaFile, List<PsamBeen> psamBeenList) {
+        byte[] rcdBuffer = new byte[64];
+        int i, chk;
+        CardRecordDao cardRecordDao = DbDaoManage.getDaoSession().getCardRecordDao();
+        rcdBuffer[2] = exchType;
+        rcdBuffer[3] = (byte) 0x11;
+        rcdBuffer[4] = cardOpDU.cardClass;
+        System.arraycopy(cardOpDU.issueSnr, 0, rcdBuffer, 5, 2);
+        System.arraycopy(cardOpDU.snr, 0, rcdBuffer, 7, 4);
+        System.arraycopy(cardOpDU.issueSnr, 0, rcdBuffer, 11, 8);
+        rcdBuffer[19] = cardOpDU.cardType;
+        rcdBuffer[20] = (byte) 0x00;
+        System.arraycopy(cardOpDU.startUserDate, 0, rcdBuffer, 21, 3);
+        System.arraycopy(cardOpDU.ucDateTimeUTC, 0, rcdBuffer, 24, 4);
+        // 28:刷卡上班记录生成方式
+        rcdBuffer[28] = (byte) 0x01;
+        // 29-30:POS城市代码
+        System.arraycopy(runParaFile.getCityNr(), 0, rcdBuffer, 29, 2);
+        System.arraycopy(runParaFile.getAreaNr(), 0, rcdBuffer, 31, 1);
+        System.arraycopy(runParaFile.getVocNr(), 0, rcdBuffer, 32, 1);
+        System.arraycopy(runParaFile.getCorNr(), 0, rcdBuffer, 33, 1);
+        System.arraycopy(runParaFile.getTeamNr(), 0, rcdBuffer, 34, 2);
+        System.arraycopy(runParaFile.getLineNr(), 0, rcdBuffer, 36, 2);
+        // 31-40: Ar,Vo,Co,Te,Li
+        System.arraycopy(runParaFile.getBusN(), 0, rcdBuffer, 38, 3);
+        // 41-44: Dev
+        System.arraycopy(runParaFile.getDevNr(), 0, rcdBuffer, 41, 4);
+        System.arraycopy(runParaFile.getKeyV1(), 0, rcdBuffer, 45, 2);
+        // 47: 通用折扣率
+        rcdBuffer[47] = runParaFile.getUcCitySubRadioP()[0];
+
+        System.arraycopy(psamBeenList.get(0).getSnr(), 3, rcdBuffer, 52, 1);
+        System.arraycopy(psamBeenList.get(0).getSnr(), 7, rcdBuffer, 53, 3);
+        System.arraycopy(psamBeenList.get(1).getSnr(), 3, rcdBuffer, 56, 1);
+        System.arraycopy(psamBeenList.get(1).getSnr(), 7, rcdBuffer, 57, 3);
+        //60??  站点信息
+        rcdBuffer[60] = (byte) 0x00;
+
+        for (chk = 0, i = 0; i < 64; i++) {
+            chk ^= rcdBuffer[i];
+        }
+        rcdBuffer[61] = (byte) chk;
+        CardRecord cardRecord = new CardRecord();
+        cardRecord.setIsUpload(false);
+        cardRecord.setRecord(rcdBuffer);
+        DbDaoManage.getDaoSession().getCardRecordDao().insertOrReplace(cardRecord);
+    }
+
+
+    /**
+     * 写消费记录
+     */
+    public static void onAppendRecordTrade(byte exchType, TCardOpDU cardOpDU
+            , RunParaFile runParaFile, List<PsamBeen> psamBeenList) {
+        int i;
+        byte[] rcdBuffer = new byte[64];
+        // 0~1:	 流水号
+        // 02:   记录类型
+        rcdBuffer[2] = exchType;
+        rcdBuffer[3] = cardOpDU.cardClass == (byte) 0x07 ? (byte) 0x12 : (byte) 0x11;
+        rcdBuffer[4] = cardOpDU.cardClass;
+        if ((cardOpDU.cardClass == (byte) 0x01) || (cardOpDU.cardClass == (byte) 0x51)
+                || (cardOpDU.cardClass == (byte) 0x71)) // M1??(S50/S70)
+        {
+            // 5-6:  发卡方代码 得0
+            // 7-10:  卡芯片号
+            System.arraycopy(cardOpDU.snr, 0, rcdBuffer, 7, 4);
+            // 11-18: 卡发行流水号
+            System.arraycopy(cardOpDU.issueSnr, 0, rcdBuffer, 11, 8);
+            // 15-18: ??MAC
+            // 19:   卡主类型
+            rcdBuffer[19] = cardOpDU.cardType;
+            // 20:卡子类型
+            if (cardOpDU.cardClass == (byte) 0x01) {
+                rcdBuffer[20] = (byte) 0x00;
+            } else if ((cardOpDU.cardClass == (byte) 0x51) || (cardOpDU.cardClass == (byte) 0x71)) {
+                rcdBuffer[20] = cardOpDU.subType;
+            } else {
+                rcdBuffer[20] = (byte) 0x00;
+            }
+            // 21-23:应用日期
+            System.arraycopy(cardOpDU.issueDate, 0, rcdBuffer, 21, 3);
+            //24-27:交易时间
+            System.arraycopy(cardOpDU.ucDateTimeUTC, 0, rcdBuffer, 24, 4);
+        } else {//CPU卡
+            if (cardOpDU.ucCardClass == JTBCARD)//交通部
+            {
+                //5-6:  发卡方代码
+                System.arraycopy(cardOpDU.ucIssuerCode, 0, rcdBuffer, 5, 4);
+                //9-18: 应用序列号
+                System.arraycopy(cardOpDU.ucAppSnr, 0, rcdBuffer, 9, 10);
+            } else {
+                //5-6:  发卡方代码
+                System.arraycopy(cardOpDU.ucIssuerCode, 0, rcdBuffer, 5, 2);
+                //7-8:  城市代码
+                System.arraycopy(cardOpDU.ucCityCode, 0, rcdBuffer, 7, 2);
+                //9-10: 行业代码
+                System.arraycopy(cardOpDU.ucVocCode, 0, rcdBuffer, 9, 2);
+                //11-18:应用序列号
+                System.arraycopy(cardOpDU.ucAppSnr, 2, rcdBuffer, 11, 8);
+            }
+            rcdBuffer[19] = cardOpDU.ucMainCardType;                //19:   卡主类型
+            rcdBuffer[20] = cardOpDU.ucSubCardType;                //20:   卡子类型
+            //21-24:应用启动日期
+            System.arraycopy(cardOpDU.ucAppStartDate, 1, rcdBuffer, 21, 3);
+            //24-27:交易时间
+            System.arraycopy(cardOpDU.ucDateTimeUTC, 0, rcdBuffer, 24, 4);
+
+        }
+        if ((cardOpDU.cardClass == (byte) 0x01) || (cardOpDU.cardClass == (byte) 0x51)
+                || (cardOpDU.cardClass == (byte) 0x71)) // M1卡(S50/S70)
+        {
+            if (cardOpDU.procSec == 2)// 消费钱包
+            {
+                //28-29: 充值计数器
+                System.arraycopy(cardOpDU.uiIncPurCount, 0, rcdBuffer, 28, 2);
+                //30-32: 充值日期
+                System.arraycopy(cardOpDU.ucIncPurDate, 0, rcdBuffer, 30, 3);
+                if (cardOpDU.cardClass == (byte) 0x01) {
+                    //33-34：卡内钱包计数器
+                    rcdBuffer[33] = (byte) (cardOpDU.purCount >> 8);
+                    rcdBuffer[34] = (byte) cardOpDU.purCount;
+                } else {
+                    //33-34：卡内钱包计数器
+                    rcdBuffer[33] = (byte) ((cardOpDU.purCount + 1) >> 8);
+                    rcdBuffer[34] = (byte) (cardOpDU.purCount + 1);
+                }
+                rcdBuffer[35] = 0x06;                                //35:    交易类型标识
+                rcdBuffer[36] = (byte) (cardOpDU.purorimoneyInt >> 16);                //36-38	交易前余额
+                rcdBuffer[37] = (byte) (cardOpDU.purorimoneyInt >> 8);
+                rcdBuffer[38] = (byte) cardOpDU.purorimoneyInt;
+                rcdBuffer[39] = (byte) (cardOpDU.pursubInt >> 16);                    //39-41 交易额
+                rcdBuffer[40] = (byte) (cardOpDU.pursubInt >> 8);
+                rcdBuffer[41] = (byte) cardOpDU.pursubInt;
+
+                rcdBuffer[44] = psamBeenList.get(0).getSnr()[3];
+                System.arraycopy(psamBeenList.get(0).getSnr(), 7, rcdBuffer, 45, 3);
+                //48-51: PSAM卡终端交易序号
+                System.arraycopy(cardOpDU.ucIncPurDev, 0, rcdBuffer, 48, 4);
+                //56-58: 交易实扣金额
+                rcdBuffer[56] = (byte) (cardOpDU.pursubInt >> 16);
+                rcdBuffer[57] = (byte) (cardOpDU.pursubInt >> 8);
+                rcdBuffer[58] = (byte) cardOpDU.pursubInt;
+            } else {//月票
+                //27-28: 充值计数器
+                rcdBuffer[28] = (byte) (cardOpDU.uiIncYueCount >> 8);
+                rcdBuffer[29] = (byte) cardOpDU.uiIncYueCount;
+                //29-31: 充值日期
+                System.arraycopy(cardOpDU.yueUsingDate, 0, rcdBuffer, 30, 3);
+                //33-34: 是公交月票卡,记录里是月票计数器
+                if (cardOpDU.cardClass == (byte) 0x01) {
+                    rcdBuffer[33] = (byte) (cardOpDU.yueCount >> 8);
+                    rcdBuffer[34] = (byte) cardOpDU.yueCount;
+                } else {
+                    //33-34: 是城市月票卡,记录里是钱包计数器
+                    rcdBuffer[33] = (byte) ((cardOpDU.yueCount + 1) >> 8);
+                    rcdBuffer[34] = (byte) (cardOpDU.yueCount + 1);
+                }
+                rcdBuffer[35] = (byte) (cardOpDU.yueOriMoney >> 24);                //35-38 交易前余额
+                rcdBuffer[36] = (byte) (cardOpDU.yueOriMoney >> 16);
+                rcdBuffer[37] = (byte) (cardOpDU.yueOriMoney >> 8);
+                rcdBuffer[38] = (byte) cardOpDU.yueOriMoney;
+                rcdBuffer[39] = (byte) (cardOpDU.yueSub >> 16);                //39-41 交易额
+                rcdBuffer[40] = (byte) (cardOpDU.yueSub >> 8);
+                rcdBuffer[41] = (byte) cardOpDU.yueSub;
+
+                rcdBuffer[44] = psamBeenList.get(0).getSnr()[3];
+                System.arraycopy(psamBeenList.get(0).getSnr(), 7, rcdBuffer, 45, 3);
+                rcdBuffer[56] = (byte) (cardOpDU.actYueSub >> 16);                //56-58: 交易实扣金额
+                rcdBuffer[57] = (byte) (cardOpDU.actYueSub >> 8);
+                rcdBuffer[58] = (byte) cardOpDU.actYueSub;
+            }
+        } else {//CPU
+            if (cardOpDU.ucProcSec == 2)//传统钱包
+            {
+                //33-34:消费序号
+                System.arraycopy(cardOpDU.uiOffLineCount, 0, rcdBuffer, 33, 2);
+                //35:交易类型标识表
+                rcdBuffer[35] = cardOpDU.ucCAPP == (byte) 0x01 ? (byte) 0x09 : (byte) 0x06;
+                rcdBuffer[36] = (byte) (cardOpDU.lPurOriMoney >> 16);
+                rcdBuffer[37] = (byte) (cardOpDU.lPurOriMoney >> 8);
+                rcdBuffer[38] = (byte) cardOpDU.lPurOriMoney;
+                rcdBuffer[39] = (byte) (cardOpDU.lPurSub >> 16);                    //40-41交易额
+                rcdBuffer[40] = (byte) (cardOpDU.lPurSub >> 8);
+                rcdBuffer[41] = (byte) cardOpDU.lPurSub;
+                System.arraycopy(cardOpDU.ucPOSSnr, 0, rcdBuffer, 42, 6);
+                rcdBuffer[48] = (byte) (cardOpDU.ulPOSTradeCount >> 24);        //48-51: PSAM???????????
+                rcdBuffer[49] = (byte) (cardOpDU.ulPOSTradeCount >> 16);
+                rcdBuffer[50] = (byte) (cardOpDU.ulPOSTradeCount >> 8);
+                rcdBuffer[51] = (byte) cardOpDU.ulPOSTradeCount;
+                //52-55: TAC码
+                System.arraycopy(new byte[]{(byte) 0xff, (byte) 0xff, (byte) 0xff, (byte) 0xff}
+                        , 0, rcdBuffer, 52, 4);
+                rcdBuffer[56] = (byte) (cardOpDU.lPurSub >> 16);                    //56-58:交易实扣金额
+                rcdBuffer[57] = (byte) (cardOpDU.lPurSub >> 8);
+                rcdBuffer[58] = (byte) cardOpDU.lPurSub;
+            } else {//传统优惠区	
+                //30-32:充值日期
+                System.arraycopy(cardOpDU.ucYueUsingDate, 0, rcdBuffer, 30, 3);
+                //33-34:消费序号
+                System.arraycopy(cardOpDU.uiOffLineCount, 0, rcdBuffer, 33, 2);
+                //35:交易类型标识表
+                rcdBuffer[35] = cardOpDU.ucCAPP == (byte) 0x01 ? (byte) 0x09 : (byte) 0x06;
+                rcdBuffer[36] = (byte) (cardOpDU.lYueOriMoney >> 16);                    //35-38交易前余额
+                rcdBuffer[37] = (byte) (cardOpDU.lYueOriMoney >> 8);
+                rcdBuffer[38] = (byte) cardOpDU.lYueOriMoney;
+                rcdBuffer[39] = (byte) (cardOpDU.lYueSub >> 16);                    //39-41 交易额
+                rcdBuffer[40] = (byte) (cardOpDU.lYueSub >> 8);
+                rcdBuffer[41] = (byte) cardOpDU.lYueSub;
+                //42-47: PSAM卡终端机编号
+                System.arraycopy(cardOpDU.ucPOSSnr, 0, rcdBuffer, 42, 6);
+                rcdBuffer[48] = (byte) (cardOpDU.ulPOSTradeCount >> 24);        //48-51: PSAM卡终端交易序号
+                rcdBuffer[49] = (byte) (cardOpDU.ulPOSTradeCount >> 16);
+                rcdBuffer[50] = (byte) (cardOpDU.ulPOSTradeCount >> 8);
+                rcdBuffer[51] = (byte) cardOpDU.ulPOSTradeCount;
+                //52-55: TAC码
+                System.arraycopy(new byte[]{(byte) 0xff, (byte) 0xff, (byte) 0xff, (byte) 0xff}
+                        , 0, rcdBuffer, 52, 4);
+                rcdBuffer[56] = (byte) (cardOpDU.lActYueSub >> 16);                //56-58: 交易实扣金额
+                rcdBuffer[57] = (byte) (cardOpDU.lActYueSub >> 8);
+                rcdBuffer[58] = (byte) cardOpDU.lActYueSub;
+            }
+        }
+        rcdBuffer[59] = cardOpDU.fUseHC == 0 ? (byte) 0xff : (byte) cardOpDU.fHC;
+        rcdBuffer[60] = (byte) 0x00;
+
+        if (cardOpDU.ucCardClass == JTBCARD) {
+            for (i = 64; i < 128; i++) {
+                rcdBuffer[i] = 0;
+            }
+            rcdBuffer[64 + 2] = exchType;                                // 2:    记录类型
+            rcdBuffer[64 + 3] = (byte) 0x22;                                    // 3:	 分段标示
+            System.arraycopy(psamBeenList.get(0).getSnr(), 0, rcdBuffer, 64 + 4, 10);
+            rcdBuffer[64 + 14] = cardOpDU.ucKeyVer;
+            rcdBuffer[64 + 15] = cardOpDU.ucKeyAlg;
+            // 17-20: 应用日期
+            System.arraycopy(cardOpDU.ucAppEndDate, 0, rcdBuffer, 64 + 16, 4);
+            rcdBuffer[64 + 62] = rcdBuffer[62];
+            rcdBuffer[64 + 63] = rcdBuffer[63];
+        }
+
+        CardRecord cardRecord = new CardRecord();
+        cardRecord.setIsUpload(false);
+        cardRecord.setRecord(rcdBuffer);
+        DbDaoManage.getDaoSession().getCardRecordDao().insertOrReplace(cardRecord);
     }
 }

@@ -83,7 +83,6 @@ import okhttp3.RequestBody;
 public class SpdBusPayPresenter extends BasePresenterImpl<SpdBusPayContract.View> implements SpdBusPayContract.Presenter {
     private AlipayJni alipayJni;
     private WlxSdk wlxSdk;
-    //    private BosiPayJni bosiPayJni;
     private String TAG = "SPEEDATA_BUS";
     private List<UploadInfoDB> uploadInfoDBS;
     private List<UploadInfoZFBDB> uploadInfoZFBDBS;
@@ -170,20 +169,7 @@ public class SpdBusPayPresenter extends BasePresenterImpl<SpdBusPayContract.View
             @Override
             public void onNext(GetZhiFuBaoKey getZhiFuBaoKey) {
                 String publicKeys = getZhiFuBaoKey.getPublicKeys();
-//                JsonArray asJsonArray = new JsonParser().parse(publicKeys).getAsJsonArray();
                 if (!TextUtils.isEmpty(publicKeys)) {
-//                    DbDaoManage.getDaoSession().getZhiFuBaoPubKeyDao().deleteAll();
-//                    for (int i = 0; i < asJsonArray.size(); i++) {
-//                        String publicKey = asJsonArray.get(i).getAsJsonObject()
-//                                .get("public_key").getAsString();
-//                        int keyId = asJsonArray.get(i).getAsJsonObject()
-//                                .get("key_id").getAsInt();
-//                        ZhiFuBaoPubKey zhiFuBaoPubKey = new ZhiFuBaoPubKey();
-//                        zhiFuBaoPubKey.setKey_id(keyId);
-//                        zhiFuBaoPubKey.setPublic_key(publicKey);
-//                        DbDaoManage.getDaoSession().getZhiFuBaoPubKeyDao().insertOrReplace(zhiFuBaoPubKey);
-//                    }
-
                     DbDaoManage.getDaoSession().getGetZhiFuBaoKeyDao().deleteAll();
                     DbDaoManage.getDaoSession().getGetZhiFuBaoKeyDao().insert(getZhiFuBaoKey);
                     mView.showAliPublicKey(0);

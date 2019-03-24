@@ -19,8 +19,8 @@ public class TCommInfo {
     public byte[] rfu = new byte[6];                                      // 9-14
     public byte chk;
 
-    public int iPurCount;
-    public int iYueCount;
+    public char iPurCount;
+    public char iYueCount;
 
     public void setData(byte[] data) {
         cPtr = data[0];

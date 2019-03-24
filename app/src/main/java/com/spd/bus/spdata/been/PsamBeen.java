@@ -11,10 +11,13 @@ public class PsamBeen {
     //秘钥索引
     private byte[] keyID;
 
-    public PsamBeen(int id, byte[] termBumber, byte[] keyID) {
+    private byte[] snr;
+
+    public PsamBeen(int id, byte[] termBumber, byte[] keyID, byte[] snr) {
         this.id = id;
         this.termBumber = termBumber;
         this.keyID = keyID;
+        this.snr = snr;
     }
 
     public int getId() {
@@ -40,5 +43,13 @@ public class PsamBeen {
 
     public void setKeyID(byte[] keyID) {
         this.keyID = keyID;
+    }
+
+    public byte[] getSnr() {
+        return snr;
+    }
+
+    public void setSnr(byte[] snr) {
+        this.snr = snr;
     }
 }

@@ -4,24 +4,36 @@ import org.greenrobot.greendao.annotation.Entity;
 import org.greenrobot.greendao.annotation.Generated;
 
 /**
+ * 司机卡
  * Created by 张明_ on 2019/3/18.
  * Email 741183142@qq.com
  */
 @Entity
 public class TStaffTb {
+    //卡类型
     public byte ucCardClass;
+    //发卡方代码
     public byte[] ucIssuerCode = new byte[2];
+    //城市代码
     public byte[] ucCityCode = new byte[2];
+    //行业代码
     public byte[] ucVocCode = new byte[2];
+    //卡号
     public byte[] ucAppSnr = new byte[8];
+    //主类型
     public byte ucMainCardType;
+    //子卡类型
     public byte ucSubCardType;
+    //启用日期
     public byte[] ucAppStartYYMMDD = new byte[3];
-    public byte[] ulUTC;
-    @Generated(hash = 577605041)
+    //时间
+    public byte[] ulUTC=new byte[4];
+    public byte[] ulBCD=new byte[7];
+    @Generated(hash = 115204339)
     public TStaffTb(byte ucCardClass, byte[] ucIssuerCode, byte[] ucCityCode,
             byte[] ucVocCode, byte[] ucAppSnr, byte ucMainCardType,
-            byte ucSubCardType, byte[] ucAppStartYYMMDD, byte[] ulUTC) {
+            byte ucSubCardType, byte[] ucAppStartYYMMDD, byte[] ulUTC,
+            byte[] ulBCD) {
         this.ucCardClass = ucCardClass;
         this.ucIssuerCode = ucIssuerCode;
         this.ucCityCode = ucCityCode;
@@ -31,6 +43,7 @@ public class TStaffTb {
         this.ucSubCardType = ucSubCardType;
         this.ucAppStartYYMMDD = ucAppStartYYMMDD;
         this.ulUTC = ulUTC;
+        this.ulBCD = ulBCD;
     }
     @Generated(hash = 35185255)
     public TStaffTb() {
@@ -89,4 +102,11 @@ public class TStaffTb {
     public void setUlUTC(byte[] ulUTC) {
         this.ulUTC = ulUTC;
     }
+    public byte[] getUlBCD() {
+        return this.ulBCD;
+    }
+    public void setUlBCD(byte[] ulBCD) {
+        this.ulBCD = ulBCD;
+    }
+    
 }
