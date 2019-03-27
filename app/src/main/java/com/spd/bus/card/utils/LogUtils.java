@@ -10,12 +10,12 @@ import android.util.Log;
  */
 public class LogUtils {
     public static String tagPrefix = "ZM";
-    public static boolean showV = true;
+    public static boolean showV = false;
     public static boolean showD = true;
-    public static boolean showI = true;
-    public static boolean showW = true;
-    public static boolean showE = true;
-    public static boolean showWTF = true;
+    public static boolean showI = false;
+    public static boolean showW = false;
+    public static boolean showE = false;
+    public static boolean showWTF = false;
 
     /**
      * 得到tag（所在类.方法（L:行））

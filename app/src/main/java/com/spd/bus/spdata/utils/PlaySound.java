@@ -23,6 +23,12 @@ public class PlaySound {
     public static final int dang = 1;
     public static final int xiaofeiSuccse = 2;
     public static final int qingchongshua = 3;
+    public static final int setSuccess = 4;
+    public static final int ZHIFUBAO = 5;
+    public static final int ZHENGZAICHULI = 6;
+    public static final int XUESHENGKA = 6;
+    public static final int QINGTOUBI = 7;
+    public static final int ERWEIMASHIXIAO = 8;
     public static int NO_CYCLE = 0;//不循环
 
 
@@ -36,6 +42,12 @@ public class PlaySound {
         mapSRC.put(dang, sp.load(context, R.raw.dang, 0));
         mapSRC.put(xiaofeiSuccse, sp.load(context, R.raw.xiaofeichenggong, 0));
         mapSRC.put(qingchongshua, sp.load(context, R.raw.qingchongshua, 0));
+        mapSRC.put(setSuccess, sp.load(context, R.raw.set_success, 0));
+        mapSRC.put(ZHIFUBAO, sp.load(context, R.raw.zhifubao, 0));
+        mapSRC.put(ZHENGZAICHULI, sp.load(context, R.raw.zhengzaichulizhong, 0));
+        mapSRC.put(XUESHENGKA, sp.load(context, R.raw.xueshengka, 0));
+        mapSRC.put(ERWEIMASHIXIAO, sp.load(context, R.raw.erweimashixiao, 0));
+        mapSRC.put(QINGTOUBI, sp.load(context, R.raw.qingtoubi, 0));
     }
 
 

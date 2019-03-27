@@ -2,6 +2,7 @@ package com.spd.base.been.tianjin.produce.weixin;
 
 import org.greenrobot.greendao.annotation.Entity;
 import org.greenrobot.greendao.annotation.Generated;
+import org.greenrobot.greendao.annotation.Id;
 
 /**
  * Created by 张明_ on 2019/3/12.
@@ -30,6 +31,7 @@ public class UploadInfoDB {
     //机具号
     private String pos_id;
     //验码记录
+    @Id(autoincrement = false)
     private String record_in;
 
     //是否上传
@@ -153,4 +155,6 @@ public class UploadInfoDB {
     public void setIsUpload(boolean isUpload) {
         this.isUpload = isUpload;
     }
+
+
 }

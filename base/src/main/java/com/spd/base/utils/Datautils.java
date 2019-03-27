@@ -14,6 +14,11 @@ import java.util.Date;
 
 public class Datautils {
 
+
+    public static int btyeTo16Int(byte x) {
+        return ((x) >> 4) * 10 + ((x) & 0x0f);
+    }
+
     /**
      * 多个数组合并
      *

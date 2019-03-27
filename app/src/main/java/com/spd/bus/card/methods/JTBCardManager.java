@@ -20,6 +20,8 @@ import java.util.List;
 
 import wangpos.sdk4.libbasebinder.BankCard;
 
+import static com.spd.bus.card.methods.CardMethods.JTBCARD;
+
 /**
  * 交通部卡
  * Created by 张明_ on 2019/2/18.
@@ -38,6 +40,7 @@ public class JTBCardManager {
     private RunParaFile runParaFile;
     private int purDisable = 0;
     private int fOldDisable = 0;
+    private List<PsamBeen> psamBeenList;
 
     public static JTBCardManager getInstance() {
         if (jtbCardManager == null) {
@@ -49,16 +52,17 @@ public class JTBCardManager {
     }
 
 
-    public CardBackBean mainMethod(BankCard mBankCard, List<PsamBeen> psamBeenList, byte[] cpuCard, byte[] lPurSub) {
+    public CardBackBean mainMethod(BankCard mBankCard, List<PsamBeen> psamBeenList) {
+        LogUtils.d("JTB开始" + DateUtils.getCurrentTimeMillis(DateUtils.FORMAT_yyyyMMddHHmmss));
+        this.psamBeenList = psamBeenList;
         long ltime = System.currentTimeMillis();
         tCardOpDU = new TCardOpDU();
         tCardOpDU.cardClass = (byte) 0x07;
-        tCardOpDU.lPurSubByte = lPurSub;
         //复合交易
         tCardOpDU.ucCAPP = 1;
         CardBackBean first = getFirst(mBankCard, psamBeenList);
         if (first.getBackValue() != METHOD_OK) {
-            return new CardBackBean(first.getBackValue(), tCardOpDU);
+            return first;
         }
         int snr = getSnr(mBankCard);
         if (snr != METHOD_OK) {
@@ -69,16 +73,14 @@ public class JTBCardManager {
         if (fSysSta != METHOD_OK) {
             return new CardBackBean(fSysSta, tCardOpDU);
         }
-        CardBackBean cardBackBean = consumption(mBankCard, cpuCard);
-        LogUtils.i("===消费结束===" + (System.currentTimeMillis() - ltime));
-        CardMethods.onAppendRecordTrade((byte) 0x00, tCardOpDU, runParaFile, psamBeenList);
+        CardBackBean cardBackBean = consumption(mBankCard, psamBeenList);
+        LogUtils.d("JTB结束" + DateUtils.getCurrentTimeMillis(DateUtils.FORMAT_yyyyMMddHHmmss));
         return cardBackBean;
     }
 
     public CardBackBean getFirst(BankCard mBankCard, List<PsamBeen> psamBeenList) {
         byte[] resultBytes = CardMethods.sendApdus(mBankCard, BankCard.CARD_MODE_PICC, CardMethods.SELEC_PPSE);
         if (resultBytes == null || resultBytes.length == 2) {
-            LogUtils.e("===消费记录3031error=== " + Datautils.byteArrayToString(resultBytes));
             return mustToSend(mBankCard, psamBeenList);
         } else {
             List<String> listTlv = new ArrayList<>();
@@ -130,7 +132,7 @@ public class JTBCardManager {
                 , Datautils.byteArrayToString(tCardOpDU.ucDateTime));
         String ulUTCString = Long.toHexString(timeToLong / 1000).toUpperCase();
         tCardOpDU.ucDateTimeUTC = Datautils.HexString2Bytes(ulUTCString);
-        tCardOpDU.ucCardClass = CardMethods.JTBCARD;
+        tCardOpDU.ucCardClass = JTBCARD;
         tCardOpDU.ucCheckDate = new byte[]{(byte) 0x20, (byte) 0x99, (byte) 0x12, (byte) 0x31};
         tCardOpDU.ucOtherCity = (byte) 0x00;
 
@@ -141,8 +143,7 @@ public class JTBCardManager {
             LogUtils.e("===读15文件error===" + Datautils.byteArrayToString(resultBytes));
             return ReturnVal.CAD_READ;
         }
-
-        tCardOpDU.setDataStartUcIssuerCode(resultBytes);
+        setDataStartUcIssuerCode(resultBytes);
         tCardOpDU.ucFile15Top8 = Datautils.concatAll(tCardOpDU.ucIssuerCode, tCardOpDU.ucCityCode
                 , tCardOpDU.ucVocCode, tCardOpDU.ucRfu1);
         if (tCardOpDU.ucAppVer == (byte) 0xff) {
@@ -200,15 +201,16 @@ public class JTBCardManager {
             if (!Arrays.equals(ucAppSnr, problemIssue2)) {
                 fSysSta = false;
             } else {
+                byte[] dBCmd = new byte[8];
+                System.arraycopy(new byte[]{(byte) 0x80, (byte) 0x5a, (byte) 0x00, (byte) 0x00, (byte) 0x02}
+                        , 0, dBCmd, 0, 5);
                 tCardOpDU.uiOffLineCount = Datautils.cutBytes(problemIssueCode, 10, 2);
-                byte[] value3;
-                if (problemIssueCode[21] == (byte) 0x00) {
-                    value3 = new byte[]{(byte) 0x06};
-                } else {
-                    value3 = new byte[]{(byte) 0x09};
-                }
-                byte[] dBCmd = Datautils.concatAll(new byte[]{(byte) 0x80, (byte) 0x5a, (byte) 0x00}, value3
-                        , new byte[]{(byte) 0x02}, tCardOpDU.uiOffLineCount, new byte[]{(byte) 0x08});
+                char uiOffLineCount = (char) (Datautils.byteToChar(tCardOpDU.uiOffLineCount) + 1);
+                dBCmd[5] = (byte) ((uiOffLineCount) >> 8);
+                dBCmd[6] = (byte) uiOffLineCount;
+                dBCmd[7] = (byte) 0x08;
+                dBCmd[3] = problemIssueCode[21] == (byte) 0x00 ? (byte) 0x06 : (byte) 0x09;
+
                 byte[] resultBytes = CardMethods.sendApdus(mBankCard, BankCard.CARD_MODE_PICC, dBCmd);
                 if (resultBytes == null || resultBytes.length == 2) {
                     LogUtils.e("===恢复error===" + Datautils.byteArrayToString(resultBytes));
@@ -216,8 +218,7 @@ public class JTBCardManager {
                 } else {
                     tCardOpDU.ucMAC2 = Datautils.cutBytes(resultBytes, 0, 4);
                     tCardOpDU.ucTAC = Datautils.cutBytes(resultBytes, 4, 4);
-                    byte[] mac2 = Datautils.cutBytes(resultBytes, 0, 8);
-                    byte[] psamCheckMac2 = CardMethods.checkPsamMac2(mac2);
+                    byte[] psamCheckMac2 = CardMethods.checkPsamMac2(tCardOpDU.ucMAC2);
                     resultBytes = CardMethods.sendApdus(mBankCard, BankCard.CARD_MODE_PSAM1_APDU, psamCheckMac2);
                     if (resultBytes == null || resultBytes.length == 2) {
                         LogUtils.e("===psam卡(8072)校验error===");
@@ -233,8 +234,9 @@ public class JTBCardManager {
                     }
 //                    tCardOpDU.ucRcdType = tCardOpDU.ucRcdType & 0xfe;
 
-//                    OnAppendRecordTrade(tCardOpDu.ucRcdType);//写记录
-
+                      //写记录
+                    CardMethods.onAppendRecordTrade(tCardOpDU.ucProcSec == 2 ? (byte) 0x00 : (byte) 0x02
+                            , tCardOpDU, runParaFile, psamBeenList);
                     return ReturnVal.CAD_OK;
                 }
             }
@@ -273,8 +275,8 @@ public class JTBCardManager {
 
             tCardOpDU.ucProcSec = (byte) 0x02;
             tCardOpDU.uiOffLineCount = new byte[]{(byte) 0x00, (byte) 0x00};
-            tCardOpDU.lPurOriMoney = 0;
-            tCardOpDU.lPurSub = 0;
+            tCardOpDU.purorimoneyInt = 0;
+            tCardOpDU.pursubInt = 0;
             tCardOpDU.ulPOSTradeCount = 0;
             tCardOpDU.ucTAC = new byte[]{(byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x00};
             // TODO: 2019/2/20
@@ -290,6 +292,19 @@ public class JTBCardManager {
         }
         runParaFile = runParaFiles.get(0);
 
+
+        return METHOD_OK;
+    }
+
+    public CardBackBean consumption(BankCard mBankCard, List<PsamBeen> psamBeenList) {
+        tCardOpDU.ucDiv = 2;
+        tCardOpDU.ucCAPP = 1;
+        fOldDisable = 0;
+        purDisable = 0;
+        tCardOpDU.ucKeyID = psamBeenList.get(0).getKeyID();
+        tCardOpDU.ucPOSSnr = psamBeenList.get(0).getTermBumber();
+        tCardOpDU.ucProcSec = (byte) 0x02;
+
         byte[] resultBytes;
         if (tCardOpDU.ucProcSec == 2) {
             int ret = CardMethods.fIsUsePur(tCardOpDU, runParaFile);    //判断钱包权限
@@ -299,9 +314,9 @@ public class JTBCardManager {
                 purDisable = 1;
             } else if (ret == 0)        //没有权限
             {
-                tCardOpDU.lPurOriMoney = 0;
-                tCardOpDU.lPurSub = 0;
-                return ReturnVal.CAD_EMPTY;
+                tCardOpDU.purorimoneyInt = 0;
+                tCardOpDU.pursubInt = 0;
+                return new CardBackBean(ReturnVal.CAD_EMPTY, tCardOpDU);
             }
 
         }
@@ -314,7 +329,7 @@ public class JTBCardManager {
                     , new byte[]{(byte) 0x00, (byte) 0xB0, (byte) 0x85, (byte) 0x00, (byte) 0x00});
             if (resultBytes == null || resultBytes.length == 2) {
                 LogUtils.e("===B085error===" + Datautils.byteArrayToString(resultBytes));
-                return ReturnVal.CAD_READ;
+                return new CardBackBean(ReturnVal.CAD_READ, tCardOpDU);
             }
             byte[] ucDateTimeByte = Datautils.cutBytes(tCardOpDU.ucDateTime, 0, 4);
             int ucDateTimeInt = Integer.parseInt(Datautils.byteArrayToString(ucDateTimeByte));
@@ -331,7 +346,7 @@ public class JTBCardManager {
                     , new byte[]{(byte) 0x00, (byte) 0xB2, (byte) 0x01, (byte) 0xF4, (byte) 0x00});
             if (resultBytes == null || resultBytes.length == 2) {
                 LogUtils.e("===B201error===" + Datautils.byteArrayToString(resultBytes));
-                return ReturnVal.CAD_READ;
+                return new CardBackBean(ReturnVal.CAD_READ, tCardOpDU);
             }
 
             //判断是否是同一辆车
@@ -343,10 +358,12 @@ public class JTBCardManager {
                 String busLastStr = Datautils.byteArrayToString(busLastBytes);
                 // 连续刷卡限制时间
                 int timeLimit = Datautils.byteArrayToInt(runParaFile.getUcOldCardTimeLimit());
+//                int timeLimit = 10;
                 SimpleDateFormat format = new SimpleDateFormat("yyyyMMddHHmmss");
                 try {
                     Date busLast = format.parse(busLastStr);
-                    Date dateTime = format.parse(Datautils.byteArrayToString(ucDateTimeByte));
+                    Date dateTime = format.parse(Datautils.byteArrayToString(
+                            Datautils.cutBytes(tCardOpDU.ucDateTime, 0, 7)));
                     Date busLastAfter = new Date(busLast.getTime() + timeLimit * 60000);
                     Date dateTimeAfter = new Date(dateTime.getTime() + timeLimit * 60000);
                     int compare = dateTime.compareTo(busLastAfter);
@@ -360,26 +377,68 @@ public class JTBCardManager {
             }
         }
 
-        return METHOD_OK;
-    }
-
-    public CardBackBean consumption(BankCard mBankCard, byte[] cpuCard) {
         LogUtils.d("===IC读1E文件 00b2send===00B201F400");
-        byte[] resultBytes = CardMethods.sendApdus(mBankCard, BankCard.CARD_MODE_PICC, Datautils.HexString2Bytes("00B201F400"));
+        resultBytes = CardMethods.sendApdus(mBankCard, BankCard.CARD_MODE_PICC
+                , Datautils.HexString2Bytes("00B201F400"));
         if (resultBytes == null || resultBytes.length == 2) {
-            LogUtils.e("===IC读1E文件error===" + Datautils.byteArrayToString(resultBytes));
             return new CardBackBean(ReturnVal.CAD_READ, tCardOpDU);
         }
-        LogUtils.d("===IC读1E文件00b2return===" + Datautils.byteArrayToString(resultBytes));
-        LogUtils.d("===IC余额(805c)send===  805C030204");
-        resultBytes = CardMethods.sendApdus(mBankCard, BankCard.CARD_MODE_PICC, Datautils.HexString2Bytes("805C030204"));
+
+        //805c 读余额
+        resultBytes = CardMethods.sendApdus(mBankCard, BankCard.CARD_MODE_PICC
+                , new byte[]{(byte) 0x80, (byte) 0x5c, (byte) 0x03, (byte) 0x02, (byte) 0x04});
         if (resultBytes == null || resultBytes.length == 2) {
-            LogUtils.e("===IC卡初始化(8050)error===" + Datautils.byteArrayToString(resultBytes));
+            LogUtils.e("===805cerror===" + Datautils.byteArrayToString(resultBytes));
             return new CardBackBean(ReturnVal.CAD_READ, tCardOpDU);
         }
-        LogUtils.d("===IC余额(805c)return===" + Datautils.byteArrayToString(resultBytes));
-        LogUtils.d("===IC卡初始化(8050)send===" + Datautils.byteArrayToString(cpuCard));
-        resultBytes = CardMethods.sendApdus(mBankCard, BankCard.CARD_MODE_PICC, cpuCard);
+
+        int actRemaining, i;
+        for (actRemaining = 0, i = 0; i < 4; i++) {
+            actRemaining <<= 8;
+            actRemaining += resultBytes[i] & 0xFF;
+        }
+        tCardOpDU.purorimoneyInt = actRemaining;
+
+        tCardOpDU.pursubInt = CardMethods.getRadioPurSub(tCardOpDU, runParaFile);
+        tCardOpDU.pursub = Datautils.intToByteArray1(tCardOpDU.pursubInt);
+
+        //老年卡 残疾人卡  有钱包权限不能连刷  无钱包权限扣钱包，可以连刷
+        if ((tCardOpDU.ucOtherCity == 0) &&
+                (tCardOpDU.ucMainCardType == 0x01 || tCardOpDU.ucMainCardType == 0x11) &&
+                (tCardOpDU.ucCardClass == JTBCARD) && (purDisable == 0)) {
+            // fOldDisable=0 第一次刷卡  不扣钱
+            if (fOldDisable == 0) {
+                tCardOpDU.pursubInt = 0;
+            } else {
+                //有权限 第二次刷卡 扣钱
+                return new CardBackBean(ReturnVal.CAD_REUSE, tCardOpDU);
+            }
+
+        }
+
+        if (tCardOpDU.purorimoneyInt > CardMethods.MAXVALUE) {
+            return new CardBackBean(ReturnVal.CAD_BROKEN, tCardOpDU);
+        }
+        if (tCardOpDU.purorimoneyInt < tCardOpDU.pursubInt) {
+            return new CardBackBean(ReturnVal.CAD_EMPTY, tCardOpDU);
+        }
+
+        tCardOpDU.ulTradeValue = tCardOpDU.ucProcSec == (byte) 0x02 ? tCardOpDU.pursubInt : tCardOpDU.actYueSub;
+        tCardOpDU.ucRcdType = tCardOpDU.ucProcSec == (byte) 0x02 ? (byte) 0x00 : (byte) 0x02;
+
+        resultBytes = CardMethods.sendApdus(mBankCard, BankCard.CARD_MODE_PICC
+                , Datautils.HexString2Bytes("805C030204"));
+        if (resultBytes == null || resultBytes.length == 2) {
+            LogUtils.e("===IC卡初始化(805C)error===" + Datautils.byteArrayToString(resultBytes));
+            return new CardBackBean(ReturnVal.CAD_READ, tCardOpDU);
+        }
+        byte[] first = new byte[]{(byte) 0x80, (byte) 0x50, (byte) 0x03, (byte) 0x02, (byte) 0x0b};
+
+        byte[] ulTradeValue = Datautils.intToByteArray1(tCardOpDU.ulTradeValue);
+        byte[] dB8050Cmd = Datautils.concatAll(first, tCardOpDU.ucKeyID, ulTradeValue
+                , tCardOpDU.ucPOSSnr, new byte[]{(byte) 0x0f});
+
+        resultBytes = CardMethods.sendApdus(mBankCard, BankCard.CARD_MODE_PICC, dB8050Cmd);
         if (resultBytes == null || resultBytes.length == 2) {
             LogUtils.e("===IC卡初始化(8050)error===" + Datautils.byteArrayToString(resultBytes));
             return new CardBackBean(ReturnVal.CAD_READ, tCardOpDU);
@@ -420,14 +479,22 @@ public class JTBCardManager {
 
         if (tCardOpDU.ucCAPP == 1) {
             //80dc
+            byte[] value = new byte[8];
+            value[0] = (byte) (tCardOpDU.ulTradeValue >> 24);
+            value[1] = (byte) (tCardOpDU.ulTradeValue >> 16);
+            value[2] = (byte) (tCardOpDU.ulTradeValue >> 8);
+            value[3] = (byte) tCardOpDU.ulTradeValue;
+            value[4] = (byte) ((tCardOpDU.ulBalance - tCardOpDU.ulTradeValue) >> 24);
+            value[5] = (byte) ((tCardOpDU.ulBalance - tCardOpDU.ulTradeValue) >> 16);
+            value[6] = (byte) ((tCardOpDU.ulBalance - tCardOpDU.ulTradeValue) >> 8);
+            value[7] = (byte) (tCardOpDU.ulBalance - tCardOpDU.ulTradeValue);
             byte[] concatAll = Datautils.concatAll(new byte[]{(byte) 0x80, (byte) 0xDC
                             , (byte) 0x00, (byte) 0xF0, (byte) 0x30, tCardOpDU.ucTradeType
                             , (byte) 0x00, (byte) 0x00}
                     , tCardOpDU.ucPOSSnr
                     , new byte[]{(byte) 0x02, (byte) 0x00, (byte) 0x00, (byte) 0x00
                             , (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x00}
-                    , Datautils.intToByteArray1(tCardOpDU.ulTradeValue)
-                    , Datautils.intToByteArray1(tCardOpDU.ulBalance - tCardOpDU.ulTradeValue)
+                    , value
                     , tCardOpDU.ucDateTime
                     , CardMethods.ucCityCodeII
                     , CardMethods.ucShouLiCodeII
@@ -449,10 +516,22 @@ public class JTBCardManager {
             return new CardBackBean(ReturnVal.CAD_MAC1, tCardOpDU);
         }
         if (resultBytes == null || resultBytes.length == 2) {
+//        if (resultBytes != null) {
+            byte[] value = new byte[8];
+            value[0] = (byte) (tCardOpDU.ulTradeValue >> 24);
+            value[1] = (byte) (tCardOpDU.ulTradeValue >> 16);
+            value[2] = (byte) (tCardOpDU.ulTradeValue >> 8);
+            value[3] = (byte) tCardOpDU.ulTradeValue;
+            value[4] = (byte) ((tCardOpDU.purorimoneyInt) >> 24);
+            value[5] = (byte) ((tCardOpDU.purorimoneyInt) >> 16);
+            value[6] = (byte) ((tCardOpDU.purorimoneyInt) >> 8);
+            value[7] = (byte) (tCardOpDU.purorimoneyInt);
             LogUtils.e("===IC卡(8054)消费error===" + Datautils.byteArrayToString(resultBytes));
             fSysSta = true;
             problemIssueCode = Datautils.concatAll(tCardOpDU.ucAppSnr, tCardOpDU.uiOffLineCount,
-                    tCardOpDU.lPurSubByte, tCardOpDU.ulBalanceByte, new byte[]{tCardOpDU.ucCAPP});
+                    new byte[]{tCardOpDU.ucProcSec}, value, new byte[]{tCardOpDU.ucCAPP});
+            CardMethods.onAppendRecordTrade(tCardOpDU.ucProcSec == 2 ? (byte) 0x01 : (byte) 0x03
+                    , tCardOpDU, runParaFile, psamBeenList);
             return new CardBackBean(ReturnVal.CAD_RETRY, tCardOpDU);
         }
 
@@ -468,6 +547,36 @@ public class JTBCardManager {
         }
         LogUtils.d("===psam卡 8072校验返回===: " + Datautils.byteArrayToString(resultBytes));
 //        PlaySound.play(PlaySound.xiaofeiSuccse, 0);
+        //添加正常交易记录 报语音显示界面
+        CardMethods.onAppendRecordTrade(tCardOpDU.ucProcSec == 2 ? (byte) 0x00 : (byte) 0x02
+                , tCardOpDU, runParaFile, psamBeenList);
         return new CardBackBean(ReturnVal.CAD_OK, tCardOpDU);
+    }
+
+
+    public void setDataStartUcIssuerCode(byte[] DBDat) {
+        tCardOpDU.ucIssuerCode = Datautils.cutBytes(DBDat, 0, 2);
+        tCardOpDU.ucCityCode = Datautils.cutBytes(DBDat, 2, 2);
+        tCardOpDU.ucVocCode = Datautils.cutBytes(DBDat, 4, 2);
+        tCardOpDU.ucRfu1 = Datautils.cutBytes(DBDat, 6, 2);
+        tCardOpDU.ucAppTypeFlag = Datautils.cutBytes(DBDat, 8, 1)[0];
+        tCardOpDU.ucAppVer = Datautils.cutBytes(DBDat, 9, 1)[0];
+        tCardOpDU.ucAppSnr = Datautils.cutBytes(DBDat, 10, 10);
+        tCardOpDU.ucAppStartDate = Datautils.cutBytes(DBDat, 20, 4);
+        tCardOpDU.ucAppEndDate = Datautils.cutBytes(DBDat, 24, 4);
+        tCardOpDU.ucRfu2 = Datautils.cutBytes(DBDat, 28, 2);
+    }
+
+
+    public void setDataStartUcMainCardType(byte[] DBDat) {
+        tCardOpDU.ucMainCardType = DBDat[0];
+        tCardOpDU.ucSubCardType = DBDat[1];
+        tCardOpDU.ucCardAppFlag = DBDat[2];
+        tCardOpDU.ucCheckDate = Datautils.cutBytes(DBDat, 3, 4);
+        tCardOpDU.ucAppStartFlag = DBDat[7];
+        tCardOpDU.ucRadioInCard = DBDat[8];
+        tCardOpDU.uiValidDays = Datautils.cutBytes(DBDat, 9, 2);
+        tCardOpDU.ucTimeLimitInCard = DBDat[10];
+        tCardOpDU.ucRfu3 = Datautils.cutBytes(DBDat, 11, 6);
     }
 }

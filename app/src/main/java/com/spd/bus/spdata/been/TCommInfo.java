@@ -22,15 +22,4 @@ public class TCommInfo {
     public char iPurCount;
     public char iYueCount;
 
-    public void setData(byte[] data) {
-        cPtr = data[0];
-        ucPurCount = Datautils.cutBytes(data, 1, 2);
-        fProc = data[3];
-        ucYueCount = Datautils.cutBytes(data, 4, 2);
-        fBlack = data[6];
-        fFileNr = data[7];
-        fSubWay = data[8];
-        rfu = Datautils.cutBytes(data, 9, 6);
-        chk = data[15];
-    }
 }

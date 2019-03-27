@@ -9,6 +9,7 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
 import android.os.RemoteException;
+import android.os.SystemClock;
 import android.support.annotation.Nullable;
 import android.util.Log;
 import android.view.View;
@@ -216,6 +217,17 @@ public class PsamIcActivity extends MVPBaseActivity<SpdBusPayContract.View, SpdB
         setContentView(R.layout.spd_bus_layout);
         initView();
         initCard();
+
+
+//        new Thread(new Runnable() {
+//            @Override
+//            public void run() {
+//                for (int i = 0; i < 20; i++) {
+//                    SystemClock.sleep(1000);
+//                    doVal(new CardBackBean(ReturnVal.CAD_READ, null));
+//                }
+//            }
+//        }).start();
     }
 
 
@@ -515,7 +527,7 @@ public class PsamIcActivity extends MVPBaseActivity<SpdBusPayContract.View, SpdB
                     //检测到非接IC卡
                     if (respdata[0] == 0x07) {
                         CardBackBean cardBackBean = JTBCardManager.getInstance()
-                                .mainMethod(mBankCard, psamDatas, cpuCardInit(), pursub);
+                                .mainMethod(mBankCard, psamDatas);
                         doVal(cardBackBean);
                         isFlag = 0;
 //                        icExpance();//执行等待读卡消费
@@ -563,28 +575,61 @@ public class PsamIcActivity extends MVPBaseActivity<SpdBusPayContract.View, SpdB
                 int value = cardBackBean.getBackValue();
                 switch (value) {
                     case ReturnVal.CAD_READ:
+//                        PlaySound.play(PlaySound.ZHIFUBAO, 0);
+//                        PlaySound.play(PlaySound.ZHENGZAICHULI, 0);
+//                        PlaySound.play(PlaySound.XUESHENGKA, 0);
                         break;
                     case ReturnVal.CAD_EXPIRE:
                         break;
                     case ReturnVal.CAD_SELL:
                         break;
                     case ReturnVal.CAD_OK:
+                        mPresenter.uploadCardData();
                         PlaySound.play(PlaySound.xiaofeiSuccse, 0);
                         TCardOpDU cardOpDU = cardBackBean.getCardOpDU();
-                        if (cardOpDU.procSec != 2) {
-
+                        mLayoutLineInfo.setVisibility(View.GONE);
+                        mLayoutXiaofei.setVisibility(View.VISIBLE);
+                        if (cardOpDU.ucProcSec == (byte) 0x07) {
+                            int num = cardOpDU.yueOriMoney - cardOpDU.yueSub;
+                            mTvXiaofeiTitle.setText("剩余次数");
+                            mTvXiaofeiMoney.setText(num + "");
+                            mTvBalanceTitle.setText("月票");
+                            mTvBalance.setText("1");
                         } else {
-                            mLayoutLineInfo.setVisibility(View.GONE);
-                            mLayoutXiaofei.setVisibility(View.VISIBLE);
                             mTvBalanceTitle.setText("余额");
+                            int balance = cardOpDU.purorimoneyInt - cardOpDU.pursubInt;
+                            mTvBalance.setText(((double) balance / 100) + "元");
                             mTvXiaofeiMoney.setText(((double) cardOpDU.pursubInt / 100) + "元");
                         }
-                        handler.postDelayed(runnable, 2000);
+                        handler.postDelayed(runnable, 3000);
                         break;
                     case ReturnVal.CAD_MAC2:
                         break;
                     case ReturnVal.CAD_RETRY:
                         PlaySound.play(PlaySound.qingchongshua, 0);
+                        break;
+                    case ReturnVal.CAD_SETCOK:
+                        PlaySound.play(PlaySound.setSuccess, 0);
+                        break;
+                    case ReturnVal.CODE_WEIXIN_SUCCESS:
+                        PlaySound.play(PlaySound.xiaofeiSuccse, 0);
+                        break;
+                    case ReturnVal.CODE_ZHIFUBAO_SUCCESS:
+                        int ulHCSub = cardBackBean.getCardOpDU().ulHCSub;
+                        if (ulHCSub == 100) {
+                            PlaySound.play(PlaySound.ZHIFUBAO, 0);
+                        } else if (ulHCSub == -2) {
+                            PlaySound.play(PlaySound.ERWEIMASHIXIAO, 0);
+                        } else {
+                            PlaySound.play(PlaySound.QINGTOUBI, 0);
+                        }
+
+                        break;
+                    case ReturnVal.CODE_YINLAIN_SUCCESS:
+                        PlaySound.play(PlaySound.xiaofeiSuccse, 0);
+                        break;
+                    case ReturnVal.CAD_REUSE:
+                        PlaySound.play(PlaySound.QINGTOUBI, 0);
                         break;
                     default:
                         break;
@@ -1248,150 +1293,150 @@ public class PsamIcActivity extends MVPBaseActivity<SpdBusPayContract.View, SpdB
 
     private byte[] pursub = {0x00, 0x00, 0x00, 0x01};
 
-    private void icExpance() {
-        ltime = System.currentTimeMillis();
-        Log.d(TAG, "===start--消费记录3031send=== " + Datautils.byteArrayToString(SELEC_PPSE));
-        byte[] resultBytes = sendApdus(BankCard.CARD_MODE_PICC, SELEC_PPSE);
-        if (resultBytes == null) {
-            isFlag = 1;
-            Log.d(TAG, "===消费记录3031error=== " + Datautils.byteArrayToString(resultBytes));
-            return;
-        } else if (Arrays.equals(resultBytes, APDU_RESULT_FAILE)) {
-            // TODO: 2019/1/3  查数据库黑名单报语音
-        }
-        List<String> listTlv = new ArrayList<>();
-        TLV.anaTagSpeedata(resultBytes, listTlv);
-        //获取交易时间
-        systemTime = Datautils.getDateTime();
-        if (listTlv.contains("A000000632010105")) {
-            Log.d(TAG, "xiaofeichenggong: 解析到TLV发送0105 send：" + Datautils.byteArrayToString(SELECT_ICCARD_QIANBAO));
-            //选择电子钱包应用
-            resultBytes = sendApdus(BankCard.CARD_MODE_PICC, SELECT_ICCARD_QIANBAO);
-            if (resultBytes == null || resultBytes.length == 2) {
-                isFlag = 1;
-                Log.e(TAG, "===解析到TLV发送0105 return===" + Datautils.byteArrayToString(resultBytes));
-                return;
-            }
-        } else {
-            Log.d(TAG, "===默认发送0105send===" + Datautils.byteArrayToString(SELECT_ICCARD_QIANBAO));
-            //选择电子钱包应用
-            resultBytes = sendApdus(BankCard.CARD_MODE_PICC, SELECT_ICCARD_QIANBAO);
-            if (resultBytes == null) {
-                Log.e(TAG, "icExpance: 获取交易时间错误");
-                isFlag = 1;
-                return;
-            }
-        }
-        Log.d(TAG, "===0105 return===" + Datautils.byteArrayToString(resultBytes));
-        Log.d(TAG, "===读15文件send===" + Datautils.byteArrayToString(READ_ICCARD_15FILE));
-        //读应用下公共应用基本信息文件指令
-        resultBytes = sendApdus(BankCard.CARD_MODE_PICC, READ_ICCARD_15FILE);
-        if (resultBytes == null || resultBytes.length == 2) {
-            Log.e(TAG, "===读15文件error===" + Datautils.byteArrayToString(resultBytes));
-            isFlag = 1;
-            return;
-        }
-        Log.d(TAG, "===IC读15文件 === retur:" + Datautils.byteArrayToString(resultBytes));
-        System.arraycopy(resultBytes, 12, cardId, 0, 8);
-        System.arraycopy(resultBytes, 0, file15_8, 0, 8);
-        System.arraycopy(resultBytes, 2, city, 0, 2);
-        Log.d(TAG, "===卡应用序列号 ===" + Datautils.byteArrayToString(cardId));
-
-        Log.d(TAG, "===读17文件00b0send===" + Datautils.byteArrayToString(READ_ICCARD_17FILE));
-        resultBytes = sendApdus(BankCard.CARD_MODE_PICC, READ_ICCARD_17FILE);
-        if (resultBytes == null || resultBytes.length == 2) {
-            Log.e(TAG, "===读17文件error===" + Datautils.byteArrayToString(resultBytes));
-            isFlag = 1;
-            return;
-        }
-        Log.d(TAG, resplen[0] + "===IC读17文件return===" + Datautils.byteArrayToString(resultBytes));
-        Log.d(TAG, "===IC读1E文件 00b2send===00B201F400");
-        resultBytes = sendApdus(BankCard.CARD_MODE_PICC, Datautils.HexString2Bytes("00B201F400"));
-        if (resultBytes == null || resultBytes.length == 2) {
-            Log.e(TAG, "===IC读1E文件error===" + Datautils.byteArrayToString(resultBytes));
-            isFlag = 1;
-            return;
-        }
-        Log.d(TAG, "===IC读1E文件00b2return===" + Datautils.byteArrayToString(resultBytes));
-
-
-        Log.d(TAG, "===IC余额(805c)send===  805C030204");
-        resultBytes = sendApdus(BankCard.CARD_MODE_PICC, Datautils.HexString2Bytes("805C030204"));
-        if (resultBytes == null || resultBytes.length == 2) {
-            Log.e(TAG, "===IC卡初始化(8050)error===" + Datautils.byteArrayToString(resultBytes));
-            isFlag = 1;
-            return;
-        }
-        Log.d(TAG, "===IC余额(805c)return===" + Datautils.byteArrayToString(resultBytes));
-        Log.d(TAG, "===IC卡初始化(8050)send===" + Datautils.byteArrayToString(cpuCardInit()));
-        resultBytes = sendApdus(BankCard.CARD_MODE_PICC, cpuCardInit());
-        if (resultBytes == null || resultBytes.length == 2) {
-            Log.e(TAG, "===IC卡初始化(8050)error===" + Datautils.byteArrayToString(resultBytes));
-            isFlag = 1;
-            return;
-        }
-        System.arraycopy(resultBytes, 0, blance, 0, 4);
-        System.arraycopy(resultBytes, 4, ATC, 0, 2);
-        System.arraycopy(resultBytes, 6, keyVersion, 0, 4);
-        flag = resultBytes[10];
-        System.arraycopy(resultBytes, 11, rondomCpu, 0, 4);
-        Log.d(TAG, "===IC卡初始化(8050)return=== " + Datautils.byteArrayToString(resultBytes) + "\n" +
-                "===电子钱包余额:" + Datautils.byteArrayToInt(blance) + "\n" +
-                "===CPU卡脱机交易序号:  " + Datautils.byteArrayToString(ATC) + "\n" +
-                "===密钥版本 : " + (int) flag + "\n" + "===随机数 : " + Datautils.byteArrayToString(rondomCpu));
-        // TODO: 2019/1/8  设定本次消费额
-        if ((Datautils.byteArrayToInt(blance) / 100) > 1000) {
-            // TODO: 2019/1/8  语音请投币  界面显示卡片已损坏
-        }
-        if ((Datautils.byteArrayToInt(blance) / 100) < 0.01) {
-            // TODO: 2019/1/8 语音/界面  余额不足
-        }
-        byte[] psam_mac1 = initSamForPurchase(pursub);
-
-        Log.d(TAG, "===获取MAC1(8070)send===" + Datautils.byteArrayToString(psam_mac1));
-        resultBytes = sendApdus(BankCard.CARD_MODE_PSAM1_APDU, psam_mac1);
-        if (resultBytes == null || resultBytes.length == 2) {
-            Log.e(TAG, "===获取MAC1(8070)error===" + Datautils.byteArrayToString(resultBytes));
-            isFlag = 1;
-            return;
-        }
-        Log.d(TAG, "===获取MAC18070return===" + Datautils.byteArrayToString(resultBytes));
-        praseMAC1(resultBytes);
-        if (CAPP == 1) {
-            //80dc
-            String update80Dc = "80DC00F030060000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000";
-            Log.d(TAG, "===更新1E文件(80dc)send===" + update80Dc);
-            resultBytes = sendApdus(BankCard.CARD_MODE_PICC, Datautils.HexString2Bytes(update80Dc));
-            if (resultBytes == null || resultBytes.length == 2) {
-                Log.e(TAG, "===更新1E文件(80dc)error===" + Datautils.byteArrayToString(resultBytes));
-                isFlag = 1;
-                return;
-            }
-            Log.d(TAG, "===更新1E文件return===" + Datautils.byteArrayToString(resultBytes));
-        }
-        byte[] cmd = getIcPurchase();
-        Log.d(TAG, "===IC卡(8054)消费send===" + Datautils.byteArrayToString(cmd));
-        resultBytes = sendApdus(BankCard.CARD_MODE_PICC, cmd);
-        if (resultBytes == null || resultBytes.length == 2) {
-            Log.e(TAG, "===IC卡(8054)消费error===" + Datautils.byteArrayToString(resultBytes));
-            isFlag = 1;
-            return;
-        }
-        Log.d(TAG, "===IC卡(8054)消费返回===" + Datautils.byteArrayToString(resultBytes));
-        byte[] mac2 = Datautils.cutBytes(resultBytes, 0, 8);
-        byte[] PSAM_CHECK_MAC2 = checkPsamMac2(mac2);
-        Log.d(TAG, "===psam卡 8072校验 send===: " + Datautils.byteArrayToString(PSAM_CHECK_MAC2));
-        resultBytes = sendApdus(BankCard.CARD_MODE_PSAM1_APDU, PSAM_CHECK_MAC2);
-        if (resultBytes == null) {
-            Log.e(TAG, "===psam卡(8072)校验error===");
-            isFlag = 1;
-            return;
-        }
-        Log.d(TAG, "===psam卡 8072校验返回===: " + Datautils.byteArrayToString(resultBytes));
-        isFlag = 0;
-        handler.sendMessage(handler.obtainMessage(1, Datautils.byteArrayToInt(blance)));
-        Log.i("stw", "===消费结束===" + (System.currentTimeMillis() - ltime));
-    }
+//    private void icExpance() {
+//        ltime = System.currentTimeMillis();
+//        Log.d(TAG, "===start--消费记录3031send=== " + Datautils.byteArrayToString(SELEC_PPSE));
+//        byte[] resultBytes = sendApdus(BankCard.CARD_MODE_PICC, SELEC_PPSE);
+//        if (resultBytes == null) {
+//            isFlag = 1;
+//            Log.d(TAG, "===消费记录3031error=== " + Datautils.byteArrayToString(resultBytes));
+//            return;
+//        } else if (Arrays.equals(resultBytes, APDU_RESULT_FAILE)) {
+//            // TODO: 2019/1/3  查数据库黑名单报语音
+//        }
+//        List<String> listTlv = new ArrayList<>();
+//        TLV.anaTagSpeedata(resultBytes, listTlv);
+//        //获取交易时间
+//        systemTime = Datautils.getDateTime();
+//        if (listTlv.contains("A000000632010105")) {
+//            Log.d(TAG, "xiaofeichenggong: 解析到TLV发送0105 send：" + Datautils.byteArrayToString(SELECT_ICCARD_QIANBAO));
+//            //选择电子钱包应用
+//            resultBytes = sendApdus(BankCard.CARD_MODE_PICC, SELECT_ICCARD_QIANBAO);
+//            if (resultBytes == null || resultBytes.length == 2) {
+//                isFlag = 1;
+//                Log.e(TAG, "===解析到TLV发送0105 return===" + Datautils.byteArrayToString(resultBytes));
+//                return;
+//            }
+//        } else {
+//            Log.d(TAG, "===默认发送0105send===" + Datautils.byteArrayToString(SELECT_ICCARD_QIANBAO));
+//            //选择电子钱包应用
+//            resultBytes = sendApdus(BankCard.CARD_MODE_PICC, SELECT_ICCARD_QIANBAO);
+//            if (resultBytes == null) {
+//                Log.e(TAG, "icExpance: 获取交易时间错误");
+//                isFlag = 1;
+//                return;
+//            }
+//        }
+//        Log.d(TAG, "===0105 return===" + Datautils.byteArrayToString(resultBytes));
+//        Log.d(TAG, "===读15文件send===" + Datautils.byteArrayToString(READ_ICCARD_15FILE));
+//        //读应用下公共应用基本信息文件指令
+//        resultBytes = sendApdus(BankCard.CARD_MODE_PICC, READ_ICCARD_15FILE);
+//        if (resultBytes == null || resultBytes.length == 2) {
+//            Log.e(TAG, "===读15文件error===" + Datautils.byteArrayToString(resultBytes));
+//            isFlag = 1;
+//            return;
+//        }
+//        Log.d(TAG, "===IC读15文件 === retur:" + Datautils.byteArrayToString(resultBytes));
+//        System.arraycopy(resultBytes, 12, cardId, 0, 8);
+//        System.arraycopy(resultBytes, 0, file15_8, 0, 8);
+//        System.arraycopy(resultBytes, 2, city, 0, 2);
+//        Log.d(TAG, "===卡应用序列号 ===" + Datautils.byteArrayToString(cardId));
+//
+//        Log.d(TAG, "===读17文件00b0send===" + Datautils.byteArrayToString(READ_ICCARD_17FILE));
+//        resultBytes = sendApdus(BankCard.CARD_MODE_PICC, READ_ICCARD_17FILE);
+//        if (resultBytes == null || resultBytes.length == 2) {
+//            Log.e(TAG, "===读17文件error===" + Datautils.byteArrayToString(resultBytes));
+//            isFlag = 1;
+//            return;
+//        }
+//        Log.d(TAG, resplen[0] + "===IC读17文件return===" + Datautils.byteArrayToString(resultBytes));
+//        Log.d(TAG, "===IC读1E文件 00b2send===00B201F400");
+//        resultBytes = sendApdus(BankCard.CARD_MODE_PICC, Datautils.HexString2Bytes("00B201F400"));
+//        if (resultBytes == null || resultBytes.length == 2) {
+//            Log.e(TAG, "===IC读1E文件error===" + Datautils.byteArrayToString(resultBytes));
+//            isFlag = 1;
+//            return;
+//        }
+//        Log.d(TAG, "===IC读1E文件00b2return===" + Datautils.byteArrayToString(resultBytes));
+//
+//
+//        Log.d(TAG, "===IC余额(805c)send===  805C030204");
+//        resultBytes = sendApdus(BankCard.CARD_MODE_PICC, Datautils.HexString2Bytes("805C030204"));
+//        if (resultBytes == null || resultBytes.length == 2) {
+//            Log.e(TAG, "===IC卡初始化(8050)error===" + Datautils.byteArrayToString(resultBytes));
+//            isFlag = 1;
+//            return;
+//        }
+//        Log.d(TAG, "===IC余额(805c)return===" + Datautils.byteArrayToString(resultBytes));
+//        Log.d(TAG, "===IC卡初始化(8050)send===" + Datautils.byteArrayToString(cpuCardInit()));
+//        resultBytes = sendApdus(BankCard.CARD_MODE_PICC, cpuCardInit());
+//        if (resultBytes == null || resultBytes.length == 2) {
+//            Log.e(TAG, "===IC卡初始化(8050)error===" + Datautils.byteArrayToString(resultBytes));
+//            isFlag = 1;
+//            return;
+//        }
+//        System.arraycopy(resultBytes, 0, blance, 0, 4);
+//        System.arraycopy(resultBytes, 4, ATC, 0, 2);
+//        System.arraycopy(resultBytes, 6, keyVersion, 0, 4);
+//        flag = resultBytes[10];
+//        System.arraycopy(resultBytes, 11, rondomCpu, 0, 4);
+//        Log.d(TAG, "===IC卡初始化(8050)return=== " + Datautils.byteArrayToString(resultBytes) + "\n" +
+//                "===电子钱包余额:" + Datautils.byteArrayToInt(blance) + "\n" +
+//                "===CPU卡脱机交易序号:  " + Datautils.byteArrayToString(ATC) + "\n" +
+//                "===密钥版本 : " + (int) flag + "\n" + "===随机数 : " + Datautils.byteArrayToString(rondomCpu));
+//        // TODO: 2019/1/8  设定本次消费额
+//        if ((Datautils.byteArrayToInt(blance) / 100) > 1000) {
+//            // TODO: 2019/1/8  语音请投币  界面显示卡片已损坏
+//        }
+//        if ((Datautils.byteArrayToInt(blance) / 100) < 0.01) {
+//            // TODO: 2019/1/8 语音/界面  余额不足
+//        }
+//        byte[] psam_mac1 = initSamForPurchase(pursub);
+//
+//        Log.d(TAG, "===获取MAC1(8070)send===" + Datautils.byteArrayToString(psam_mac1));
+//        resultBytes = sendApdus(BankCard.CARD_MODE_PSAM1_APDU, psam_mac1);
+//        if (resultBytes == null || resultBytes.length == 2) {
+//            Log.e(TAG, "===获取MAC1(8070)error===" + Datautils.byteArrayToString(resultBytes));
+//            isFlag = 1;
+//            return;
+//        }
+//        Log.d(TAG, "===获取MAC18070return===" + Datautils.byteArrayToString(resultBytes));
+//        praseMAC1(resultBytes);
+//        if (CAPP == 1) {
+//            //80dc
+//            String update80Dc = "80DC00F030060000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000";
+//            Log.d(TAG, "===更新1E文件(80dc)send===" + update80Dc);
+//            resultBytes = sendApdus(BankCard.CARD_MODE_PICC, Datautils.HexString2Bytes(update80Dc));
+//            if (resultBytes == null || resultBytes.length == 2) {
+//                Log.e(TAG, "===更新1E文件(80dc)error===" + Datautils.byteArrayToString(resultBytes));
+//                isFlag = 1;
+//                return;
+//            }
+//            Log.d(TAG, "===更新1E文件return===" + Datautils.byteArrayToString(resultBytes));
+//        }
+//        byte[] cmd = getIcPurchase();
+//        Log.d(TAG, "===IC卡(8054)消费send===" + Datautils.byteArrayToString(cmd));
+//        resultBytes = sendApdus(BankCard.CARD_MODE_PICC, cmd);
+//        if (resultBytes == null || resultBytes.length == 2) {
+//            Log.e(TAG, "===IC卡(8054)消费error===" + Datautils.byteArrayToString(resultBytes));
+//            isFlag = 1;
+//            return;
+//        }
+//        Log.d(TAG, "===IC卡(8054)消费返回===" + Datautils.byteArrayToString(resultBytes));
+//        byte[] mac2 = Datautils.cutBytes(resultBytes, 0, 8);
+//        byte[] PSAM_CHECK_MAC2 = checkPsamMac2(mac2);
+//        Log.d(TAG, "===psam卡 8072校验 send===: " + Datautils.byteArrayToString(PSAM_CHECK_MAC2));
+//        resultBytes = sendApdus(BankCard.CARD_MODE_PSAM1_APDU, PSAM_CHECK_MAC2);
+//        if (resultBytes == null) {
+//            Log.e(TAG, "===psam卡(8072)校验error===");
+//            isFlag = 1;
+//            return;
+//        }
+//        Log.d(TAG, "===psam卡 8072校验返回===: " + Datautils.byteArrayToString(resultBytes));
+//        isFlag = 0;
+//        handler.sendMessage(handler.obtainMessage(1, Datautils.byteArrayToInt(blance)));
+//        Log.i("stw", "===消费结束===" + (System.currentTimeMillis() - ltime));
+//    }
 
 
     public static byte[] double2Bytes(double d) {
@@ -1453,20 +1498,6 @@ public class PsamIcActivity extends MVPBaseActivity<SpdBusPayContract.View, SpdB
         }
     };
 
-    /**
-     * 用户卡(IC卡)交易初始化指令 8050指令
-     *
-     * @return 8050指令
-     */
-    private byte[] cpuCardInit() {
-        StringBuilder stringBuilder = new StringBuilder();
-        stringBuilder.append("805001020B");
-        if (CAPP == 1) {
-            stringBuilder.replace(5, 6, "3");
-        }
-        stringBuilder.append(Datautils.byteArrayToString(psamDatas.get(0).getKeyID())).append(Datautils.byteArrayToString(pursub)).append(Datautils.byteArrayToString(psamDatas.get(0).getTermBumber())).append("0F");
-        return Datautils.HexString2Bytes(stringBuilder.toString());
-    }
 
     /**
      * PSAM 卡产生MAC1指令 8070
@@ -1793,6 +1824,11 @@ public class PsamIcActivity extends MVPBaseActivity<SpdBusPayContract.View, SpdB
 
 
     @Override
+    public void successCode(CardBackBean cardBackBean) {
+        doVal(cardBackBean);
+    }
+
+    @Override
     public void success(String msg) {
         Log.i(TAG, "success::: " + msg);
     }
@@ -1865,7 +1901,7 @@ public class PsamIcActivity extends MVPBaseActivity<SpdBusPayContract.View, SpdB
 //            mPresenter.uploadAlipayRe(alipayQrCodeUpload);
 
             mPresenter.uploadAlipayRe();
-            handler.sendMessage(handler.obtainMessage(3));
+//            handler.sendMessage(handler.obtainMessage(3));
         } else {
             Log.i(TAG, "\n支付宝校验结果错误:" + codeinfoData.result);
         }
@@ -1912,7 +1948,7 @@ public class PsamIcActivity extends MVPBaseActivity<SpdBusPayContract.View, SpdB
 //            weichatQrCodeUpload.setData(dataBeans);
             mPresenter.uploadWechatRe();
             Log.e("stw", "微信时间：" + (System.currentTimeMillis() - ltime));
-            handler.sendMessage(handler.obtainMessage(3));
+//            handler.sendMessage(handler.obtainMessage(3));
         } else {
             Log.i(TAG, "微信校验结果错误 " + result);
 
@@ -1955,7 +1991,7 @@ public class PsamIcActivity extends MVPBaseActivity<SpdBusPayContract.View, SpdB
             bosiQrCodeUpload.setData(dataBeans);
             Log.i(TAG, "showCheckBosiQrCode: " + recordBean.toString());
             mPresenter.uploadBosiRe(bosiQrCodeUpload);
-            handler.sendMessage(handler.obtainMessage(3));
+//            handler.sendMessage(handler.obtainMessage(3));
         }
     }
 

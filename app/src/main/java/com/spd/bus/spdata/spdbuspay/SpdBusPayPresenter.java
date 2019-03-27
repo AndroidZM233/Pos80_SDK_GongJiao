@@ -21,10 +21,14 @@ import com.spd.alipay.been.TianjinAlipayRes;
 import com.spd.base.been.AlipayQrcodekey;
 
 import com.spd.base.been.BosiQrcodeKey;
+import com.spd.base.been.tianjin.CardBackBean;
+import com.spd.base.been.tianjin.CardRecord;
+import com.spd.base.been.tianjin.CardRecordDao;
 import com.spd.base.been.tianjin.GetMacBackBean;
 import com.spd.base.been.tianjin.GetPublicBackBean;
 import com.spd.base.been.tianjin.GetZhiFuBaoKey;
 import com.spd.base.been.tianjin.KeysBean;
+import com.spd.base.been.tianjin.TCardOpDU;
 import com.spd.base.been.tianjin.UnqrkeyBackBean;
 import com.spd.base.been.tianjin.ZhiFuBaoPubKey;
 import com.spd.base.been.tianjin.produce.weixin.PayinfoBean;
@@ -57,6 +61,7 @@ import com.spd.base.been.tianjin.AppSercetBackBean;
 import com.spd.base.been.tianjin.NetBackBean;
 import com.spd.base.been.tianjin.PosInfoBackBean;
 import com.spd.base.been.tianjin.produce.ProducePost;
+import com.spd.bus.card.methods.ReturnVal;
 import com.spd.bus.card.utils.DateUtils;
 import com.spd.bus.card.utils.HttpMethods;
 import com.spd.bus.spdata.been.ErroCode;
@@ -64,7 +69,10 @@ import com.spd.bus.spdata.mvp.BasePresenterImpl;
 import com.spd.bus.util.SaveDataUtils;
 import com.tencent.wlxsdk.WlxSdk;
 
+import org.apache.commons.lang3.text.StrBuilder;
+
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
@@ -87,6 +95,7 @@ public class SpdBusPayPresenter extends BasePresenterImpl<SpdBusPayContract.View
     private List<UploadInfoDB> uploadInfoDBS;
     private List<UploadInfoZFBDB> uploadInfoZFBDBS;
     private List<UploadInfoYinLianDB> yinLianDBS;
+    private List<CardRecord> cardRecordList;
 
     //===============支付宝二维码==============
 
@@ -424,7 +433,9 @@ public class SpdBusPayPresenter extends BasePresenterImpl<SpdBusPayContract.View
                 String msg = netBackBean.getMsg();
                 if ("success".equalsIgnoreCase(msg)) {
                     Log.i(TAG, "onNext: " + netBackBean.toString());
-                    mView.success("支付宝上传成功");
+                    TCardOpDU tCardOpDU=new TCardOpDU();
+                    tCardOpDU.ulHCSub= Integer.parseInt(netBackBean.getCode());
+                    mView.successCode(new CardBackBean(ReturnVal.CODE_ZHIFUBAO_SUCCESS, tCardOpDU));
                     for (UploadInfoZFBDB uploadInfoZFBDB : uploadInfoZFBDBS) {
                         uploadInfoZFBDB.setIsUpload(true);
                         DbDaoManage.getDaoSession().getUploadInfoZFBDBDao().update(uploadInfoZFBDB);
@@ -826,7 +837,9 @@ public class SpdBusPayPresenter extends BasePresenterImpl<SpdBusPayContract.View
                 String msg = netBackBean.getMsg();
                 if ("success".equalsIgnoreCase(msg)) {
                     Log.i(TAG, "onNext: " + netBackBean.toString());
-                    mView.success("微信上传成功");
+                    TCardOpDU tCardOpDU=new TCardOpDU();
+                    tCardOpDU.ulHCSub= Integer.parseInt(netBackBean.getCode());
+                    mView.successCode(new CardBackBean(ReturnVal.CODE_WEIXIN_SUCCESS, tCardOpDU));
                     for (UploadInfoDB uploadInfoDB : uploadInfoDBS) {
                         uploadInfoDB.setIsUpload(true);
                         DbDaoManage.getDaoSession().getUploadInfoDBDao().update(uploadInfoDB);
@@ -1061,6 +1074,76 @@ public class SpdBusPayPresenter extends BasePresenterImpl<SpdBusPayContract.View
         }
     }
 
+    @Override
+    public void uploadCardData() {
+        String uploadData = getCardData().replace("\\\"", "'");
+        if (TextUtils.isEmpty(uploadData)) {
+            return;
+        }
+
+        HttpMethods.getInstance().produce(uploadData, new Observer<NetBackBean>() {
+            @Override
+            public void onSubscribe(Disposable d) {
+
+            }
+
+            @Override
+            public void onNext(NetBackBean netBackBean) {
+                String msg = netBackBean.getMsg();
+                if ("success".equalsIgnoreCase(msg)) {
+                    Log.i(TAG, "onNext: " + netBackBean.toString());
+                    mView.success("Card上传成功");
+                    for (CardRecord cardRecord : cardRecordList) {
+                        cardRecord.setIsUpload(true);
+                        DbDaoManage.getDaoSession().getCardRecordDao().update(cardRecord);
+                    }
+                }
+            }
+
+            @Override
+            public void onError(Throwable e) {
+                mView.erro(e.toString());
+                Log.i(TAG, "uploadWechatRe: " + e.toString());
+            }
+
+            @Override
+            public void onComplete() {
+
+            }
+        });
+    }
+
+    public String getCardData() {
+        final Gson gson = new GsonBuilder().disableHtmlEscaping().create();
+        //上传记录到天津后台
+        ProducePost producePost = new ProducePost();
+        producePost.setType("2200C");
+        producePost.setRoute("11");
+        producePost.setPosId("123");
+
+        cardRecordList = DbDaoManage.getDaoSession().getCardRecordDao().queryBuilder()
+                .where(CardRecordDao.Properties.IsUpload.eq(false)).list();
+        if (cardRecordList.size() == 0) {
+            return null;
+        }
+        StrBuilder strBuilder = new StrBuilder();
+        for (CardRecord cardRecord : cardRecordList) {
+            byte[] record = cardRecord.getRecord();
+
+            byte[] secondBytes = Datautils.cutBytes(record, 64, 64);
+            byte[] bytes = new byte[64];
+            if (Arrays.equals(secondBytes, bytes)) {
+                byte[] firstBytes = Datautils.cutBytes(record, 0, 64);
+                strBuilder.append(Datautils.byteArrayToString(firstBytes));
+            } else {
+                strBuilder.append(Datautils.byteArrayToString(record));
+            }
+        }
+
+        producePost.setData(String.valueOf(strBuilder));
+        return gson.toJson(producePost).toString();
+    }
+
     private void uploadYinLian() {
         String weiXinUploadData = getYinLianUploadData().replace("\\\"", "'");
 
@@ -1075,7 +1158,9 @@ public class SpdBusPayPresenter extends BasePresenterImpl<SpdBusPayContract.View
                 String msg = netBackBean.getMsg();
                 if ("success".equalsIgnoreCase(msg)) {
                     Log.i(TAG, "onNext: " + netBackBean.toString());
-                    mView.success("银联上传成功");
+                    TCardOpDU tCardOpDU=new TCardOpDU();
+                    tCardOpDU.ulHCSub= Integer.parseInt(netBackBean.getCode());
+                    mView.successCode(new CardBackBean(ReturnVal.CODE_YINLAIN_SUCCESS, tCardOpDU));
                     for (UploadInfoYinLianDB yinLianDB : yinLianDBS) {
                         yinLianDB.setIsUpload(true);
                         DbDaoManage.getDaoSession().getUploadInfoYinLianDBDao().update(yinLianDB);

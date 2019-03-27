@@ -59,9 +59,9 @@ public class TCardOpDU {
     public byte[] uiIncPurCount;
     public byte[] ucIncPurDate = new byte[4];
 
-    public int lPurOriMoney;
-    public int lPurSub;
-    public byte[] lPurSubByte = new byte[4];
+//    public int lPurOriMoney;
+//    public int lPurSub;
+//    public byte[] lPurSubByte = new byte[4];
     public byte[] uiPurCount = new byte[2];
 
     public byte fYueAsPur;
@@ -74,10 +74,10 @@ public class TCardOpDU {
     public int ulYueBase;
     public int[] ulYueBase2 = new int[4];
 
-    public int lYueOriMoney;
-    public int lActYueOriMoney;
-    public int lYueSub;
-    public int lActYueSub;
+//    public int lYueOriMoney;
+//    public int lActYueOriMoney;
+//    public int lYueSub;
+//    public int lActYueSub;
     public byte[] uiYueCount = new byte[2];
 
     public byte ucOtherCity;
@@ -191,47 +191,27 @@ public class TCardOpDU {
     public int pursubInt;//消费金额
     public byte cardClass;
     public int purCount;
-    public int procSec;
+//    public int procSec;
 
     public byte subType;
     public byte[] yueBase;
-    public byte[] yueUsingDate;
+    public byte[] yueUsingDate=new byte[3];
     public byte yuePosition;
     public int yueFlag;
     public int yuePositionInt;
+    //月票余额总数
     public int actYueOriMoney;
+    //月票扣费次数
     public int yueSub;
+    //本月余额次数
     public int yueOriMoney;
+    //月票实扣次数
     public int actYueSub;
     public int yueCount;
     public byte[] ucRcdToCard = new byte[16];
 
 
-    public void setDataStartUcIssuerCode(byte[] DBDat) {
-        ucIssuerCode = Datautils.cutBytes(DBDat, 0, 2);
-        ucCityCode = Datautils.cutBytes(DBDat, 2, 2);
-        ucVocCode = Datautils.cutBytes(DBDat, 4, 2);
-        ucRfu1 = Datautils.cutBytes(DBDat, 6, 2);
-        ucAppTypeFlag = Datautils.cutBytes(DBDat, 8, 1)[0];
-        ucAppVer = Datautils.cutBytes(DBDat, 9, 1)[0];
-        ucAppSnr = Datautils.cutBytes(DBDat, 10, 10);
-        ucAppStartDate = Datautils.cutBytes(DBDat, 20, 4);
-        ucAppEndDate = Datautils.cutBytes(DBDat, 24, 4);
-        ucRfu2 = Datautils.cutBytes(DBDat, 28, 2);
-    }
 
-
-    public void setDataStartUcMainCardType(byte[] DBDat) {
-        ucMainCardType = DBDat[0];
-        ucSubCardType = DBDat[1];
-        ucCardAppFlag = DBDat[2];
-        ucCheckDate = Datautils.cutBytes(DBDat, 3, 4);
-        ucAppStartFlag = DBDat[7];
-        ucRadioInCard = DBDat[8];
-        uiValidDays = Datautils.cutBytes(DBDat, 9, 2);
-        ucTimeLimitInCard = DBDat[10];
-        ucRfu3 = Datautils.cutBytes(DBDat, 11, 6);
-    }
 
     public byte getfStartUsePur() {
         return fStartUsePur;

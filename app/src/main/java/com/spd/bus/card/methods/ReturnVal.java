@@ -49,6 +49,11 @@ public class ReturnVal {
     public final static int CAD_HLERR = 38;
     public final static int CAD_APDU_ERROR = 39;
     public final static int QPASS_SIGN = 40;
+
+    public final static int CODE_WEIXIN_SUCCESS = 41;
+    public final static int CODE_ZHIFUBAO_SUCCESS = 42;
+    public final static int CODE_YINLAIN_SUCCESS = 43;
+    public final static int CODE_ERROR = 44;
 //    public final static int CAD_NORMAL		 	0x01
 //    public final static int CAD_PAUSE			0x40
 //    public final static int CAD_PAUSE0		 	0xF0

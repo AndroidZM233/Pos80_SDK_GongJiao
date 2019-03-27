@@ -7,6 +7,7 @@ import com.spd.alipay.been.AliCodeinfoData;
 import com.spd.alipay.been.TianjinAlipayRes;
 import com.spd.base.been.AlipayQrcodekey;
 import com.spd.base.been.BosiQrcodeKey;
+import com.spd.base.been.tianjin.CardBackBean;
 import com.spd.base.beenupload.AlipayQrCodeUpload;
 import com.spd.base.beenupload.BosiQrCodeUpload;
 import com.spd.base.beenupload.WeichatQrCodeUpload;
@@ -26,6 +27,8 @@ public class SpdBusPayContract {
         /**
          * /界面显示
          */
+        void successCode(CardBackBean cardBackBean);
+
         void success(String msg);
 
         void erro(String msg);
@@ -197,5 +200,7 @@ public class SpdBusPayContract {
         void getYinLianPubKey();
 
         void checkYinLianCode(Context context,String qrcode);
+
+        void uploadCardData();
     }
 }
