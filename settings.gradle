@@ -1,1 +1,1 @@
-include ':app', ':yinlianbarcode', ':wechat', ':base', ':alipay', ':bosipay', ':bosi', ':face', ':cloudpay'
+include ':app', ':yinlianbarcode', ':wechat', ':base', ':alipay',    ':cloudpay'

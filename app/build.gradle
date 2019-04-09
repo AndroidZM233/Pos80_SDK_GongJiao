@@ -43,8 +43,6 @@ dependencies {
     implementation project(':yinlianbarcode')
     implementation project(':wechat')
     implementation project(':alipay')
-    implementation project(':bosi')
-    implementation project(':face')
     implementation 'com.android.support:support-v4:28.0.0'
     implementation 'com.android.support:appcompat-v7:28.0.0'
 }

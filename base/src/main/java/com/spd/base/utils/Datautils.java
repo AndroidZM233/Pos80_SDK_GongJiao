@@ -41,6 +41,60 @@ public class Datautils {
     }
 
     /**
+     * @param str16
+     * @return
+     * @Date:2014-3-18
+     * @Author:lulei
+     * @Description: 将16进制的字符串转化为long值
+     */
+    public static long parseString16ToLong(String str16) {
+        if (str16 == null) {
+            throw new NumberFormatException("null");
+        }
+        //先转化为小写
+        str16 = str16.toLowerCase();
+        //如果字符串以0x开头，去掉0x
+        str16 = str16.startsWith("0x") ? str16.substring(2) : str16;
+        if (str16.length() > 16) {
+            throw new NumberFormatException("For input string '" + str16 + "' is to long");
+        }
+        return parseMd5L16ToLong(str16);
+
+    }
+
+    /**
+     * @param md5L16
+     * @return
+     * @Date:2014-3-18
+     * @Author:lulei
+     * @Description: 将16位的md5转化为long值
+     */
+    public static long parseMd5L16ToLong(String md5L16) {
+        if (md5L16 == null) {
+            throw new NumberFormatException("null");
+        }
+        md5L16 = md5L16.toLowerCase();
+        byte[] bA = md5L16.getBytes();
+        long re = 0L;
+        for (int i = 0; i < bA.length; i++) {
+            //加下一位的字符时，先将前面字符计算的结果左移4位
+            re <<= 4;
+            //0-9数组
+            byte b = (byte) (bA[i] - 48);
+            //A-F字母
+            if (b > 9) {
+                b = (byte) (b - 39);
+            }
+            //非16进制的字符
+            if (b > 15 || b < 0) {
+                throw new NumberFormatException("For input string '" + md5L16);
+            }
+            re += b;
+        }
+        return re;
+    }
+
+    /**
      * 将指定字符串src，以每两个字符分割转换为16进制形式 如："2B44EFD9" --> byte[]{0x2B, 0x44, 0xEF,
      * 0xD9}
      *
@@ -610,5 +664,21 @@ public class Datautils {
         tm.listen(mylistener, PhoneStateListener.LISTEN_SIGNAL_STRENGTHS);
     }
 
+    public static byte[] double2Bytes(double d) {
+        long value = Double.doubleToRawLongBits(d);
+        byte[] byteRet = new byte[8];
+        for (int i = 0; i < 8; i++) {
+            byteRet[i] = (byte) ((value >> 8 * i) & 0xff);
+        }
+        return byteRet;
+    }
+
+    public static double bytes2Double(byte[] arr) {
+        long value = 0;
+        for (int i = 0; i < 8; i++) {
+            value |= ((long) (arr[i] & 0xff)) << (8 * i);
+        }
+        return Double.longBitsToDouble(value);
+    }
 }
 

@@ -1,6 +1,7 @@
 package com.example.test.yinlianbarcode.utils;
 
 import android.content.Context;
+import android.content.res.AssetManager;
 import android.hardware.Camera;
 import android.util.Log;
 
@@ -8,6 +9,10 @@ import com.example.test.yinlianbarcode.interfaces.OnBackListener;
 import com.honeywell.barcode.HSMDecoder;
 import com.honeywell.license.ActivationManager;
 import com.honeywell.license.ActivationResult;
+
+import java.io.FileNotFoundException;
+import java.io.IOException;
+import java.io.InputStream;
 
 import io.reactivex.Observable;
 import io.reactivex.ObservableEmitter;
@@ -22,11 +27,12 @@ import io.reactivex.schedulers.Schedulers;
  */
 
 public class ScanUtils {
+    public static String finalDecrypt = "trial-speed-tjian-05232018";
 
     /**
      * 激活扫描
      */
-    public static void activateScan(final Context context, final OnBackListener onBackListener) {
+    public static void activateScan(final Context context, final OnBackListener onBackListener, boolean isLocal) {
 //        final String key = "37837B0642FE2D76714D44A02B7B916FD0DADE468C4DE621622D6EEDE3DBF406";
 //        Log.d("ZM", "activateScan: " + key);
 //        String decrypt = null;
@@ -38,12 +44,12 @@ public class ScanUtils {
 //            return;
 //        }
 
-        final String finalDecrypt = "trial-speed-tjian-05232018";
+
         Observable.create(new ObservableOnSubscribe<ActivationResult>() {
             @Override
             public void subscribe(ObservableEmitter<ActivationResult> e) throws Exception {
                 try {
-                    ActivationResult toString = getActivationResultString(true, context, finalDecrypt);
+                    ActivationResult toString = getActivationResultString(isLocal, context, finalDecrypt);
                     e.onNext(toString);
                 } catch (Exception e1) {
                     e1.printStackTrace();
@@ -117,30 +123,48 @@ public class ScanUtils {
 
 
     /**
-     * 得到激活结果
-     *
+     * @param isLocal 本地激活判断
      * @param context
-     * @param decrypt
+     * @param decrypt key
      * @return
      */
-    public static ActivationResult getActivationResultString(final Boolean booleans, final Context context, String decrypt) {
+    public static ActivationResult getActivationResultString(final Boolean isLocal, final Context context, String decrypt) {
         ActivationResult activationResult = null;
-        if (booleans) {
+        if (isLocal) {
             activationResult = ActivationManager.activate(context, decrypt);
             System.out.println("激活" + context.toString());
         } else {
-            ActivationResult jihuoResult = ActivationManager.activate(context, decrypt);
-            System.out.println("激活" + jihuoResult.toString());
-            String toString = jihuoResult.toString();
-            if (!toString.contains("SUCCESS")) {
-                return jihuoResult;
-            } else {
-                activationResult = ActivationManager.deactivate(context, decrypt);
-                System.out.println("退订" + context.toString());
-//                closeCamera(context);
+            byte[] frameBuffer = new byte[3980];
+            try {
+                AssetManager assetManager = context.getResources().getAssets();
+                InputStream inputStream = null;
+                try {
+                    inputStream = assetManager.open("IdentityClient.bin");
+                    if (inputStream != null) {
+                        System.out.println("It worked!");
+                    }
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+                int len = inputStream.read(frameBuffer);
+                inputStream.close();
+            } catch (FileNotFoundException e) {
+                e.printStackTrace();
+            } catch (IOException e) {
+                e.printStackTrace();
             }
+            String localLicenseServerURL = "http://218.247.237.138:7070";
+            activationResult = com.honeywell.license.ActivationManager.activate(context,
+                    decrypt, localLicenseServerURL, frameBuffer);
+            System.out.println("激活" + activationResult.toString());
         }
-
+        String toString = activationResult.toString();
+        if (toString.contains("SUCCESS")) {
+            return activationResult;
+        } else {
+            activationResult = ActivationManager.deactivate(context, decrypt);
+            System.out.println("退订" + context.toString());
+        }
         return activationResult;
     }
 

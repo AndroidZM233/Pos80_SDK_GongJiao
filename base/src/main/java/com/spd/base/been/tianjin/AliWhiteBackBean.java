@@ -1,10 +1,14 @@
 package com.spd.base.been.tianjin;
 
+import org.greenrobot.greendao.annotation.Entity;
+import org.greenrobot.greendao.annotation.Generated;
+
 /**
  * Created by 张明_ on 2019/2/21.
  * Email 741183142@qq.com
  */
-public class AliWhiteBlackBackBean {
+@Entity
+public class AliWhiteBackBean {
 
     /**
      * crc16 : FFFF
@@ -15,28 +19,33 @@ public class AliWhiteBlackBackBean {
     private String crc16;
     private String code;
     private String data;
-
-    public String getCrc16() {
-        return crc16;
+    @Generated(hash = 251126654)
+    public AliWhiteBackBean(String crc16, String code, String data) {
+        this.crc16 = crc16;
+        this.code = code;
+        this.data = data;
     }
-
+    @Generated(hash = 1988580747)
+    public AliWhiteBackBean() {
+    }
+    public String getCrc16() {
+        return this.crc16;
+    }
     public void setCrc16(String crc16) {
         this.crc16 = crc16;
     }
-
     public String getCode() {
-        return code;
+        return this.code;
     }
-
     public void setCode(String code) {
         this.code = code;
     }
-
     public String getData() {
-        return data;
+        return this.data;
     }
-
     public void setData(String data) {
         this.data = data;
     }
+
+
 }

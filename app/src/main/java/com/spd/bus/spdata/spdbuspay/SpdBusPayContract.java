@@ -2,7 +2,6 @@ package com.spd.bus.spdata.spdbuspay;
 
 import android.content.Context;
 
-import com.bluering.pos.sdk.qr.QrCodeInfo;
 import com.spd.alipay.been.AliCodeinfoData;
 import com.spd.alipay.been.TianjinAlipayRes;
 import com.spd.base.been.AlipayQrcodekey;
@@ -45,16 +44,6 @@ public class SpdBusPayContract {
 
         void showCheckWechatQrCode(int result, String wechatResult, String userId);
 
-
-        //博思
-        void showBosikey(BosiQrcodeKey bosiQrcodeKey);
-
-        void showBosiCerVersion(String vension);
-
-        void showCheckBosiQrCode(QrCodeInfo qrCodeInfo);
-
-        void showUpdataBosiKey(int state);
-
         void doCheckWechatTianJin();
     }
 
@@ -84,27 +73,8 @@ public class SpdBusPayContract {
          * 校验支付宝二维码
          *
          * @param code
-         * @param recordId
-         * @param posId
-         * @param posMfId
-         * @param posSwVersion
-         * @param merchantType
-         * @param currency
-         * @param amount
-         * @param vehicleId
-         * @param plateNo
-         * @param driverId
-         * @param lineInfo
-         * @param stationNo
-         * @param lbsInfo
-         * @param recordType
          */
-        void checkAliQrCode(String code, String recordId,
-                            String posId, String posMfId, String posSwVersion,
-                            String merchantType, String currency, int amount,
-                            String vehicleId, String plateNo, String driverId,
-                            String lineInfo, String stationNo, String lbsInfo,
-                            String recordType);
+        void checkAliQrCode(String code);
 
         /**
          * 上传支付宝结果
@@ -159,43 +129,6 @@ public class SpdBusPayContract {
         void uploadWechatRe();
 
 
-        /**
-         * 博思二维码
-         */
-        /**
-         * @param context  上下文对象
-         * @param filePath 保存证书key路径
-         */
-        void bosiInitJin(Context context, String filePath);
-
-        /**
-         * 获取博思二维码证书key
-         */
-        void getBosikey();
-
-        /**
-         * 获取证书key版本
-         *
-         * @return 证书版本号
-         */
-        int getBosiCerVersion();
-
-        /**
-         * 更新证书key
-         *
-         * @param cer
-         * @return
-         */
-        int updataBosiKey(String cer);
-
-        /**
-         * 校验博思码
-         *
-         * @param qrcode
-         */
-        void checkBosiQrCode(String qrcode);
-
-        void uploadBosiRe(BosiQrCodeUpload qrcodeUpload);
 
         void getYinLianPubKey();
 

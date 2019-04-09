@@ -1,10 +1,17 @@
 package com.spd.bus.card.methods;
 
+import android.content.Context;
+import android.os.Environment;
+
+import com.google.gson.Gson;
 import com.spd.base.been.tianjin.CardBackBean;
+import com.spd.base.been.tianjin.CardRecord;
 import com.spd.base.db.DbDaoManage;
 import com.spd.base.utils.Datautils;
 import com.spd.base.dbbeen.RunParaFile;
 import com.spd.base.been.tianjin.TCardOpDU;
+import com.spd.base.utils.FileUtils;
+import com.spd.bus.MyApplication;
 import com.spd.bus.card.utils.DateUtils;
 import com.spd.bus.card.utils.LogUtils;
 import com.spd.bus.spdata.been.PsamBeen;
@@ -38,6 +45,7 @@ public class ZJBCardManager {
     private int ulHCUTC;
     private byte[] ulDevUTCByte;
     private List<PsamBeen> psamBeenList;
+    private Context context;
 
     public static ZJBCardManager getInstance() {
         if (jtbCardManager == null) {
@@ -49,7 +57,8 @@ public class ZJBCardManager {
     }
 
 
-    public CardBackBean mainMethod(BankCard mBankCard, List<PsamBeen> psamBeenList) {
+    public CardBackBean mainMethod(Context context,BankCard mBankCard, List<PsamBeen> psamBeenList) {
+        this.context = context;
         long ltime = System.currentTimeMillis();
         LogUtils.d("开始" + DateUtils.getCurrentTimeMillis(DateUtils.FORMAT_yyyyMMddHHmmss));
         tCardOpDU = new TCardOpDU();
@@ -222,6 +231,10 @@ public class ZJBCardManager {
             //保存信息
             DbDaoManage.getDaoSession().getRunParaFileDao().deleteAll();
             DbDaoManage.getDaoSession().getRunParaFileDao().insert(runParaFile);
+            Gson gson = new Gson();
+            String toJson = gson.toJson(runParaFile);
+            FileUtils.writeFile(Environment.getExternalStorageDirectory() + "/card.txt"
+                    , toJson, false);
             return new CardBackBean(ReturnVal.CAD_SETCOK, tCardOpDU);
         }
 
@@ -229,7 +242,7 @@ public class ZJBCardManager {
         List<RunParaFile> runParaFiles = DbDaoManage.getDaoSession()
                 .getRunParaFileDao().loadAll();
         if (runParaFiles.size() < 1) {
-            return new CardBackBean(ReturnVal.CAD_ERR1, tCardOpDU);
+            return new CardBackBean(ReturnVal.CODE_PLEASE_SET, tCardOpDU);
         }
         runParaFile = runParaFiles.get(0);
         //判断启用标志
@@ -299,8 +312,8 @@ public class ZJBCardManager {
 //                    tCardOpDU.ucRcdType = tCardOpDU.ucRcdType & 0xfe;
 
 //                    OnAppendRecordTrade(tCardOpDu.ucRcdType);//写记录
-                    CardMethods.onAppendRecordTrade(tCardOpDU.ucProcSec == 2 ? (byte) 0x00 : (byte) 0x02
-                            , tCardOpDU, runParaFile, psamBeenList);
+                    CardMethods.onAppendRecordTrade(context,tCardOpDU.ucProcSec == 2 ? (byte) 0x00 : (byte) 0x02
+                            , tCardOpDU, runParaFile, psamBeenList, mBankCard);
 
                     return new CardBackBean(ReturnVal.CAD_OK, tCardOpDU);
                 }
@@ -312,9 +325,92 @@ public class ZJBCardManager {
         tCardOpDU.ucKeyID = psamBeenList.get(1).getKeyID();
         tCardOpDU.ucPOSSnr = psamBeenList.get(1).getTermBumber();
         tCardOpDU.ucProcSec = tCardOpDU.ucOtherCity == (byte) 0x00 ? (byte) 0x07 : (byte) 0x02;
+        int fOldDisable = 0;
+        boolean findRecord = false;
 
         //读记录
-        // TODO: 2019/2/27
+        byte[] rcdbuffer = new byte[128];
+        if (MyApplication.cardRecordList.size() != 0) {
+            for (int j = 0; j < MyApplication.cardRecordList.size(); j++) {
+                CardRecord cardRecord = MyApplication.cardRecordList.get(j);
+                if (cardRecord == null) {
+                    continue;
+                }
+                byte[] recordByte = cardRecord.getRecord();
+                byte[] snr = Datautils.cutBytes(recordByte, 7, 4);
+                if (Arrays.equals(snr, tCardOpDU.snr)) {
+                    rcdbuffer = recordByte;
+                    findRecord = true;
+                    break;
+                }
+            }
+        }
+
+//        LogUtils.d("查库开始" + DateUtils.getCurrentTimeMillis(DateUtils.FORMAT_yyyyMMddHHmmss));
+//        long dbCount = DbDaoManage.getDaoSession().getCardRecordDao().count();
+//        if (dbCount > 0) {
+//            int count = 20;
+//            if (dbCount < 20L) {
+//                count = (int) dbCount;
+//            }
+//            for (int j = 0; j < count; j++) {
+//                CardRecord cardRecord = DbDaoManage.getDaoSession().getCardRecordDao()
+//                        .loadByRowId(dbCount - j);
+//                byte[] recordByte = cardRecord.getRecord();
+//                byte[] snr = Datautils.cutBytes(recordByte, 7, 4);
+//                if (Arrays.equals(snr, tCardOpDU.snr)) {
+//                    rcdbuffer = recordByte;
+//                    findRecord = true;
+//                    break;
+//                }
+//            }
+//        }
+//        LogUtils.d("查库结束" + DateUtils.getCurrentTimeMillis(DateUtils.FORMAT_yyyyMMddHHmmss));
+
+        if (findRecord) {
+            if (rcdbuffer[2] == (byte) 0x00 || rcdbuffer[2] == (byte) 0x02) {
+
+                //上次刷卡时间
+//                byte[] busLastBytes = Datautils.cutBytes(rcdbuffer, 24, 7);
+//                String busLastStr = Datautils.byteArrayToString(busLastBytes);
+                byte[] busLastBytes = Datautils.cutBytes(rcdbuffer, 24, 4);
+                long string16ToLong = Datautils.parseString16ToLong(Datautils
+                        .byteArrayToString(busLastBytes)) * 1000;
+                Date utcToLocal = DateUtils.transferLongToDate("yyyyMMddHHmmss", string16ToLong);
+                // 连续刷卡限制时间
+                int time = Datautils.byteArrayToInt(runParaFile.getUcCityYueTimeLimit());
+                SimpleDateFormat format = new SimpleDateFormat("yyyyMMddHHmmss");
+                try {
+                    Date busLast = utcToLocal;
+                    Date dateTime = format.parse(Datautils.byteArrayToString(tCardOpDU.ucDateTime));
+                    Date busLastAfter = new Date(busLast.getTime() + time * 60000);
+                    Date dateTimeAfter = new Date(dateTime.getTime() + time * 60000);
+                    int compare = dateTime.compareTo(busLastAfter);
+                    int compare1 = busLast.compareTo(dateTimeAfter);
+                    if (compare < 0 && compare1 < 0) {
+                        tCardOpDU.ucProcSec = 2; //5分钟后，且已经正常消费过，消费钱包
+                        tCardOpDU.fPermit = 1;
+                    }
+                    time = Datautils.byteArrayToInt(runParaFile.getUcOldCardTimeLimit());
+
+//                    busLast = format.parse(busLastStr);
+                    dateTime = format.parse(Datautils.byteArrayToString(tCardOpDU.ucDateTime));
+                    busLastAfter = new Date(busLast.getTime() + time * 60000);
+                    dateTimeAfter = new Date(dateTime.getTime() + time * 60000);
+                    compare = dateTime.compareTo(busLastAfter);
+                    compare1 = busLast.compareTo(dateTimeAfter);
+                    if ((tCardOpDU.ucMainCardType == 0x01 || tCardOpDU.ucMainCardType == 0x11) &&
+                            (compare < 0 && compare1 < 0)) {
+                        fOldDisable = 1;
+                    }
+                } catch (ParseException e) {
+                    e.printStackTrace();
+                    return new CardBackBean(ReturnVal.CAD_READ, tCardOpDU);
+                }
+
+            }
+        }
+
 
         if (tCardOpDU.ucProcSec != (byte) 0x02) {
             int ret = CardMethods.fIsUseYue(tCardOpDU, runParaFile);//判断月票权限
@@ -388,7 +484,7 @@ public class ZJBCardManager {
             }
             //读取17上条复合记录命令48字节
             resultBytes = CardMethods.sendApdus(mBankCard, BankCard.CARD_MODE_PICC
-                    , new byte[]{(byte) 0x00, (byte) 0xB2, (byte) 0x01, (byte) 0xB8, (byte) 0x30});
+                    , new byte[]{(byte) 0x00, (byte) 0xB2, (byte) 0x01, (byte) 0xB8, (byte) 0x00});
             if (Arrays.equals(resultBytes, CardMethods.APDU_RESULT_FAILE_6A82)) {
             } else if (resultBytes == null || resultBytes.length == 2) {
                 LogUtils.e("===980701error===" + Datautils.byteArrayToString(resultBytes));
@@ -396,90 +492,90 @@ public class ZJBCardManager {
             } else {
                 System.arraycopy(resultBytes, 0, tCardOpDU.ucDatInCard, 0, 30);
             }
-            if (CardMethods.fIsUseHC(tCardOpDU, runParaFile) == 1)//换乘权限判断
-            {
-                tCardOpDU.fUseHC = 1;
-                tCardOpDU.ucCAPP = (byte) 0x01;
-                byte[] utcBytes = Datautils.cutBytes(tCardOpDU.ucDatInCard, 24, 4);
-                String utcHexString = Datautils.byteArrayToString(utcBytes);
-                String ucDateTime = Datautils.byteArrayToString(tCardOpDU.ucDateTime);
-                Date ucHCDateTime = TimeDataUtils.utcToLocal(utcHexString);
-                SimpleDateFormat format = new SimpleDateFormat("yyyyMMddHHmmss");
-                int compareTo = 0;
-                Date parse = null;
-                try {
-                    parse = format.parse(ucDateTime);
-                    compareTo = ucHCDateTime.compareTo(parse);
-                } catch (ParseException e) {
-                    e.printStackTrace();
-                }
-                SimpleDateFormat sdf = new SimpleDateFormat("HHmm");
-                //记录时间
-                String ds1 = sdf.format(ucHCDateTime);
-                //现在时间
-                String ds2 = sdf.format(parse);
-
-                ulHCUTC = Integer.parseInt(ds1);
-                int ulDevUTC = Integer.parseInt(ds2);
-                ulDevUTCByte = Datautils.hexStringToByteArray(ds2);
-                if (TimeDataUtils.isSameDay(ucHCDateTime, parse))//同一天
-                {
-                    byte[] ucJamTime = runParaFile.getUcJamTime();
-                    String ucJamTimeStr1 = Datautils.byteArrayToString(Datautils
-                            .cutBytes(ucJamTime, 0, 2));
-                    String ucJamTimeStr2 = Datautils.byteArrayToString(Datautils
-                            .cutBytes(ucJamTime, 2, 2));
-                    String ucJamTimeStr3 = Datautils.byteArrayToString(Datautils
-                            .cutBytes(ucJamTime, 4, 2));
-                    String ucJamTimeStr4 = Datautils.byteArrayToString(Datautils
-                            .cutBytes(ucJamTime, 6, 2));
-
-                    //记录和现在的时候 分别和runParaFile里面存的时间作比较
-                    if ((ulHCUTC - Integer.parseInt(ucJamTimeStr1) >= 0) &&
-                            ((ulHCUTC - Integer.parseInt(ucJamTimeStr2) < 0))) {
-                        if ((ulDevUTC - Integer.parseInt(ucJamTimeStr1) >= 0) &&
-                                ((ulDevUTC - Integer.parseInt(ucJamTimeStr2) < 0))) {
-                            tCardOpDU.fHCSeg = 1;
-                        } else {
-                            tCardOpDU.fHCSeg = 0;
-                        }
-                    } else if ((ulHCUTC - Integer.parseInt(ucJamTimeStr3) >= 0) &&
-                            ((ulHCUTC - Integer.parseInt(ucJamTimeStr4) < 0)))    //高峰时间
-                    {
-                        if ((ulDevUTC - Integer.parseInt(ucJamTimeStr3) >= 0) &&
-                                ((ulDevUTC - Integer.parseInt(ucJamTimeStr4) < 0)))    //高峰时间
-                        {
-                            tCardOpDU.fHCSeg = 2;
-                        } else {
-                            tCardOpDU.fHCSeg = 0;
-                        }
-                    } else {
-                        tCardOpDU.fHCSeg = 0;
-                    }
-                } else {
-                    tCardOpDU.fHCSeg = 0;
-                }
-                if (tCardOpDU.fHCSeg == 0) {
-                    ulHCUTC = ulDevUTC;
-                    tCardOpDU.fHC = 0;
-                } else {
-                    byte[] ucTransferCntLimit = runParaFile.getUcTransferCntLimit();
-                    byte[] ucTransferTimeLong = runParaFile.getUcTransferTimeLong();
-                    if (ulDevUTC < ulHCUTC + Integer.parseInt(Datautils.byteArrayToString(ucTransferTimeLong))) {
-                        tCardOpDU.fHC = Integer.parseInt(Datautils.byteArrayToString(new byte[]{tCardOpDU.ucDatInCard[28]}));
-                        if (tCardOpDU.fHC < 255) {
-                            tCardOpDU.fHC++;
-                        }
-                        if (tCardOpDU.fHC > Integer.parseInt(Datautils.byteArrayToString(ucTransferCntLimit))) {
-                            tCardOpDU.fUseHC = 0;
-                            tCardOpDU.ucCAPP = 0;
-                        }
-                    } else {
-                        ulHCUTC = ulDevUTC;
-                        tCardOpDU.fHC = 0;
-                    }
-                }
-            }
+//            if (CardMethods.fIsUseHC(tCardOpDU, runParaFile) == 1)//换乘权限判断
+//            {
+//                tCardOpDU.fUseHC = 1;
+//                tCardOpDU.ucCAPP = (byte) 0x01;
+//                byte[] utcBytes = Datautils.cutBytes(tCardOpDU.ucDatInCard, 24, 4);
+//                String utcHexString = Datautils.byteArrayToString(utcBytes);
+//                String ucDateTime = Datautils.byteArrayToString(tCardOpDU.ucDateTime);
+//                Date ucHCDateTime = TimeDataUtils.utcToLocal(utcHexString);
+//                SimpleDateFormat format = new SimpleDateFormat("yyyyMMddHHmmss");
+//                int compareTo = 0;
+//                Date parse = null;
+//                try {
+//                    parse = format.parse(ucDateTime);
+//                    compareTo = ucHCDateTime.compareTo(parse);
+//                } catch (ParseException e) {
+//                    e.printStackTrace();
+//                }
+//                SimpleDateFormat sdf = new SimpleDateFormat("HHmm");
+//                //记录时间
+//                String ds1 = sdf.format(ucHCDateTime);
+//                //现在时间
+//                String ds2 = sdf.format(parse);
+//
+//                ulHCUTC = Integer.parseInt(ds1);
+//                int ulDevUTC = Integer.parseInt(ds2);
+//                ulDevUTCByte = Datautils.hexStringToByteArray(ds2);
+//                if (TimeDataUtils.isSameDay(ucHCDateTime, parse))//同一天
+//                {
+//                    byte[] ucJamTime = runParaFile.getUcJamTime();
+//                    String ucJamTimeStr1 = Datautils.byteArrayToString(Datautils
+//                            .cutBytes(ucJamTime, 0, 2));
+//                    String ucJamTimeStr2 = Datautils.byteArrayToString(Datautils
+//                            .cutBytes(ucJamTime, 2, 2));
+//                    String ucJamTimeStr3 = Datautils.byteArrayToString(Datautils
+//                            .cutBytes(ucJamTime, 4, 2));
+//                    String ucJamTimeStr4 = Datautils.byteArrayToString(Datautils
+//                            .cutBytes(ucJamTime, 6, 2));
+//
+//                    //记录和现在的时候 分别和runParaFile里面存的时间作比较
+//                    if ((ulHCUTC - Integer.parseInt(ucJamTimeStr1) >= 0) &&
+//                            ((ulHCUTC - Integer.parseInt(ucJamTimeStr2) < 0))) {
+//                        if ((ulDevUTC - Integer.parseInt(ucJamTimeStr1) >= 0) &&
+//                                ((ulDevUTC - Integer.parseInt(ucJamTimeStr2) < 0))) {
+//                            tCardOpDU.fHCSeg = 1;
+//                        } else {
+//                            tCardOpDU.fHCSeg = 0;
+//                        }
+//                    } else if ((ulHCUTC - Integer.parseInt(ucJamTimeStr3) >= 0) &&
+//                            ((ulHCUTC - Integer.parseInt(ucJamTimeStr4) < 0)))    //高峰时间
+//                    {
+//                        if ((ulDevUTC - Integer.parseInt(ucJamTimeStr3) >= 0) &&
+//                                ((ulDevUTC - Integer.parseInt(ucJamTimeStr4) < 0)))    //高峰时间
+//                        {
+//                            tCardOpDU.fHCSeg = 2;
+//                        } else {
+//                            tCardOpDU.fHCSeg = 0;
+//                        }
+//                    } else {
+//                        tCardOpDU.fHCSeg = 0;
+//                    }
+//                } else {
+//                    tCardOpDU.fHCSeg = 0;
+//                }
+//                if (tCardOpDU.fHCSeg == 0) {
+//                    ulHCUTC = ulDevUTC;
+//                    tCardOpDU.fHC = 0;
+//                } else {
+//                    byte[] ucTransferCntLimit = runParaFile.getUcTransferCntLimit();
+//                    byte[] ucTransferTimeLong = runParaFile.getUcTransferTimeLong();
+//                    if (ulDevUTC < ulHCUTC + Integer.parseInt(Datautils.byteArrayToString(ucTransferTimeLong))) {
+//                        tCardOpDU.fHC = Integer.parseInt(Datautils.byteArrayToString(new byte[]{tCardOpDU.ucDatInCard[28]}));
+//                        if (tCardOpDU.fHC < 255) {
+//                            tCardOpDU.fHC++;
+//                        }
+//                        if (tCardOpDU.fHC > Integer.parseInt(Datautils.byteArrayToString(ucTransferCntLimit))) {
+//                            tCardOpDU.fUseHC = 0;
+//                            tCardOpDU.ucCAPP = 0;
+//                        }
+//                    } else {
+//                        ulHCUTC = ulDevUTC;
+//                        tCardOpDU.fHC = 0;
+//                    }
+//                }
+//            }
         }//End 本地钱包本地城市第一次消费
 
         resultBytes = CardMethods.sendApdus(mBankCard, BankCard.CARD_MODE_PICC
@@ -677,8 +773,8 @@ public class ZJBCardManager {
             fSysSta = true;
             problemIssueCode = Datautils.concatAll(tCardOpDU.ucAppSnr, tCardOpDU.uiOffLineCount,
                     new byte[]{tCardOpDU.ucProcSec}, value, new byte[]{tCardOpDU.ucCAPP});
-            CardMethods.onAppendRecordTrade(tCardOpDU.ucProcSec == 2 ? (byte) 0x01 : (byte) 0x03
-                    , tCardOpDU, runParaFile, psamBeenList);
+            CardMethods.onAppendRecordTrade(context,tCardOpDU.ucProcSec == 2 ? (byte) 0x01 : (byte) 0x03
+                    , tCardOpDU, runParaFile, psamBeenList, mBankCard);
             return new CardBackBean(ReturnVal.CAD_RETRY, tCardOpDU);
         }
 
@@ -693,8 +789,8 @@ public class ZJBCardManager {
             return new CardBackBean(ReturnVal.CAD_READ, tCardOpDU);
         }
         LogUtils.d("===psam卡 8072校验返回===: " + Datautils.byteArrayToString(resultBytes));
-        CardMethods.onAppendRecordTrade(tCardOpDU.ucProcSec == 2 ? (byte) 0x00 : (byte) 0x02
-                , tCardOpDU, runParaFile, psamBeenList);
+        CardMethods.onAppendRecordTrade(context,tCardOpDU.ucProcSec == 2 ? (byte) 0x00 : (byte) 0x02
+                , tCardOpDU, runParaFile, psamBeenList, mBankCard);
         LogUtils.d("结束" + DateUtils.getCurrentTimeMillis(DateUtils.FORMAT_yyyyMMddHHmmss));
         return new CardBackBean(ReturnVal.CAD_OK, tCardOpDU);
     }

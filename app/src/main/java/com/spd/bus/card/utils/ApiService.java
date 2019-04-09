@@ -1,7 +1,8 @@
 package com.spd.bus.card.utils;
 
+import com.spd.base.been.tianjin.AliWhiteBackBean;
 import com.spd.base.been.tianjin.AppSercetBackBean;
-import com.spd.base.been.tianjin.AliWhiteBlackBackBean;
+import com.spd.base.been.tianjin.AliBlackBackBean;
 import com.spd.base.been.tianjin.BaseInfoBackBean;
 import com.spd.base.been.tianjin.GetMacBackBean;
 import com.spd.base.been.tianjin.GetPublicBackBean;
@@ -64,15 +65,16 @@ public interface ApiService {
 
     //支付宝黑名单
     @POST("pos/black")
-    Observable<AliWhiteBlackBackBean> black(@Body RequestBody route);
+    Observable<AliBlackBackBean> black(@Body RequestBody route);
 
     //支付宝白名单
     @POST("pos/white")
-    Observable<AliWhiteBlackBackBean> white(@Body RequestBody route);
+    Observable<AliWhiteBackBean> white(@Body RequestBody route);
 
     //车载机心跳 10分钟一次
+    @FormUrlEncoded
     @POST("pos/baseinfo")
-    Observable<BaseInfoBackBean> baseinfo(@Body RequestBody route);
+    Observable<BaseInfoBackBean> baseinfo(@FieldMap Map<String, String> params);
 
 
     //车载机程序下载

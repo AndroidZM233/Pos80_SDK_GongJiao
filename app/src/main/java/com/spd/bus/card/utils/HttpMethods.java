@@ -1,6 +1,7 @@
 package com.spd.bus.card.utils;
 
-import com.spd.base.been.tianjin.AliWhiteBlackBackBean;
+import com.spd.base.been.tianjin.AliBlackBackBean;
+import com.spd.base.been.tianjin.AliWhiteBackBean;
 import com.spd.base.been.tianjin.AppSercetBackBean;
 import com.spd.base.been.tianjin.BaseInfoBackBean;
 import com.spd.base.been.tianjin.GetMacBackBean;
@@ -176,7 +177,7 @@ public class HttpMethods {
      * @param sendData
      * @param observer
      */
-    public void black(String sendData, Observer<AliWhiteBlackBackBean> observer) {
+    public void black(String sendData, Observer<AliBlackBackBean> observer) {
         RequestBody requestBody = RequestBody.create(
                 MediaType.parse("application/json;charset=UTF-8"), sendData);
         RetrofitCreateHelper.createApi(ApiService.class, BASE_URL)
@@ -193,7 +194,7 @@ public class HttpMethods {
      * @param sendData
      * @param observer
      */
-    public void white(String sendData, Observer<AliWhiteBlackBackBean> observer) {
+    public void white(String sendData, Observer<AliWhiteBackBean> observer) {
         RequestBody requestBody = RequestBody.create(
                 MediaType.parse("application/json;charset=UTF-8"), sendData);
         RetrofitCreateHelper.createApi(ApiService.class, BASE_URL)
@@ -211,11 +212,11 @@ public class HttpMethods {
      * @param sendData
      * @param observer
      */
-    public void baseinfo(String sendData, Observer<BaseInfoBackBean> observer) {
-        RequestBody requestBody = RequestBody.create(
-                MediaType.parse("application/json;charset=UTF-8"), sendData);
+    public void baseinfo(Map<String, String> params,  Observer<BaseInfoBackBean> observer) {
+//        RequestBody requestBody = RequestBody.create(
+//                MediaType.parse("application/json;charset=UTF-8"), sendData);
         RetrofitCreateHelper.createApi(ApiService.class, BASE_URL)
-                .baseinfo(requestBody)
+                .baseinfo(params)
                 .subscribeOn(Schedulers.io())
                 .unsubscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())

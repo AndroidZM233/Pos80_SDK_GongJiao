@@ -13,13 +13,19 @@ import org.greenrobot.greendao.annotation.Id;
 public class CardRecord {
     @Id
     private Long id;
+
+    private Long recordId;
     private byte[] record;
     private boolean isUpload;
-    @Generated(hash = 522513063)
-    public CardRecord(Long id, byte[] record, boolean isUpload) {
+    private String busRecord;
+    @Generated(hash = 720913872)
+    public CardRecord(Long id, Long recordId, byte[] record, boolean isUpload,
+            String busRecord) {
         this.id = id;
+        this.recordId = recordId;
         this.record = record;
         this.isUpload = isUpload;
+        this.busRecord = busRecord;
     }
     @Generated(hash = 19461391)
     public CardRecord() {
@@ -29,6 +35,12 @@ public class CardRecord {
     }
     public void setId(Long id) {
         this.id = id;
+    }
+    public Long getRecordId() {
+        return this.recordId;
+    }
+    public void setRecordId(Long recordId) {
+        this.recordId = recordId;
     }
     public byte[] getRecord() {
         return this.record;
@@ -42,5 +54,12 @@ public class CardRecord {
     public void setIsUpload(boolean isUpload) {
         this.isUpload = isUpload;
     }
+    public String getBusRecord() {
+        return this.busRecord;
+    }
+    public void setBusRecord(String busRecord) {
+        this.busRecord = busRecord;
+    }
+    
 
 }

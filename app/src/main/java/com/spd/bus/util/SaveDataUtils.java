@@ -112,7 +112,10 @@ public class SaveDataUtils {
                 : Datautils.byteArrayToString(tStaffTb.getUlBCD()));
         payinfoBean.setTeam(Datautils.byteArrayToString(runParaFile.getTeamNr()));
         payinfoBean.setRoute("");
-        payinfoBean.setAccount(Datautils.byteArrayToInt(runParaFile.getKeyV1()) + "");
+        // TODO: 2019/4/9 测试先写一分钱
+//        payinfoBean.setAccount(Datautils.byteArrayToInt(runParaFile.getKeyV1()) + "");
+        payinfoBean.setAccount("1");
+
         payinfoBean.setDept(Datautils.byteArrayToString(runParaFile.getCorNr()));
         payinfoBean.setIn_station_time(DateUtils.getCurrentTimeMillis(DateUtils.FORMAT_YMDHMS));
         payinfoBean.setBus_no(Datautils.byteArrayToString(runParaFile.getBusN()));

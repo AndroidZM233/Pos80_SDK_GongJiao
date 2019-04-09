@@ -22,7 +22,7 @@ android {
 }
 
 greendao {
-    schemaVersion 16
+    schemaVersion 22
 }
 dependencies {
     api fileTree(dir: 'libs', include: ['*.jar', '*.aar'])
@@ -46,6 +46,7 @@ dependencies {
     api 'org.apache.commons:commons-lang3:3.5'
     api 'commons-codec:commons-codec:1.10'
     api 'org.greenrobot:greendao:3.2.2'
+    api 'com.kaopiz:kprogresshud:1.2.0'
 //    //腾讯bugly
 //    api 'com.tencent.bugly:crashreport:latest.release'
 //    //其中latest.release指代最新Bugly SDK版本号，也可以指定明确的版本号，例如2.1.9

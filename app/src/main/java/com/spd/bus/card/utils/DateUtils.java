@@ -97,6 +97,15 @@ public class DateUtils {
     }
 
     /**
+     * 把long 转换成 日期
+     */
+    public static Date transferLongToDate(String dateFormat, Long millSec) {
+        SimpleDateFormat sdf = new SimpleDateFormat(dateFormat);
+        return new Date(millSec);
+    }
+
+
+    /**
      * 转换时间日期格式字串为long型
      *
      * @param time 格式为：yyyy-MM-dd HH:mm的时间日期类型

@@ -3,11 +3,8 @@ package com.spd.bus.spdata.spdbuspay;
 import android.content.Context;
 import android.text.TextUtils;
 import android.util.Log;
-import android.widget.Toast;
 
-import com.bluering.pos.sdk.qr.QrCodeInfo;
 import com.example.test.yinlianbarcode.entity.QrEntity;
-import com.example.test.yinlianbarcode.utils.Logcat;
 import com.example.test.yinlianbarcode.utils.SharedXmlUtil;
 import com.example.test.yinlianbarcode.utils.ValidationUtils;
 import com.google.gson.Gson;
@@ -16,21 +13,18 @@ import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonParser;
 import com.spd.alipay.AlipayJni;
-import com.spd.alipay.been.AliCodeinfoData;
 import com.spd.alipay.been.TianjinAlipayRes;
 import com.spd.base.been.AlipayQrcodekey;
 
 import com.spd.base.been.BosiQrcodeKey;
+import com.spd.base.been.tianjin.AliWhiteBackBean;
 import com.spd.base.been.tianjin.CardBackBean;
-import com.spd.base.been.tianjin.CardRecord;
-import com.spd.base.been.tianjin.CardRecordDao;
 import com.spd.base.been.tianjin.GetMacBackBean;
 import com.spd.base.been.tianjin.GetPublicBackBean;
 import com.spd.base.been.tianjin.GetZhiFuBaoKey;
 import com.spd.base.been.tianjin.KeysBean;
 import com.spd.base.been.tianjin.TCardOpDU;
 import com.spd.base.been.tianjin.UnqrkeyBackBean;
-import com.spd.base.been.tianjin.ZhiFuBaoPubKey;
 import com.spd.base.been.tianjin.produce.weixin.PayinfoBean;
 import com.spd.base.been.tianjin.produce.weixin.ProduceWeiXin;
 import com.spd.base.been.tianjin.produce.weixin.UploadInfoDB;
@@ -43,7 +37,6 @@ import com.spd.base.been.tianjin.produce.zhifubao.ReqDataBean;
 import com.spd.base.been.tianjin.produce.zhifubao.UploadInfoZFBDB;
 import com.spd.base.been.tianjin.produce.zhifubao.UploadInfoZFBDBDao;
 import com.spd.base.beenresult.QrcodeUploadResult;
-import com.spd.base.beenupload.AlipayQrCodeUpload;
 import com.spd.base.beenupload.BosiQrCodeUpload;
 import com.spd.base.been.WechatQrcodeKey;
 import com.spd.base.db.DbDaoManage;
@@ -52,10 +45,8 @@ import com.spd.base.dbbeen.AlipayKeyDbDao;
 import com.spd.base.dbbeen.WeichatKeyDb;
 import com.spd.base.dbbeen.WeichatKeyDbDao;
 import com.spd.base.net.QrcodeApi;
-import com.spd.base.utils.Datautils;
-import com.spd.bosi.BosiQrManage;
 import com.spd.bus.Info;
-import com.spd.base.been.tianjin.AliWhiteBlackBackBean;
+import com.spd.base.been.tianjin.AliBlackBackBean;
 import com.spd.base.been.tianjin.AliWhiteBlackPost;
 import com.spd.base.been.tianjin.AppSercetBackBean;
 import com.spd.base.been.tianjin.NetBackBean;
@@ -64,15 +55,13 @@ import com.spd.base.been.tianjin.produce.ProducePost;
 import com.spd.bus.card.methods.ReturnVal;
 import com.spd.bus.card.utils.DateUtils;
 import com.spd.bus.card.utils.HttpMethods;
+import com.spd.bus.card.utils.LogUtils;
 import com.spd.bus.spdata.been.ErroCode;
 import com.spd.bus.spdata.mvp.BasePresenterImpl;
 import com.spd.bus.util.SaveDataUtils;
 import com.tencent.wlxsdk.WlxSdk;
 
-import org.apache.commons.lang3.text.StrBuilder;
-
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
@@ -95,7 +84,7 @@ public class SpdBusPayPresenter extends BasePresenterImpl<SpdBusPayContract.View
     private List<UploadInfoDB> uploadInfoDBS;
     private List<UploadInfoZFBDB> uploadInfoZFBDBS;
     private List<UploadInfoYinLianDB> yinLianDBS;
-    private List<CardRecord> cardRecordList;
+//    private List<CardRecord> cardRecordList;
 
     //===============支付宝二维码==============
 
@@ -208,17 +197,7 @@ public class SpdBusPayPresenter extends BasePresenterImpl<SpdBusPayContract.View
             return;
         }
         GetZhiFuBaoKey getZhiFuBaoKey = getZhiFuBaoKeys.get(0);
-//        List<ZhiFuBaoPubKey> zhiFuBaoPubKeys = DbDaoManage.getDaoSession()
-//                .getZhiFuBaoPubKeyDao().loadAll();
-//        List<AlipayQrcodekey.PublicKeyListBean> publicKeyLists = new ArrayList<>();
-//        if (zhiFuBaoPubKeys.size() > 0) {
-//            for (int i = 0; i < zhiFuBaoPubKeys.size(); i++) {
-//                AlipayQrcodekey.PublicKeyListBean keyListBean = new AlipayQrcodekey
-//                        .PublicKeyListBean(zhiFuBaoPubKeys.get(i).getKey_id()
-//                        , zhiFuBaoPubKeys.get(i).getPublic_key());
-//                publicKeyLists.add(keyListBean);
-//            }
-//        }
+
         alipayJni = new AlipayJni();
         int result = alipayJni.initAliDev(getZhiFuBaoKey.getPublicKeys(), getZhiFuBaoKey.getCards());
         Log.e(TAG, "showAliPayInit: " + mView);
@@ -297,14 +276,14 @@ public class SpdBusPayPresenter extends BasePresenterImpl<SpdBusPayContract.View
         aliWhiteBlackPost.setVersion("20161208");
         final Gson gson = new GsonBuilder().serializeNulls().create();
         String sendData = gson.toJson(aliWhiteBlackPost);
-        HttpMethods.getInstance().black(sendData, new Observer<AliWhiteBlackBackBean>() {
+        HttpMethods.getInstance().black(sendData, new Observer<AliBlackBackBean>() {
             @Override
             public void onSubscribe(Disposable d) {
 
             }
 
             @Override
-            public void onNext(AliWhiteBlackBackBean aliWhiteBlackBackBean) {
+            public void onNext(AliBlackBackBean aliBlackBackBean) {
 
             }
 
@@ -330,14 +309,14 @@ public class SpdBusPayPresenter extends BasePresenterImpl<SpdBusPayContract.View
         aliWhiteBlackPost.setVersion("20161208");
         final Gson gson = new GsonBuilder().serializeNulls().create();
         String sendData = gson.toJson(aliWhiteBlackPost);
-        HttpMethods.getInstance().white(sendData, new Observer<AliWhiteBlackBackBean>() {
+        HttpMethods.getInstance().white(sendData, new Observer<AliWhiteBackBean>() {
             @Override
             public void onSubscribe(Disposable d) {
 
             }
 
             @Override
-            public void onNext(AliWhiteBlackBackBean aliWhiteBlackBackBean) {
+            public void onNext(AliWhiteBackBean aliBlackBackBean) {
 
             }
 
@@ -356,35 +335,11 @@ public class SpdBusPayPresenter extends BasePresenterImpl<SpdBusPayContract.View
     /**
      * 验码
      *
-     * @param code         扫描到的二维码
-     * @param recordId
-     * @param posId
-     * @param posMfId
-     * @param posSwVersion
-     * @param merchantType
-     * @param currency
-     * @param amount
-     * @param vehicleId
-     * @param plateNo
-     * @param driverId
-     * @param lineInfo
-     * @param stationNo
-     * @param lbsInfo
-     * @param recordType
+     * @param code 扫描到的二维码
      */
     @Override
-    public void checkAliQrCode(String code, String recordId, String posId, String posMfId
-            , String posSwVersion, String merchantType, String currency, int amount
-            , String vehicleId, String plateNo, String driverId, String lineInfo
-            , String stationNo, String lbsInfo, String recordType) {
+    public void checkAliQrCode(String code) {
         Log.e(TAG, "mView11111: " + mView);
-//        AliCodeinfoData aliCodeinfoData = new AliCodeinfoData();
-//        aliCodeinfoData = alipayJni.checkAliQrCode(aliCodeinfoData, code, recordId,
-//                posId, posMfId, posSwVersion,
-//                merchantType, currency, amount,
-//                vehicleId, plateNo, driverId,
-//                lineInfo, stationNo, lbsInfo,
-//                recordType);
         TianjinAlipayRes tianjinAlipayRes = new TianjinAlipayRes();
         tianjinAlipayRes = alipayJni.checkAliQrCode(tianjinAlipayRes,
                 code, "17430805", "1", 1, "SINGLE",
@@ -433,8 +388,8 @@ public class SpdBusPayPresenter extends BasePresenterImpl<SpdBusPayContract.View
                 String msg = netBackBean.getMsg();
                 if ("success".equalsIgnoreCase(msg)) {
                     Log.i(TAG, "onNext: " + netBackBean.toString());
-                    TCardOpDU tCardOpDU=new TCardOpDU();
-                    tCardOpDU.ulHCSub= Integer.parseInt(netBackBean.getCode());
+                    TCardOpDU tCardOpDU = new TCardOpDU();
+                    tCardOpDU.ulHCSub = Integer.parseInt(netBackBean.getCode());
                     mView.successCode(new CardBackBean(ReturnVal.CODE_ZHIFUBAO_SUCCESS, tCardOpDU));
                     for (UploadInfoZFBDB uploadInfoZFBDB : uploadInfoZFBDBS) {
                         uploadInfoZFBDB.setIsUpload(true);
@@ -456,34 +411,6 @@ public class SpdBusPayPresenter extends BasePresenterImpl<SpdBusPayContract.View
         });
 
 
-//        RequestBody requestBody = RequestBody.create(MediaType
-//                .parse("application/json; charset=utf-8"), rusultData);
-//        QrcodeApi.getInstance().alipayUpload(requestBody)
-//                .subscribeOn(io.reactivex.schedulers.Schedulers.io())
-//                .observeOn(io.reactivex.android.schedulers.AndroidSchedulers.mainThread())
-//                .subscribe(new Observer<QrcodeUploadResult>() {
-//                    @Override
-//                    public void onSubscribe(Disposable d) {
-//
-//                    }
-//
-//                    @Override
-//                    public void onNext(QrcodeUploadResult payUploadResult) {
-//                        Log.i(TAG, "onNext: " + payUploadResult.toString());
-//                        mView.success("支付宝上传成功");
-//                    }
-//
-//                    @Override
-//                    public void onError(Throwable e) {
-//                        Log.e(TAG, "上传结果onError :" + e.toString());
-//                        mView.erro(e.toString());
-//                    }
-//
-//                    @Override
-//                    public void onComplete() {
-//
-//                    }
-//                });
     }
 
     private String getALiUploadData() {
@@ -675,15 +602,17 @@ public class SpdBusPayPresenter extends BasePresenterImpl<SpdBusPayContract.View
     @Override
     public void checkWechatTianJin(String code, int payfee, byte scene,
                                    byte scantype, String posId, String posTrxId) {
+        if (wlxSdk==null){
+            wlxSdk = new WlxSdk();
+        }
         int result = 0;
         result = wlxSdk.init(code);
         if (result != ErroCode.EC_SUCCESS) {
+            LogUtils.d(result + "");
             mView.showCheckWechatQrCode(result, "", "");
             return;
         }
-
         String openId = wlxSdk.get_open_id();
-
         //判断是否连刷
         List<UploadInfoDB> checklist = DbDaoManage.getDaoSession().getUploadInfoDBDao()
                 .queryBuilder().where(UploadInfoDBDao.Properties.Open_id.eq(openId)).list();
@@ -698,9 +627,9 @@ public class SpdBusPayPresenter extends BasePresenterImpl<SpdBusPayContract.View
                 }
             } catch (Exception e) {
                 e.printStackTrace();
+                LogUtils.d(e.toString());
             }
         }
-
         String pubKey = "";
         String aesMacRoot = "";
         GetPublicBackBean publicBackBean = DbDaoManage.getDaoSession()
@@ -732,6 +661,7 @@ public class SpdBusPayPresenter extends BasePresenterImpl<SpdBusPayContract.View
 
         result = wlxSdk.verify(openId, pubKey, payfee, scene, scantype, posId, posTrxId, aesMacRoot);
         if (result != ErroCode.EC_SUCCESS) {
+            LogUtils.d(result + "");
             mView.showCheckWechatQrCode(result, wlxSdk.get_record(), "");
             return;
         }
@@ -739,13 +669,13 @@ public class SpdBusPayPresenter extends BasePresenterImpl<SpdBusPayContract.View
             SaveDataUtils.saveWeiXinDataBean(wlxSdk);
         } catch (Exception e) {
             e.printStackTrace();
-            Log.d(TAG, "微信数据保存失败:" + e.toString());
+            LogUtils.d("微信数据保存失败:" + e.toString());
         }
         String record = wlxSdk.get_record();
         mView.showCheckWechatQrCode(result, record, openId);
-        String resInfo = "二维码:" + code + "\r\nkey_id:" + wlxSdk.get_key_id() + "\r\nmac_root_id:" + wlxSdk.get_mac_root_id() + "\r\nopne_id:" + openId + "\r\nbiz_data:" + wlxSdk.get_biz_data_hex() + "\r\npub_Key:" + pubKey + "\r\nmac_key:" + aesMacRoot + "\r\n验码结果:" + result + "\r\n扫码记录:" + record;
-        Log.i(TAG, "验码记录:" + resInfo);
-        Log.i(TAG, "验码结果:" + result + "$$$$" + record);
+//        String resInfo = "二维码:" + code + "\r\nkey_id:" + wlxSdk.get_key_id() + "\r\nmac_root_id:" + wlxSdk.get_mac_root_id() + "\r\nopne_id:" + openId + "\r\nbiz_data:" + wlxSdk.get_biz_data_hex() + "\r\npub_Key:" + pubKey + "\r\nmac_key:" + aesMacRoot + "\r\n验码结果:" + result + "\r\n扫码记录:" + record;
+//        Log.i(TAG, "验码记录:" + resInfo);
+//        Log.i(TAG, "验码结果:" + result + "$$$$" + record);
 
     }
 
@@ -793,22 +723,6 @@ public class SpdBusPayPresenter extends BasePresenterImpl<SpdBusPayContract.View
         }
 
 
-//        WeichatKeyDb weichatKeyDb = DbDaoManage.getDaoSession().getWeichatKeyDbDao().queryBuilder().where(WeichatKeyDbDao.Properties.PubkeyId.eq(String.valueOf(wlxSdk.get_key_id()))).build().unique();
-//        pubKey = weichatKeyDb.getPubKey();
-//        for (int i = 0; i < pbKeyList.size(); i++) {
-//            if (wlxSdk.get_key_id() == pbKeyList.get(i).getKey_id()) {
-//                pubKey = pbKeyList.get(i).getPub_key();
-//                break;
-//            }
-//        }
-//        WeichatKeyDb weichatKeyDb2 = DbDaoManage.getDaoSession().getWeichatKeyDbDao().queryBuilder().where(WeichatKeyDbDao.Properties.MackeyId.eq(wlxSdk.get_mac_root_id())).build().unique();
-//        pubKey = weichatKeyDb2.getMacKey();
-//        for (int i = 0; i < macKeyList.size(); i++) {
-//            if (String.valueOf(wlxSdk.get_mac_root_id()).equals(macKeyList.get(i).getKey_id())) {
-//                aesMacRoot = macKeyList.get(i).getMac_key();
-//                break;
-//            }
-//        }
         result = wlxSdk.verify(openId, pubKey, payfee, scene, scantype, posId, posTrxId, aesMacRoot);
         if (result != ErroCode.EC_SUCCESS) {
             mView.showCheckWechatQrCode(result, wlxSdk.get_record(), "");
@@ -836,10 +750,10 @@ public class SpdBusPayPresenter extends BasePresenterImpl<SpdBusPayContract.View
             public void onNext(NetBackBean netBackBean) {
                 String msg = netBackBean.getMsg();
                 if ("success".equalsIgnoreCase(msg)) {
-                    Log.i(TAG, "onNext: " + netBackBean.toString());
-                    TCardOpDU tCardOpDU=new TCardOpDU();
-                    tCardOpDU.ulHCSub= Integer.parseInt(netBackBean.getCode());
-                    mView.successCode(new CardBackBean(ReturnVal.CODE_WEIXIN_SUCCESS, tCardOpDU));
+                    LogUtils.d("onNext: " + netBackBean.toString());
+                    TCardOpDU tCardOpDU = new TCardOpDU();
+                    tCardOpDU.ulHCSub = Integer.parseInt(netBackBean.getCode());
+//                    mView.successCode(new CardBackBean(ReturnVal.CODE_WEIXIN_SUCCESS, tCardOpDU));
                     for (UploadInfoDB uploadInfoDB : uploadInfoDBS) {
                         uploadInfoDB.setIsUpload(true);
                         DbDaoManage.getDaoSession().getUploadInfoDBDao().update(uploadInfoDB);
@@ -850,7 +764,7 @@ public class SpdBusPayPresenter extends BasePresenterImpl<SpdBusPayContract.View
             @Override
             public void onError(Throwable e) {
                 mView.erro(e.toString());
-                Log.i(TAG, "uploadWechatRe: " + e.toString());
+                LogUtils.d("uploadWechatRe: " + e.toString());
             }
 
             @Override
@@ -859,36 +773,6 @@ public class SpdBusPayPresenter extends BasePresenterImpl<SpdBusPayContract.View
             }
         });
 
-//        final Gson gson = new GsonBuilder().serializeNulls().create();
-//        String rusultData = gson.toJson(qrcodeUpload);
-//        Log.i("SPEEDATA_BUS", "uploadBosiRe: json=====" + rusultData);
-//        RequestBody requestBody = RequestBody.create(MediaType.parse("application/json; charset=utf-8"), rusultData);
-//        QrcodeApi.getInstance().weichatUpload(requestBody)
-//                .subscribeOn(io.reactivex.schedulers.Schedulers.io())
-//                .observeOn(io.reactivex.android.schedulers.AndroidSchedulers.mainThread())
-//                .subscribe(new Observer<QrcodeUploadResult>() {
-//                    @Override
-//                    public void onSubscribe(Disposable d) {
-//
-//                    }
-//
-//                    @Override
-//                    public void onNext(QrcodeUploadResult payUploadResult) {
-//                        Log.i(TAG, "onNext: " + payUploadResult.toString());
-//                        mView.success("微信上传成功");
-//                    }
-//
-//                    @Override
-//                    public void onError(Throwable e) {
-//                        Log.e(TAG, "微信上传结果onError :" + e.toString());
-//                        mView.erro(e.toString());
-//                    }
-//
-//                    @Override
-//                    public void onComplete() {
-//
-//                    }
-//                });
     }
 
 
@@ -926,97 +810,6 @@ public class SpdBusPayPresenter extends BasePresenterImpl<SpdBusPayContract.View
         return gson.toJson(producePost).toString();
     }
 
-
-    //=============博思二维码============
-
-    @Override
-    public void bosiInitJin(Context context, String filePath) {
-        //"/storage/sdcard0/bosicer/"
-        BosiQrManage.bosiQrInit(context, filePath);
-    }
-
-
-    @Override
-    public void getBosikey() {
-        RequestBody requestBody = RequestBody.create(MediaType.parse("application/json"), "".toString());
-        QrcodeApi.getInstance().getBosiPubKey(requestBody)
-                .subscribeOn(io.reactivex.schedulers.Schedulers.io())
-                .observeOn(io.reactivex.android.schedulers.AndroidSchedulers.mainThread())
-                .subscribe(new io.reactivex.Observer<BosiQrcodeKey>() {
-                    @Override
-                    public void onSubscribe(Disposable d) {
-
-                    }
-
-                    @Override
-                    public void onNext(BosiQrcodeKey bosiQrcodeKey) {
-                        mView.showBosikey(bosiQrcodeKey);
-                        mView.success("获取博思KEY成功");
-                    }
-
-                    @Override
-                    public void onError(Throwable e) {
-                        mView.erro(e.toString());
-                        Log.i("PsamIcActivity", "onError:  获取错误 " + e.toString());
-                    }
-
-                    @Override
-                    public void onComplete() {
-
-                    }
-                });
-    }
-
-
-    @Override
-    public int getBosiCerVersion() {
-        return BosiQrManage.bosiQrQueryCertVer();
-    }
-
-    @Override
-    public int updataBosiKey(String cer) {
-        return Integer.parseInt(BosiQrManage.bosiQrUpdateCert(cer));
-    }
-
-    @Override
-    public void checkBosiQrCode(String qrcode) {
-        QrCodeInfo qrCodeInfo = BosiQrManage.bosiQrVerifyCode(qrcode);
-        mView.showCheckBosiQrCode(qrCodeInfo);
-    }
-
-    @Override
-    public void uploadBosiRe(BosiQrCodeUpload qrcodeUpload) {
-        final Gson gson = new GsonBuilder().disableHtmlEscaping().create();
-        String rusultData = gson.toJson(qrcodeUpload);
-        Log.i("SPEEDATA_BUS", "uploadBosiRe: json=====" + rusultData);
-        RequestBody requestBody = RequestBody.create(MediaType.parse("application/json; charset=utf-8"), rusultData);
-        QrcodeApi.getInstance().bosiUpload(requestBody)
-                .subscribeOn(io.reactivex.schedulers.Schedulers.io())
-                .observeOn(io.reactivex.android.schedulers.AndroidSchedulers.mainThread())
-                .subscribe(new Observer<QrcodeUploadResult>() {
-                    @Override
-                    public void onSubscribe(Disposable d) {
-
-                    }
-
-                    @Override
-                    public void onNext(QrcodeUploadResult payUploadResult) {
-                        Log.i(TAG, "onNext: " + payUploadResult.toString());
-                        mView.success("bosi上传成功");
-                    }
-
-                    @Override
-                    public void onError(Throwable e) {
-                        Log.e(TAG, "bosi上传结果onError :" + e.toString());
-                        mView.erro(e.toString());
-                    }
-
-                    @Override
-                    public void onComplete() {
-
-                    }
-                });
-    }
 
     ///////////////////////////////////////////////////银联//////////////////////////
     @Override
@@ -1076,72 +869,7 @@ public class SpdBusPayPresenter extends BasePresenterImpl<SpdBusPayContract.View
 
     @Override
     public void uploadCardData() {
-        String uploadData = getCardData().replace("\\\"", "'");
-        if (TextUtils.isEmpty(uploadData)) {
-            return;
-        }
-
-        HttpMethods.getInstance().produce(uploadData, new Observer<NetBackBean>() {
-            @Override
-            public void onSubscribe(Disposable d) {
-
-            }
-
-            @Override
-            public void onNext(NetBackBean netBackBean) {
-                String msg = netBackBean.getMsg();
-                if ("success".equalsIgnoreCase(msg)) {
-                    Log.i(TAG, "onNext: " + netBackBean.toString());
-                    mView.success("Card上传成功");
-                    for (CardRecord cardRecord : cardRecordList) {
-                        cardRecord.setIsUpload(true);
-                        DbDaoManage.getDaoSession().getCardRecordDao().update(cardRecord);
-                    }
-                }
-            }
-
-            @Override
-            public void onError(Throwable e) {
-                mView.erro(e.toString());
-                Log.i(TAG, "uploadWechatRe: " + e.toString());
-            }
-
-            @Override
-            public void onComplete() {
-
-            }
-        });
-    }
-
-    public String getCardData() {
-        final Gson gson = new GsonBuilder().disableHtmlEscaping().create();
-        //上传记录到天津后台
-        ProducePost producePost = new ProducePost();
-        producePost.setType("2200C");
-        producePost.setRoute("11");
-        producePost.setPosId("123");
-
-        cardRecordList = DbDaoManage.getDaoSession().getCardRecordDao().queryBuilder()
-                .where(CardRecordDao.Properties.IsUpload.eq(false)).list();
-        if (cardRecordList.size() == 0) {
-            return null;
-        }
-        StrBuilder strBuilder = new StrBuilder();
-        for (CardRecord cardRecord : cardRecordList) {
-            byte[] record = cardRecord.getRecord();
-
-            byte[] secondBytes = Datautils.cutBytes(record, 64, 64);
-            byte[] bytes = new byte[64];
-            if (Arrays.equals(secondBytes, bytes)) {
-                byte[] firstBytes = Datautils.cutBytes(record, 0, 64);
-                strBuilder.append(Datautils.byteArrayToString(firstBytes));
-            } else {
-                strBuilder.append(Datautils.byteArrayToString(record));
-            }
-        }
-
-        producePost.setData(String.valueOf(strBuilder));
-        return gson.toJson(producePost).toString();
+//        DataUploadToTianJinUtils.uploadCardData();
     }
 
     private void uploadYinLian() {
@@ -1158,8 +886,8 @@ public class SpdBusPayPresenter extends BasePresenterImpl<SpdBusPayContract.View
                 String msg = netBackBean.getMsg();
                 if ("success".equalsIgnoreCase(msg)) {
                     Log.i(TAG, "onNext: " + netBackBean.toString());
-                    TCardOpDU tCardOpDU=new TCardOpDU();
-                    tCardOpDU.ulHCSub= Integer.parseInt(netBackBean.getCode());
+                    TCardOpDU tCardOpDU = new TCardOpDU();
+                    tCardOpDU.ulHCSub = Integer.parseInt(netBackBean.getCode());
                     mView.successCode(new CardBackBean(ReturnVal.CODE_YINLAIN_SUCCESS, tCardOpDU));
                     for (UploadInfoYinLianDB yinLianDB : yinLianDBS) {
                         yinLianDB.setIsUpload(true);
