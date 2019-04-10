@@ -55,6 +55,7 @@ public class ReturnVal {
     public final static int CODE_YINLAIN_SUCCESS = 43;
     public final static int CODE_ERROR = 44;
     public final static int CODE_PLEASE_SET = 45;
+    public final static int CAD_PSAM_ERROR = 46;
 //    public final static int CAD_NORMAL		 	0x01
 //    public final static int CAD_PAUSE			0x40
 //    public final static int CAD_PAUSE0		 	0xF0

@@ -35,6 +35,7 @@ public class ConfigCheckActivity extends MVPBaseActivity<ConfigCheckContract.Vie
         setContentView(R.layout.activity_config_check);
         initView();
         ConfigUtils.loadTxtConfig();
+
         kProgressHUD = KProgressHUD.create(ConfigCheckActivity.this);
         kProgressHUD.setStyle(KProgressHUD.Style.SPIN_INDETERMINATE)
                 .setLabel("初始化中...")

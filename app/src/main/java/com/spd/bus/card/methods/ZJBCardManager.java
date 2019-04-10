@@ -60,7 +60,7 @@ public class ZJBCardManager {
     public CardBackBean mainMethod(Context context,BankCard mBankCard, List<PsamBeen> psamBeenList) {
         this.context = context;
         long ltime = System.currentTimeMillis();
-        LogUtils.d("开始" + DateUtils.getCurrentTimeMillis(DateUtils.FORMAT_yyyyMMddHHmmss));
+        LogUtils.v("ZJB开始");
         tCardOpDU = new TCardOpDU();
         tCardOpDU.cardClass = (byte) 0x03;
         this.psamBeenList = psamBeenList;
@@ -669,7 +669,7 @@ public class ZJBCardManager {
                         , tCardOpDU.ucSafeAuthCode));
         if (resultBytes == null || resultBytes.length == 2) {
             LogUtils.e("===PSAM验证安全认证识别码指令error===" + Datautils.byteArrayToString(resultBytes));
-            return new CardBackBean(ReturnVal.CAD_READ, tCardOpDU);
+            return new CardBackBean(ReturnVal.CAD_PSAM_ERROR, tCardOpDU);
         }
 
         tCardOpDU.ulTradeValue = tCardOpDU.ucProcSec == (byte) 0x02 ? tCardOpDU.pursubInt : tCardOpDU.actYueSub;
@@ -705,12 +705,12 @@ public class ZJBCardManager {
         resultBytes = CardMethods.sendApdus(mBankCard, BankCard.CARD_MODE_PSAM2_APDU, psamMac1);
         if (resultBytes == null || resultBytes.length == 2) {
             LogUtils.e("===获取MAC1(8070)error===" + Datautils.byteArrayToString(resultBytes));
-            return new CardBackBean(ReturnVal.CAD_READ, tCardOpDU);
+            return new CardBackBean(ReturnVal.CAD_PSAM_ERROR, tCardOpDU);
         }
         LogUtils.d("===获取MAC18070return===" + Datautils.byteArrayToString(resultBytes));
         if (resultBytes.length <= 2) {
             LogUtils.e("===获取MAC1失败===" + Datautils.byteArrayToString(resultBytes));
-            return new CardBackBean(ReturnVal.CAD_READ, tCardOpDU);
+            return new CardBackBean(ReturnVal.CAD_PSAM_ERROR, tCardOpDU);
         }
         tCardOpDU.ulPOSTradeCountByte = Datautils.cutBytes(resultBytes, 0, 4);
         tCardOpDU.ulPOSTradeCount = Datautils.byteArrayToInt(tCardOpDU.ulPOSTradeCountByte);
@@ -786,12 +786,12 @@ public class ZJBCardManager {
         resultBytes = CardMethods.sendApdus(mBankCard, BankCard.CARD_MODE_PSAM2_APDU, psamCheckMac2);
         if (resultBytes == null || resultBytes.length == 2) {
             LogUtils.e("===psam卡(8072)校验error===");
-            return new CardBackBean(ReturnVal.CAD_READ, tCardOpDU);
+            return new CardBackBean(ReturnVal.CAD_PSAM_ERROR, tCardOpDU);
         }
         LogUtils.d("===psam卡 8072校验返回===: " + Datautils.byteArrayToString(resultBytes));
         CardMethods.onAppendRecordTrade(context,tCardOpDU.ucProcSec == 2 ? (byte) 0x00 : (byte) 0x02
                 , tCardOpDU, runParaFile, psamBeenList, mBankCard);
-        LogUtils.d("结束" + DateUtils.getCurrentTimeMillis(DateUtils.FORMAT_yyyyMMddHHmmss));
+        LogUtils.v("ZJB结束" );
         return new CardBackBean(ReturnVal.CAD_OK, tCardOpDU);
     }
 

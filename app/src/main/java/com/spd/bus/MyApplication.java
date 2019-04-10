@@ -87,6 +87,7 @@ public class MyApplication extends Application {
                     intent.putExtra("sp_time", timeToLong);
                     sendBroadcast(intent);
 
+//                    successCallBack();
                     initScanBards(getApplicationContext());
                 } catch (RemoteException e) {
                     e.printStackTrace();

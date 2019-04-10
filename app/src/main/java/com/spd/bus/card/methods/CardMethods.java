@@ -2,6 +2,7 @@ package com.spd.bus.card.methods;
 
 import android.content.Context;
 import android.os.RemoteException;
+import android.text.TextUtils;
 import android.util.Log;
 
 import com.example.test.yinlianbarcode.utils.SharedXmlUtil;
@@ -56,7 +57,8 @@ public class CardMethods {
     /**
      * //选择电子钱包应用
      */
-    public static final byte[] SELECT_ICCARD_QIANBAO = {0x00, (byte) 0xA4, 0x04, 0x00, 0x08, (byte) 0xA0, 0x00, 0x00, 0x06, 0x32, 0x01, 0x01, 0x05};
+    public static final byte[] SELECT_ICCARD_QIANBAO = {0x00, (byte) 0xA4, 0x04, 0x00, 0x08
+            , (byte) 0xA0, 0x00, 0x00, 0x06, 0x32, 0x01, 0x01, 0x05};
 
     /**
      * //读CPU卡应用下公共应用基本信息文件指令 15文件
@@ -126,11 +128,11 @@ public class CardMethods {
             int retvalue = mBankCard.sendAPDU(cardType, sendApdu, sendApdu.length, respdata, resplen);
             if (retvalue != 0) {
                 mBankCard.breakOffCommand();
-                Log.e(TAG, "微智接口返回错误码" + retvalue);
+                LogUtils.d("微智接口返回错误码" + retvalue);
                 return reBytes;
             }
             if (!Arrays.equals(APDU_RESULT_SUCCESS, Datautils.cutBytes(respdata, resplen[0] - 2, 2))) {
-                mBankCard.breakOffCommand();
+//                mBankCard.breakOffCommand();
                 return Datautils.cutBytes(respdata, resplen[0] - 2, 2);
             }
             reBytes = Datautils.cutBytes(respdata, 0, resplen[0] - 2);
@@ -870,8 +872,14 @@ public class CardMethods {
         rcdBuffer[60] = (byte) 0x00;
 
         String bus = SharedXmlUtil.getInstance(context).read(Info.BUS_RECORD, "");
-        byte[] busByte = Datautils.cutBytes(Datautils.HexString2Bytes(bus), 0, 2);
-        System.arraycopy(busByte, 0, rcdBuffer, 62, 2);
+        if (TextUtils.isEmpty(bus)) {
+            System.arraycopy(new byte[]{(byte) 0x00, (byte) 0x00}, 0
+                    , rcdBuffer, 62, 2);
+        } else {
+            byte[] busByte = Datautils.cutBytes(Datautils.HexString2Bytes(bus), 0, 2);
+            System.arraycopy(busByte, 0, rcdBuffer, 62, 2);
+        }
+
 
         if ((cardOpDU.cardClass == (byte) 0x01) || (cardOpDU.cardClass == (byte) 0x51)
                 || (cardOpDU.cardClass == (byte) 0x71)) {

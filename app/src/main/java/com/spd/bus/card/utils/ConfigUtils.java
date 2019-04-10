@@ -30,4 +30,10 @@ public class ConfigUtils {
             }
         }
     }
+
+    public static void logWrite(String content) {
+        content = DateUtils.getCurrentTimeMillis(DateUtils.FORMAT_yyyyMMddHHmmss) + content;
+        FileUtils.writeFile(Environment.getExternalStorageDirectory() + "/busLog.txt"
+                , content + "\n", true);
+    }
 }

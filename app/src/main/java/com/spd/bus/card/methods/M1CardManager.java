@@ -105,7 +105,7 @@ public class M1CardManager {
         cinfoz = new TCommInfo();
         cinfof = new TCommInfo();
         cinfo = new TCommInfo();
-        LogUtils.d("M1开始" + DateUtils.getCurrentTimeMillis(DateUtils.FORMAT_yyyyMMddHHmmss));
+        LogUtils.v("M1开始");
         List<RunParaFile> runParaFiles = DbDaoManage.getDaoSession()
                 .getRunParaFileDao().loadAll();
         if (runParaFiles.size() == 0) {
@@ -126,9 +126,10 @@ public class M1CardManager {
 
         int ret;
 
-        if (checkMifcardclass(mBankCard) != CAD_OK) {
+        int mifcardclass = checkMifcardclass(mBankCard);
+        if (mifcardclass != CAD_OK) {
             LogUtils.d("checkMifcardclass(mBankCard) != CAD_OK");
-            return new CardBackBean(ReturnVal.CAD_READ, cardOpDU);
+            return new CardBackBean(mifcardclass, cardOpDU);
         }
         switch (cardOpDU.cardClass) {
             case 0x01:
@@ -935,7 +936,7 @@ public class M1CardManager {
         //添加正常交易记录 报语音显示界面
         CardMethods.onAppendRecordTrade(context, cardOpDU.ucRcdType, cardOpDU
                 , runParaFile, psamBeenList, mBankCard);
-        LogUtils.d("BUS结束" + DateUtils.getCurrentTimeMillis(DateUtils.FORMAT_yyyyMMddHHmmss));
+        LogUtils.v("BUS结束");
         return new CardBackBean(ReturnVal.CAD_OK, cardOpDU);
     }
 
@@ -1926,7 +1927,7 @@ public class M1CardManager {
         CardMethods.onAppendRecordTrade(context, cardOpDU.ucProcSec == 2 ? (byte) 0x00 : (byte) 0x02
                 , cardOpDU, runParaFile, psamBeenList, mBankCard);
         //添加钱包记录或月票记录
-        LogUtils.d("CITY结束");
+        LogUtils.v("CITY结束");
         return new CardBackBean(ReturnVal.CAD_OK, cardOpDU);
 
     }
@@ -2444,13 +2445,13 @@ public class M1CardManager {
         System.arraycopy(snUid, 0, key, 4, 2);
         //认证1扇区第4块
         retvalue = mBankCard.m1CardKeyAuth(0x41, 4 + secOffset * 4, key.length, key, snUid.length, snUid);
-        LogUtils.d(retvalue+"");
+        LogUtils.d(retvalue + "");
         if (retvalue != 0) {
             LogUtils.e("===认证1扇区第4块失败===");
             return CAD_READ;
         }
         retvalue = mBankCard.m1CardReadBlockData(4 + secOffset * 4, respdata, resplen);
-        LogUtils.d(retvalue+"");
+        LogUtils.d(retvalue + "");
         if (retvalue != 0) {
             LogUtils.e("=== 读取1扇区第4块失败==");
             return CAD_READ;
@@ -2492,7 +2493,7 @@ public class M1CardManager {
 
         //读1扇区05块数据
         retvalue = mBankCard.m1CardReadBlockData(5 + secOffset * 4, respdata, resplen);
-        LogUtils.d(retvalue+"");
+        LogUtils.d(retvalue + "");
         if (retvalue != 0) {
             LogUtils.e("===读1扇区05块数据失败====");
             return CAD_READ;
@@ -2509,7 +2510,7 @@ public class M1CardManager {
 
         //读1扇区06块数据
         retvalue = mBankCard.m1CardReadBlockData(6 + secOffset * 4, respdata, resplen);
-        LogUtils.d(retvalue+"");
+        LogUtils.d(retvalue + "");
         if (retvalue != 0) {
             LogUtils.e("===读1扇区06块数据失败==");
             return CAD_READ;
@@ -2521,14 +2522,14 @@ public class M1CardManager {
         //第0扇区 01块认证
         retvalue = mBankCard.m1CardKeyAuth(0x41, 1 + secOffset * 4,
                 6, new byte[]{(byte) 0xA0, (byte) 0xA1, (byte) 0xA2, (byte) 0xA3, (byte) 0xA4, (byte) 0xA5}, snUid.length, snUid);
-        LogUtils.d(retvalue+"");
+        LogUtils.d(retvalue + "");
         if (retvalue != 0) {
             LogUtils.e("===第0扇区01块认证失败==");
             return CAD_READ;
         }
         //读第0扇区第一块秘钥
         retvalue = mBankCard.m1CardReadBlockData(1 + secOffset * 4, respdata, resplen);
-        LogUtils.d(retvalue+"");
+        LogUtils.d(retvalue + "");
         if (retvalue != 0) {
             LogUtils.e("m1ICCard: 读第0扇区01块失败");
             return CAD_READ;
@@ -2568,7 +2569,7 @@ public class M1CardManager {
                     , new byte[]{(byte) 0x00, (byte) 0xa4, (byte) 0x00, (byte) 0x00, (byte) 0x02, (byte) 0x10, (byte) 0x03});
             if (resultBytes == null || resultBytes.length == 2) {
                 LogUtils.e("===00a4校验error===");
-                return CAD_READ;
+                return ReturnVal.CAD_PSAM_ERROR;
             }
 
             //算秘钥指令
@@ -2597,7 +2598,7 @@ public class M1CardManager {
                     , Datautils.HexString2Bytes(sendCmd));
             if (result == null || result.length == 2) {
                 LogUtils.e("cad_read");
-                return ReturnVal.CAD_READ;
+                return ReturnVal.CAD_PSAM_ERROR;
             }
 
             LogUtils.d("m1ICCard: psam计算秘钥返回：" + Datautils.byteArrayToString(result));
