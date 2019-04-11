@@ -1,0 +1,176 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="vertical" android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    >
+
+    <LinearLayout
+        android:orientation="horizontal"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+
+        <TextView
+            android:visibility="gone"
+            android:id="@+id/textView2"
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:gravity="center"
+            android:text="输入联机pin\n剩余次数 : 1 "
+            android:textSize="18sp" />
+
+        <TextView
+            android:padding="10dp"
+            android:minHeight="55dp"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:textSize="44sp"
+            android:text="New Text"
+            android:id="@+id/textView"
+            android:gravity="center_horizontal" />
+        <!--<TextView-->
+            <!--android:background="#00000000"-->
+            <!--android:padding="10dp"-->
+            <!--android:minHeight="30dp"-->
+            <!--android:layout_width="match_parent"-->
+            <!--android:layout_height="wrap_content"-->
+            <!--android:textSize="38sp"-->
+            <!--android:text="New Text"-->
+            <!--android:id="@+id/textView"-->
+            <!--android:gravity="center" />-->
+    </LinearLayout>
+
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal">
+
+        <Button
+            android:id="@+id/button1"
+            android:layout_height="wrap_content"
+            android:layout_width="wrap_content"
+            android:text="1"
+            />
+
+        <Button
+            android:id="@+id/button2"
+
+            android:layout_height="wrap_content"
+            android:layout_width="wrap_content"
+            android:text="2"
+            />
+
+        <Button
+            android:id="@+id/button3"
+
+            android:layout_height="wrap_content"
+            android:layout_width="wrap_content"
+            android:text="3"
+            />
+
+
+    </LinearLayout>
+
+    <LinearLayout
+        android:orientation="horizontal"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+
+        <Button
+            android:id="@+id/button4"
+            android:layout_height="wrap_content"
+            android:layout_width="wrap_content"
+            android:text="4" />
+
+        <Button
+            android:layout_height="wrap_content"
+            android:layout_width="wrap_content"
+            android:text="5"
+            android:id="@+id/button5" />
+
+        <Button
+            android:layout_height="wrap_content"
+            android:layout_width="wrap_content"
+            android:text="6"
+            android:id="@+id/button6" />
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal">
+
+        <Button
+            android:layout_height="wrap_content"
+            android:layout_width="wrap_content"
+            android:id="@+id/button7"
+            android:text="7" />
+
+        <Button
+            android:layout_height="wrap_content"
+            android:layout_width="wrap_content"
+            android:id="@+id/button8"
+            android:text="8" />
+
+        <Button
+            android:layout_height="wrap_content"
+            android:layout_width="wrap_content"
+            android:id="@+id/button9"
+            android:text="9" />
+    </LinearLayout>
+
+    <LinearLayout
+        android:orientation="horizontal"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        >
+        <Button
+            android:visibility="gone"
+            android:textSize="28sp"
+            android:text="取消"
+            android:id="@+id/buttoncan"
+            android:layout_height="wrap_content"
+            android:layout_width="wrap_content" />
+
+
+        <Button
+            android:layout_height="wrap_content"
+            android:layout_width="wrap_content"
+            android:textColor="@android:color/black"
+            android:text="清除"
+            android:id="@+id/buttonclean" />
+        <Button
+            android:layout_height="wrap_content"
+            android:layout_width="wrap_content"
+            android:text="0"
+            android:id="@+id/button0" />
+        <Button
+            android:layout_height="wrap_content"
+            android:layout_width="wrap_content"
+            android:textColor="@android:color/black"
+            android:text="确认"
+            android:id="@+id/buttonconfirm" />
+
+
+    </LinearLayout>
+
+    <LinearLayout
+        android:visibility="gone"
+        android:orientation="horizontal"
+        android:layout_width="match_parent"
+        android:gravity="center_horizontal"
+        android:layout_height="wrap_content">
+
+        <Button
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="start"
+            android:id="@+id/buttonstart" />
+
+        <Button
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="exit"
+            android:id="@+id/buttonexit" />
+    </LinearLayout>
+</LinearLayout>

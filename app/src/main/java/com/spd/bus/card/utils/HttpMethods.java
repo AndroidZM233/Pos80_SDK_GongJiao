@@ -19,6 +19,7 @@ import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.schedulers.Schedulers;
 import okhttp3.MediaType;
 import okhttp3.RequestBody;
+import okhttp3.ResponseBody;
 
 /**
  * Created by 张明_ on 2019/2/18.
@@ -212,11 +213,27 @@ public class HttpMethods {
      * @param sendData
      * @param observer
      */
-    public void baseinfo(Map<String, String> params,  Observer<BaseInfoBackBean> observer) {
+    public void baseinfo(Map<String, String> params, Observer<BaseInfoBackBean> observer) {
 //        RequestBody requestBody = RequestBody.create(
 //                MediaType.parse("application/json;charset=UTF-8"), sendData);
         RetrofitCreateHelper.createApi(ApiService.class, BASE_URL)
                 .baseinfo(params)
+                .subscribeOn(Schedulers.io())
+                .unsubscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(observer);
+    }
+
+
+    /**
+     * 车载机程序下载
+     *
+     * @param sendData
+     * @param observer
+     */
+    public void download(String url, Observer<ResponseBody> observer) {
+        RetrofitCreateHelper.createApi(ApiService.class, BASE_URL)
+                .download(url)
                 .subscribeOn(Schedulers.io())
                 .unsubscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())

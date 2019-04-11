@@ -60,7 +60,7 @@ public class SaveDataUtils {
         // 用户号
         reqDataBean.setUserId(aliCodeinfoData.uid);
         // 车辆号
-        reqDataBean.setCarryCode(Datautils.byteArrayToString(runParaFile.getBusN()));
+        reqDataBean.setCarryCode(Datautils.byteArrayToString(runParaFile.getBusNr()));
         // 路队号
         reqDataBean.setBusGroupCode(Datautils.byteArrayToString(runParaFile.getTeamNr()));
         // 公司号
@@ -118,7 +118,7 @@ public class SaveDataUtils {
 
         payinfoBean.setDept(Datautils.byteArrayToString(runParaFile.getCorNr()));
         payinfoBean.setIn_station_time(DateUtils.getCurrentTimeMillis(DateUtils.FORMAT_YMDHMS));
-        payinfoBean.setBus_no(Datautils.byteArrayToString(runParaFile.getBusN()));
+        payinfoBean.setBus_no(Datautils.byteArrayToString(runParaFile.getBusNr()));
         payinfoBean.setDriver(tStaffTb == null ? "300000015165068000"
                 : Datautils.byteArrayToString(tStaffTb.getUcAppSnr()));
         payinfoBean.setPos_id("");
@@ -138,7 +138,7 @@ public class SaveDataUtils {
 
         UploadInfoYinLianDB payinfoBean = new UploadInfoYinLianDB();
         //车辆号
-        payinfoBean.setBusNo(Datautils.byteArrayToString(runParaFile.getBusN()));
+        payinfoBean.setBusNo(Datautils.byteArrayToString(runParaFile.getBusNr()));
         //交易流水号
         int read = SharedXmlUtil.getInstance(context).read(Info.YL_TRANS_SEQ, 0);
         String valueOf = String.valueOf(read + 1);

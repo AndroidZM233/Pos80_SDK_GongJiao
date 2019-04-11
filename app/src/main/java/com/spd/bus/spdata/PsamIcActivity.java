@@ -257,17 +257,16 @@ public class PsamIcActivity extends MVPBaseActivity<SpdBusPayContract.View, SpdB
 //                        PlaySound.play(XUESHENGKA, 0);
                         CardBackBean cardBackBean = null;
                         try {
-                            if (MyApplication.psamDatas.size() != 2) {
-                                doVal(new CardBackBean(ReturnVal.CAD_PSAM_ERROR,null));
-                                break;
-                            }
+//                            if (MyApplication.psamDatas.size() != 2) {
+//                                doVal(new CardBackBean(ReturnVal.CAD_PSAM_ERROR, null));
+//                                break;
+//                            }
                             cardBackBean = JTBCardManager.getInstance()
                                     .mainMethod(getApplicationContext(), MyApplication.mBankCard
                                             , MyApplication.psamDatas);
                             doVal(cardBackBean);
                         } catch (Exception e) {
                             e.printStackTrace();
-                            Toast.makeText(this, e.toString(), Toast.LENGTH_SHORT).show();
                             ConfigUtils.logWrite(e.toString());
                         }
 
@@ -278,10 +277,10 @@ public class PsamIcActivity extends MVPBaseActivity<SpdBusPayContract.View, SpdB
 //                        }
                     } else if (respdata[0] == 0x37) {
                         //检测到 M1-S50 卡
-                        if (MyApplication.psamDatas.size() != 2) {
-                            doVal(new CardBackBean(ReturnVal.CAD_PSAM_ERROR,null));
-                            break;
-                        }
+//                        if (MyApplication.psamDatas.size() != 2) {
+//                            doVal(new CardBackBean(ReturnVal.CAD_PSAM_ERROR, null));
+//                            break;
+//                        }
                         Log.i("stw", "m1结束寻卡===" + (System.currentTimeMillis() - ltime));
                         try {
                             CardBackBean cardBackBean = M1CardManager.getInstance()
@@ -289,8 +288,7 @@ public class PsamIcActivity extends MVPBaseActivity<SpdBusPayContract.View, SpdB
                                             , M1CardManager.M150, 0, MyApplication.psamDatas);
                             doVal(cardBackBean);
                         } catch (Exception e) {
-                            LogUtils.d(e.toString());
-                            Toast.makeText(this, e.toString(), Toast.LENGTH_SHORT).show();
+                            LogUtils.v(e.toString());
                             ConfigUtils.logWrite(e.toString());
                             e.printStackTrace();
                         }
@@ -300,10 +298,10 @@ public class PsamIcActivity extends MVPBaseActivity<SpdBusPayContract.View, SpdB
 //                        }
                     } else if (respdata[0] == 0x47) {
                         // 检测到 M1-S70 卡
-                        if (MyApplication.psamDatas.size() != 2) {
-                            doVal(new CardBackBean(ReturnVal.CAD_PSAM_ERROR,null));
-                            break;
-                        }
+//                        if (MyApplication.psamDatas.size() != 2) {
+//                            doVal(new CardBackBean(ReturnVal.CAD_PSAM_ERROR, null));
+//                            break;
+//                        }
 
                         try {
                             CardBackBean cardBackBean = M1CardManager.getInstance()
@@ -311,8 +309,7 @@ public class PsamIcActivity extends MVPBaseActivity<SpdBusPayContract.View, SpdB
                                             , M1CardManager.M170, 0, MyApplication.psamDatas);
                             doVal(cardBackBean);
                         } catch (Exception e) {
-                            LogUtils.d(e.toString());
-                            Toast.makeText(this, e.toString(), Toast.LENGTH_SHORT).show();
+                            LogUtils.v(e.toString());
                             ConfigUtils.logWrite(e.toString());
                             e.printStackTrace();
                         }
@@ -334,15 +331,12 @@ public class PsamIcActivity extends MVPBaseActivity<SpdBusPayContract.View, SpdB
                 switch (value) {
                     case ReturnVal.CAD_READ:
                         LogUtils.d("CAD_READ");
-//                        PlaySound.play(PlaySound.ZHIFUBAO, 0);
-//                        PlaySound.play(PlaySound.ZHENGZAICHULI, 0);
-//                        PlaySound.play(PlaySound.XUESHENGKA, 0);
                         break;
                     case ReturnVal.CAD_EXPIRE:
-                        LogUtils.d("CAD_EXPIRE");
-                        break;
                     case ReturnVal.CAD_SELL:
-                        LogUtils.d("CAD_SELL");
+                        Toast.makeText(PsamIcActivity.this, "未启用及过期卡"
+                                , Toast.LENGTH_SHORT).show();
+                        PlaySound.play(PlaySound.QINGTOUBI, 0);
                         break;
                     case ReturnVal.CAD_OK:
                         PlaySound.play(PlaySound.dang, 0);
@@ -363,9 +357,6 @@ public class PsamIcActivity extends MVPBaseActivity<SpdBusPayContract.View, SpdB
                         }
                         handler.postDelayed(runnable, 3000);
                         mPresenter.uploadCardData();
-                        break;
-                    case ReturnVal.CAD_MAC2:
-                        LogUtils.d("CAD_MAC2");
                         break;
                     case ReturnVal.CAD_RETRY:
                         PlaySound.play(PlaySound.qingchongshua, 0);
@@ -409,6 +400,18 @@ public class PsamIcActivity extends MVPBaseActivity<SpdBusPayContract.View, SpdB
                     case ReturnVal.CAD_PSAM_ERROR:
                         Toast.makeText(PsamIcActivity.this, "PSAM-0"
                                 , Toast.LENGTH_SHORT).show();
+                        break;
+                    case ReturnVal.CAD_MAC1:
+                    case ReturnVal.CAD_MAC2:
+                        Toast.makeText(PsamIcActivity.this, "MAC错误"
+                                , Toast.LENGTH_SHORT).show();
+                        PlaySound.play(PlaySound.QINGTOUBI, 0);
+                        break;
+                    case ReturnVal.CAD_BL1:
+                    case ReturnVal.CAD_BL2:
+                        Toast.makeText(PsamIcActivity.this, "黑名单"
+                                , Toast.LENGTH_SHORT).show();
+                        PlaySound.play(PlaySound.QINGTOUBI, 0);
                         break;
                     default:
                         break;
@@ -500,6 +503,9 @@ public class PsamIcActivity extends MVPBaseActivity<SpdBusPayContract.View, SpdB
             }
 
             if (decodeDate.equals(codes)) {
+                if ("sp".equals(decodeDate.substring(0, 2))) {
+                    Toast.makeText(this, "二维码重复", Toast.LENGTH_SHORT).show();
+                }
                 return;
             }
             codes = decodeDate;
@@ -522,6 +528,8 @@ public class PsamIcActivity extends MVPBaseActivity<SpdBusPayContract.View, SpdB
                             .read(Info.BUS_NO, "");
                     String[] split = decodeDate.split(":");
                     if (read.equals(split[1])) {
+                        LogUtils.v(split[1]);
+                        Toast.makeText(this, "车辆号相同无需设置", Toast.LENGTH_SHORT).show();
                         return;
                     }
                     SharedXmlUtil.getInstance(getApplicationContext()).write(Info.BUS_NO, split[1]);

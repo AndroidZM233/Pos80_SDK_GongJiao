@@ -16,12 +16,14 @@ import java.util.Map;
 
 import io.reactivex.Observable;
 import okhttp3.RequestBody;
+import okhttp3.ResponseBody;
 import retrofit2.http.Body;
 import retrofit2.http.FieldMap;
 import retrofit2.http.FormUrlEncoded;
 import retrofit2.http.GET;
 import retrofit2.http.POST;
 import retrofit2.http.Streaming;
+import retrofit2.http.Url;
 
 /**
  * Created by 张明_ on 2019/2/18.
@@ -80,5 +82,5 @@ public interface ApiService {
     //车载机程序下载
     @Streaming
     @GET("pos/download")
-    Observable<BaseInfoBackBean> download(@Body RequestBody route);
+    Observable<ResponseBody> download(@Url String url);
 }

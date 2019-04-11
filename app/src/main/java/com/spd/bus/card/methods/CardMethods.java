@@ -623,17 +623,20 @@ public class CardMethods {
                 System.arraycopy(runParaFile.getTeamNr(), 0, rcdBuffer, 34, 2);
                 System.arraycopy(runParaFile.getLineNr(), 0, rcdBuffer, 36, 2);
                 // 31-40: Ar,Vo,Co,Te,Li
-                System.arraycopy(runParaFile.getBusN(), 0, rcdBuffer, 38, 3);
+                System.arraycopy(runParaFile.getBusNr(), 0, rcdBuffer, 38, 3);
                 // 41-44: Dev
                 System.arraycopy(runParaFile.getDevNr(), 0, rcdBuffer, 41, 4);
                 System.arraycopy(runParaFile.getKeyV1(), 0, rcdBuffer, 45, 2);
                 // 47: 通用折扣率
                 rcdBuffer[47] = runParaFile.getUcCitySubRadioP()[0];
 
-                System.arraycopy(psamBeenList.get(0).getSnr(), 3, rcdBuffer, 52, 1);
-                System.arraycopy(psamBeenList.get(0).getSnr(), 7, rcdBuffer, 53, 3);
-                System.arraycopy(psamBeenList.get(1).getSnr(), 3, rcdBuffer, 56, 1);
-                System.arraycopy(psamBeenList.get(1).getSnr(), 7, rcdBuffer, 57, 3);
+                if (psamBeenList.size()==2){
+                    System.arraycopy(psamBeenList.get(0).getSnr(), 3, rcdBuffer, 52, 1);
+                    System.arraycopy(psamBeenList.get(0).getSnr(), 7, rcdBuffer, 53, 3);
+                    System.arraycopy(psamBeenList.get(1).getSnr(), 3, rcdBuffer, 56, 1);
+                    System.arraycopy(psamBeenList.get(1).getSnr(), 7, rcdBuffer, 57, 3);
+                }
+
                 //60??  站点信息
                 rcdBuffer[60] = (byte) 0x00;
 

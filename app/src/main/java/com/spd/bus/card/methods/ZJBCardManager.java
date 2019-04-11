@@ -3,6 +3,7 @@ package com.spd.bus.card.methods;
 import android.content.Context;
 import android.os.Environment;
 
+import com.example.test.yinlianbarcode.utils.SharedXmlUtil;
 import com.google.gson.Gson;
 import com.spd.base.been.tianjin.CardBackBean;
 import com.spd.base.been.tianjin.CardRecord;
@@ -11,6 +12,7 @@ import com.spd.base.utils.Datautils;
 import com.spd.base.dbbeen.RunParaFile;
 import com.spd.base.been.tianjin.TCardOpDU;
 import com.spd.base.utils.FileUtils;
+import com.spd.bus.Info;
 import com.spd.bus.MyApplication;
 import com.spd.bus.card.utils.DateUtils;
 import com.spd.bus.card.utils.LogUtils;
@@ -57,7 +59,7 @@ public class ZJBCardManager {
     }
 
 
-    public CardBackBean mainMethod(Context context,BankCard mBankCard, List<PsamBeen> psamBeenList) {
+    public CardBackBean mainMethod(Context context, BankCard mBankCard, List<PsamBeen> psamBeenList) {
         this.context = context;
         long ltime = System.currentTimeMillis();
         LogUtils.v("ZJB开始");
@@ -157,6 +159,8 @@ public class ZJBCardManager {
             }
 
             RunParaFile runParaFile = new RunParaFile();
+            String busNr = SharedXmlUtil.getInstance(context).read(Info.BUS_NO, "");
+            runParaFile.setBusNr(Datautils.HexString2Bytes(busNr));
             for (int i = 1; i < 10; i++) {
                 if (i == 6) {
                     continue;
@@ -312,7 +316,7 @@ public class ZJBCardManager {
 //                    tCardOpDU.ucRcdType = tCardOpDU.ucRcdType & 0xfe;
 
 //                    OnAppendRecordTrade(tCardOpDu.ucRcdType);//写记录
-                    CardMethods.onAppendRecordTrade(context,tCardOpDU.ucProcSec == 2 ? (byte) 0x00 : (byte) 0x02
+                    CardMethods.onAppendRecordTrade(context, tCardOpDU.ucProcSec == 2 ? (byte) 0x00 : (byte) 0x02
                             , tCardOpDU, runParaFile, psamBeenList, mBankCard);
 
                     return new CardBackBean(ReturnVal.CAD_OK, tCardOpDU);
@@ -773,7 +777,7 @@ public class ZJBCardManager {
             fSysSta = true;
             problemIssueCode = Datautils.concatAll(tCardOpDU.ucAppSnr, tCardOpDU.uiOffLineCount,
                     new byte[]{tCardOpDU.ucProcSec}, value, new byte[]{tCardOpDU.ucCAPP});
-            CardMethods.onAppendRecordTrade(context,tCardOpDU.ucProcSec == 2 ? (byte) 0x01 : (byte) 0x03
+            CardMethods.onAppendRecordTrade(context, tCardOpDU.ucProcSec == 2 ? (byte) 0x01 : (byte) 0x03
                     , tCardOpDU, runParaFile, psamBeenList, mBankCard);
             return new CardBackBean(ReturnVal.CAD_RETRY, tCardOpDU);
         }
@@ -789,9 +793,9 @@ public class ZJBCardManager {
             return new CardBackBean(ReturnVal.CAD_PSAM_ERROR, tCardOpDU);
         }
         LogUtils.d("===psam卡 8072校验返回===: " + Datautils.byteArrayToString(resultBytes));
-        CardMethods.onAppendRecordTrade(context,tCardOpDU.ucProcSec == 2 ? (byte) 0x00 : (byte) 0x02
+        CardMethods.onAppendRecordTrade(context, tCardOpDU.ucProcSec == 2 ? (byte) 0x00 : (byte) 0x02
                 , tCardOpDU, runParaFile, psamBeenList, mBankCard);
-        LogUtils.v("ZJB结束" );
+        LogUtils.v("ZJB结束");
         return new CardBackBean(ReturnVal.CAD_OK, tCardOpDU);
     }
 

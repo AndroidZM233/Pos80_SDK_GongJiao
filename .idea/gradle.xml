@@ -11,12 +11,10 @@
             <option value="$PROJECT_DIR$/alipay" />
             <option value="$PROJECT_DIR$/app" />
             <option value="$PROJECT_DIR$/base" />
-            <option value="$PROJECT_DIR$/bosi" />
-            <option value="$PROJECT_DIR$/bosipay" />
             <option value="$PROJECT_DIR$/cloudpay" />
-            <option value="$PROJECT_DIR$/face" />
             <option value="$PROJECT_DIR$/wechat" />
             <option value="$PROJECT_DIR$/yinlianbarcode" />
+            <option value="$PROJECT_DIR$/yinlianpay" />
           </set>
         </option>
         <option name="resolveModulePerSourceSet" value="false" />

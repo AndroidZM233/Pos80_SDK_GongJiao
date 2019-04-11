@@ -25,7 +25,7 @@ public class RunParaFile {
     private byte[] corNr = new byte[1];                                  // 公司号
     private byte[] teamNr = new byte[2];                                 // 路队号
     private byte[] lineNr = new byte[2];                                 // 线路号
-    private byte[] busN = new byte[3];                                  // 车辆号
+    private byte[] busNr = new byte[3];                                  // 车辆号
     private byte[] devNr = new byte[4];                                  // 车载机设备号
 
     private byte[] keyV1 = new byte[2];                                    // 基本票价
@@ -89,21 +89,21 @@ public class RunParaFile {
     private byte[] ucGateIP = new byte[4];                //默认网关
     private byte[] ucServerIP = new byte[4];            //IP
     private byte[] uiServerPort = new byte[2];                //Port端口号
-    @Generated(hash = 1748536959)
+    @Generated(hash = 1051512279)
     public RunParaFile(byte[] sWDate, byte[] sWVer, byte[] lFDate, byte[] lFVer, byte[] uiLFCrc, byte[] fMP,
             byte[] fCJHTMode, byte[] wlStopNum, byte[] ucCANAdr, byte[] cityNr, byte[] areaNr, byte[] vocNr, byte[] corNr,
-            byte[] teamNr, byte[] lineNr, byte[] busN, byte[] devNr, byte[] keyV1, byte[] keyV2, byte[] keyV3, byte[] keyV4,
-            byte[] keyV5, byte[] keyV6, byte[] keyV7, byte[] keyV8, byte[] ucBusYuePower, byte[] ucBusPurPower,
-            byte[] ucCpuYuePower, byte[] ucCpuPurPower, byte[] ucCityYuePower, byte[] ucCityMainPurPower,
-            byte[] ucCitySubPurPower, byte[] ucBusYueTimeLimit, byte[] ucBusPurTimeLimit, byte[] ucCpuYueTimeLimit,
-            byte[] ucCpuPurTimeLimit, byte[] ucCityYueTimeLimit, byte[] ucCityPurTimeLimit, byte[] ucOldCardTimeLimit,
-            byte[] ucCardCheckDays, byte[] ucAddValueLowP, byte[] ucBusRadioP, byte[] ucCpuRadioP, byte[] ucCityMainRadioP,
-            byte[] ucCitySubRadioP, byte[] ucTransferCtrl, byte[] ucTransferCntLimit, byte[] ucTransferTimeLong,
-            byte[] ucTransferPower, byte[] ucTransfer1stRadioYue, byte[] ucTransfer2ndRadioYue,
-            byte[] ucTransferMulRadioYue, byte[] ucTransfer1stRadioPur, byte[] ucTransfer2ndRadioPur,
-            byte[] ucTransferMulRadioPur, byte[] ucJamTime, byte[] ucAirDate, byte[] ucAPNLen, byte[] cAPN,
-            byte[] ucUserLen, byte[] cUser, byte[] ucPasswordLen, byte[] cPassword, byte[] ucChannel, byte[] ucKeyMode,
-            byte[] ucMask, byte[] ucGateIP, byte[] ucServerIP, byte[] uiServerPort) {
+            byte[] teamNr, byte[] lineNr, byte[] busNr, byte[] devNr, byte[] keyV1, byte[] keyV2, byte[] keyV3,
+            byte[] keyV4, byte[] keyV5, byte[] keyV6, byte[] keyV7, byte[] keyV8, byte[] ucBusYuePower,
+            byte[] ucBusPurPower, byte[] ucCpuYuePower, byte[] ucCpuPurPower, byte[] ucCityYuePower,
+            byte[] ucCityMainPurPower, byte[] ucCitySubPurPower, byte[] ucBusYueTimeLimit, byte[] ucBusPurTimeLimit,
+            byte[] ucCpuYueTimeLimit, byte[] ucCpuPurTimeLimit, byte[] ucCityYueTimeLimit, byte[] ucCityPurTimeLimit,
+            byte[] ucOldCardTimeLimit, byte[] ucCardCheckDays, byte[] ucAddValueLowP, byte[] ucBusRadioP,
+            byte[] ucCpuRadioP, byte[] ucCityMainRadioP, byte[] ucCitySubRadioP, byte[] ucTransferCtrl,
+            byte[] ucTransferCntLimit, byte[] ucTransferTimeLong, byte[] ucTransferPower, byte[] ucTransfer1stRadioYue,
+            byte[] ucTransfer2ndRadioYue, byte[] ucTransferMulRadioYue, byte[] ucTransfer1stRadioPur,
+            byte[] ucTransfer2ndRadioPur, byte[] ucTransferMulRadioPur, byte[] ucJamTime, byte[] ucAirDate, byte[] ucAPNLen,
+            byte[] cAPN, byte[] ucUserLen, byte[] cUser, byte[] ucPasswordLen, byte[] cPassword, byte[] ucChannel,
+            byte[] ucKeyMode, byte[] ucMask, byte[] ucGateIP, byte[] ucServerIP, byte[] uiServerPort) {
         this.sWDate = sWDate;
         this.sWVer = sWVer;
         this.lFDate = lFDate;
@@ -119,7 +119,7 @@ public class RunParaFile {
         this.corNr = corNr;
         this.teamNr = teamNr;
         this.lineNr = lineNr;
-        this.busN = busN;
+        this.busNr = busNr;
         this.devNr = devNr;
         this.keyV1 = keyV1;
         this.keyV2 = keyV2;
@@ -267,11 +267,11 @@ public class RunParaFile {
     public void setLineNr(byte[] lineNr) {
         this.lineNr = lineNr;
     }
-    public byte[] getBusN() {
-        return this.busN;
+    public byte[] getBusNr() {
+        return this.busNr;
     }
-    public void setBusN(byte[] busN) {
-        this.busN = busN;
+    public void setBusNr(byte[] busNr) {
+        this.busNr = busNr;
     }
     public byte[] getDevNr() {
         return this.devNr;
@@ -591,4 +591,5 @@ public class RunParaFile {
     public void setUiServerPort(byte[] uiServerPort) {
         this.uiServerPort = uiServerPort;
     }
+
 }
