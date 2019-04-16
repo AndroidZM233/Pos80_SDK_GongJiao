@@ -12,9 +12,10 @@ public class Info {
     public static final String BUS_NO ="BUS_NO";
     public static final String BUS_NO_INIT ="30001234";
     public static final String POS_ID ="POS_ID";
-    public static final String POS_ID_INIT ="30001234";
+    public static final String POS_ID_INIT ="17510850";
     public static final String BLACK ="BLACK";
     public static final String WHITE ="WHITE";
+    public static final String YLSM_KEY ="YLSM_KEY";
 
 
 

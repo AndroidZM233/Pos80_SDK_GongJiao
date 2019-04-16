@@ -366,6 +366,7 @@ public class ChanelPacket {
         Body b = new Body(ITEMS);
         b.setType("0800");// 0620/0630
         WeiPassGlobal.getTransactionInfo().setTransaceNo(Util.to(PrefUtil.getSerialNo(), 6));
+        //设置11域数据
         b.setField(11, WeiPassGlobal.getTransactionInfo().getTransaceNo());
         b.setField(41, WeiPassGlobal.getTransactionInfo().getTermId());
         b.setField(42, WeiPassGlobal.getTransactionInfo().getMerchantId());
@@ -406,6 +407,13 @@ public class ChanelPacket {
         }
     }
 
+    /**
+     * 解析报文
+     * @param b
+     * @param mac
+     * @return
+     * @throws PayException
+     */
     private static byte[] makeMsg(Body b, boolean mac) throws PayException {
         long time = System.currentTimeMillis();
         if (PrefUtil.getTPDU() == null || PrefUtil.getTPDU().length() <= 0) {

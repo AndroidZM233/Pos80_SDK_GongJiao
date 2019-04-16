@@ -54,8 +54,8 @@ public interface ApiService {
     Observable<UnqrkeyBackBean> unqrkey();
 
     //银联双免POSKEY
-    @GET("pos/posKeys?data=17510418")
-    Observable<PosKeysBackBean> posKeys();
+    @GET
+    Observable<PosKeysBackBean> posKeys(@Url String url);
 
     //微信秘钥
     @POST("pos/wxPay/getPublic")

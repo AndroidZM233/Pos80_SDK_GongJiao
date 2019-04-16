@@ -1270,6 +1270,7 @@ public class UnionPayCard {
         }
     }
 
+    // TODO: 2019/4/12  
     /**
      * qpboc  第一执行
      * 交易初始化

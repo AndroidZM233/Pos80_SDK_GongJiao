@@ -36,22 +36,26 @@ public class ConfigCheckActivity extends MVPBaseActivity<ConfigCheckContract.Vie
         initView();
         ConfigUtils.loadTxtConfig();
 
-        kProgressHUD = KProgressHUD.create(ConfigCheckActivity.this);
-        kProgressHUD.setStyle(KProgressHUD.Style.SPIN_INDETERMINATE)
-                .setLabel("初始化中...")
-                .setCancellable(true)
-                .setAnimationSpeed(2)
-                .setDimAmount(0.5f)
-                .show();
+
         MyApplication.setInitDevListener(new MyApplication.InitDevListener() {
             @Override
             public void onSuccess() {
+                kProgressHUD = KProgressHUD.create(ConfigCheckActivity.this);
+                kProgressHUD.setStyle(KProgressHUD.Style.SPIN_INDETERMINATE)
+                        .setLabel("初始化中...")
+                        .setCancellable(true)
+                        .setAnimationSpeed(2)
+                        .setDimAmount(0.5f)
+                        .show();
                 mPresenter.initPsam(getApplicationContext());
             }
 
             @Override
             public void onError() {
-                kProgressHUD.dismiss();
+                if (kProgressHUD!=null){
+                    kProgressHUD.dismiss();
+                }
+
             }
         });
 
@@ -74,7 +78,9 @@ public class ConfigCheckActivity extends MVPBaseActivity<ConfigCheckContract.Vie
             @Override
             public void run() {
                 mTvInfo.append(msg);
-                kProgressHUD.dismiss();
+                if (kProgressHUD!=null){
+                    kProgressHUD.dismiss();
+                }
             }
         });
 
@@ -82,9 +88,12 @@ public class ConfigCheckActivity extends MVPBaseActivity<ConfigCheckContract.Vie
 
     @Override
     public void openActivity() {
-        kProgressHUD.dismiss();
+        if (kProgressHUD!=null){
+            kProgressHUD.dismiss();
+        }
+        this.finish();
         Intent intent = new Intent(ConfigCheckActivity.this, PsamIcActivity.class);
         startActivity(intent);
-        this.finish();
+
     }
 }

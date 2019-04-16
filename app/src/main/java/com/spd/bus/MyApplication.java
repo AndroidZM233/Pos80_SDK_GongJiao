@@ -33,8 +33,11 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
+import sdk4.wangpos.libemvbinder.EmvCore;
 import wangpos.sdk4.libbasebinder.BankCard;
 import wangpos.sdk4.libbasebinder.Core;
+import wangpos.sdk4.libkeymanagerbinder.Key;
+import wiseasy.socketpusher.socketpusher;
 
 import static com.honeywell.barcode.Symbology.QR;
 
@@ -42,20 +45,27 @@ public class MyApplication extends Application {
     String TAG = "PsamIcActivity";
     private static HSMDecoder hsmDecoder;
     private HSMDecodeComponent hsmDecodeComponent;
-    private static BankCard bankCard = null;
     public static List<CardRecord> cardRecordList = new ArrayList<>();
     public static List<PsamBeen> psamDatas = new ArrayList<>();
-    public static BankCard mBankCard;
-    public static Core mCore;
+    //SDK 4.0
+    public static Key mKey = null;
+    public static Core mCore = null;
+    public static EmvCore emvCore = null;
+    public static BankCard mBankCard = null;
+    //log to pc
+    public static socketpusher log = null;
+
     private static final String ACTION_SET_SYSTIME_BYSP = "set_systime_with_sp";
 
     public static void setCardRecordList(CardRecord cardRecord) {
+        LogUtils.v("start");
         if (cardRecordList.size() < 20) {
             cardRecordList.add(cardRecord);
         } else {
             cardRecordList.remove(cardRecordList.get(0));
             cardRecordList.add(cardRecord);
         }
+        LogUtils.v("end");
     }
 
     @RequiresApi(api = Build.VERSION_CODES.ICE_CREAM_SANDWICH)
@@ -69,10 +79,21 @@ public class MyApplication extends Application {
         new Thread(new Runnable() {
             @Override
             public void run() {
-                BankCard mBankCard = new BankCard(getApplicationContext());
-                Core mCore = new Core(getApplicationContext());
-                MyApplication.setmBankCard(mBankCard);
-                MyApplication.setmCore(mCore);
+                if (mBankCard == null) {
+                    mBankCard = new BankCard(getApplicationContext());
+                }
+                if (mCore == null) {
+                    mCore = new Core(getApplicationContext());
+                }
+                if (mKey == null) {
+                    mKey = new Key(getApplicationContext());
+                }
+                if (emvCore == null) {
+                    emvCore = new EmvCore(getApplicationContext());
+                }
+                if (log == null) {
+                    log = new socketpusher();
+                }
 
                 try {
                     //更新sp时间到系统时间
@@ -136,9 +157,17 @@ public class MyApplication extends Application {
         MyApplication.mCore = mCore;
     }
 
+    public static Key getmKey() {
+        return mKey;
+    }
+
+    public static EmvCore getEmvCore() {
+        return emvCore;
+    }
+
     public static BankCard getBankCardInstance() {
-        if (bankCard != null) {
-            return bankCard;
+        if (mBankCard != null) {
+            return mBankCard;
         } else {
             return null;
         }

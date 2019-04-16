@@ -2,6 +2,7 @@ package com.spd.bus.card.methods;
 
 import android.content.Context;
 import android.os.Environment;
+import android.text.TextUtils;
 
 import com.example.test.yinlianbarcode.utils.SharedXmlUtil;
 import com.google.gson.Gson;
@@ -160,7 +161,15 @@ public class ZJBCardManager {
 
             RunParaFile runParaFile = new RunParaFile();
             String busNr = SharedXmlUtil.getInstance(context).read(Info.BUS_NO, "");
-            runParaFile.setBusNr(Datautils.HexString2Bytes(busNr));
+            if (TextUtils.isEmpty(busNr)) {
+                runParaFile.setBusNr(new byte[]{(byte) 0x00, (byte) 0x00, (byte) 0x00});
+            } else {
+                runParaFile.setBusNr(Datautils.HexString2Bytes(busNr));
+            }
+
+            //测试 正式时要取SN后八位
+            byte[] hexString2Bytes = Datautils.HexString2Bytes(Info.POS_ID_INIT);
+            runParaFile.setDevNr(hexString2Bytes);
             for (int i = 1; i < 10; i++) {
                 if (i == 6) {
                     continue;
@@ -245,7 +254,7 @@ public class ZJBCardManager {
 
         List<RunParaFile> runParaFiles = DbDaoManage.getDaoSession()
                 .getRunParaFileDao().loadAll();
-        if (runParaFiles.size() < 1) {
+        if (runParaFiles == null) {
             return new CardBackBean(ReturnVal.CODE_PLEASE_SET, tCardOpDU);
         }
         runParaFile = runParaFiles.get(0);

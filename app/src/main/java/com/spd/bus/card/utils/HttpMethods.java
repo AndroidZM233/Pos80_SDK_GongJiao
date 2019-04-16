@@ -20,6 +20,7 @@ import io.reactivex.schedulers.Schedulers;
 import okhttp3.MediaType;
 import okhttp3.RequestBody;
 import okhttp3.ResponseBody;
+import retrofit2.http.Url;
 
 /**
  * Created by 张明_ on 2019/2/18.
@@ -127,11 +128,11 @@ public class HttpMethods {
      * @param sendData
      * @param observer
      */
-    public void posKeys(Observer<PosKeysBackBean> observer) {
+    public void posKeys(String url, Observer<PosKeysBackBean> observer) {
 //        RequestBody requestBody = RequestBody.create(
 //                MediaType.parse("application/json;charset=UTF-8"), sendData);
         RetrofitCreateHelper.createApi(ApiService.class, BASE_URL)
-                .posKeys()
+                .posKeys(url)
                 .subscribeOn(Schedulers.io())
                 .unsubscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())

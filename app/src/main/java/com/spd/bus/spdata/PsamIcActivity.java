@@ -1,18 +1,15 @@
 package com.spd.bus.spdata;
 
 import android.annotation.SuppressLint;
-import android.content.BroadcastReceiver;
-import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
-import android.hardware.Camera;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
 import android.os.RemoteException;
-import android.os.SystemClock;
 import android.support.annotation.Nullable;
 import android.util.Log;
+import android.view.KeyEvent;
 import android.view.View;
 import android.widget.LinearLayout;
 import android.widget.TextView;
@@ -20,42 +17,33 @@ import android.widget.Toast;
 
 import com.example.test.yinlianbarcode.utils.SharedXmlUtil;
 import com.honeywell.barcode.HSMDecodeResult;
-import com.honeywell.barcode.HSMDecoder;
 import com.honeywell.plugins.decode.DecodeResultListener;
-import com.spd.alipay.been.AliCodeinfoData;
 import com.spd.alipay.been.TianjinAlipayRes;
-import com.spd.base.been.BosiQrcodeKey;
 import com.spd.base.been.WechatQrcodeKey;
+import com.spd.base.been.tianjin.CardBackBean;
 import com.spd.base.been.tianjin.TCardOpDU;
-import com.spd.base.beenupload.BosiQrCodeUpload;
 import com.spd.base.db.DbDaoManage;
+import com.spd.base.dbbeen.RunParaFile;
 import com.spd.base.utils.Datautils;
 import com.spd.base.view.SignalView;
 import com.spd.bus.Info;
 import com.spd.bus.MyApplication;
 import com.spd.bus.R;
 import com.spd.bus.card.methods.JTBCardManager;
-import com.spd.base.been.tianjin.CardBackBean;
 import com.spd.bus.card.methods.M1CardManager;
 import com.spd.bus.card.methods.ReturnVal;
 import com.spd.bus.card.utils.ConfigUtils;
-import com.spd.bus.card.utils.DateUtils;
 import com.spd.bus.card.utils.LogUtils;
 import com.spd.bus.spdata.been.ErroCode;
-import com.spd.bus.spdata.been.IcCardBeen;
-import com.spd.bus.spdata.been.PsamBeen;
-import com.spd.bus.spdata.been.TCommInfo;
 import com.spd.bus.spdata.mvp.MVPBaseActivity;
 import com.spd.bus.spdata.spdbuspay.SpdBusPayContract;
 import com.spd.bus.spdata.spdbuspay.SpdBusPayPresenter;
 import com.spd.bus.spdata.utils.PlaySound;
-import com.spd.bus.spdata.utils.TimeDataUtils;
 import com.spd.bus.util.SaveDataUtils;
-import com.spd.bus.util.TLV;
+import com.spd.yinlianpay.context.MyContext;
+import com.spd.yinlianpay.util.PrefUtil;
 
 import java.io.UnsupportedEncodingException;
-import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 
@@ -64,13 +52,10 @@ import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.annotations.NonNull;
 import io.reactivex.functions.Consumer;
 import wangpos.sdk4.libbasebinder.BankCard;
-import wangpos.sdk4.libbasebinder.Core;
 
 import static com.spd.bus.spdata.been.ErroCode.ILLEGAL_PARAM;
 import static com.spd.bus.spdata.been.ErroCode.NO_ENOUGH_MEMORY;
 import static com.spd.bus.spdata.been.ErroCode.SYSTEM_ERROR;
-import static com.spd.bus.spdata.utils.PlaySound.XUESHENGKA;
-import static com.spd.bus.spdata.utils.PlaySound.xiaofeiSuccse;
 
 public class PsamIcActivity extends MVPBaseActivity<SpdBusPayContract.View, SpdBusPayPresenter> implements SpdBusPayContract.View, DecodeResultListener {
     private static final String TAG = "SPEEDATA_BUS";
@@ -125,6 +110,13 @@ public class PsamIcActivity extends MVPBaseActivity<SpdBusPayContract.View, SpdB
      */
     private TextView mTvXiaofeiMoney;
     private LinearLayout mLayoutXiaofei;
+    private YinLianPayManage yinLianPayManage;
+    private String balance = "2元";
+    private LinearLayout mLlDriver;
+    private LinearLayout mLlMain;
+    private boolean isDriverUI = false;
+    private LinearLayout mLlShowData;
+    private boolean isShowDataUI = false;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -132,7 +124,6 @@ public class PsamIcActivity extends MVPBaseActivity<SpdBusPayContract.View, SpdB
         setContentView(R.layout.spd_bus_layout);
         initView();
         initCard();
-
     }
 
 
@@ -153,6 +144,10 @@ public class PsamIcActivity extends MVPBaseActivity<SpdBusPayContract.View, SpdB
         mTvXiaofeiMoney = (TextView) findViewById(R.id.tv_xiaofei_money);
         mLayoutXiaofei = (LinearLayout) findViewById(R.id.layout_xiaofei);
         Datautils.getCurrentNetDBM(this, mXinhao);
+        updateConfigUI();
+        mLlDriver = findViewById(R.id.ll_driver);
+        mLlMain = findViewById(R.id.ll_main);
+        mLlShowData = findViewById(R.id.ll_show_data);
     }
 
 
@@ -162,6 +157,8 @@ public class PsamIcActivity extends MVPBaseActivity<SpdBusPayContract.View, SpdB
             //注册系统时间广播 只能动态注册
             IntentFilter filter = new IntentFilter();
             filter.addAction(Intent.ACTION_TIME_TICK);
+            yinLianPayManage = new YinLianPayManage(getApplicationContext());
+            yinLianPayManage.yinLianLogin();
 
             new Thread(new Runnable() {
                 @Override
@@ -174,11 +171,15 @@ public class PsamIcActivity extends MVPBaseActivity<SpdBusPayContract.View, SpdB
             mPresenter.getZhiFuBaoBlack(getApplicationContext());
             mPresenter.getZhiFuBaoWhite(getApplicationContext());
             mPresenter.getAliPubKeyTianJin();
-            mPresenter.getYinLianPubKey();
+            mPresenter.getYinLianPubKey(getApplicationContext());
             mPresenter.getWechatPublicKeyTianJin();
+            String read = SharedXmlUtil.getInstance(getApplicationContext())
+                    .read(Info.POS_ID, Info.POS_ID_INIT);
+            mPresenter.getShuangMianPubKey(getApplicationContext(), "pos/posKeys?data=" + read);
+
             updateTime();
         } catch (Exception e) {
-
+            Toast.makeText(this, "请检查网络连接", Toast.LENGTH_SHORT).show();
         }
     }
 
@@ -190,7 +191,7 @@ public class PsamIcActivity extends MVPBaseActivity<SpdBusPayContract.View, SpdB
             mLayoutFace.setVisibility(View.GONE);
             mLayoutXiaofei.setVisibility(View.GONE);
             mTvBalanceTitle.setText("票价");
-            mTvBalance.setText("2.00元");
+            mTvBalance.setText(balance + "元");
         }
     };
 
@@ -253,18 +254,28 @@ public class PsamIcActivity extends MVPBaseActivity<SpdBusPayContract.View, SpdB
                         return;
                     }
                     //检测到非接IC卡
+
                     if (respdata[0] == 0x07) {
 //                        PlaySound.play(XUESHENGKA, 0);
                         CardBackBean cardBackBean = null;
                         try {
 //                            if (MyApplication.psamDatas.size() != 2) {
-//                                doVal(new CardBackBean(ReturnVal.CAD_PSAM_ERROR, null));
-//                                break;
-//                            }
+////                                doVal(new CardBackBean(ReturnVal.CAD_PSAM_ERROR, null));
+////                                break;
+////                            }
+
+                            if (isDriverUI || isShowDataUI) {
+                                continue;
+                            }
                             cardBackBean = JTBCardManager.getInstance()
                                     .mainMethod(getApplicationContext(), MyApplication.mBankCard
-                                            , MyApplication.psamDatas);
-                            doVal(cardBackBean);
+                                            , MyApplication.psamDatas, yinLianPayManage, handler);
+                            if (cardBackBean == null) {
+                                continue;
+                            } else {
+                                doVal(cardBackBean);
+                            }
+
                         } catch (Exception e) {
                             e.printStackTrace();
                             ConfigUtils.logWrite(e.toString());
@@ -277,16 +288,27 @@ public class PsamIcActivity extends MVPBaseActivity<SpdBusPayContract.View, SpdB
 //                        }
                     } else if (respdata[0] == 0x37) {
                         //检测到 M1-S50 卡
-//                        if (MyApplication.psamDatas.size() != 2) {
-//                            doVal(new CardBackBean(ReturnVal.CAD_PSAM_ERROR, null));
-//                            break;
-//                        }
+                        if (MyApplication.psamDatas.size() != 2) {
+                            doVal(new CardBackBean(ReturnVal.CAD_PSAM_ERROR, null));
+                            continue;
+                        }
+                        if (isShowDataUI) {
+                            continue;
+                        }
                         Log.i("stw", "m1结束寻卡===" + (System.currentTimeMillis() - ltime));
                         try {
-                            CardBackBean cardBackBean = M1CardManager.getInstance()
-                                    .mainMethod(getApplicationContext(), MyApplication.mBankCard
-                                            , M1CardManager.M150, 0, MyApplication.psamDatas);
-                            doVal(cardBackBean);
+                            if (isDriverUI){
+                                CardBackBean cardBackBean = M1CardManager.getInstance()
+                                        .mainMethod(getApplicationContext(), MyApplication.mBankCard
+                                                , M1CardManager.M150, 0, MyApplication.psamDatas);
+                                doVal(cardBackBean);
+                            }else {
+                                CardBackBean cardBackBean = M1CardManager.getInstance()
+                                        .mainMethod(getApplicationContext(), MyApplication.mBankCard
+                                                , M1CardManager.M150, 2, MyApplication.psamDatas);
+                                doVal(cardBackBean);
+                            }
+
                         } catch (Exception e) {
                             LogUtils.v(e.toString());
                             ConfigUtils.logWrite(e.toString());
@@ -298,16 +320,26 @@ public class PsamIcActivity extends MVPBaseActivity<SpdBusPayContract.View, SpdB
 //                        }
                     } else if (respdata[0] == 0x47) {
                         // 检测到 M1-S70 卡
-//                        if (MyApplication.psamDatas.size() != 2) {
-//                            doVal(new CardBackBean(ReturnVal.CAD_PSAM_ERROR, null));
-//                            break;
-//                        }
-
+                        if (MyApplication.psamDatas.size() != 2) {
+                            doVal(new CardBackBean(ReturnVal.CAD_PSAM_ERROR, null));
+                            continue;
+                        }
+                        if (isShowDataUI) {
+                            continue;
+                        }
                         try {
-                            CardBackBean cardBackBean = M1CardManager.getInstance()
-                                    .mainMethod(getApplicationContext(), MyApplication.mBankCard
-                                            , M1CardManager.M170, 0, MyApplication.psamDatas);
-                            doVal(cardBackBean);
+                            if (isDriverUI){
+                                CardBackBean cardBackBean = M1CardManager.getInstance()
+                                        .mainMethod(getApplicationContext(), MyApplication.mBankCard
+                                                , M1CardManager.M170, 0, MyApplication.psamDatas);
+                                doVal(cardBackBean);
+                            }else {
+                                CardBackBean cardBackBean = M1CardManager.getInstance()
+                                        .mainMethod(getApplicationContext(), MyApplication.mBankCard
+                                                , M1CardManager.M170, 2, MyApplication.psamDatas);
+                                doVal(cardBackBean);
+                            }
+
                         } catch (Exception e) {
                             LogUtils.v(e.toString());
                             ConfigUtils.logWrite(e.toString());
@@ -340,23 +372,8 @@ public class PsamIcActivity extends MVPBaseActivity<SpdBusPayContract.View, SpdB
                         break;
                     case ReturnVal.CAD_OK:
                         PlaySound.play(PlaySound.dang, 0);
-                        TCardOpDU cardOpDU = cardBackBean.getCardOpDU();
-                        mLayoutLineInfo.setVisibility(View.GONE);
-                        mLayoutXiaofei.setVisibility(View.VISIBLE);
-                        if (cardOpDU.ucProcSec == (byte) 0x07) {
-                            int num = cardOpDU.yueOriMoney - cardOpDU.yueSub;
-                            mTvXiaofeiTitle.setText("剩余次数");
-                            mTvXiaofeiMoney.setText(num + "");
-                            mTvBalanceTitle.setText("月票");
-                            mTvBalance.setText("1");
-                        } else {
-                            mTvBalanceTitle.setText("余额");
-                            int balance = cardOpDU.purorimoneyInt - cardOpDU.pursubInt;
-                            mTvBalance.setText(((double) balance / 100) + "元");
-                            mTvXiaofeiMoney.setText(((double) cardOpDU.pursubInt / 100) + "元");
-                        }
-                        handler.postDelayed(runnable, 3000);
-                        mPresenter.uploadCardData();
+                        updateUI(cardBackBean);
+//                        mPresenter.uploadCardData();
                         break;
                     case ReturnVal.CAD_RETRY:
                         PlaySound.play(PlaySound.qingchongshua, 0);
@@ -367,20 +384,22 @@ public class PsamIcActivity extends MVPBaseActivity<SpdBusPayContract.View, SpdB
                         PlaySound.play(PlaySound.setSuccess, 0);
                         Toast.makeText(PsamIcActivity.this, "设置成功"
                                 , Toast.LENGTH_SHORT).show();
+                        updateConfigUI();
+
                         break;
                     case ReturnVal.CODE_WEIXIN_SUCCESS:
-                        PlaySound.play(PlaySound.xiaofeiSuccse, 0);
+                        PlaySound.play(PlaySound.MASHANGYIXING, 0);
                         break;
                     case ReturnVal.CODE_ZHIFUBAO_SUCCESS:
-                        int ulHCSub = cardBackBean.getCardOpDU().ulHCSub;
-                        if (ulHCSub == 100) {
-                            PlaySound.play(PlaySound.ZHIFUBAO, 0);
-                        } else if (ulHCSub == -2) {
-                            PlaySound.play(PlaySound.ERWEIMASHIXIAO, 0);
-                        } else {
-                            PlaySound.play(PlaySound.QINGTOUBI, 0);
-                        }
-
+//                        int ulHCSub = cardBackBean.getCardOpDU().ulHCSub;
+//                        if (ulHCSub == 100) {
+                        PlaySound.play(PlaySound.ZHIFUBAO, 0);
+//                        } else if (ulHCSub == -2) {
+//                            PlaySound.play(PlaySound.ERWEIMASHIXIAO, 0);
+//                        } else {
+//                            PlaySound.play(PlaySound.QINGTOUBI, 0);
+//                        }
+                        LogUtils.v("支付宝消费成功");
                         break;
                     case ReturnVal.CODE_YINLAIN_SUCCESS:
                         LogUtils.d("CODE_YINLAIN_SUCCESS");
@@ -391,6 +410,7 @@ public class PsamIcActivity extends MVPBaseActivity<SpdBusPayContract.View, SpdB
                         PlaySound.play(PlaySound.QINGTOUBI, 0);
                         break;
                     case ReturnVal.CAD_LOGON:
+                        PlaySound.play(PlaySound.SIJISHANGBAN, 0);
                         Toast.makeText(PsamIcActivity.this, "司机签到成功"
                                 , Toast.LENGTH_SHORT).show();
                         break;
@@ -413,12 +433,59 @@ public class PsamIcActivity extends MVPBaseActivity<SpdBusPayContract.View, SpdB
                                 , Toast.LENGTH_SHORT).show();
                         PlaySound.play(PlaySound.QINGTOUBI, 0);
                         break;
+
+                    case ReturnVal.CAD_EMPTY:
+                        Toast.makeText(PsamIcActivity.this, "请投币"
+                                , Toast.LENGTH_SHORT).show();
+                        PlaySound.play(PlaySound.QINGTOUBI, 0);
+                        break;
                     default:
                         break;
                 }
             }
         });
 
+    }
+
+    private void updateConfigUI() {
+        List<RunParaFile> runParaFiles = DbDaoManage.getDaoSession()
+                .getRunParaFileDao().loadAll();
+        if (runParaFiles.size() > 0) {
+            RunParaFile runParaFile = runParaFiles.get(0);
+
+            String line = Datautils.byteArrayToString(runParaFile.getLineNr());
+            mTvLine.setText(Integer.parseInt(line) + "路");
+            balance = (double) Datautils.byteArrayToInt(runParaFile.getKeyV1()) / 100 + "元";
+
+            mTvBalance.setText(balance);
+            String busNr = SharedXmlUtil.getInstance(getApplicationContext())
+                    .read(Info.BUS_NO, "");
+            StringBuffer stringBuffer = new StringBuffer();
+            stringBuffer.append("车辆号：" + busNr + "\n");
+            String posID = SharedXmlUtil.getInstance(getApplicationContext())
+                    .read(Info.POS_ID, Info.POS_ID_INIT);
+            stringBuffer.append("设备号：" + posID);
+            mTvDeviceMessage.setText(stringBuffer + "");
+        }
+    }
+
+    private void updateUI(CardBackBean cardBackBean) {
+        TCardOpDU cardOpDU = cardBackBean.getCardOpDU();
+        mLayoutLineInfo.setVisibility(View.GONE);
+        mLayoutXiaofei.setVisibility(View.VISIBLE);
+        if (cardOpDU.ucProcSec == (byte) 0x07) {
+            int num = cardOpDU.yueOriMoney - cardOpDU.yueSub;
+            mTvXiaofeiTitle.setText("剩余次数");
+            mTvXiaofeiMoney.setText(num + "");
+            mTvBalanceTitle.setText("月票");
+            mTvBalance.setText("1");
+        } else {
+            mTvBalanceTitle.setText("余额");
+            int balance = cardOpDU.purorimoneyInt - cardOpDU.pursubInt;
+            mTvBalance.setText(((double) balance / 100) + "元");
+            mTvXiaofeiMoney.setText(((double) cardOpDU.pursubInt / 100) + "元");
+        }
+        handler.postDelayed(runnable, 3000);
     }
 
 
@@ -456,9 +523,58 @@ public class PsamIcActivity extends MVPBaseActivity<SpdBusPayContract.View, SpdB
                     mTvXiaofeiTitle.setText("消费成功!");
                     handler.postDelayed(runnable, 2000);
                     break;
-                case 6:
+                case 123:
+                    Log.i(TAG, "handleMessage:  返回 卡號");
+                    Log.i(TAG, "卡号: " + msg.obj.toString());
+                    break;
+                case MyContext.Hide_Progress:
+
+                    Log.i(TAG, "handleMessage:  返回 Hide_Progress" + msg.obj.toString());
+                    break;
+                case MyContext.MSG_ERROR:
+                    Log.i("stw", "主界面==交易失败银联时间111111== " + (System.currentTimeMillis() - ltime));
+//                    LedUtils.getInstance().error();
+                    PlaySound.play(PlaySound.qingchongshua, 0);
+                    Log.i(TAG, "handleMessage:showErrDialo " + msg);
+                    isFlag = 1;
+                    try {
+                        MyApplication.mBankCard.breakOffCommand();
+                    } catch (RemoteException e) {
+                        e.printStackTrace();
+                    }
+                    break;
+                case MyContext.MSG_PROGRESS:
+                    Log.e(TAG, "银联双免MSG_PROGRESS==" + msg.obj.toString());
+                    break;
+                case 12313:
+                    mTvDeviceMessage.setText(msg.obj.toString());
+                    break;
+
+                case MyContext.RESULT_SUCCESS:
+                    Log.i("stw", "主界面==交易成功银联时间22222== " + (System.currentTimeMillis() - ltime));
+                    PrefUtil.putReversal(null);
+                    PlaySound.play(PlaySound.xiaofeiSuccse, 0);
+                    mLayoutLineInfo.setVisibility(View.GONE);
+                    mTvBalance.setText("1.00元");
+                    mLayoutXiaofei.setVisibility(View.VISIBLE);
+                    mTvXiaofeiMoney.setVisibility(View.GONE);
+                    mTvXiaofeiTitle.setText("消费成功!");
+                    handler.postDelayed(runnable, 2000);
+                    isFlag = 0;
+                    break;
+
+                case MyContext.RESULT_OUTCOME:
+                    if (msg.obj != null) {
+                        Log.d("SwipCard RESULT_OUTCOME", msg.obj.toString());
+                    }
                     break;
                 default:
+                    Log.i(TAG, "handleMessage:  返回 default");
+                    try {
+                        Log.d("SwipCard", msg.toString());
+                    } catch (Exception ex) {
+                        ex.printStackTrace();
+                    }
                     break;
             }
         }
@@ -503,13 +619,14 @@ public class PsamIcActivity extends MVPBaseActivity<SpdBusPayContract.View, SpdB
             }
 
             if (decodeDate.equals(codes)) {
+//                LogUtils.v("二维码重复"+decodeDate);
                 if ("sp".equals(decodeDate.substring(0, 2))) {
                     Toast.makeText(this, "二维码重复", Toast.LENGTH_SHORT).show();
                 }
                 return;
             }
             codes = decodeDate;
-            Log.i(TAG, "二维码: " + decodeDate);
+            LogUtils.v("二维码: " + decodeDate);
             ltime = System.currentTimeMillis();
             Log.e("stw", "微信解码：" + (System.currentTimeMillis() - ltime));
             switch (decodeDate.substring(0, 2)) {
@@ -534,6 +651,29 @@ public class PsamIcActivity extends MVPBaseActivity<SpdBusPayContract.View, SpdB
                     }
                     SharedXmlUtil.getInstance(getApplicationContext()).write(Info.BUS_NO, split[1]);
                     Toast.makeText(this, "车辆号设置完成", Toast.LENGTH_SHORT).show();
+                    PlaySound.play(PlaySound.setSuccess, 0);
+                    List<RunParaFile> runParaFiles = DbDaoManage.getDaoSession().getRunParaFileDao().loadAll();
+                    if (runParaFiles.size() > 0) {
+                        RunParaFile runParaFile = runParaFiles.get(0);
+                        runParaFile.setBusNr(Datautils.HexString2Bytes(split[1]));
+                        DbDaoManage.getDaoSession().getRunParaFileDao().deleteAll();
+                        DbDaoManage.getDaoSession().getRunParaFileDao().insert(runParaFile);
+                    }
+
+                    runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
+                            String busNr = SharedXmlUtil.getInstance(getApplicationContext())
+                                    .read(Info.BUS_NO, "");
+                            StringBuffer stringBuffer = new StringBuffer();
+                            stringBuffer.append("车辆号：" + busNr + "\n");
+                            String posID = SharedXmlUtil.getInstance(getApplicationContext())
+                                    .read(Info.POS_ID, Info.POS_ID_INIT);
+                            stringBuffer.append("设备号：" + posID);
+                            mTvDeviceMessage.setText(stringBuffer + "");
+                        }
+                    });
+
                     break;
                 default:
                     //支付宝 二维码
@@ -595,7 +735,6 @@ public class PsamIcActivity extends MVPBaseActivity<SpdBusPayContract.View, SpdB
     @Override
     public void showCheckAliQrCode(TianjinAlipayRes tianjinAlipayRes) {
         codeinfoData = tianjinAlipayRes;
-        Log.e(TAG, "checkAliQrCode:不为空 ");
         if (codeinfoData.result == ErroCode.SUCCESS) {
             // TODO: 2019/3/11 存储天津公交需要的数据
             try {
@@ -604,10 +743,10 @@ public class PsamIcActivity extends MVPBaseActivity<SpdBusPayContract.View, SpdB
                 e.printStackTrace();
             }
             doVal(new CardBackBean(ReturnVal.CODE_ZHIFUBAO_SUCCESS, null));
-            mPresenter.uploadAlipayRe();
+            mPresenter.uploadAlipayRe(getApplicationContext());
 //            handler.sendMessage(handler.obtainMessage(3));
         } else {
-            doVal(new CardBackBean(ReturnVal.CAD_EMPTY, null));
+            doVal(new CardBackBean(ReturnVal.CAD_RETRY, null));
             Log.i(TAG, "\n支付宝校验结果错误:" + codeinfoData.result);
         }
     }
@@ -644,7 +783,7 @@ public class PsamIcActivity extends MVPBaseActivity<SpdBusPayContract.View, SpdB
         if (result == ErroCode.EC_SUCCESS) {
             LogUtils.i("微信结果: " + "openID" + openId + "结果" + wechatResult);
             doVal(new CardBackBean(ReturnVal.CODE_WEIXIN_SUCCESS, null));
-            mPresenter.uploadWechatRe();
+            mPresenter.uploadWechatRe(getApplicationContext());
         } else {
             LogUtils.i("微信校验结果错误 " + result);
             doVal(new CardBackBean(ReturnVal.CAD_EMPTY, null));
@@ -654,5 +793,55 @@ public class PsamIcActivity extends MVPBaseActivity<SpdBusPayContract.View, SpdB
     @Override
     public void doCheckWechatTianJin() {
 
+    }
+
+
+    @Override
+    public boolean onKeyDown(int keyCode, KeyEvent event) {
+        if (keyCode == KeyEvent.KEYCODE_BACK) {
+            return false;
+        }
+
+        if (event.getAction() == KeyEvent.ACTION_DOWN) {
+            if (keyCode == KeyEvent.KEYCODE_DPAD_UP) {
+                if (isDriverUI) {
+                    mLlShowData.setVisibility(View.VISIBLE);
+                    isShowDataUI = true;
+                    isDriverUI = false;
+                    mLlDriver.setVisibility(View.GONE);
+                } else if (isShowDataUI) {
+                    mLlShowData.setVisibility(View.GONE);
+                    isShowDataUI = false;
+                    isDriverUI = false;
+                    mLlDriver.setVisibility(View.GONE);
+                } else {
+                    mLlShowData.setVisibility(View.GONE);
+                    isShowDataUI = false;
+                    isDriverUI = true;
+                    mLlDriver.setVisibility(View.VISIBLE);
+                }
+            }
+            if (keyCode == KeyEvent.KEYCODE_DPAD_DOWN) {
+                if (isDriverUI) {
+                    mLlShowData.setVisibility(View.GONE);
+                    isShowDataUI = false;
+                    isDriverUI = false;
+                    mLlDriver.setVisibility(View.GONE);
+                } else if (isShowDataUI) {
+                    mLlShowData.setVisibility(View.GONE);
+                    isShowDataUI = false;
+                    isDriverUI = true;
+                    mLlDriver.setVisibility(View.VISIBLE);
+                } else {
+                    mLlShowData.setVisibility(View.VISIBLE);
+                    isShowDataUI = true;
+                    isDriverUI = false;
+                    mLlDriver.setVisibility(View.GONE);
+                }
+            }
+        }
+
+
+        return super.onKeyDown(keyCode, event);
     }
 }

@@ -4,6 +4,7 @@ import android.content.Context;
 import android.os.RemoteException;
 import android.text.TextUtils;
 import android.util.Log;
+import android.widget.Toast;
 
 import com.example.test.yinlianbarcode.utils.SharedXmlUtil;
 import com.spd.base.been.tianjin.CardRecord;
@@ -131,7 +132,18 @@ public class CardMethods {
                 LogUtils.d("微智接口返回错误码" + retvalue);
                 return reBytes;
             }
-            if (!Arrays.equals(APDU_RESULT_SUCCESS, Datautils.cutBytes(respdata, resplen[0] - 2, 2))) {
+            byte[] resultBytes = Datautils.cutBytes(respdata, resplen[0] - 2, 2);
+            if (resultBytes[0] == (byte) 0x6C) {
+                sendApdu[4] = resultBytes[1];
+                retvalue = mBankCard.sendAPDU(cardType, sendApdu, sendApdu.length, respdata, resplen);
+                if (retvalue != 0) {
+                    mBankCard.breakOffCommand();
+                    LogUtils.d("微智接口返回错误码" + retvalue);
+                    return reBytes;
+                }
+            }
+            if (!Arrays.equals(APDU_RESULT_SUCCESS, Datautils
+                    .cutBytes(respdata, resplen[0] - 2, 2))) {
 //                mBankCard.breakOffCommand();
                 return Datautils.cutBytes(respdata, resplen[0] - 2, 2);
             }
@@ -597,6 +609,7 @@ public class CardMethods {
      ********************************************************************/
     public static void onAppendRecordSelf(Context context, byte exchType, TCardOpDU cardOpDU
             , RunParaFile runParaFile, List<PsamBeen> psamBeenList) {
+
         new Thread(new Runnable() {
             @Override
             public void run() {
@@ -624,13 +637,13 @@ public class CardMethods {
                 System.arraycopy(runParaFile.getLineNr(), 0, rcdBuffer, 36, 2);
                 // 31-40: Ar,Vo,Co,Te,Li
                 System.arraycopy(runParaFile.getBusNr(), 0, rcdBuffer, 38, 3);
-                // 41-44: Dev
+                // 41-44: Dev  取sn号后八位
                 System.arraycopy(runParaFile.getDevNr(), 0, rcdBuffer, 41, 4);
                 System.arraycopy(runParaFile.getKeyV1(), 0, rcdBuffer, 45, 2);
                 // 47: 通用折扣率
                 rcdBuffer[47] = runParaFile.getUcCitySubRadioP()[0];
 
-                if (psamBeenList.size()==2){
+                if (psamBeenList.size() == 2) {
                     System.arraycopy(psamBeenList.get(0).getSnr(), 3, rcdBuffer, 52, 1);
                     System.arraycopy(psamBeenList.get(0).getSnr(), 7, rcdBuffer, 53, 3);
                     System.arraycopy(psamBeenList.get(1).getSnr(), 3, rcdBuffer, 56, 1);

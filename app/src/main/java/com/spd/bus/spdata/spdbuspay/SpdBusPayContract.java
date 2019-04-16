@@ -81,7 +81,7 @@ public class SpdBusPayContract {
          *
          * @param qrcodeUpload
          */
-        void uploadAlipayRe();
+        void uploadAlipayRe(Context context);
 
         /**
          * 释放支付宝库
@@ -126,14 +126,19 @@ public class SpdBusPayContract {
          */
         void checkWechatQrCode(String code, List<WechatQrcodeKey.PubKeyListBean> pbKeyList, List<WechatQrcodeKey.MacKeyListBean> macKeyList, int payfee, byte scene, byte scantype, String posId, String posTrxId);
 
-        void uploadWechatRe();
+        void uploadWechatRe(Context context);
 
 
 
-        void getYinLianPubKey();
+        void getYinLianPubKey(Context context);
 
         void checkYinLianCode(Context context,String qrcode);
 
         void uploadCardData();
+
+        /**
+         * 获取银联双免key
+         */
+        void getShuangMianPubKey(Context context,String url);
     }
 }

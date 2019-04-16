@@ -1,6 +1,7 @@
 package com.spd.bus.card.methods;
 
 import android.content.Context;
+import android.os.Handler;
 import android.util.Log;
 
 import com.spd.base.been.tianjin.CardRecord;
@@ -13,6 +14,7 @@ import com.spd.base.been.tianjin.TCardOpDU;
 import com.spd.bus.MyApplication;
 import com.spd.bus.card.utils.DateUtils;
 import com.spd.bus.card.utils.LogUtils;
+import com.spd.bus.spdata.YinLianPayManage;
 import com.spd.bus.spdata.been.PsamBeen;
 import com.spd.bus.spdata.utils.PlaySound;
 import com.spd.bus.util.TLV;
@@ -48,6 +50,8 @@ public class JTBCardManager {
     private int fOldDisable = 0;
     private List<PsamBeen> psamBeenList;
     private Context context;
+    private YinLianPayManage yinLianPayManage;
+    private Handler handler;
 
     public static JTBCardManager getInstance() {
 
@@ -60,7 +64,10 @@ public class JTBCardManager {
     }
 
 
-    public CardBackBean mainMethod(Context context, BankCard mBankCard, List<PsamBeen> psamBeenList) throws Exception {
+    public CardBackBean mainMethod(Context context, BankCard mBankCard, List<PsamBeen> psamBeenList
+            , YinLianPayManage yinLianPayManage, Handler handler) throws Exception {
+        this.handler = handler;
+        this.yinLianPayManage = yinLianPayManage;
         this.context = context;
         LogUtils.v("JTB开始");
         this.psamBeenList = psamBeenList;
@@ -88,9 +95,12 @@ public class JTBCardManager {
         return cardBackBean;
     }
 
+    private boolean isPPSE = false;
+
     public CardBackBean getFirst(BankCard mBankCard, List<PsamBeen> psamBeenList) {
         LogUtils.d("First");
-        byte[] resultBytes = CardMethods.sendApdus(mBankCard, BankCard.CARD_MODE_PICC, CardMethods.SELEC_PPSE);
+        byte[] resultBytes = CardMethods.sendApdus(mBankCard, BankCard.CARD_MODE_PICC
+                , CardMethods.SELEC_PPSE);
         LogUtils.d("First 1");
         if (resultBytes == null || resultBytes.length == 2) {
             return mustToSend(mBankCard, psamBeenList);
@@ -104,7 +114,9 @@ public class JTBCardManager {
                     return new CardBackBean(ReturnVal.CAD_READ, tCardOpDU);
                 }
             } else {
-                return mustToSend(mBankCard, psamBeenList);
+                // 银联双免
+                yinLianPayManage.readCardInfo("07", handler);
+                return null;
 
             }
         }
@@ -114,7 +126,8 @@ public class JTBCardManager {
     private CardBackBean mustToSend(BankCard mBankCard, List<PsamBeen> psamBeenList) {
         byte[] resultBytes;//选择电子钱包应用
         LogUtils.d("First 2");
-        resultBytes = CardMethods.sendApdus(mBankCard, BankCard.CARD_MODE_PICC, CardMethods.SELECT_ICCARD_QIANBAO);
+        resultBytes = CardMethods.sendApdus(mBankCard, BankCard.CARD_MODE_PICC
+                , CardMethods.SELECT_ICCARD_QIANBAO);
         LogUtils.d("First 3");
         if (resultBytes == null) {
             return new CardBackBean(ReturnVal.CAD_READ, tCardOpDU);
@@ -297,7 +310,7 @@ public class JTBCardManager {
 
         List<RunParaFile> runParaFiles = DbDaoManage.getDaoSession()
                 .getRunParaFileDao().loadAll();
-        if (runParaFiles.size() < 1) {
+        if (runParaFiles == null) {
             return ReturnVal.CODE_PLEASE_SET;
         }
         runParaFile = runParaFiles.get(0);

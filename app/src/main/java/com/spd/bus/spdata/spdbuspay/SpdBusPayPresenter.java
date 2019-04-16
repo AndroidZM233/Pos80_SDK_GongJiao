@@ -18,11 +18,13 @@ import com.spd.base.been.AlipayQrcodekey;
 
 import com.spd.base.been.BosiQrcodeKey;
 import com.spd.base.been.tianjin.AliWhiteBackBean;
+import com.spd.base.been.tianjin.AppSercetPost;
 import com.spd.base.been.tianjin.CardBackBean;
 import com.spd.base.been.tianjin.GetMacBackBean;
 import com.spd.base.been.tianjin.GetPublicBackBean;
 import com.spd.base.been.tianjin.GetZhiFuBaoKey;
 import com.spd.base.been.tianjin.KeysBean;
+import com.spd.base.been.tianjin.PosKeysBackBean;
 import com.spd.base.been.tianjin.TCardOpDU;
 import com.spd.base.been.tianjin.UnqrkeyBackBean;
 import com.spd.base.been.tianjin.produce.weixin.PayinfoBean;
@@ -42,9 +44,11 @@ import com.spd.base.been.WechatQrcodeKey;
 import com.spd.base.db.DbDaoManage;
 import com.spd.base.dbbeen.AlipayKeyDb;
 import com.spd.base.dbbeen.AlipayKeyDbDao;
+import com.spd.base.dbbeen.RunParaFile;
 import com.spd.base.dbbeen.WeichatKeyDb;
 import com.spd.base.dbbeen.WeichatKeyDbDao;
 import com.spd.base.net.QrcodeApi;
+import com.spd.base.utils.Datautils;
 import com.spd.bus.Info;
 import com.spd.base.been.tianjin.AliBlackBackBean;
 import com.spd.base.been.tianjin.AliWhiteBlackPost;
@@ -59,6 +63,7 @@ import com.spd.bus.card.utils.LogUtils;
 import com.spd.bus.spdata.been.ErroCode;
 import com.spd.bus.spdata.mvp.BasePresenterImpl;
 import com.spd.bus.util.SaveDataUtils;
+import com.spd.yinlianpay.util.PrefUtil;
 import com.tencent.wlxsdk.WlxSdk;
 
 import java.util.ArrayList;
@@ -209,8 +214,12 @@ public class SpdBusPayPresenter extends BasePresenterImpl<SpdBusPayContract.View
      */
     @Override
     public void getZhiFuBaoAppSercet(Context context) {
+        final Gson gson = new GsonBuilder().serializeNulls().create();
         Map<String, String> map = new HashMap<>();
-        map.put("data", "{\"deviceId\":\"17340086\"}");
+        String posID = SharedXmlUtil.getInstance(context).read(Info.POS_ID, Info.POS_ID_INIT);
+        AppSercetPost appSercetPost=new AppSercetPost();
+        appSercetPost.setDeviceId(posID);
+        map.put("data", gson.toJson(appSercetPost));
         HttpMethods.getInstance().appSercet(map, new Observer<AppSercetBackBean>() {
             @Override
             public void onSubscribe(Disposable d) {
@@ -226,7 +235,7 @@ public class SpdBusPayPresenter extends BasePresenterImpl<SpdBusPayContract.View
 
             @Override
             public void onError(Throwable e) {
-
+                LogUtils.v(e.toString());
             }
 
             @Override
@@ -373,9 +382,8 @@ public class SpdBusPayPresenter extends BasePresenterImpl<SpdBusPayContract.View
     }
 
     @Override
-    public void uploadAlipayRe() {
-        String aLiUploadData = getALiUploadData().replace("\\\"", "'");
-        Log.i("SPEEDATA_BUS", "uploadBosiRe: json=====" + aLiUploadData);
+    public void uploadAlipayRe(Context context) {
+        String aLiUploadData = getALiUploadData(context).replace("\\\"", "'");
 
         HttpMethods.getInstance().produce(aLiUploadData, new Observer<NetBackBean>() {
             @Override
@@ -390,7 +398,7 @@ public class SpdBusPayPresenter extends BasePresenterImpl<SpdBusPayContract.View
                     Log.i(TAG, "onNext: " + netBackBean.toString());
                     TCardOpDU tCardOpDU = new TCardOpDU();
                     tCardOpDU.ulHCSub = Integer.parseInt(netBackBean.getCode());
-                    mView.successCode(new CardBackBean(ReturnVal.CODE_ZHIFUBAO_SUCCESS, tCardOpDU));
+//                    mView.successCode(new CardBackBean(ReturnVal.CODE_ZHIFUBAO_SUCCESS, tCardOpDU));
                     for (UploadInfoZFBDB uploadInfoZFBDB : uploadInfoZFBDBS) {
                         uploadInfoZFBDB.setIsUpload(true);
                         DbDaoManage.getDaoSession().getUploadInfoZFBDBDao().update(uploadInfoZFBDB);
@@ -413,13 +421,21 @@ public class SpdBusPayPresenter extends BasePresenterImpl<SpdBusPayContract.View
 
     }
 
-    private String getALiUploadData() {
+    private String getALiUploadData(Context context) {
         final Gson gson = new GsonBuilder().serializeNulls().create();
         //上传记录到天津后台
         ProducePost producePost = new ProducePost();
         producePost.setType("2200AQ");
-        producePost.setRoute("11");
-        producePost.setPosId("123");
+        List<RunParaFile> runParaFiles = DbDaoManage.getDaoSession().getRunParaFileDao().loadAll();
+        if (runParaFiles.size() == 0) {
+            producePost.setRoute("11");
+        } else {
+            byte[] lineNr = runParaFiles.get(0).getLineNr();
+            producePost.setRoute(Datautils.byteArrayToString(lineNr));
+        }
+
+        String posId = SharedXmlUtil.getInstance(context).read(Info.POS_ID, Info.POS_ID_INIT);
+        producePost.setPosId(posId);
         ProduceZhiFuBao produceZhiFuBao = new ProduceZhiFuBao();
         List<ReqDataBean> reqDataBeans = new ArrayList<>();
         uploadInfoZFBDBS = DbDaoManage.getDaoSession().getUploadInfoZFBDBDao()
@@ -473,7 +489,9 @@ public class SpdBusPayPresenter extends BasePresenterImpl<SpdBusPayContract.View
         }
 
         produceZhiFuBao.setReqData(reqDataBeans);
-        produceZhiFuBao.setSecret("DB623AFEBF6B5CA8DC500449D0B59AA7");
+        String secret = SharedXmlUtil.getInstance(context).read(Info.ZFB_APP_SERCET
+                , "DB623AFEBF6B5CA8DC500449D0B59AA7");
+        produceZhiFuBao.setSecret(secret);
         producePost.setData(gson.toJson(produceZhiFuBao));
         return gson.toJson(producePost).toString();
     }
@@ -602,7 +620,7 @@ public class SpdBusPayPresenter extends BasePresenterImpl<SpdBusPayContract.View
     @Override
     public void checkWechatTianJin(String code, int payfee, byte scene,
                                    byte scantype, String posId, String posTrxId) {
-        if (wlxSdk==null){
+        if (wlxSdk == null) {
             wlxSdk = new WlxSdk();
         }
         int result = 0;
@@ -737,8 +755,8 @@ public class SpdBusPayPresenter extends BasePresenterImpl<SpdBusPayContract.View
     }
 
     @Override
-    public void uploadWechatRe() {
-        String weiXinUploadData = getWeiXinUploadData().replace("\\\"", "'");
+    public void uploadWechatRe(Context context) {
+        String weiXinUploadData = getWeiXinUploadData(context).replace("\\\"", "'");
 
         HttpMethods.getInstance().produce(weiXinUploadData, new Observer<NetBackBean>() {
             @Override
@@ -776,13 +794,21 @@ public class SpdBusPayPresenter extends BasePresenterImpl<SpdBusPayContract.View
     }
 
 
-    private String getWeiXinUploadData() {
+    private String getWeiXinUploadData(Context context) {
         final Gson gson = new GsonBuilder().serializeNulls().create();
         //上传记录到天津后台
         ProducePost producePost = new ProducePost();
         producePost.setType("2200WQ");
-        producePost.setRoute("11");
-        producePost.setPosId("123");
+        List<RunParaFile> runParaFiles = DbDaoManage.getDaoSession().getRunParaFileDao().loadAll();
+        if (runParaFiles.size() == 0) {
+            producePost.setRoute("11");
+        } else {
+            byte[] lineNr = runParaFiles.get(0).getLineNr();
+            producePost.setRoute(Datautils.byteArrayToString(lineNr));
+        }
+
+        String posId = SharedXmlUtil.getInstance(context).read(Info.POS_ID, Info.POS_ID_INIT);
+        producePost.setPosId(posId);
         ProduceWeiXin produceWeiXin = new ProduceWeiXin();
         List<PayinfoBean> weiXinPayinfo = new ArrayList<>();
         uploadInfoDBS = DbDaoManage.getDaoSession().getUploadInfoDBDao()
@@ -813,7 +839,7 @@ public class SpdBusPayPresenter extends BasePresenterImpl<SpdBusPayContract.View
 
     ///////////////////////////////////////////////////银联//////////////////////////
     @Override
-    public void getYinLianPubKey() {
+    public void getYinLianPubKey(Context context) {
         HttpMethods.getInstance().unqrkey(new Observer<UnqrkeyBackBean>() {
             @Override
             public void onSubscribe(Disposable d) {
@@ -854,7 +880,9 @@ public class SpdBusPayPresenter extends BasePresenterImpl<SpdBusPayContract.View
                 boolean validation = ValidationUtils.validationTianJin(qrEntity, keysBeans);
                 if (validation) {
                     SaveDataUtils.saveYinLianDataBean(context, qrcode, qrEntity);
-                    uploadYinLian();
+                    mView.successCode(new CardBackBean(ReturnVal.CODE_YINLAIN_SUCCESS
+                            , null));
+                    uploadYinLian(context);
                 } else {
                     mView.erro("验证失败");
                 }
@@ -872,8 +900,38 @@ public class SpdBusPayPresenter extends BasePresenterImpl<SpdBusPayContract.View
 //        DataUploadToTianJinUtils.uploadCardData();
     }
 
-    private void uploadYinLian() {
-        String weiXinUploadData = getYinLianUploadData().replace("\\\"", "'");
+    @Override
+    public void getShuangMianPubKey(Context context, String url) {
+        HttpMethods.getInstance().posKeys(url, new Observer<PosKeysBackBean>() {
+            @Override
+            public void onSubscribe(Disposable d) {
+
+            }
+
+            @Override
+            public void onNext(PosKeysBackBean posKeysBackBean) {
+                String code = posKeysBackBean.getCode();
+                if (code.equals("00")) {
+//                    SharedXmlUtil.getInstance(context).write(Info.YLSM_KEY
+//                            , posKeysBackBean.getKey());
+                    PrefUtil.setMasterkey(posKeysBackBean.getKey());
+                }
+            }
+
+            @Override
+            public void onError(Throwable e) {
+                LogUtils.v(e.toString());
+            }
+
+            @Override
+            public void onComplete() {
+
+            }
+        });
+    }
+
+    private void uploadYinLian(Context context) {
+        String weiXinUploadData = getYinLianUploadData(context).replace("\\\"", "'");
 
         HttpMethods.getInstance().produce(weiXinUploadData, new Observer<NetBackBean>() {
             @Override
@@ -888,7 +946,7 @@ public class SpdBusPayPresenter extends BasePresenterImpl<SpdBusPayContract.View
                     Log.i(TAG, "onNext: " + netBackBean.toString());
                     TCardOpDU tCardOpDU = new TCardOpDU();
                     tCardOpDU.ulHCSub = Integer.parseInt(netBackBean.getCode());
-                    mView.successCode(new CardBackBean(ReturnVal.CODE_YINLAIN_SUCCESS, tCardOpDU));
+//                    mView.successCode(new CardBackBean(ReturnVal.CODE_YINLAIN_SUCCESS, tCardOpDU));
                     for (UploadInfoYinLianDB yinLianDB : yinLianDBS) {
                         yinLianDB.setIsUpload(true);
                         DbDaoManage.getDaoSession().getUploadInfoYinLianDBDao().update(yinLianDB);
@@ -909,13 +967,21 @@ public class SpdBusPayPresenter extends BasePresenterImpl<SpdBusPayContract.View
         });
     }
 
-    public String getYinLianUploadData() {
+    public String getYinLianUploadData(Context context) {
         final Gson gson = new GsonBuilder().disableHtmlEscaping().create();
         //上传记录到天津后台
         ProducePost producePost = new ProducePost();
         producePost.setType("2200UQ");
-        producePost.setRoute("11");
-        producePost.setPosId("123");
+        List<RunParaFile> runParaFiles = DbDaoManage.getDaoSession().getRunParaFileDao().loadAll();
+        if (runParaFiles.size() == 0) {
+            producePost.setRoute("11");
+        } else {
+            byte[] lineNr = runParaFiles.get(0).getLineNr();
+            producePost.setRoute(Datautils.byteArrayToString(lineNr));
+        }
+
+        String posId = SharedXmlUtil.getInstance(context).read(Info.POS_ID, Info.POS_ID_INIT);
+        producePost.setPosId(posId);
         ProduceYinLian produceYinLian = new ProduceYinLian();
         List<ProduceYinLian.PayinfoBean> yinLianList = new ArrayList<>();
         yinLianDBS = DbDaoManage.getDaoSession().getUploadInfoYinLianDBDao()
