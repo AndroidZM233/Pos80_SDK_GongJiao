@@ -3,8 +3,6 @@ package com.spd.bus;
 import android.app.Application;
 import android.content.Context;
 import android.content.Intent;
-import android.graphics.Color;
-import android.hardware.Camera;
 import android.os.Build;
 import android.os.RemoteException;
 import android.support.annotation.RequiresApi;
@@ -13,16 +11,14 @@ import android.widget.Toast;
 
 import com.example.test.yinlianbarcode.interfaces.OnBackListener;
 import com.example.test.yinlianbarcode.utils.ScanUtils;
-import com.honeywell.barcode.ActiveCamera;
 import com.honeywell.barcode.HSMDecodeComponent;
 import com.honeywell.barcode.HSMDecoder;
 
 import com.honeywell.camera.CameraManager;
 import com.spd.base.been.tianjin.CardRecord;
 import com.spd.base.db.DbDaoManage;
-import com.spd.base.utils.Datautils;
-import com.spd.bus.card.utils.DateUtils;
-import com.spd.bus.card.utils.LogUtils;
+import com.spd.base.utils.DateUtils;
+import com.spd.base.utils.LogUtils;
 import com.spd.bus.spdata.been.PsamBeen;
 import com.spd.bus.spdata.utils.PlaySound;
 import com.spd.bus.timer.HeartTimer;
@@ -31,7 +27,6 @@ import com.spd.yinlianpay.util.PrefUtil;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 
 import sdk4.wangpos.libemvbinder.EmvCore;

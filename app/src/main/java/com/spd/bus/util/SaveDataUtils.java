@@ -4,35 +4,25 @@ import android.content.Context;
 
 import com.example.test.yinlianbarcode.entity.QrEntity;
 import com.example.test.yinlianbarcode.utils.SharedXmlUtil;
-import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
-import com.spd.alipay.been.AliCodeinfoData;
 import com.spd.alipay.been.TianjinAlipayRes;
 import com.spd.base.been.tianjin.TStaffTb;
-import com.spd.base.been.tianjin.produce.ProducePost;
 import com.spd.base.been.tianjin.produce.shuangmian.UploadSMDB;
-import com.spd.base.been.tianjin.produce.weixin.PayinfoBean;
-import com.spd.base.been.tianjin.produce.weixin.ProduceWeiXin;
 import com.spd.base.been.tianjin.produce.weixin.UploadInfoDB;
-import com.spd.base.been.tianjin.produce.weixin.UploadInfoDBDao;
 import com.spd.base.been.tianjin.produce.yinlian.UploadInfoYinLianDB;
-import com.spd.base.been.tianjin.produce.zhifubao.ReqDataBean;
 import com.spd.base.been.tianjin.produce.zhifubao.UploadInfoZFBDB;
 import com.spd.base.db.DbDaoManage;
 import com.spd.base.dbbeen.RunParaFile;
 import com.spd.base.utils.Datautils;
 import com.spd.bus.Info;
-import com.spd.bus.card.utils.DateUtils;
+import com.spd.base.utils.DateUtils;
 import com.spd.yinlianpay.WeiPassGlobal;
 import com.spd.yinlianpay.iso8583.Msg;
 import com.spd.yinlianpay.util.PrefUtil;
 import com.tencent.wlxsdk.WlxSdk;
 
 import org.apache.commons.lang3.text.StrBuilder;
-import org.greenrobot.greendao.annotation.Id;
 
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 

@@ -11,6 +11,7 @@ import com.spd.base.been.tianjin.NetBackBean;
 import com.spd.base.been.tianjin.PosInfoBackBean;
 import com.spd.base.been.tianjin.PosKeysBackBean;
 import com.spd.base.been.tianjin.UnqrkeyBackBean;
+import com.spd.base.utils.RetrofitCreateHelper;
 
 import java.util.Map;
 
@@ -20,7 +21,6 @@ import io.reactivex.schedulers.Schedulers;
 import okhttp3.MediaType;
 import okhttp3.RequestBody;
 import okhttp3.ResponseBody;
-import retrofit2.http.Url;
 
 /**
  * Created by 张明_ on 2019/2/18.

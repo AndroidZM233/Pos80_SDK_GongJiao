@@ -197,6 +197,7 @@ public class UnionPayCard {
                 public void onResult(TradeInfo info) {
                     msg[0] = info.msg;
                     WeiPassGlobal.tradeInfo = info;
+                    handler.sendMessage(handler.obtainMessage(MyContext.BackMsg, info.msg));
                     countDownLatch.countDown();
                     Log.i(TAG, "返回0200发送返回11111111111== " + (System.currentTimeMillis() - systemlongtime));
                 }
@@ -222,7 +223,7 @@ public class UnionPayCard {
 
                 @Override
                 public void onDataBack(Msg msg) {
-                    handler.sendMessage(handler.obtainMessage(MyContext.BackMsg, msg));
+//                    handler.sendMessage(handler.obtainMessage(MyContext.BackMsg, msg));
                 }
             });
             countDownLatch.await();
@@ -1174,6 +1175,7 @@ public class UnionPayCard {
                 Log.e("PAYPASSTEST", "getMagTrackData_MC error result = " + rest);
             }
         } else {
+
             //磁道信息
             outData = new byte[100];
             outDataLen = new int[1];

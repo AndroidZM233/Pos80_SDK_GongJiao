@@ -14,7 +14,7 @@ import com.spd.base.been.tianjin.BaseInfoDataPost;
 import com.spd.base.db.DbDaoManage;
 import com.spd.bus.Info;
 import com.spd.bus.card.utils.HttpMethods;
-import com.spd.bus.card.utils.LogUtils;
+import com.spd.base.utils.LogUtils;
 
 import java.util.HashMap;
 import java.util.List;

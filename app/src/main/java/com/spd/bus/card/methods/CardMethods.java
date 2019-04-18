@@ -4,7 +4,6 @@ import android.content.Context;
 import android.os.RemoteException;
 import android.text.TextUtils;
 import android.util.Log;
-import android.widget.Toast;
 
 import com.example.test.yinlianbarcode.utils.SharedXmlUtil;
 import com.spd.base.been.tianjin.CardRecord;
@@ -16,19 +15,15 @@ import com.spd.base.been.tianjin.TCardOpDU;
 import com.spd.bus.Info;
 import com.spd.bus.MyApplication;
 import com.spd.bus.card.utils.DataUploadToTianJinUtils;
-import com.spd.bus.card.utils.DateUtils;
-import com.spd.bus.card.utils.LogUtils;
+import com.spd.base.utils.DateUtils;
+import com.spd.base.utils.LogUtils;
 import com.spd.bus.spdata.been.PsamBeen;
 import com.spd.bus.spdata.been.TCommInfo;
-
-import org.greenrobot.greendao.annotation.Id;
 
 import java.util.Arrays;
 import java.util.List;
 
 import wangpos.sdk4.libbasebinder.BankCard;
-
-import static com.spd.bus.card.methods.ReturnVal.CAD_READ;
 
 /**
  * Created by 张明_ on 2019/2/18.

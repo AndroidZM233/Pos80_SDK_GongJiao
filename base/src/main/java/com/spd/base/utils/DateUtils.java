@@ -1,8 +1,7 @@
-package com.spd.bus.card.utils;
+package com.spd.base.utils;
 
 import android.annotation.SuppressLint;
 
-import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;

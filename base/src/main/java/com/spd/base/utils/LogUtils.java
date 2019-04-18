@@ -1,4 +1,4 @@
-package com.spd.bus.card.utils;
+package com.spd.base.utils;
 
 import android.annotation.SuppressLint;
 import android.text.TextUtils;

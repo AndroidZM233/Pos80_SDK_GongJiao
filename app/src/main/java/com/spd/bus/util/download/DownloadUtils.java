@@ -1,8 +1,6 @@
 package com.spd.bus.util.download;
 
 import com.spd.bus.card.utils.ApiService;
-import com.spd.bus.card.utils.HttpMethods;
-import com.spd.bus.card.utils.RetrofitCreateHelper;
 
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -20,9 +18,6 @@ import okhttp3.OkHttpClient;
 import okhttp3.ResponseBody;
 import retrofit2.Retrofit;
 import retrofit2.adapter.rxjava2.RxJava2CallAdapterFactory;
-import rx.Subscriber;
-import rx.functions.Action1;
-import rx.functions.Func1;
 
 /**
  * Created by 张明_ on 2019/4/11.

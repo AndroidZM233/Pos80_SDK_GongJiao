@@ -2,9 +2,7 @@ package com.spd.bus.card.utils;
 
 import android.content.Context;
 import android.text.TextUtils;
-import android.util.Log;
 
-import com.example.test.yinlianbarcode.utils.SharedXmlUtil;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.spd.base.been.tianjin.CardRecord;
@@ -14,8 +12,7 @@ import com.spd.base.been.tianjin.produce.ProducePost;
 import com.spd.base.db.DbDaoManage;
 import com.spd.base.dbbeen.RunParaFile;
 import com.spd.base.utils.Datautils;
-import com.spd.bus.Info;
-import com.spd.bus.MyApplication;
+import com.spd.base.utils.LogUtils;
 
 import org.apache.commons.lang3.text.StrBuilder;
 

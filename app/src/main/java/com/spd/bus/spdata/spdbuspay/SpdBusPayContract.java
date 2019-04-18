@@ -7,9 +7,6 @@ import com.spd.alipay.been.TianjinAlipayRes;
 import com.spd.base.been.AlipayQrcodekey;
 import com.spd.base.been.BosiQrcodeKey;
 import com.spd.base.been.tianjin.CardBackBean;
-import com.spd.base.beenupload.AlipayQrCodeUpload;
-import com.spd.base.beenupload.BosiQrCodeUpload;
-import com.spd.base.beenupload.WeichatQrCodeUpload;
 import com.spd.base.been.WechatQrcodeKey;
 import com.spd.base.dbbeen.RunParaFile;
 import com.spd.bus.spdata.mvp.BasePresenter;
@@ -49,15 +46,6 @@ public class SpdBusPayContract {
     }
 
     interface Presenter extends BasePresenter<View> {
-        void produce();
-        /**
-         * 支付宝二维码
-         */
-        /**
-         * 获取支付宝证书key
-         */
-        void getAliPubKey();
-
 
         void aliPayInitJni();
 
@@ -83,11 +71,6 @@ public class SpdBusPayContract {
          * 释放支付宝库
          */
         void releseAlipayJni();
-
-        /**
-         * 腾讯（微信）二维码
-         */
-        void getWechatPublicKey();
 
 
         void checkWechatTianJin(String code, int payfee, byte scene,

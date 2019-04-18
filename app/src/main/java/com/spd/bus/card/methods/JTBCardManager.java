@@ -2,21 +2,18 @@ package com.spd.bus.card.methods;
 
 import android.content.Context;
 import android.os.Handler;
-import android.util.Log;
 
 import com.spd.base.been.tianjin.CardRecord;
-import com.spd.base.been.tianjin.CardRecordDao;
 import com.spd.base.db.DbDaoManage;
 import com.spd.base.dbbeen.RunParaFile;
 import com.spd.base.utils.Datautils;
 import com.spd.base.been.tianjin.CardBackBean;
 import com.spd.base.been.tianjin.TCardOpDU;
 import com.spd.bus.MyApplication;
-import com.spd.bus.card.utils.DateUtils;
-import com.spd.bus.card.utils.LogUtils;
+import com.spd.base.utils.DateUtils;
+import com.spd.base.utils.LogUtils;
 import com.spd.bus.spdata.YinLianPayManage;
 import com.spd.bus.spdata.been.PsamBeen;
-import com.spd.bus.spdata.utils.PlaySound;
 import com.spd.bus.util.TLV;
 
 import java.text.ParseException;

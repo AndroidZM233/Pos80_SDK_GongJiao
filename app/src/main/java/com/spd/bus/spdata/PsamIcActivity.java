@@ -33,7 +33,7 @@ import com.spd.bus.card.methods.JTBCardManager;
 import com.spd.bus.card.methods.M1CardManager;
 import com.spd.bus.card.methods.ReturnVal;
 import com.spd.bus.card.utils.ConfigUtils;
-import com.spd.bus.card.utils.LogUtils;
+import com.spd.base.utils.LogUtils;
 import com.spd.bus.spdata.been.ErroCode;
 import com.spd.bus.spdata.mvp.MVPBaseActivity;
 import com.spd.bus.spdata.spdbuspay.SpdBusPayContract;
@@ -41,9 +41,7 @@ import com.spd.bus.spdata.spdbuspay.SpdBusPayPresenter;
 import com.spd.bus.spdata.utils.PlaySound;
 import com.spd.bus.util.SaveDataUtils;
 import com.spd.yinlianpay.context.MyContext;
-import com.spd.yinlianpay.iso8583.Body;
 import com.spd.yinlianpay.iso8583.Msg;
-import com.spd.yinlianpay.iso8583.RespCode;
 import com.spd.yinlianpay.util.PrefUtil;
 
 import java.io.UnsupportedEncodingException;

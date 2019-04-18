@@ -1,7 +1,6 @@
 package com.spd.bus.spdata.spdbuspay;
 
 import android.content.Context;
-import android.text.TextUtils;
 import android.util.Log;
 
 import com.example.test.yinlianbarcode.entity.QrEntity;
@@ -14,19 +13,13 @@ import com.google.gson.JsonElement;
 import com.google.gson.JsonParser;
 import com.spd.alipay.AlipayJni;
 import com.spd.alipay.been.TianjinAlipayRes;
-import com.spd.base.been.AlipayQrcodekey;
 
-import com.spd.base.been.BosiQrcodeKey;
-import com.spd.base.been.tianjin.AliWhiteBackBean;
-import com.spd.base.been.tianjin.AppSercetPost;
 import com.spd.base.been.tianjin.CardBackBean;
 import com.spd.base.been.tianjin.GetMacBackBean;
 import com.spd.base.been.tianjin.GetPublicBackBean;
 import com.spd.base.been.tianjin.GetZhiFuBaoKey;
 import com.spd.base.been.tianjin.KeysBean;
-import com.spd.base.been.tianjin.PosKeysBackBean;
 import com.spd.base.been.tianjin.TCardOpDU;
-import com.spd.base.been.tianjin.UnqrkeyBackBean;
 import com.spd.base.been.tianjin.produce.shuangmian.ProduceShuangMian;
 import com.spd.base.been.tianjin.produce.shuangmian.ShuangMianBean;
 import com.spd.base.been.tianjin.produce.shuangmian.UploadSMDB;
@@ -42,46 +35,31 @@ import com.spd.base.been.tianjin.produce.zhifubao.ProduceZhiFuBao;
 import com.spd.base.been.tianjin.produce.zhifubao.ReqDataBean;
 import com.spd.base.been.tianjin.produce.zhifubao.UploadInfoZFBDB;
 import com.spd.base.been.tianjin.produce.zhifubao.UploadInfoZFBDBDao;
-import com.spd.base.beenresult.QrcodeUploadResult;
-import com.spd.base.beenupload.BosiQrCodeUpload;
 import com.spd.base.been.WechatQrcodeKey;
 import com.spd.base.db.DbDaoManage;
-import com.spd.base.dbbeen.AlipayKeyDb;
-import com.spd.base.dbbeen.AlipayKeyDbDao;
 import com.spd.base.dbbeen.RunParaFile;
 import com.spd.base.dbbeen.WeichatKeyDb;
-import com.spd.base.dbbeen.WeichatKeyDbDao;
-import com.spd.base.net.QrcodeApi;
 import com.spd.base.utils.Datautils;
 import com.spd.bus.Info;
-import com.spd.base.been.tianjin.AliBlackBackBean;
-import com.spd.base.been.tianjin.AliWhiteBlackPost;
-import com.spd.base.been.tianjin.AppSercetBackBean;
 import com.spd.base.been.tianjin.NetBackBean;
 import com.spd.base.been.tianjin.PosInfoBackBean;
 import com.spd.base.been.tianjin.produce.ProducePost;
 import com.spd.bus.card.methods.ReturnVal;
-import com.spd.bus.card.utils.DateUtils;
+import com.spd.base.utils.DateUtils;
 import com.spd.bus.card.utils.HttpMethods;
-import com.spd.bus.card.utils.LogUtils;
+import com.spd.base.utils.LogUtils;
 import com.spd.bus.spdata.been.ErroCode;
 import com.spd.bus.spdata.mvp.BasePresenterImpl;
 import com.spd.bus.util.SaveDataUtils;
-import com.spd.yinlianpay.util.PrefUtil;
 import com.tencent.wlxsdk.WlxSdk;
 
-import org.greenrobot.greendao.annotation.Id;
-
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
 import io.reactivex.Observer;
 import io.reactivex.disposables.Disposable;
-import okhttp3.MediaType;
-import okhttp3.RequestBody;
 
 /**
  * MVPPlugin
@@ -99,75 +77,6 @@ public class SpdBusPayPresenter extends BasePresenterImpl<SpdBusPayContract.View
     //    private List<CardRecord> cardRecordList;
 
     //===============支付宝二维码==============
-
-    @Override
-    public void produce() {
-        ProducePost producePost = new ProducePost();
-
-        Gson gson = new GsonBuilder().serializeNulls().create();
-        String sendData = gson.toJson(producePost);
-        HttpMethods.getInstance().produce(sendData, new Observer<NetBackBean>() {
-            @Override
-            public void onSubscribe(Disposable d) {
-
-            }
-
-            @Override
-            public void onNext(NetBackBean netBackBean) {
-
-            }
-
-            @Override
-            public void onError(Throwable e) {
-
-            }
-
-            @Override
-            public void onComplete() {
-
-            }
-        });
-    }
-
-    @Override
-    public void getAliPubKey() {
-        RequestBody requestBody = RequestBody.create(MediaType.parse("application/json"), "".toString());
-        QrcodeApi.getInstance().getAlipayPubKey(requestBody)
-                .subscribeOn(io.reactivex.schedulers.Schedulers.io())
-                .observeOn(io.reactivex.android.schedulers.AndroidSchedulers.mainThread())
-                .subscribe(new io.reactivex.Observer<AlipayQrcodekey>() {
-                    @Override
-                    public void onSubscribe(Disposable d) {
-
-                    }
-
-                    @Override
-                    public void onNext(AlipayQrcodekey aliQrcodekey) {
-                        AlipayKeyDbDao alipayKeyDbDao = DbDaoManage.getDaoSession().getAlipayKeyDbDao();
-                        List<AlipayQrcodekey.PublicKeyListBean> publicKeyListBeans = aliQrcodekey.getPublicKeyList();
-                        Collections.sort(publicKeyListBeans);
-                        for (int i = 0; i < publicKeyListBeans.size(); i++) {
-                            AlipayKeyDb alipayKeyDb = new AlipayKeyDb(aliQrcodekey.getVersion(), aliQrcodekey.getKeyType(), publicKeyListBeans.get(i).getKey_id() + "", publicKeyListBeans.get(i).getPub_key());
-                            alipayKeyDbDao.insertOrReplace(alipayKeyDb);
-                        }
-                        mView.showAliPublicKey(0);
-                        mView.success("获取支付宝KEY成功");
-                    }
-
-                    @Override
-                    public void onError(Throwable e) {
-                        mView.showAliPublicKey(1);
-                        mView.erro(e.toString());
-                        Log.i("PsamIcActivity", "onError:支付宝获取错误 " + e.toString());
-                    }
-
-                    @Override
-                    public void onComplete() {
-
-                    }
-                });
-    }
-
 
 
     @Override
@@ -400,50 +309,6 @@ public class SpdBusPayPresenter extends BasePresenterImpl<SpdBusPayContract.View
     public void wechatInitJin() {
         wlxSdk = new WlxSdk();
     }
-
-    @Override
-    public void getWechatPublicKey() {
-        RequestBody requestBody = RequestBody.create(MediaType.parse("application/json"), "".toString());
-        QrcodeApi.getInstance().getWechatPubKey(requestBody)
-                .subscribeOn(io.reactivex.schedulers.Schedulers.io())
-                .observeOn(io.reactivex.android.schedulers.AndroidSchedulers.mainThread())
-                .subscribe(new io.reactivex.Observer<WechatQrcodeKey>() {
-                    @Override
-                    public void onSubscribe(Disposable d) {
-                    }
-
-                    @Override
-                    public void onNext(WechatQrcodeKey wechatQrcodeKey) {
-                        WeichatKeyDb weichatKeyDb = null;
-                        String key = "key";
-                        int cont = 0;
-                        WeichatKeyDbDao weichatKeyDbDao = DbDaoManage.getDaoSession().getWeichatKeyDbDao();
-                        List<WechatQrcodeKey.MacKeyListBean> macKeyList = wechatQrcodeKey.getMacKeyList();
-                        for (int i = 0; i < macKeyList.size(); i++) {
-                            weichatKeyDb = new WeichatKeyDb(key + cont++, wechatQrcodeKey.getCurVersion(), wechatQrcodeKey.getKeyType(), macKeyList.get(i).getKey_id(), macKeyList.get(i).getMac_key(), "", "");
-                            weichatKeyDbDao.insertOrReplace(weichatKeyDb);
-                        }
-                        List<WechatQrcodeKey.PubKeyListBean> pubKeyList = wechatQrcodeKey.getPubKeyList();
-                        for (int i = 0; i < pubKeyList.size(); i++) {
-                            weichatKeyDbDao.insertOrReplace(new WeichatKeyDb(key + cont++, wechatQrcodeKey.getCurVersion(), wechatQrcodeKey.getKeyType(), "", "", pubKeyList.get(i).getKey_id() + "", pubKeyList.get(i).getPub_key()));
-                        }
-                        mView.showWechatPublicKey(wechatQrcodeKey);
-                        mView.success("微信获取key成功");
-                    }
-
-                    @Override
-                    public void onError(Throwable e) {
-                        mView.erro(e.toString());
-                        Log.i(TAG, "onError:  微信获取key錯誤：： " + e.toString());
-                    }
-
-                    @Override
-                    public void onComplete() {
-
-                    }
-                });
-    }
-
 
 
     @Override

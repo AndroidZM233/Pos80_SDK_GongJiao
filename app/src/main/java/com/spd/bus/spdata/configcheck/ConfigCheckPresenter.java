@@ -1,22 +1,12 @@
 package com.spd.bus.spdata.configcheck;
 
 import android.content.Context;
-import android.content.Intent;
 import android.os.RemoteException;
 import android.text.TextUtils;
-import android.util.Log;
-import android.widget.Toast;
 
-import com.example.test.yinlianbarcode.interfaces.OnBackListener;
-import com.example.test.yinlianbarcode.utils.ScanUtils;
 import com.example.test.yinlianbarcode.utils.SharedXmlUtil;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
-import com.honeywell.barcode.HSMDecoder;
-import com.honeywell.camera.CameraManager;
-import com.spd.base.been.tianjin.AliBlackBackBean;
-import com.spd.base.been.tianjin.AliWhiteBackBean;
-import com.spd.base.been.tianjin.AliWhiteBlackPost;
 import com.spd.base.been.tianjin.AppSercetBackBean;
 import com.spd.base.been.tianjin.AppSercetPost;
 import com.spd.base.been.tianjin.GetMacBackBean;
@@ -30,15 +20,11 @@ import com.spd.base.utils.Datautils;
 import com.spd.bus.Info;
 import com.spd.bus.MyApplication;
 import com.spd.bus.card.utils.HttpMethods;
-import com.spd.bus.card.utils.LogUtils;
-import com.spd.bus.spdata.PsamIcActivity;
-import com.spd.bus.spdata.YinLianPayManage;
+import com.spd.base.utils.LogUtils;
 import com.spd.bus.spdata.been.PsamBeen;
 import com.spd.bus.spdata.mvp.BasePresenterImpl;
 import com.spd.yinlianpay.util.PrefUtil;
 
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
@@ -46,11 +32,7 @@ import java.util.Map;
 
 import io.reactivex.Observer;
 import io.reactivex.disposables.Disposable;
-import rx.Observable;
 import wangpos.sdk4.libbasebinder.BankCard;
-import wangpos.sdk4.libbasebinder.Core;
-
-import static com.honeywell.barcode.Symbology.QR;
 
 /**
  * MVPPlugin
