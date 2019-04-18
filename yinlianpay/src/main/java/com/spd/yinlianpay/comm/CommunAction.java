@@ -4,6 +4,7 @@ import android.os.Handler;
 import android.os.Looper;
 import android.os.Message;
 
+import com.spd.base.utils.Datautils;
 import com.spd.yinlianpay.dlg.ProcessDlg;
 import com.spd.yinlianpay.iso8583.PayException;
 import com.spd.yinlianpay.net.CCBBManage;
@@ -101,19 +102,22 @@ public class CommunAction {
             ex.printStackTrace();
             throw new PayException("Server address configuration exception");
         }
-        System.out.println("AllSend:" + ip + " " + port + " " + HEXUitl.bytesToHex(send));
+        String toHex = HEXUitl.bytesToHex(send);
+        System.out.println("AllSend:" + ip + " " + port + " " + toHex);
         Socket soc = null;
         int timeout = (PrefUtil.getOverTimeInt()) * 1000;
         try {
             soc = new Socket();
             soc.setSoTimeout(timeout);
             soc.connect(new InetSocketAddress(ip, port), 10000);
+//            soc.getOutputStream().write(Datautils.HexString2Bytes("003C600601000060320032401708000020000000C00012000121313030323038333133303836343030343131313030303300110000000200300003303031"));
             soc.getOutputStream().write(send);
             isSendSuccess = true;
             DataInputStream dis = new DataInputStream(soc.getInputStream());
             int len = dis.readShort();
             byte[] rs = new byte[len];
             dis.readFully(rs);
+            String toHexRs = HEXUitl.bytesToHex(rs);
             System.out.println("read data:" + HEXUitl.bytesToHex(rs));
             return rs;
         } catch (SocketTimeoutException ex) {

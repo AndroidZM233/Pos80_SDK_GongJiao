@@ -219,6 +219,11 @@ public class UnionPayCard {
                     countDownLatch.countDown();
                     Log.i(TAG, "返回0200发送返回2222222222222== " + (System.currentTimeMillis() - systemlongtime));
                 }
+
+                @Override
+                public void onDataBack(Msg msg) {
+                    handler.sendMessage(handler.obtainMessage(MyContext.BackMsg, msg));
+                }
             });
             countDownLatch.await();
             systemlongtime = System.currentTimeMillis();
@@ -627,7 +632,7 @@ public class UnionPayCard {
         if (WeiPassGlobal.getTransactionInfo().getTransType() == TradeInfo.Type_Sale ||
                 WeiPassGlobal.getTransactionInfo().getTransType() == TradeInfo.Type_Auth ||
                 WeiPassGlobal.getTransactionInfo().getTransType() == TradeInfo.Type_QueryBalance
-        ) {
+                ) {
 
             emvCore.getTLV(0x9F63, outData, outDataLen);
 
@@ -1028,7 +1033,7 @@ public class UnionPayCard {
         if (WeiPassGlobal.getTransactionInfo().getTransType() == TradeInfo.Type_Sale ||
                 WeiPassGlobal.getTransactionInfo().getTransType() == TradeInfo.Type_Auth ||
                 WeiPassGlobal.getTransactionInfo().getTransType() == TradeInfo.Type_QueryBalance
-        ) {
+                ) {
             emvCore.getTLV(0x9F63, outData, outDataLen);
         }
         if (!map.containsKey("9F63")) {
@@ -1271,6 +1276,7 @@ public class UnionPayCard {
     }
 
     // TODO: 2019/4/12  
+
     /**
      * qpboc  第一执行
      * 交易初始化

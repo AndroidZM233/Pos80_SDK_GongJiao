@@ -11,6 +11,7 @@ import com.spd.base.beenupload.AlipayQrCodeUpload;
 import com.spd.base.beenupload.BosiQrCodeUpload;
 import com.spd.base.beenupload.WeichatQrCodeUpload;
 import com.spd.base.been.WechatQrcodeKey;
+import com.spd.base.dbbeen.RunParaFile;
 import com.spd.bus.spdata.mvp.BasePresenter;
 import com.spd.bus.spdata.mvp.BaseView;
 
@@ -38,7 +39,7 @@ public class SpdBusPayContract {
 
         void showWechatPublicKey(WechatQrcodeKey wechatQrcodeKey);
 
-        void showCheckAliQrCode(TianjinAlipayRes tianjinAlipayRes);
+        void showCheckAliQrCode(TianjinAlipayRes tianjinAlipayRes, RunParaFile runParaFile,String orderNr);
 
         void showReleseAlipayJni(int result);
 
@@ -57,17 +58,12 @@ public class SpdBusPayContract {
          */
         void getAliPubKey();
 
-        void getAliPubKeyTianJin();
 
         void aliPayInitJni();
 
-        void getZhiFuBaoAppSercet(Context context);
 
         void getZhiFuBaoPosInfo(Context context);
 
-        void getZhiFuBaoBlack(Context context);
-
-        void getZhiFuBaoWhite(Context context);
 
         /**
          * 校验支付宝二维码
@@ -93,15 +89,7 @@ public class SpdBusPayContract {
          */
         void getWechatPublicKey();
 
-        /**
-         * 获取微信秘钥
-         */
-        void getWechatPublicKeyTianJin();
 
-        /**
-         * 获取微信mac
-         */
-        void getWechatMacTianJin();
 
 
         void checkWechatTianJin(String code, int payfee, byte scene,
@@ -112,33 +100,13 @@ public class SpdBusPayContract {
          */
         void wechatInitJin();
 
-        /**
-         * 校验博思二维码
-         *
-         * @param code
-         * @param pbKeyList
-         * @param macKeyList
-         * @param payfee
-         * @param scene
-         * @param scantype
-         * @param posId
-         * @param posTrxId
-         */
         void checkWechatQrCode(String code, List<WechatQrcodeKey.PubKeyListBean> pbKeyList, List<WechatQrcodeKey.MacKeyListBean> macKeyList, int payfee, byte scene, byte scantype, String posId, String posTrxId);
 
         void uploadWechatRe(Context context);
 
 
-
-        void getYinLianPubKey(Context context);
-
         void checkYinLianCode(Context context,String qrcode);
 
-        void uploadCardData();
 
-        /**
-         * 获取银联双免key
-         */
-        void getShuangMianPubKey(Context context,String url);
     }
 }

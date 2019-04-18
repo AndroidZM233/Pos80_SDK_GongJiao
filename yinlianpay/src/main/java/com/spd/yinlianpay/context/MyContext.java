@@ -23,6 +23,7 @@ public class MyContext {
             MSG_ERROR = MSG_BACK + 2, MSG_RESULT = MSG_BACK + 3, MSG_CARD = MSG_BACK + 4,
             MSG_SWIP = MSG_BACK + 5;
     public static final int ShowErrorDialogFlag = 105;//error tip
+    public static final int BackMsg = 106;//error tip
     public static final int Hide_Progress = 10001;
     public static final int ShowToastFlag = 106;
     public static final int RESULT_SUCCESS = 0x1024;

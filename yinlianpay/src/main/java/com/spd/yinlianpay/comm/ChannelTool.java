@@ -386,8 +386,10 @@ public class ChannelTool {
                         castResult(tradeInfo);
                         onCommonListener.onResult(tradeInfo);
                         onCommonListener.onSuccess();
+                        onCommonListener.onDataBack(msg);
 //                        onCommonListener.onProgress((System.currentTimeMillis() - times) + "ms");
                     } else {
+
                         Log.i("stw", "發送报文0200报文反回=====" + (System.currentTimeMillis() - times));
                         onCommonListener.onError(0, msg.getField39Code());
                     }

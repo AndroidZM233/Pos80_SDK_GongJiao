@@ -37,9 +37,9 @@ import java.util.List;
  */
 public class SaveDataUtils {
 
-    public static void saveZhiFuBaoReqDataBean(TianjinAlipayRes aliCodeinfoData) throws Exception {
-        List<RunParaFile> runParaFiles = DbDaoManage.getDaoSession().getRunParaFileDao().loadAll();
-        RunParaFile runParaFile = runParaFiles.get(0);
+    public static void saveZhiFuBaoReqDataBean(TianjinAlipayRes aliCodeinfoData
+            , RunParaFile runParaFile,String orderNr) throws Exception {
+
         List<TStaffTb> tStaffTbs = DbDaoManage.getDaoSession().getTStaffTbDao().loadAll();
         TStaffTb tStaffTb = null;
         if (tStaffTbs.size() > 0) {
@@ -48,10 +48,12 @@ public class SaveDataUtils {
 
         UploadInfoZFBDB reqDataBean = new UploadInfoZFBDB();
         String currentTimeMillis = DateUtils.getCurrentTimeMillis(DateUtils.FORMAT_YMDHMS);
+        byte[] lineNr = runParaFile.getLineNr();
+        byte[] devNr = runParaFile.getDevNr();
         // 交易流水
-        reqDataBean.setOutTradeNo("6001_17430805_" + DateUtils.getCurrentTimeMillis(DateUtils.FORMAT_yyyyMMddHHmmss));
+        reqDataBean.setOutTradeNo(orderNr);
         // 设备号
-        reqDataBean.setDeviceId("17430805");
+        reqDataBean.setDeviceId(Datautils.byteArrayToString(devNr));
         // 司机卡号
         reqDataBean.setDriverCardNo(tStaffTb == null ? "300000015165068000"
                 : Datautils.byteArrayToString(tStaffTb.getUcAppSnr()));
@@ -88,9 +90,9 @@ public class SaveDataUtils {
 //        reqDataBean.setCardData(Datautils.byteArrayToString(aliCodeinfoData.cardData));
         reqDataBean.setCardData("31");
         // 真实票价
-        reqDataBean.setActualPrice("1");
+        reqDataBean.setActualPrice(Datautils.byteArrayToInt(runParaFile.getKeyV1()) + "");
         // 线路号
-        reqDataBean.setLineCode(Datautils.byteArrayToString(runParaFile.getLineNr()));
+        reqDataBean.setLineCode(Datautils.byteArrayToString(lineNr));
         // 记录内容
         reqDataBean.setRecord(aliCodeinfoData.record);
         DbDaoManage.getDaoSession().getUploadInfoZFBDBDao().insertOrReplace(reqDataBean);
@@ -168,7 +170,7 @@ public class SaveDataUtils {
         //线路号
         payinfoBean.setRoute(Datautils.byteArrayToString(runParaFile.getTeamNr()));
         //机具号
-        payinfoBean.setPosId("17510418");
+        payinfoBean.setPosId(Datautils.byteArrayToString(runParaFile.getDevNr()));
         //用户凭证类型
         payinfoBean.setVoucher_type("00");
         payinfoBean.setTerminal_no("1751041817510418");

@@ -27,6 +27,10 @@ import com.spd.base.been.tianjin.KeysBean;
 import com.spd.base.been.tianjin.PosKeysBackBean;
 import com.spd.base.been.tianjin.TCardOpDU;
 import com.spd.base.been.tianjin.UnqrkeyBackBean;
+import com.spd.base.been.tianjin.produce.shuangmian.ProduceShuangMian;
+import com.spd.base.been.tianjin.produce.shuangmian.ShuangMianBean;
+import com.spd.base.been.tianjin.produce.shuangmian.UploadSMDB;
+import com.spd.base.been.tianjin.produce.shuangmian.UploadSMDBDao;
 import com.spd.base.been.tianjin.produce.weixin.PayinfoBean;
 import com.spd.base.been.tianjin.produce.weixin.ProduceWeiXin;
 import com.spd.base.been.tianjin.produce.weixin.UploadInfoDB;
@@ -66,6 +70,8 @@ import com.spd.bus.util.SaveDataUtils;
 import com.spd.yinlianpay.util.PrefUtil;
 import com.tencent.wlxsdk.WlxSdk;
 
+import org.greenrobot.greendao.annotation.Id;
+
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
@@ -89,7 +95,8 @@ public class SpdBusPayPresenter extends BasePresenterImpl<SpdBusPayContract.View
     private List<UploadInfoDB> uploadInfoDBS;
     private List<UploadInfoZFBDB> uploadInfoZFBDBS;
     private List<UploadInfoYinLianDB> yinLianDBS;
-//    private List<CardRecord> cardRecordList;
+    private List<UploadSMDB> uploadSMDBList;
+    //    private List<CardRecord> cardRecordList;
 
     //===============支付宝二维码==============
 
@@ -161,37 +168,7 @@ public class SpdBusPayPresenter extends BasePresenterImpl<SpdBusPayContract.View
                 });
     }
 
-    @Override
-    public void getAliPubKeyTianJin() {
-        HttpMethods.getInstance().publicKey(new Observer<GetZhiFuBaoKey>() {
-            @Override
-            public void onSubscribe(Disposable d) {
 
-            }
-
-            @Override
-            public void onNext(GetZhiFuBaoKey getZhiFuBaoKey) {
-                String publicKeys = getZhiFuBaoKey.getPublicKeys();
-                if (!TextUtils.isEmpty(publicKeys)) {
-                    DbDaoManage.getDaoSession().getGetZhiFuBaoKeyDao().deleteAll();
-                    DbDaoManage.getDaoSession().getGetZhiFuBaoKeyDao().insert(getZhiFuBaoKey);
-                    mView.showAliPublicKey(0);
-                    mView.success("获取支付宝KEY成功");
-                }
-
-            }
-
-            @Override
-            public void onError(Throwable e) {
-                mView.erro(e.toString());
-            }
-
-            @Override
-            public void onComplete() {
-
-            }
-        });
-    }
 
     @Override
     public void aliPayInitJni() {
@@ -209,41 +186,7 @@ public class SpdBusPayPresenter extends BasePresenterImpl<SpdBusPayContract.View
         mView.showAliPayInit(result);
     }
 
-    /**
-     * 调用天津后台接口AppSercet
-     */
-    @Override
-    public void getZhiFuBaoAppSercet(Context context) {
-        final Gson gson = new GsonBuilder().serializeNulls().create();
-        Map<String, String> map = new HashMap<>();
-        String posID = SharedXmlUtil.getInstance(context).read(Info.POS_ID, Info.POS_ID_INIT);
-        AppSercetPost appSercetPost=new AppSercetPost();
-        appSercetPost.setDeviceId(posID);
-        map.put("data", gson.toJson(appSercetPost));
-        HttpMethods.getInstance().appSercet(map, new Observer<AppSercetBackBean>() {
-            @Override
-            public void onSubscribe(Disposable d) {
 
-            }
-
-            @Override
-            public void onNext(AppSercetBackBean appSercetBackBean) {
-                AppSercetBackBean.DataBean data = appSercetBackBean.getData();
-                SharedXmlUtil.getInstance(context).write(Info.ZFB_APP_KEY, data.getAppKey());
-                SharedXmlUtil.getInstance(context).write(Info.ZFB_APP_SERCET, data.getAppSercet());
-            }
-
-            @Override
-            public void onError(Throwable e) {
-                LogUtils.v(e.toString());
-            }
-
-            @Override
-            public void onComplete() {
-
-            }
-        });
-    }
 
     /**
      * 调用天津后台接口posInfo
@@ -275,71 +218,7 @@ public class SpdBusPayPresenter extends BasePresenterImpl<SpdBusPayContract.View
         });
     }
 
-    /**
-     * 调用天津后台接口black 获取支付宝黑名单
-     */
-    @Override
-    public void getZhiFuBaoBlack(Context context) {
-        AliWhiteBlackPost aliWhiteBlackPost = new AliWhiteBlackPost();
-        aliWhiteBlackPost.setPosid("17510803");
-        aliWhiteBlackPost.setVersion("20161208");
-        final Gson gson = new GsonBuilder().serializeNulls().create();
-        String sendData = gson.toJson(aliWhiteBlackPost);
-        HttpMethods.getInstance().black(sendData, new Observer<AliBlackBackBean>() {
-            @Override
-            public void onSubscribe(Disposable d) {
 
-            }
-
-            @Override
-            public void onNext(AliBlackBackBean aliBlackBackBean) {
-
-            }
-
-            @Override
-            public void onError(Throwable e) {
-
-            }
-
-            @Override
-            public void onComplete() {
-
-            }
-        });
-    }
-
-    /**
-     * 调用天津后台接口white  获取支付宝白名单
-     */
-    @Override
-    public void getZhiFuBaoWhite(Context context) {
-        AliWhiteBlackPost aliWhiteBlackPost = new AliWhiteBlackPost();
-        aliWhiteBlackPost.setPosid("17510803");
-        aliWhiteBlackPost.setVersion("20161208");
-        final Gson gson = new GsonBuilder().serializeNulls().create();
-        String sendData = gson.toJson(aliWhiteBlackPost);
-        HttpMethods.getInstance().white(sendData, new Observer<AliWhiteBackBean>() {
-            @Override
-            public void onSubscribe(Disposable d) {
-
-            }
-
-            @Override
-            public void onNext(AliWhiteBackBean aliBlackBackBean) {
-
-            }
-
-            @Override
-            public void onError(Throwable e) {
-
-            }
-
-            @Override
-            public void onComplete() {
-
-            }
-        });
-    }
 
     /**
      * 验码
@@ -349,10 +228,21 @@ public class SpdBusPayPresenter extends BasePresenterImpl<SpdBusPayContract.View
     @Override
     public void checkAliQrCode(String code) {
         Log.e(TAG, "mView11111: " + mView);
+        List<RunParaFile> runParaFiles = DbDaoManage.getDaoSession().getRunParaFileDao().loadAll();
+        if (runParaFiles.size() == 0) {
+            return;
+        }
+        RunParaFile runParaFile = runParaFiles.get(0);
+        String lineNr = Datautils.byteArrayToString(runParaFile.getLineNr());
+        String devNr = Datautils.byteArrayToString(runParaFile.getDevNr());
+        String outTradeNo = lineNr + "_" + devNr + "_"
+                + DateUtils.getCurrentTimeMillis(DateUtils.FORMAT_yyyyMMddHHmmss) + "_"
+                + ((Math.random() * 9 + 1) * 1000);
         TianjinAlipayRes tianjinAlipayRes = new TianjinAlipayRes();
+
         tianjinAlipayRes = alipayJni.checkAliQrCode(tianjinAlipayRes,
-                code, "17430805", "1", 1, "SINGLE",
-                "123123132");
+                code, devNr, lineNr, Datautils.byteArrayToInt(runParaFile.getKeyV1())
+                , "SINGLE", outTradeNo);
         Log.i(TAG, "onHSMDecodeResult: " + tianjinAlipayRes.toString());
 
         if (tianjinAlipayRes.result != 1) {
@@ -378,7 +268,7 @@ public class SpdBusPayPresenter extends BasePresenterImpl<SpdBusPayContract.View
         }
 
         Log.e(TAG, "mView: " + mView);
-        mView.showCheckAliQrCode(tianjinAlipayRes);
+        mView.showCheckAliQrCode(tianjinAlipayRes,runParaFile,outTradeNo);
     }
 
     @Override
@@ -554,68 +444,7 @@ public class SpdBusPayPresenter extends BasePresenterImpl<SpdBusPayContract.View
                 });
     }
 
-    /**
-     * 获取微信的秘钥
-     */
-    @Override
-    public void getWechatPublicKeyTianJin() {
-        HttpMethods.getInstance().getPublic("", new Observer<GetPublicBackBean>() {
-            @Override
-            public void onSubscribe(Disposable d) {
 
-            }
-
-            @Override
-            public void onNext(GetPublicBackBean getPublicBackBean) {
-                DbDaoManage.getDaoSession().getGetPublicBackBeanDao().deleteAll();
-                DbDaoManage.getDaoSession().getGetPublicBackBeanDao()
-                        .insertOrReplace(getPublicBackBean);
-                getWechatMacTianJin();
-            }
-
-            @Override
-            public void onError(Throwable e) {
-                mView.erro(e.toString());
-                Log.d(TAG, "onError: " + e.toString());
-            }
-
-            @Override
-            public void onComplete() {
-
-            }
-        });
-    }
-
-    /**
-     * 获取微信mac
-     */
-    @Override
-    public void getWechatMacTianJin() {
-        HttpMethods.getInstance().getMac("", new Observer<GetMacBackBean>() {
-            @Override
-            public void onSubscribe(Disposable d) {
-
-            }
-
-            @Override
-            public void onNext(GetMacBackBean getMacBackBean) {
-                DbDaoManage.getDaoSession().getGetMacBackBeanDao().deleteAll();
-                DbDaoManage.getDaoSession().getGetMacBackBeanDao()
-                        .insertOrReplace(getMacBackBean);
-                wechatInitJin();
-            }
-
-            @Override
-            public void onError(Throwable e) {
-                mView.erro(e.toString());
-            }
-
-            @Override
-            public void onComplete() {
-
-            }
-        });
-    }
 
     @Override
     public void checkWechatTianJin(String code, int payfee, byte scene,
@@ -838,37 +667,7 @@ public class SpdBusPayPresenter extends BasePresenterImpl<SpdBusPayContract.View
 
 
     ///////////////////////////////////////////////////银联//////////////////////////
-    @Override
-    public void getYinLianPubKey(Context context) {
-        HttpMethods.getInstance().unqrkey(new Observer<UnqrkeyBackBean>() {
-            @Override
-            public void onSubscribe(Disposable d) {
 
-            }
-
-            @Override
-            public void onNext(UnqrkeyBackBean unqrkeyBackBean) {
-                List<KeysBean> keys = unqrkeyBackBean.getKeys();
-                if (keys.size() > 0) {
-                    DbDaoManage.getDaoSession().getKeysBeanDao().deleteAll();
-                    for (KeysBean key : keys) {
-                        DbDaoManage.getDaoSession().getKeysBeanDao().insertOrReplace(key);
-                    }
-                }
-
-            }
-
-            @Override
-            public void onError(Throwable e) {
-                mView.erro(e.toString());
-            }
-
-            @Override
-            public void onComplete() {
-
-            }
-        });
-    }
 
     @Override
     public void checkYinLianCode(Context context, String qrcode) {
@@ -895,40 +694,7 @@ public class SpdBusPayPresenter extends BasePresenterImpl<SpdBusPayContract.View
         }
     }
 
-    @Override
-    public void uploadCardData() {
-//        DataUploadToTianJinUtils.uploadCardData();
-    }
 
-    @Override
-    public void getShuangMianPubKey(Context context, String url) {
-        HttpMethods.getInstance().posKeys(url, new Observer<PosKeysBackBean>() {
-            @Override
-            public void onSubscribe(Disposable d) {
-
-            }
-
-            @Override
-            public void onNext(PosKeysBackBean posKeysBackBean) {
-                String code = posKeysBackBean.getCode();
-                if (code.equals("00")) {
-//                    SharedXmlUtil.getInstance(context).write(Info.YLSM_KEY
-//                            , posKeysBackBean.getKey());
-                    PrefUtil.setMasterkey(posKeysBackBean.getKey());
-                }
-            }
-
-            @Override
-            public void onError(Throwable e) {
-                LogUtils.v(e.toString());
-            }
-
-            @Override
-            public void onComplete() {
-
-            }
-        });
-    }
 
     private void uploadYinLian(Context context) {
         String weiXinUploadData = getYinLianUploadData(context).replace("\\\"", "'");
@@ -1034,6 +800,60 @@ public class SpdBusPayPresenter extends BasePresenterImpl<SpdBusPayContract.View
 
         produceYinLian.setPayinfo(yinLianList);
         producePost.setData(gson.toJson(produceYinLian));
+        return gson.toJson(producePost).toString();
+    }
+
+
+
+    private String getSMUploadData(Context context) {
+        final Gson gson = new GsonBuilder().serializeNulls().create();
+        //上传记录到天津后台
+        ProducePost producePost = new ProducePost();
+        producePost.setType("2200UC");
+        List<RunParaFile> runParaFiles = DbDaoManage.getDaoSession().getRunParaFileDao().loadAll();
+        if (runParaFiles.size() == 0) {
+            producePost.setRoute("11");
+        } else {
+            byte[] lineNr = runParaFiles.get(0).getLineNr();
+            producePost.setRoute(Datautils.byteArrayToString(lineNr));
+        }
+
+        String posId = SharedXmlUtil.getInstance(context).read(Info.POS_ID, Info.POS_ID_INIT);
+        producePost.setPosId(posId);
+        ProduceShuangMian produceShuangMian = new ProduceShuangMian();
+        List<ShuangMianBean> shuangMianBeans = new ArrayList<>();
+        uploadSMDBList = DbDaoManage.getDaoSession().getUploadSMDBDao()
+                .queryBuilder().where(UploadSMDBDao.Properties.IsUpload.eq(false)).list();
+        if (uploadSMDBList.size() != 0) {
+            for (UploadSMDB uploadSMDB : uploadSMDBList) {
+                ShuangMianBean shuangMianBean = new ShuangMianBean();
+                shuangMianBean.setBusNo(uploadSMDB.getBusNo());
+                shuangMianBean.setCardSerialNum(uploadSMDB.getCardSerialNum());
+                shuangMianBean.setBatchNumber(uploadSMDB.getBatchNumber());
+                shuangMianBean.setResponseCode(uploadSMDB.getResponseCode());
+                shuangMianBean.setIsPay(uploadSMDB.getIsPay());
+                shuangMianBean.setDriver(uploadSMDB.getDriver());
+                shuangMianBean.setTransactionTime(uploadSMDB.getTransactionTime());
+                shuangMianBean.setTowTrackData(uploadSMDB.getTowTrackData());
+                shuangMianBean.setTerminalCode(uploadSMDB.getTerminalCode());
+                shuangMianBean.setSerialNumber(uploadSMDB.getSerialNumber());
+                shuangMianBean.setTransactionAmount(uploadSMDB.getTransactionAmount());
+                shuangMianBean.setTeam(uploadSMDB.getTeam());
+                shuangMianBean.setThreeTrackData(uploadSMDB.getThreeTrackData());
+                shuangMianBean.setRoute(uploadSMDB.getRoute());
+                shuangMianBean.setPosId(uploadSMDB.getPosId());
+                shuangMianBean.setRetrievingNum(uploadSMDB.getRetrievingNum());
+                shuangMianBean.setDept(uploadSMDB.getDept());
+                shuangMianBean.setField(uploadSMDB.getField());
+                shuangMianBean.setTransactionCode(uploadSMDB.getTransactionCode());
+                shuangMianBean.setType(uploadSMDB.getType());
+                shuangMianBean.setCardNo(uploadSMDB.getCardNo());
+                shuangMianBeans.add(shuangMianBean);
+            }
+        }
+
+        produceShuangMian.setPayinfo(shuangMianBeans);
+        producePost.setData(gson.toJson(produceShuangMian));
         return gson.toJson(producePost).toString();
     }
 }

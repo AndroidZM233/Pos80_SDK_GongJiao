@@ -26,6 +26,7 @@ import com.spd.bus.card.utils.LogUtils;
 import com.spd.bus.spdata.been.PsamBeen;
 import com.spd.bus.spdata.utils.PlaySound;
 import com.spd.bus.timer.HeartTimer;
+import com.spd.yinlianpay.util.PrefUtil;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -75,6 +76,7 @@ public class MyApplication extends Application {
         DbDaoManage.initDb(this);
 //        CrashReport.initCrashReport(getApplicationContext(),"ca2f83cd2c",true);
         PlaySound.initSoundPool(this);
+        PrefUtil.getSharedPreferences(getApplicationContext());
 
         new Thread(new Runnable() {
             @Override

@@ -9,6 +9,7 @@ import android.os.Message;
 import android.os.RemoteException;
 import android.text.TextUtils;
 import android.util.Log;
+import android.widget.Toast;
 
 import com.example.test.yinlianbarcode.utils.SharedXmlUtil;
 import com.spd.bus.Info;
@@ -18,6 +19,8 @@ import com.spd.yinlianpay.card.UnionPayCard;
 import com.spd.yinlianpay.comm.ChannelTool;
 import com.spd.yinlianpay.context.MyContext;
 import com.spd.yinlianpay.dlg.ProcessDlg;
+import com.spd.yinlianpay.iso8583.Body;
+import com.spd.yinlianpay.iso8583.Msg;
 import com.spd.yinlianpay.listener.OnCommonListener;
 import com.spd.yinlianpay.listener.OnTraditionListener;
 import com.spd.yinlianpay.trade.TradeInfo;
@@ -38,24 +41,25 @@ public class YinLianPayManage implements OnTraditionListener {
     public void yinLianLogin() {
         MyContext.onCreate(myContext, MyApplication.getmKey(), MyApplication.getmCore(), MyApplication.getEmvCore(), MyApplication.getBankCardInstance());
         Log.i(TAG, "yinLianLogin: 开始");
-        PrefUtil.getSharedPreferences(myContext);
-        PrefUtil.setIP("140.207.168.62");
-        PrefUtil.setPort(30000);
+
+//        PrefUtil.setIP("140.207.168.62");
+//        PrefUtil.setPort(30000);
         //天津 socket请求
-//        PrefUtil.setIP("202.101.25.188");
-//        PrefUtil.setPort(20140);
+        PrefUtil.setIP("123.150.11.50");
+        PrefUtil.setPort(18000);
         PrefUtil.putMerchantName("APP Cash");
         //TPDU
-        PrefUtil.setTPDU("6005280000");
+        PrefUtil.setTPDU("6000730000");
         //报文头
         PrefUtil.setHead("603200324017");
         if (PrefUtil.getTerminalNo() == null) {
             //终端号
-            PrefUtil.putTerminalNo("95516001");
+//            PrefUtil.putTerminalNo("95516001");
+            PrefUtil.putTerminalNo(Info.POS_ID_INIT);
         }
         if (PrefUtil.getMerchantNo() == null) {
             //商户号
-            PrefUtil.putMerchantNo("898120058120006");
+            PrefUtil.putMerchantNo("898120041110190");
         }
         PrefUtil.putReversal(null);
         //设置主密钥
@@ -125,6 +129,11 @@ public class YinLianPayManage implements OnTraditionListener {
                     public void onError(int errorCode, String errorMsg) {
                         Log.i(TAG, "onError: " + errorMsg);
                     }
+
+                    @Override
+                    public void onDataBack(Msg msg) {
+
+                    }
                 });
             } catch (Exception e) {
                 e.printStackTrace();
@@ -152,7 +161,13 @@ public class YinLianPayManage implements OnTraditionListener {
 
     @Override
     public void onError(int errorCode, String errorMsg) {
+        Toast.makeText(myContext, errorMsg, Toast.LENGTH_SHORT).show();
         Log.i(TAG, "onError: ");
+    }
+
+    @Override
+    public void onDataBack(Msg msg) {
+        Body body = msg.body;
     }
 
     public void readCardInfo(String s, Handler readCardHandler) {

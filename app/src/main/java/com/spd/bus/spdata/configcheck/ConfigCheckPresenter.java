@@ -3,25 +3,49 @@ package com.spd.bus.spdata.configcheck;
 import android.content.Context;
 import android.content.Intent;
 import android.os.RemoteException;
+import android.text.TextUtils;
 import android.util.Log;
 import android.widget.Toast;
 
 import com.example.test.yinlianbarcode.interfaces.OnBackListener;
 import com.example.test.yinlianbarcode.utils.ScanUtils;
+import com.example.test.yinlianbarcode.utils.SharedXmlUtil;
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
 import com.honeywell.barcode.HSMDecoder;
 import com.honeywell.camera.CameraManager;
+import com.spd.base.been.tianjin.AliBlackBackBean;
+import com.spd.base.been.tianjin.AliWhiteBackBean;
+import com.spd.base.been.tianjin.AliWhiteBlackPost;
+import com.spd.base.been.tianjin.AppSercetBackBean;
+import com.spd.base.been.tianjin.AppSercetPost;
+import com.spd.base.been.tianjin.GetMacBackBean;
+import com.spd.base.been.tianjin.GetPublicBackBean;
+import com.spd.base.been.tianjin.GetZhiFuBaoKey;
+import com.spd.base.been.tianjin.KeysBean;
+import com.spd.base.been.tianjin.PosKeysBackBean;
+import com.spd.base.been.tianjin.UnqrkeyBackBean;
+import com.spd.base.db.DbDaoManage;
 import com.spd.base.utils.Datautils;
+import com.spd.bus.Info;
 import com.spd.bus.MyApplication;
+import com.spd.bus.card.utils.HttpMethods;
 import com.spd.bus.card.utils.LogUtils;
 import com.spd.bus.spdata.PsamIcActivity;
 import com.spd.bus.spdata.YinLianPayManage;
 import com.spd.bus.spdata.been.PsamBeen;
 import com.spd.bus.spdata.mvp.BasePresenterImpl;
+import com.spd.yinlianpay.util.PrefUtil;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Arrays;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
+import io.reactivex.Observer;
+import io.reactivex.disposables.Disposable;
 import rx.Observable;
 import wangpos.sdk4.libbasebinder.BankCard;
 import wangpos.sdk4.libbasebinder.Core;
@@ -76,6 +100,14 @@ public class ConfigCheckPresenter extends BasePresenterImpl<ConfigCheckContract.
 
     @Override
     public void initPsam(Context context) {
+        //获取支付宝微信key
+        getZhiFuBaoAppSercet(context);
+        getAliPubKeyTianJin();
+        getYinLianPubKey(context);
+        getWechatPublicKeyTianJin();
+        String read = SharedXmlUtil.getInstance(context)
+                .read(Info.POS_ID, Info.POS_ID_INIT);
+        getShuangMianPubKey(context, "pos/posKeys?data=" + read);
         new Thread(new Runnable() {
             @Override
             public void run() {
@@ -92,6 +124,7 @@ public class ConfigCheckPresenter extends BasePresenterImpl<ConfigCheckContract.
                     mView.setTextView("住建部PSAM初始化失败\n");
                 }
 
+
 //                if (psam1Init && psam2Init) {
                 mView.openActivity();
 //                }
@@ -101,7 +134,191 @@ public class ConfigCheckPresenter extends BasePresenterImpl<ConfigCheckContract.
 
     }
 
+    public void getShuangMianPubKey(Context context, String url) {
+        HttpMethods.getInstance().posKeys(url, new Observer<PosKeysBackBean>() {
+            @Override
+            public void onSubscribe(Disposable d) {
 
+            }
+
+            @Override
+            public void onNext(PosKeysBackBean posKeysBackBean) {
+                String code = posKeysBackBean.getCode();
+                if (code.equals("00")) {
+//                    SharedXmlUtil.getInstance(context).write(Info.YLSM_KEY
+//                            , posKeysBackBean.getKey());
+                    PrefUtil.setMasterkey(posKeysBackBean.getKey());
+                }
+            }
+
+            @Override
+            public void onError(Throwable e) {
+                mView.setTextView("银联双免秘钥获取失败\n");
+                LogUtils.v(e.toString());
+            }
+
+            @Override
+            public void onComplete() {
+
+            }
+        });
+    }
+
+    public void getYinLianPubKey(Context context) {
+        HttpMethods.getInstance().unqrkey(new Observer<UnqrkeyBackBean>() {
+            @Override
+            public void onSubscribe(Disposable d) {
+
+            }
+
+            @Override
+            public void onNext(UnqrkeyBackBean unqrkeyBackBean) {
+                List<KeysBean> keys = unqrkeyBackBean.getKeys();
+                if (keys.size() > 0) {
+                    DbDaoManage.getDaoSession().getKeysBeanDao().deleteAll();
+                    for (KeysBean key : keys) {
+                        DbDaoManage.getDaoSession().getKeysBeanDao().insertOrReplace(key);
+                    }
+                }
+
+            }
+
+            @Override
+            public void onError(Throwable e) {
+                mView.setTextView("银联秘钥获取失败\n");
+            }
+
+            @Override
+            public void onComplete() {
+
+            }
+        });
+    }
+
+    /**
+     * 获取微信mac
+     */
+    public void getWechatMacTianJin() {
+        HttpMethods.getInstance().getMac("", new Observer<GetMacBackBean>() {
+            @Override
+            public void onSubscribe(Disposable d) {
+
+            }
+
+            @Override
+            public void onNext(GetMacBackBean getMacBackBean) {
+                DbDaoManage.getDaoSession().getGetMacBackBeanDao().deleteAll();
+                DbDaoManage.getDaoSession().getGetMacBackBeanDao()
+                        .insertOrReplace(getMacBackBean);
+            }
+
+            @Override
+            public void onError(Throwable e) {
+                mView.setTextView("微信MAC获取失败\n");
+            }
+
+            @Override
+            public void onComplete() {
+
+            }
+        });
+    }
+
+
+    /**
+     * 获取微信的秘钥
+     */
+    public void getWechatPublicKeyTianJin() {
+        HttpMethods.getInstance().getPublic("", new Observer<GetPublicBackBean>() {
+            @Override
+            public void onSubscribe(Disposable d) {
+
+            }
+
+            @Override
+            public void onNext(GetPublicBackBean getPublicBackBean) {
+                DbDaoManage.getDaoSession().getGetPublicBackBeanDao().deleteAll();
+                DbDaoManage.getDaoSession().getGetPublicBackBeanDao()
+                        .insertOrReplace(getPublicBackBean);
+                getWechatMacTianJin();
+            }
+
+            @Override
+            public void onError(Throwable e) {
+                mView.setTextView("微信秘钥获取失败\n");
+            }
+
+            @Override
+            public void onComplete() {
+
+            }
+        });
+    }
+
+    /**
+     * 调用天津后台接口AppSercet
+     */
+    public void getZhiFuBaoAppSercet(Context context) {
+        final Gson gson = new GsonBuilder().serializeNulls().create();
+        Map<String, String> map = new HashMap<>();
+        String posID = SharedXmlUtil.getInstance(context).read(Info.POS_ID, Info.POS_ID_INIT);
+        AppSercetPost appSercetPost = new AppSercetPost();
+        appSercetPost.setDeviceId(posID);
+        map.put("data", gson.toJson(appSercetPost));
+        HttpMethods.getInstance().appSercet(map, new Observer<AppSercetBackBean>() {
+            @Override
+            public void onSubscribe(Disposable d) {
+
+            }
+
+            @Override
+            public void onNext(AppSercetBackBean appSercetBackBean) {
+                AppSercetBackBean.DataBean data = appSercetBackBean.getData();
+                SharedXmlUtil.getInstance(context).write(Info.ZFB_APP_KEY, data.getAppKey());
+                SharedXmlUtil.getInstance(context).write(Info.ZFB_APP_SERCET, data.getAppSercet());
+            }
+
+            @Override
+            public void onError(Throwable e) {
+                mView.setTextView("支付宝Sercet获取失败\n");
+                LogUtils.v(e.toString());
+            }
+
+            @Override
+            public void onComplete() {
+
+            }
+        });
+    }
+
+    public void getAliPubKeyTianJin() {
+        HttpMethods.getInstance().publicKey(new Observer<GetZhiFuBaoKey>() {
+            @Override
+            public void onSubscribe(Disposable d) {
+
+            }
+
+            @Override
+            public void onNext(GetZhiFuBaoKey getZhiFuBaoKey) {
+                String publicKeys = getZhiFuBaoKey.getPublicKeys();
+                if (!TextUtils.isEmpty(publicKeys)) {
+                    DbDaoManage.getDaoSession().getGetZhiFuBaoKeyDao().deleteAll();
+                    DbDaoManage.getDaoSession().getGetZhiFuBaoKeyDao().insert(getZhiFuBaoKey);
+                }
+
+            }
+
+            @Override
+            public void onError(Throwable e) {
+                mView.setTextView("支付宝秘钥获取失败\n");
+            }
+
+            @Override
+            public void onComplete() {
+
+            }
+        });
+    }
 
 
     /**
