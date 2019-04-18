@@ -41,7 +41,9 @@ import com.spd.bus.spdata.spdbuspay.SpdBusPayPresenter;
 import com.spd.bus.spdata.utils.PlaySound;
 import com.spd.bus.util.SaveDataUtils;
 import com.spd.yinlianpay.context.MyContext;
+import com.spd.yinlianpay.iso8583.Body;
 import com.spd.yinlianpay.iso8583.Msg;
+import com.spd.yinlianpay.iso8583.RespCode;
 import com.spd.yinlianpay.util.PrefUtil;
 
 import java.io.UnsupportedEncodingException;
@@ -565,8 +567,12 @@ public class PsamIcActivity extends MVPBaseActivity<SpdBusPayContract.View, SpdB
 
                 case MyContext.BackMsg:
                     Msg msg1 = (Msg) msg.obj;
-
-
+                    try {
+                        SaveDataUtils.saveSMDataBean(msg1, "1", "03");
+                        mPresenter.uploadSM(getApplicationContext());
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                    }
                     break;
                 default:
                     Log.i(TAG, "handleMessage:  返回 default");

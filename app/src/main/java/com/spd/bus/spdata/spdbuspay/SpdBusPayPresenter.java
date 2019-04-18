@@ -803,7 +803,40 @@ public class SpdBusPayPresenter extends BasePresenterImpl<SpdBusPayContract.View
         return gson.toJson(producePost).toString();
     }
 
+    @Override
+    public void uploadSM(Context context) {
+        String smData = getSMUploadData(context).replace("\\\"", "'");
 
+        HttpMethods.getInstance().produce(smData, new Observer<NetBackBean>() {
+            @Override
+            public void onSubscribe(Disposable d) {
+
+            }
+
+            @Override
+            public void onNext(NetBackBean netBackBean) {
+                String msg = netBackBean.getMsg();
+                if ("success".equalsIgnoreCase(msg)) {
+                    Log.i(TAG, "onNext: " + netBackBean.toString());
+                    for (UploadSMDB uploadSMDB :uploadSMDBList ) {
+                        uploadSMDB.setIsUpload(true);
+                        DbDaoManage.getDaoSession().getUploadSMDBDao().update(uploadSMDB);
+                    }
+                }
+            }
+
+            @Override
+            public void onError(Throwable e) {
+                mView.erro(e.toString());
+                Log.i(TAG, "uploadWechatRe: " + e.toString());
+            }
+
+            @Override
+            public void onComplete() {
+
+            }
+        });
+    }
 
     private String getSMUploadData(Context context) {
         final Gson gson = new GsonBuilder().serializeNulls().create();

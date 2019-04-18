@@ -9,7 +9,6 @@ import android.widget.TextView;
 
 import com.kaopiz.kprogresshud.KProgressHUD;
 import com.spd.base.been.tianjin.CardBackBean;
-import com.spd.bus.MainActivity;
 import com.spd.bus.MyApplication;
 import com.spd.bus.R;
 import com.spd.bus.card.methods.ReturnVal;

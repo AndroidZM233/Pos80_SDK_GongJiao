@@ -10,6 +10,7 @@ import com.spd.alipay.been.AliCodeinfoData;
 import com.spd.alipay.been.TianjinAlipayRes;
 import com.spd.base.been.tianjin.TStaffTb;
 import com.spd.base.been.tianjin.produce.ProducePost;
+import com.spd.base.been.tianjin.produce.shuangmian.UploadSMDB;
 import com.spd.base.been.tianjin.produce.weixin.PayinfoBean;
 import com.spd.base.been.tianjin.produce.weixin.ProduceWeiXin;
 import com.spd.base.been.tianjin.produce.weixin.UploadInfoDB;
@@ -22,9 +23,13 @@ import com.spd.base.dbbeen.RunParaFile;
 import com.spd.base.utils.Datautils;
 import com.spd.bus.Info;
 import com.spd.bus.card.utils.DateUtils;
+import com.spd.yinlianpay.WeiPassGlobal;
+import com.spd.yinlianpay.iso8583.Msg;
+import com.spd.yinlianpay.util.PrefUtil;
 import com.tencent.wlxsdk.WlxSdk;
 
 import org.apache.commons.lang3.text.StrBuilder;
+import org.greenrobot.greendao.annotation.Id;
 
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -38,7 +43,7 @@ import java.util.List;
 public class SaveDataUtils {
 
     public static void saveZhiFuBaoReqDataBean(TianjinAlipayRes aliCodeinfoData
-            , RunParaFile runParaFile,String orderNr) throws Exception {
+            , RunParaFile runParaFile, String orderNr) throws Exception {
 
         List<TStaffTb> tStaffTbs = DbDaoManage.getDaoSession().getTStaffTbDao().loadAll();
         TStaffTb tStaffTb = null;
@@ -98,6 +103,67 @@ public class SaveDataUtils {
         DbDaoManage.getDaoSession().getUploadInfoZFBDBDao().insertOrReplace(reqDataBean);
     }
 
+    public static void saveSMDataBean(Msg msg, String isPay,String type) throws Exception {
+        List<RunParaFile> runParaFiles = DbDaoManage.getDaoSession().getRunParaFileDao().loadAll();
+        if (runParaFiles.size() == 0) {
+            return;
+        }
+        RunParaFile runParaFile = runParaFiles.get(0);
+        List<TStaffTb> tStaffTbs = DbDaoManage.getDaoSession().getTStaffTbDao().loadAll();
+        TStaffTb tStaffTb = null;
+        if (tStaffTbs.size() > 0) {
+            tStaffTb = tStaffTbs.get(0);
+        }
+
+        String[] ds = msg.body.ds;
+        UploadSMDB uploadSMDB = new UploadSMDB();
+        uploadSMDB.setBusNo(Datautils.byteArrayToString(runParaFile.getBusNr()));
+        //卡序号
+        uploadSMDB.setCardSerialNum(ds[1]);
+        //批次号
+        uploadSMDB.setBatchNumber(PrefUtil.getBatchNo());
+        //请款应答码
+        uploadSMDB.setResponseCode(ds[38]);
+        //是否支付 1：已支付 0： 未支付
+        uploadSMDB.setIsPay(isPay);
+        //司机卡号
+        uploadSMDB.setDriver(tStaffTb == null ? "300000015165068000"
+                : Datautils.byteArrayToString(tStaffTb.getUcAppSnr()));
+        //交易时间
+        uploadSMDB.setTransactionTime(DateUtils.getCurrentTimeMillis(DateUtils.FORMAT_yyyyMMddHHmmss));
+        //二磁道数据
+        uploadSMDB.setTowTrackData(WeiPassGlobal.getTransactionInfo().getTrack2());
+        //终端编号
+        uploadSMDB.setTerminalCode(Datautils.byteArrayToString(runParaFile.getDevNr()));
+        //序号
+        uploadSMDB.setSerialNumber("000001");
+        //交易金额
+        uploadSMDB.setTransactionAmount(ds[3]);
+        //路队
+        uploadSMDB.setTeam(Datautils.byteArrayToString(runParaFile.getTeamNr()));
+        //三磁道数据
+        uploadSMDB.setThreeTrackData("");
+        //线路
+        uploadSMDB.setRoute(Datautils.byteArrayToString(runParaFile.getLineNr()));
+        //机具号
+        uploadSMDB.setPosId(Datautils.byteArrayToString(runParaFile.getDevNr()));
+        //追踪码
+        uploadSMDB.setRetrievingNum(ds[10]);
+        //公司
+        uploadSMDB.setDept(Datautils.byteArrayToString(runParaFile.getCorNr()));
+        //55域
+        uploadSMDB.setField(Datautils.byteArrayToString(ds[54].getBytes()));
+        //交易序号
+        uploadSMDB.setTransactionCode("000001");
+        //类型 03：云闪付成功 04： 云闪付失败，转ODA
+        uploadSMDB.setType(type);
+        //卡号
+        uploadSMDB.setCardNo(ds[1]);
+        //是否上传
+        uploadSMDB.setIsUpload(false);
+        DbDaoManage.getDaoSession().getUploadSMDBDao().insertOrReplace(uploadSMDB);
+    }
+
 
     public static void saveWeiXinDataBean(WlxSdk wlxSdk) throws Exception {
         List<RunParaFile> runParaFiles = DbDaoManage.getDaoSession().getRunParaFileDao().loadAll();
@@ -123,7 +189,7 @@ public class SaveDataUtils {
         payinfoBean.setBus_no(Datautils.byteArrayToString(runParaFile.getBusNr()));
         payinfoBean.setDriver(tStaffTb == null ? "300000015165068000"
                 : Datautils.byteArrayToString(tStaffTb.getUcAppSnr()));
-        payinfoBean.setPos_id("");
+        payinfoBean.setPos_id(Datautils.byteArrayToString(runParaFile.getDevNr()));
         payinfoBean.setRecord_in(wlxSdk.get_record());
         payinfoBean.setIsUpload(false);
         DbDaoManage.getDaoSession().getUploadInfoDBDao().insertOrReplace(payinfoBean);

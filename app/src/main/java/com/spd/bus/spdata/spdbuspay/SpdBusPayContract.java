@@ -39,7 +39,7 @@ public class SpdBusPayContract {
 
         void showWechatPublicKey(WechatQrcodeKey wechatQrcodeKey);
 
-        void showCheckAliQrCode(TianjinAlipayRes tianjinAlipayRes, RunParaFile runParaFile,String orderNr);
+        void showCheckAliQrCode(TianjinAlipayRes tianjinAlipayRes, RunParaFile runParaFile, String orderNr);
 
         void showReleseAlipayJni(int result);
 
@@ -90,8 +90,6 @@ public class SpdBusPayContract {
         void getWechatPublicKey();
 
 
-
-
         void checkWechatTianJin(String code, int payfee, byte scene,
                                 byte scantype, String posId, String posTrxId);
 
@@ -105,8 +103,9 @@ public class SpdBusPayContract {
         void uploadWechatRe(Context context);
 
 
-        void checkYinLianCode(Context context,String qrcode);
+        void checkYinLianCode(Context context, String qrcode);
 
+        void uploadSM(Context context);
 
     }
 }
