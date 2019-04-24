@@ -13,5 +13,5 @@ public interface OnCommonListener {
 
     void onError(int errorCode, String errorMsg);
 
-    void onDataBack(Msg msg);
+    void onDataBack();
 }

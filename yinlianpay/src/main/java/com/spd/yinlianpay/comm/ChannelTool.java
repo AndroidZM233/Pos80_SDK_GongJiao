@@ -12,6 +12,8 @@ import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 import com.google.gson.reflect.TypeToken;
+import com.spd.base.utils.Datautils;
+import com.spd.base.utils.LogUtils;
 import com.spd.yinlianpay.TransactionInfo;
 import com.spd.yinlianpay.WeiPassGlobal;
 import com.spd.yinlianpay.card.TLV;
@@ -21,6 +23,7 @@ import com.spd.yinlianpay.cardparam.CAPKData;
 import com.spd.yinlianpay.context.MyContext;
 import com.spd.yinlianpay.iso8583.Body;
 import com.spd.yinlianpay.iso8583.Msg;
+import com.spd.yinlianpay.iso8583.ODAException;
 import com.spd.yinlianpay.iso8583.PayException;
 import com.spd.yinlianpay.iso8583.RespCode;
 import com.spd.yinlianpay.listener.OnCommonListener;
@@ -132,7 +135,7 @@ public class ChannelTool {
             byte[] bytes = ChanelPacket.login(usepwd);
             Log.i("stw", "login: 签到报文时间===" + (System.currentTimeMillis() - time));
             byte[] ret = CommunAction.doNet(bytes);
-            if (ret==null) {
+            if (ret == null) {
                 // TODO: 2019/4/11   签到失败哦
             }
             Msg msg = ChanelPacket.decode(ret);
@@ -360,6 +363,9 @@ public class ChannelTool {
                     }
                     Log.i("stw", "报文 组0200=====" + (System.currentTimeMillis() - times));
                     times = System.currentTimeMillis();
+                    onCommonListener.onDataBack();
+
+                    LogUtils.v("状态返回-正在处理中" + Datautils.byteArrayToString(bytes));
                     byte[] ret = CommunAction.doNet(bytes);
                     int poscount = PrefUtil.getSerialNo();
 //                    poscount++;
@@ -386,13 +392,38 @@ public class ChannelTool {
                         castResult(tradeInfo);
                         onCommonListener.onResult(tradeInfo);
                         onCommonListener.onSuccess();
-                        onCommonListener.onDataBack(msg);
+
 //                        onCommonListener.onProgress((System.currentTimeMillis() - times) + "ms");
                     } else {
 
                         Log.i("stw", "發送报文0200报文反回=====" + (System.currentTimeMillis() - times));
                         onCommonListener.onError(0, msg.getField39Code());
                     }
+                } catch (ODAException e) {
+                    try {
+                        byte[] cutBytes = Datautils.cutBytes(bytes, 0, 2);
+                        Msg msg;
+                        if (Arrays.equals(cutBytes, new byte[]{(byte) 0x60, (byte) 0x00})) {
+                            msg = ChanelPacket.decode(bytes);
+                        } else {
+                            msg = ChanelPacket.decode(Datautils.cutBytes(bytes, 2
+                                    , bytes.length - 2));
+                        }
+
+                        // TODO: 2019/4/22 ODA
+                        String type = msg.body.type;
+                        if (!"0800".equals(type)) {
+                            TradeInfo tradeInfo = new TradeInfo();
+                            tradeInfo.msg = msg;
+                            tradeInfo.errorMsg = "ODA";
+                            onCommonListener.onResult(tradeInfo);
+                        }
+
+                    } catch (PayException e1) {
+                        e1.printStackTrace();
+                    }
+
+                    e.printStackTrace();
                 } catch (PayException ex) {
                     if (onCommonListener != null) {
                         onCommonListener.onError(0, ex.getMessage());

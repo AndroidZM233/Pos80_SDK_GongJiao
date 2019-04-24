@@ -95,46 +95,83 @@ public class JTBCardManager {
     private boolean isPPSE = false;
 
     public CardBackBean getFirst(BankCard mBankCard, List<PsamBeen> psamBeenList) {
-        LogUtils.d("First");
-        byte[] resultBytes = CardMethods.sendApdus(mBankCard, BankCard.CARD_MODE_PICC
-                , CardMethods.SELEC_PPSE);
-        LogUtils.d("First 1");
-        if (resultBytes == null || resultBytes.length == 2) {
-            return mustToSend(mBankCard, psamBeenList);
-        } else {
-            List<String> listTlv = new ArrayList<>();
-            TLV.anaTagSpeedata(resultBytes, listTlv);
-            if (listTlv.contains("A000000632010105")) {
-                //选择电子钱包应用
-                resultBytes = CardMethods.sendApdus(mBankCard, BankCard.CARD_MODE_PICC, CardMethods.SELECT_ICCARD_QIANBAO);
-                if (resultBytes == null || resultBytes.length == 2) {
-                    return new CardBackBean(ReturnVal.CAD_READ, tCardOpDU);
-                }
-            } else {
-                // 银联双免
-                yinLianPayManage.readCardInfo("07", handler);
-                return null;
+//        LogUtils.d("First");
+//        byte[] resultBytes = CardMethods.sendApdus(mBankCard, BankCard.CARD_MODE_PICC
+//                , CardMethods.SELEC_PPSE);
+//
+//        LogUtils.d("First 1");
+//        if (resultBytes == null || resultBytes.length == 2) {
+//            return mustToSend(mBankCard, psamBeenList, false);
+//        } else {
+//            List<String> listTlv = new ArrayList<>();
+//            TLV.anaTagSpeedata(resultBytes, listTlv);
+//            if (listTlv.contains("A000000632010105")) {
+//                //选择电子钱包应用
+//                resultBytes = CardMethods.sendApdus(mBankCard, BankCard.CARD_MODE_PICC
+//                        , CardMethods.SELECT_ICCARD_QIANBAO);
+//                if (resultBytes == null || resultBytes.length == 2) {
+//                    return new CardBackBean(ReturnVal.CAD_READ, tCardOpDU);
+//                }
+//            } else {
+//                return mustToSend(mBankCard, psamBeenList, true);
+//            }
+//        }
+//        return new CardBackBean(METHOD_OK, tCardOpDU);
 
+        //选择电子钱包应用 天津特有写法
+        byte[] resultBytes = CardMethods.sendApdus(mBankCard, BankCard.CARD_MODE_PICC
+                , CardMethods.SELECT_ICCARD_QIANBAO);
+        if (resultBytes == null || resultBytes.length == 2) {
+            if (Arrays.equals(resultBytes, CardMethods.APDU_RESULT_FAILE_6283) ||
+                    Arrays.equals(resultBytes, CardMethods.APDU_RESULT_FAILE_6284) ||
+                    Arrays.equals(resultBytes, CardMethods.APDU_RESULT_FAILE3_9303)) {
+                // TODO: 2019/1/3  查数据库黑名单报语音
+                return new CardBackBean(ReturnVal.CAD_BL1, tCardOpDU);
+            } else {
+                return mustToSend(mBankCard, psamBeenList, true);
             }
         }
         return new CardBackBean(METHOD_OK, tCardOpDU);
     }
 
-    private CardBackBean mustToSend(BankCard mBankCard, List<PsamBeen> psamBeenList) {
+    private CardBackBean mustToSend(BankCard mBankCard, List<PsamBeen> psamBeenList
+            , boolean isTrue) {
         byte[] resultBytes;//选择电子钱包应用
-        LogUtils.d("First 2");
+
         resultBytes = CardMethods.sendApdus(mBankCard, BankCard.CARD_MODE_PICC
-                , CardMethods.SELECT_ICCARD_QIANBAO);
-        LogUtils.d("First 3");
-        if (resultBytes == null) {
-            return new CardBackBean(ReturnVal.CAD_READ, tCardOpDU);
-        } else if (Arrays.equals(resultBytes, CardMethods.APDU_RESULT_FAILE_6283) ||
-                Arrays.equals(resultBytes, CardMethods.APDU_RESULT_FAILE_6284) ||
-                Arrays.equals(resultBytes, CardMethods.APDU_RESULT_FAILE3_9303)) {
-            // TODO: 2019/1/3  查数据库黑名单报语音
-            return new CardBackBean(ReturnVal.CAD_BL1, tCardOpDU);
+                , new byte[]{(byte) 0x00, (byte) 0xA4, (byte) 0x04, (byte) 0x00, (byte) 0x09
+                        , (byte) 0xA0, (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x03
+                        , (byte) 0x86, (byte) 0x98, (byte) 0x07, (byte) 0x01});
+        if (resultBytes == null || resultBytes.length == 2) {
+            if (Arrays.equals(resultBytes, CardMethods.APDU_RESULT_FAILE_6283) ||
+                    Arrays.equals(resultBytes, CardMethods.APDU_RESULT_FAILE_6284) ||
+                    Arrays.equals(resultBytes, CardMethods.APDU_RESULT_FAILE3_9303)) {
+                // TODO: 2019/1/3  查数据库黑名单报语音
+                return new CardBackBean(ReturnVal.CAD_BL1, tCardOpDU);
+            } else {
+//                if (isTrue) {
+//                    // 银联双免
+//                    LogUtils.v("银联双免开始");
+//                    yinLianPayManage.readCardInfo("07", handler);
+//                    return null;
+//                } else {
+//                    return new CardBackBean(ReturnVal.CAD_READ, tCardOpDU);
+//                }
+
+                resultBytes = CardMethods.sendApdus(mBankCard, BankCard.CARD_MODE_PICC
+                        , CardMethods.SELEC_PPSE);
+                if (resultBytes == null || resultBytes.length == 2) {
+                    return new CardBackBean(ReturnVal.CAD_READ, tCardOpDU);
+                }else {
+                    // 银联双免
+                    LogUtils.v("银联双免开始");
+                    yinLianPayManage.readCardInfo("07", handler);
+                    return null;
+                }
+
+            }
+
         } else {
-            LogUtils.d("First end");
             return ZJBCardManager.getInstance().mainMethod(context, mBankCard, psamBeenList);
         }
     }
@@ -329,14 +366,14 @@ public class JTBCardManager {
         //读记录
         byte[] rcdbuffer = new byte[128];
         if (MyApplication.cardRecordList.size() != 0) {
-            for (int j = 0; j < MyApplication.cardRecordList.size(); j++) {
+            for (int j = MyApplication.cardRecordList.size() - 1; j > 0; j--) {
                 CardRecord cardRecord = MyApplication.cardRecordList.get(j);
                 if (cardRecord == null) {
                     continue;
                 }
                 byte[] recordByte = cardRecord.getRecord();
-                byte[] snr = Datautils.cutBytes(recordByte, 7, 4);
-                if (Arrays.equals(snr, tCardOpDU.snr)) {
+                byte[] snr = Datautils.cutBytes(recordByte, 11, 8);
+                if (Arrays.equals(snr, Datautils.cutBytes(tCardOpDU.ucAppSnr, 2, 8))) {
                     rcdbuffer = recordByte;
                     findRecord = true;
                     break;

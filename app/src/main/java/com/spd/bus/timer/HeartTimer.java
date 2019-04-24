@@ -11,11 +11,13 @@ import com.spd.base.been.tianjin.AliWhiteBackBean;
 import com.spd.base.been.tianjin.AliWhiteBlackPost;
 import com.spd.base.been.tianjin.BaseInfoBackBean;
 import com.spd.base.been.tianjin.BaseInfoDataPost;
+import com.spd.base.been.tianjin.BlackDB;
 import com.spd.base.db.DbDaoManage;
 import com.spd.bus.Info;
 import com.spd.bus.card.utils.HttpMethods;
 import com.spd.base.utils.LogUtils;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -91,18 +93,17 @@ public class HeartTimer {
                     BaseInfoBackBean backBean = beanList.get(0);
                     String black = baseInfoBackBean.getBlack();
                     if (!black.equals(backBean.getBlack())) {
-                        getBlack(black);
+                        getBlack(black,baseInfoBackBean);
                     }
                     String white = baseInfoBackBean.getWhite();
                     if (!white.equals(backBean.getWhite())) {
                         getWhite(white);
                     }
                 } else {
-                    getBlack(baseInfoBackBean.getBlack());
+                    getBlack(baseInfoBackBean.getBlack(),baseInfoBackBean);
                     getWhite(baseInfoBackBean.getWhite());
                 }
-                DbDaoManage.getDaoSession().getBaseInfoBackBeanDao().deleteAll();
-                DbDaoManage.getDaoSession().getBaseInfoBackBeanDao().insert(baseInfoBackBean);
+
 
                 LogUtils.d("成功" + gson.toJson(baseInfoBackBean));
             }
@@ -119,7 +120,7 @@ public class HeartTimer {
         });
     }
 
-    private void getBlack(String version) {
+    private void getBlack(String version,BaseInfoBackBean baseInfoBackBean) {
         final Gson gson = new GsonBuilder().serializeNulls().create();
         AliWhiteBlackPost aliWhiteBlackPost = new AliWhiteBlackPost();
         String posID = SharedXmlUtil.getInstance(mContext).read(Info.POS_ID, Info.POS_ID_INIT);
@@ -134,13 +135,26 @@ public class HeartTimer {
 
                     @Override
                     public void onNext(AliBlackBackBean aliBlackBackBean) {
-                        DbDaoManage.getDaoSession().getAliBlackBackBeanDao().deleteAll();
-                        DbDaoManage.getDaoSession().getAliBlackBackBeanDao().insert(aliBlackBackBean);
+                        LogUtils.v("开始存储黑名单");
+                        List<BlackDB> list = new ArrayList<>();
+                        String data = aliBlackBackBean.getData();
+                        while (data.length() >= 20) {
+                            BlackDB blackDB = new BlackDB();
+                            blackDB.setData(data.substring(0, 20));
+                            data = data.substring(20);
+                            blackDB.setVersion(aliBlackBackBean.getVersion());
+                            list.add(blackDB);
+                        }
+                        DbDaoManage.getDaoSession().getBlackDBDao().deleteAll();
+                        DbDaoManage.getDaoSession().getBlackDBDao().insertInTx(list);
+                        LogUtils.v("结束存储黑名单");
+                        DbDaoManage.getDaoSession().getBaseInfoBackBeanDao().deleteAll();
+                        DbDaoManage.getDaoSession().getBaseInfoBackBeanDao().insert(baseInfoBackBean);
                     }
 
                     @Override
                     public void onError(Throwable e) {
-                        LogUtils.d("失败" + e.toString());
+                        LogUtils.v("失败" + e.toString());
                     }
 
                     @Override

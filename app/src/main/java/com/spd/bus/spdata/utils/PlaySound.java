@@ -32,6 +32,14 @@ public class PlaySound {
     public static final int QINGSHEZHI = 9;
     public static final int MASHANGYIXING = 10;
     public static final int SIJISHANGBAN = 11;
+    public static final int WUXIAOKA = 12;
+    public static final int ZHENGZZAICHULI = 13;
+    public static final int YINLIAN = 14;
+    public static final int JINGLAOKA = 15;
+    public static final int DIDI = 16;
+    public static final int AIXINKA = 17;
+    public static final int CODESHIXIAO = 18;
+    public static final int QINGQIANDAO = 19;
     public static int NO_CYCLE = 0;//不循环
 
 
@@ -54,6 +62,14 @@ public class PlaySound {
         mapSRC.put(QINGSHEZHI, sp.load(context, R.raw.qingshezhi, 0));
         mapSRC.put(MASHANGYIXING, sp.load(context, R.raw.mashangyixing, 0));
         mapSRC.put(SIJISHANGBAN, sp.load(context, R.raw.sijishangban, 0));
+        mapSRC.put(WUXIAOKA, sp.load(context, R.raw.wuxiaoka, 0));
+        mapSRC.put(ZHENGZZAICHULI, sp.load(context, R.raw.zhengzaichulizhong, 0));
+        mapSRC.put(YINLIAN, sp.load(context, R.raw.unionpay, 0));
+        mapSRC.put(JINGLAOKA, sp.load(context, R.raw.jinglaoka, 0));
+        mapSRC.put(DIDI, sp.load(context, R.raw.diddi, 0));
+        mapSRC.put(AIXINKA, sp.load(context, R.raw.aixinka, 0));
+        mapSRC.put(CODESHIXIAO, sp.load(context, R.raw.erweimashixiao, 0));
+        mapSRC.put(QINGQIANDAO, sp.load(context, R.raw.qingqiandao, 0));
     }
 
 

@@ -38,7 +38,8 @@ public class CardMethods {
     /**
      * //交通部
      */
-    public static final byte[] PSAM_SELECT_DIR = {0x00, (byte) 0xA4, 0x00, 0x00, 0x02, (byte) 0x80, 0x11};
+    public static final byte[] PSAM_SELECT_DIR = {0x00, (byte) 0xA4, 0x00, 0x00, 0x02
+            , (byte) 0x80, 0x11};
 
     /**
      * //读取psam卡17文件
@@ -48,7 +49,8 @@ public class CardMethods {
     /**
      * //选择PPSE支付环境
      */
-    public static final byte[] SELEC_PPSE = {0x00, (byte) 0xA4, 0x04, 0x00, 0x0e, 0x32, 0x50, 0x41, 0x59, 0x2e, 0x53, 0x59, 0x53, 0x2e, 0x44, 0x44, 0x46, 0x30, 0x31};
+    public static final byte[] SELEC_PPSE = {0x00, (byte) 0xA4, 0x04, 0x00, 0x0e, 0x32
+            , 0x50, 0x41, 0x59, 0x2e, 0x53, 0x59, 0x53, 0x2e, 0x44, 0x44, 0x46, 0x30, 0x31};
 
     /**
      * //选择电子钱包应用
@@ -59,18 +61,21 @@ public class CardMethods {
     /**
      * //读CPU卡应用下公共应用基本信息文件指令 15文件
      */
-    public static final byte[] READ_ICCARD_15FILE = {0x00, (byte) 0xB0, (byte) 0x95, 0x00, 0x00};
+    public static final byte[] READ_ICCARD_15FILE = {0x00, (byte) 0xB0, (byte) 0x95
+            , 0x00, 0x00};
 
     /**
      * 读CPU17文件
      */
 
-    public static final byte[] READ_ICCARD_17FILE = {0x00, (byte) 0xB0, (byte) 0x97, 0x00, 0x00};
+    public static final byte[] READ_ICCARD_17FILE = {0x00, (byte) 0xB0, (byte) 0x97
+            , 0x00, 0x00};
 
     /**
      * //住建部
      */
-    public static final byte[] PSAMZHUJIAN_SELECT_DIR = {0x00, (byte) 0xA4, 0x00, 0x00, 0x02, (byte) 0x10, 0x01};
+    public static final byte[] PSAMZHUJIAN_SELECT_DIR = {0x00, (byte) 0xA4, 0x00, 0x00
+            , 0x02, (byte) 0x10, 0x01};
     /**
      * 返回正确结果
      */
@@ -260,7 +265,7 @@ public class CardMethods {
             valid &= (0x800000L >> ucType);
         } else {
             if (((tCardOpDu.cardClass == (byte) 0x51) || (tCardOpDu.cardClass == (byte) 0x71))
-                    && (tCardOpDu.cardType != (byte) 0x00) && (tCardOpDu.cardType != 6))// =0x51/0x71，城市卡
+                    && (tCardOpDu.ucMainCardType != (byte) 0x00) && (tCardOpDu.ucMainCardType != 6))// =0x51/0x71，城市卡
             {
                 return 0;
             }
@@ -276,7 +281,7 @@ public class CardMethods {
                     valid <<= 8;
                     valid += ucBusYuePower[i] & 0xFF;
                 }
-                byte ucType = tCardOpDu.cardType;
+                byte ucType = tCardOpDu.ucMainCardType;
                 valid &= (0x800000L >> ucType);
             } else if ((tCardOpDu.cardClass == (byte) 0x51) || (tCardOpDu.cardClass == (byte) 0x71))           // 城市卡,不判年检期(城市卡无年检日期)
             {
@@ -287,12 +292,13 @@ public class CardMethods {
                     valid += ucCityYuePower[i] & 0xFF;
                 }
                 valid <<= 8;
-                byte ucType = tCardOpDu.subType;
+                byte ucType = tCardOpDu.ucMainCardType;
                 valid &= (0x800000L >> ucType);
+
             }                                                                    // 无权限，返回0
             if ((tCardOpDu.cardClass == (byte) 0x51) || (tCardOpDu.cardClass == (byte) 0x71)) {
-                if ((tCardOpDu.cardType == (byte) 0x01) || (tCardOpDu.cardType == (byte) 0x02)
-                        || (tCardOpDu.cardType == (byte) 0x11)) {
+                if ((tCardOpDu.ucMainCardType == (byte) 0x01) || (tCardOpDu.ucMainCardType == (byte) 0x02)
+                        || (tCardOpDu.ucMainCardType == (byte) 0x11)) {
                     return 1;
                 }
             }
@@ -341,6 +347,7 @@ public class CardMethods {
     public static int fIsUsePur(TCardOpDU tCardOpDu, RunParaFile runParaFile) {
         int valid = 0, i;
         byte ucType;
+        int to16Int;
 
         if (tCardOpDu.cardClass == 0x03 || tCardOpDu.cardClass == 0x07)    //0x03,CPU卡
         {
@@ -359,13 +366,13 @@ public class CardMethods {
                     valid += ucCityMainPurPower[i] & 0xFF;
                 }
                 valid <<= 8;
-                ucType = tCardOpDu.ucMainCardType;
-                valid &= (0x800000L >> ucType);
+                to16Int = Datautils.btyeTo16Int(tCardOpDu.subType);
+                valid &= (0x800000L >> to16Int);
             }
 
 
         } else if (((tCardOpDu.cardClass == 0x51) || (tCardOpDu.cardClass == 0x71))
-                && (tCardOpDu.cardType != 0) && (tCardOpDu.cardType != 6))   // =0x51/0x71，城市卡
+                && (tCardOpDu.ucMainCardType != 0) && (tCardOpDu.ucMainCardType != 6))   // =0x51/0x71，城市卡
         {
             byte[] ucCityMainPurPower = runParaFile.getUcCityMainPurPower();
             for (valid = 0, i = 0; i < 2; i++) {
@@ -373,8 +380,8 @@ public class CardMethods {
                 valid += ucCityMainPurPower[i] & 0xFF;
             }
             valid <<= 8;
-            ucType = tCardOpDu.cardType;
-            valid &= (0x800000L >> ucType);
+            to16Int = Datautils.btyeTo16Int(tCardOpDu.subType);
+            valid &= (0x800000L >> to16Int);
         } else {
             if (tCardOpDu.cardClass == 0x01)                                        // =0x01，公交卡
             {
@@ -387,7 +394,7 @@ public class CardMethods {
                     valid <<= 8;
                     valid += ucBusPurPower[i] & 0xFF;
                 }
-                ucType = tCardOpDu.cardType;
+                ucType = tCardOpDu.ucMainCardType;
                 valid &= (0x800000L >> ucType);
             } else if ((tCardOpDu.cardClass == 0x51) || (tCardOpDu.cardClass == 0x71))     // =0x51/0x71，城市卡
             {
@@ -491,14 +498,14 @@ public class CardMethods {
         } else if (tCardOpDu.cardClass == 0x01)                                      // =0x01，公交卡
         {
             tCardOpDu.fUseHC = 0;
-            int cardTypeToInt = Datautils.byteArrayToInt(new byte[]{tCardOpDu.cardType});
+            int cardTypeToInt = Datautils.byteArrayToInt(new byte[]{tCardOpDu.ucMainCardType});
             byte[] ucBusRadioP = runParaFile.getUcBusRadioP();
             radio = Datautils.byteArrayToInt(new byte[]{ucBusRadioP[cardTypeToInt]});
         } else if ((tCardOpDu.cardClass == 0x51) || (tCardOpDu.cardClass == 0x71)) {
             tCardOpDu.fUseHC = 0;
-            if ((tCardOpDu.cardType != 0) && (tCardOpDu.cardType != 6))        // 主卡类型==非0或非6, 特种卡
+            if ((tCardOpDu.ucMainCardType != 0) && (tCardOpDu.ucMainCardType != 6))        // 主卡类型==非0或非6, 特种卡
             {
-                ucBCDType = (tCardOpDu.cardType >> 4) * 10 + (tCardOpDu.cardType & 0x0f);
+                ucBCDType = (tCardOpDu.ucMainCardType >> 4) * 10 + (tCardOpDu.ucMainCardType & 0x0f);
                 if (ucBCDType <= 0x0f) // 主卡类型在16种卡之内，取主卡折扣率
                 {
                     radio = Datautils.byteArrayToInt(new byte[]{runParaFile.getUcCityMainRadioP()[ucBCDType]});
@@ -508,7 +515,8 @@ public class CardMethods {
             } else {// 主卡类型==0（公交兼容卡）或6（测试卡）
                 // 取子卡类型折扣率
                 int subTypeToInt = Datautils.byteArrayToInt(new byte[]{tCardOpDu.subType});
-                radio = Datautils.byteArrayToInt(new byte[]{runParaFile.getUcCitySubRadioP()[subTypeToInt]});
+                radio = Datautils.byteArrayToInt(new byte[]{runParaFile
+                        .getUcCitySubRadioP()[subTypeToInt]});
             }
         }
         calcRet = (price) * radio;
@@ -617,7 +625,7 @@ public class CardMethods {
                 System.arraycopy(cardOpDU.issueSnr, 0, rcdBuffer, 5, 2);
                 System.arraycopy(cardOpDU.snr, 0, rcdBuffer, 7, 4);
                 System.arraycopy(cardOpDU.issueSnr, 0, rcdBuffer, 11, 8);
-                rcdBuffer[19] = cardOpDU.cardType;
+                rcdBuffer[19] = cardOpDU.ucMainCardType;
                 rcdBuffer[20] = (byte) 0x00;
                 System.arraycopy(cardOpDU.startUserDate, 0, rcdBuffer, 21, 3);
                 System.arraycopy(cardOpDU.ucDateTimeUTC, 0, rcdBuffer, 24, 4);
@@ -721,7 +729,7 @@ public class CardMethods {
             System.arraycopy(cardOpDU.issueSnr, 0, rcdBuffer, 11, 8);
             // 15-18: ??MAC
             // 19:   卡主类型
-            rcdBuffer[19] = cardOpDU.cardType;
+            rcdBuffer[19] = cardOpDU.ucMainCardType;
             // 20:卡子类型
             if (cardOpDU.cardClass == (byte) 0x01) {
                 rcdBuffer[20] = (byte) 0x00;

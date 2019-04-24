@@ -3,9 +3,13 @@ package com.spd.yinlianpay.comm;
 import android.os.Handler;
 import android.os.Looper;
 import android.os.Message;
+import android.util.Log;
 
 import com.spd.base.utils.Datautils;
+import com.spd.yinlianpay.context.MyContext;
 import com.spd.yinlianpay.dlg.ProcessDlg;
+import com.spd.yinlianpay.iso8583.Msg;
+import com.spd.yinlianpay.iso8583.ODAException;
 import com.spd.yinlianpay.iso8583.PayException;
 import com.spd.yinlianpay.net.CCBBManage;
 import com.spd.yinlianpay.util.PrefUtil;
@@ -13,6 +17,7 @@ import com.spd.yinlianpay.util.PrefUtil;
 import java.io.DataInputStream;
 import java.net.InetSocketAddress;
 import java.net.Socket;
+import java.net.SocketException;
 import java.net.SocketTimeoutException;
 import java.util.Arrays;
 import java.util.TimerTask;
@@ -108,8 +113,8 @@ public class CommunAction {
         int timeout = (PrefUtil.getOverTimeInt()) * 1000;
         try {
             soc = new Socket();
-            soc.setSoTimeout(timeout);
-            soc.connect(new InetSocketAddress(ip, port), 10000);
+            soc.setSoTimeout(2000);
+            soc.connect(new InetSocketAddress(ip, port), 2000);
 //            soc.getOutputStream().write(Datautils.HexString2Bytes("003C600601000060320032401708000020000000C00012000121313030323038333133303836343030343131313030303300110000000200300003303031"));
             soc.getOutputStream().write(send);
             isSendSuccess = true;
@@ -121,7 +126,10 @@ public class CommunAction {
             System.out.println("read data:" + HEXUitl.bytesToHex(rs));
             return rs;
         } catch (SocketTimeoutException ex) {
-            throw new PayException("Network connection timeout");
+
+            throw new ODAException("DO ODA");
+        } catch (SocketException socket) {
+            throw new ODAException("DO ODA");
         } finally {
             timeOut = 0;
             if (soc != null) {

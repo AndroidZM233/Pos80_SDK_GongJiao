@@ -50,12 +50,12 @@ public class MyApplication extends Application {
     public static BankCard mBankCard = null;
     //log to pc
     public static socketpusher log = null;
-
+    public static byte fSysSta = (byte) 0x01;
     private static final String ACTION_SET_SYSTIME_BYSP = "set_systime_with_sp";
 
     public static void setCardRecordList(CardRecord cardRecord) {
         LogUtils.v("start");
-        if (cardRecordList.size() < 20) {
+        if (cardRecordList.size() < 2) {
             cardRecordList.add(cardRecord);
         } else {
             cardRecordList.remove(cardRecordList.get(0));

@@ -5,6 +5,7 @@ import android.content.Context;
 import com.example.test.yinlianbarcode.entity.QrEntity;
 import com.example.test.yinlianbarcode.utils.SharedXmlUtil;
 import com.spd.alipay.been.TianjinAlipayRes;
+import com.spd.base.been.tianjin.CardRecord;
 import com.spd.base.been.tianjin.TStaffTb;
 import com.spd.base.been.tianjin.produce.shuangmian.UploadSMDB;
 import com.spd.base.been.tianjin.produce.weixin.UploadInfoDB;
@@ -23,6 +24,7 @@ import com.tencent.wlxsdk.WlxSdk;
 import org.apache.commons.lang3.text.StrBuilder;
 
 import java.text.SimpleDateFormat;
+import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
 
@@ -93,7 +95,7 @@ public class SaveDataUtils {
         DbDaoManage.getDaoSession().getUploadInfoZFBDBDao().insertOrReplace(reqDataBean);
     }
 
-    public static void saveSMDataBean(Msg msg, String isPay,String type) throws Exception {
+    public static void saveSMDataBean(Msg msg, String isPay, String type) throws Exception {
         List<RunParaFile> runParaFiles = DbDaoManage.getDaoSession().getRunParaFileDao().loadAll();
         if (runParaFiles.size() == 0) {
             return;
@@ -126,7 +128,21 @@ public class SaveDataUtils {
         //终端编号
         uploadSMDB.setTerminalCode(Datautils.byteArrayToString(runParaFile.getDevNr()));
         //序号
-        uploadSMDB.setSerialNumber("000001");
+        long count = DbDaoManage.getDaoSession().getUploadSMDBDao().count();
+        Long id = 0L;
+        String serialNumber = "000001";
+        if (count != 0L) {
+            UploadSMDB record = DbDaoManage.getDaoSession().getUploadSMDBDao().loadByRowId(count);
+            if (record != null) {
+                int num = Integer.parseInt(record.getSerialNumber()) + 1;
+                serialNumber = String.valueOf(num);
+                for (int i = serialNumber.length(); i < 6; i++) {
+                    serialNumber = "0" + serialNumber;
+                }
+            }
+        }
+
+        uploadSMDB.setSerialNumber(serialNumber);
         //交易金额
         uploadSMDB.setTransactionAmount(ds[3]);
         //路队
@@ -144,7 +160,7 @@ public class SaveDataUtils {
         //55域
         uploadSMDB.setField(Datautils.byteArrayToString(ds[54].getBytes()));
         //交易序号
-        uploadSMDB.setTransactionCode("000001");
+        uploadSMDB.setTransactionCode(serialNumber);
         //类型 03：云闪付成功 04： 云闪付失败，转ODA
         uploadSMDB.setType(type);
         //卡号

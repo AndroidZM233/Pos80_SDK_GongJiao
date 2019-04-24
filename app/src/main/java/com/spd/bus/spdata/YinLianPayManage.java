@@ -131,7 +131,7 @@ public class YinLianPayManage implements OnTraditionListener {
                     }
 
                     @Override
-                    public void onDataBack(Msg msg) {
+                    public void onDataBack() {
 
                     }
                 });
@@ -166,14 +166,15 @@ public class YinLianPayManage implements OnTraditionListener {
     }
 
     @Override
-    public void onDataBack(Msg msg) {
-        Body body = msg.body;
+    public void onDataBack() {
     }
 
     public void readCardInfo(String s, Handler readCardHandler) {
         WeiPassGlobal.getTransactionInfo().setServiceCode(s);
         UnionPayCard.init(myContext, readCardHandler);
-        UnionPayCard.readBankCardInfo(WeiPassGlobal.getTransactionInfo().getTermId(), WeiPassGlobal.getTransactionInfo().getMerchantName());
+        UnionPayCard.readBankCardInfo(MyApplication.mBankCard,
+                WeiPassGlobal.getTransactionInfo().getTermId(),
+                WeiPassGlobal.getTransactionInfo().getMerchantName());
     }
 
 }

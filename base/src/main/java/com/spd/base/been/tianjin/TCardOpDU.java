@@ -177,7 +177,7 @@ public class TCardOpDU {
     public byte[] mackNr;//卡认证码
     public byte[] fStartUse;//启用标志
     public boolean fBlackCard;//黑名单标志
-    public byte cardType;//卡类型
+//    public byte cardType;//卡类型
     public byte[] issueDate;//发行日期
     public byte[] endUserDate;//有效截止日期
     public byte[] startUserDate;//开始日期日期
@@ -285,13 +285,13 @@ public class TCardOpDU {
         this.fBlackCard = fBlackCard;
     }
 
-    public byte getCardType() {
-        return cardType;
-    }
-
-    public void setCardType(byte cardType) {
-        this.cardType = cardType;
-    }
+//    public byte getCardType() {
+//        return cardType;
+//    }
+//
+//    public void setCardType(byte cardType) {
+//        this.cardType = cardType;
+//    }
 
     public byte[] getIssueDate() {
         return issueDate;

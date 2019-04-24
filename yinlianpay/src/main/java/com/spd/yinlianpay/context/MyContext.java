@@ -24,6 +24,9 @@ public class MyContext {
             MSG_SWIP = MSG_BACK + 5;
     public static final int ShowErrorDialogFlag = 105;//error tip
     public static final int BackMsg = 106;//error tip
+    public static final int YuYin_ChuLi = 107;
+    public static final int RETRY = 108;
+    public static final int DO_ODA = 109;
     public static final int Hide_Progress = 10001;
     public static final int ShowToastFlag = 106;
     public static final int RESULT_SUCCESS = 0x1024;

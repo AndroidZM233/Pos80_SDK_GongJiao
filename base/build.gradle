@@ -22,7 +22,7 @@ android {
 }
 
 greendao {
-    schemaVersion 26
+    schemaVersion 31
 }
 dependencies {
     api fileTree(include: ['*.jar', '*.aar'], dir: 'libs')

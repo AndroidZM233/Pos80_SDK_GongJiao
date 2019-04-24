@@ -3,6 +3,9 @@ package com.spd.bus.card.methods;
 import android.content.Context;
 import android.os.RemoteException;
 
+import com.spd.base.been.tianjin.AliBlackBackBean;
+import com.spd.base.been.tianjin.BlackDB;
+import com.spd.base.been.tianjin.BlackDBDao;
 import com.spd.base.been.tianjin.CardBackBean;
 import com.spd.base.been.tianjin.CardRecord;
 import com.spd.base.been.tianjin.TDutyStatFile;
@@ -86,6 +89,7 @@ public class M1CardManager {
     List<PsamBeen> psamBeenList;
     private int blk;
     private Context context;
+    private boolean isSetConfig;
 
     public static M1CardManager getInstance() {
         if (jtbCardManager == null) {
@@ -98,10 +102,11 @@ public class M1CardManager {
 
 
     public CardBackBean mainMethod(Context context, BankCard mBankCard, int card
-            , int devMode, List<PsamBeen> psamBeenList) throws Exception {
+            , int devMode, List<PsamBeen> psamBeenList, boolean isSetConfig) throws Exception {
         this.context = context;
         this.mBankCard = mBankCard;
         this.psamBeenList = psamBeenList;
+        this.isSetConfig = isSetConfig;
         cinfoz = new TCommInfo();
         cinfof = new TCommInfo();
         cinfo = new TCommInfo();
@@ -246,7 +251,7 @@ public class M1CardManager {
 
 
         // 卡禁止，但允许管理卡刷卡
-        if ((fLockCard == 1) && (cardOpDU.cardType < (byte) 0x80)) {
+        if ((fLockCard == 1) && (cardOpDU.ucMainCardType < (byte) 0x80)) {
             LogUtils.e("卡禁止");
             return new CardBackBean(ReturnVal.CAD_READ, cardOpDU);
         }
@@ -365,10 +370,17 @@ public class M1CardManager {
         if (cardOpDU.fBlackCard == false) {
             //查询数据库黑名单
 //            cardOpDU.fBlackCard = CheckBlacklist(cardOpDU.IssueSnr);
+
+            List<BlackDB> list = DbDaoManage.getDaoSession().getBlackDBDao().queryBuilder()
+                    .where(BlackDBDao.Properties.Data.eq(cardOpDU.getIssueSnr())).list();
+            if (list != null && list.size() > 0) {
+                cardOpDU.fBlackCard = true;
+            }
+
         }
 
         if (cardOpDU.fBlackCard) {
-            if (cardOpDU.cardType >= (byte) 0x80) {
+            if (cardOpDU.ucMainCardType >= (byte) 0x80) {
                 LogUtils.d("1");
                 cinfo.fBlack = 4;
                 cardOpDU.ucProcSec = 2;
@@ -398,11 +410,11 @@ public class M1CardManager {
 //            return ReturnVal.CAD_TEST_C;
 //        }
 
-        if (cardOpDU.cardType == (byte) 0x91) {
+        if (cardOpDU.ucMainCardType == (byte) 0x91) {
 
         }
 
-        if (cardOpDU.cardType == 0x0e) {
+        if (cardOpDU.ucMainCardType == 0x0e) {
             if (devMode == 2) {
                 List<TStaffTb> tStaffTbs = DbDaoManage.getDaoSession().getTStaffTbDao().loadAll();
                 byte[] concatAll;
@@ -417,7 +429,7 @@ public class M1CardManager {
                         , 0, 4));
                 if (equals) {
                     cardOpDU.purIncMoneyInt = 0;
-//                    MachStatusFile.fSysSta = CAD_NORMAL;
+//                    MachStatusFile.MyApplication.fSysSta = CAD_NORMAL;
                     return new CardBackBean(ReturnVal.CAD_EMPTY, cardOpDU);
                 }
             } else {
@@ -445,7 +457,7 @@ public class M1CardManager {
                 tStaffTb.ucCityCode = Datautils.cutBytes(cardOpDU.snr, 0, 2);
                 tStaffTb.ucVocCode = Datautils.cutBytes(cardOpDU.snr, 2, 2);
                 tStaffTb.ucAppSnr = Datautils.cutBytes(cardOpDU.issueSnr, 0, 8);
-                tStaffTb.ucMainCardType = cardOpDU.cardType;
+                tStaffTb.ucMainCardType = cardOpDU.ucMainCardType;
                 tStaffTb.ucSubCardType = 0;
                 tStaffTb.ucAppStartYYMMDD = Datautils.cutBytes(cardOpDU.startUserDate, 0, 3);
                 tStaffTb.ulUTC = cardOpDU.ucDateTimeUTC;
@@ -484,7 +496,7 @@ public class M1CardManager {
         fErr = 0;
         LogUtils.v("记录查询");
         if (MyApplication.cardRecordList.size() != 0) {
-            for (int j = 0; j < MyApplication.cardRecordList.size(); j++) {
+            for (int j = MyApplication.cardRecordList.size() - 1; j > 0; j--) {
                 CardRecord cardRecord = MyApplication.cardRecordList.get(j);
                 byte[] recordByte = cardRecord.getRecord();
                 byte[] snr = Datautils.cutBytes(recordByte, 7, 4);
@@ -984,13 +996,13 @@ public class M1CardManager {
                 , Datautils.byteArrayToString(cardOpDU.ucDateTime));
         String ulUTCString = Long.toHexString(timeToLong / 1000).toUpperCase();
         cardOpDU.ucDateTimeUTC = Datautils.HexString2Bytes(ulUTCString);
-//        fSysSta = CAD_NORMAL;
+//        MyApplication.fSysSta = CAD_NORMAL;
 
-        if (fSysSta == CAD_PAUSE) {
-            fSysSta = CAD_NORMAL;
+        if (MyApplication.fSysSta == CAD_PAUSE) {
+            MyApplication.fSysSta = CAD_NORMAL;
         }
-        if (fSysSta != CAD_NORMAL) {
-            for (int j = 0; j < MyApplication.cardRecordList.size(); j++) {
+        if (MyApplication.fSysSta != CAD_NORMAL) {
+            for (int j = MyApplication.cardRecordList.size() - 1; j > 0; j--) {
                 CardRecord cardRecord = MyApplication.cardRecordList.get(j);
                 byte[] recordByte = cardRecord.getRecord();
                 byte[] snr = Datautils.cutBytes(recordByte, 7, 4);
@@ -1025,7 +1037,7 @@ public class M1CardManager {
 
 //            if (Arrays.equals(cardOpDU.snr, Datautils.cutBytes(rcdbuffer, 7, 4))) {
             if (findRecord) {
-                if (fSysSta == CAD_PAUSEA) {
+                if (MyApplication.fSysSta == CAD_PAUSEA) {
                     while (true) {
                         cinfo.fProc = (byte) ((cinfo.fProc + 1) & 0xfe);
                         if (!pauseA()) {
@@ -1040,7 +1052,7 @@ public class M1CardManager {
                     }
 
                     // 当前卡扣款异常,请重刷处理
-                    if (fSysSta == CAD_PAUSEA) {
+                    if (MyApplication.fSysSta == CAD_PAUSEA) {
                         // TODO: 2019/3/22 写记录
                         CardMethods.onAppendRecordTrade(context, cardOpDU.ucProcSec == 2 ? (byte) 0x01 : (byte) 0x03
                                 , cardOpDU, runParaFile, psamBeenList, mBankCard);
@@ -1048,7 +1060,7 @@ public class M1CardManager {
                         // 返回RETRY错，提示请重刷
                         return new CardBackBean(ReturnVal.CAD_RETRY, cardOpDU);
                     }
-                } else if (fSysSta == CAD_PAUSEB) {
+                } else if (MyApplication.fSysSta == CAD_PAUSEB) {
                     while (true) {
 
                         if (!pauseB(blk)) {
@@ -1060,7 +1072,7 @@ public class M1CardManager {
                     }
 
                     // 当前卡扣款异常,请重刷处理
-                    if (fSysSta == CAD_PAUSEA) {
+                    if (MyApplication.fSysSta == CAD_PAUSEA) {
                         // TODO: 2019/3/22 写记录
                         CardMethods.onAppendRecordTrade(context, cardOpDU.ucProcSec == 2 ? (byte) 0x01 : (byte) 0x03
                                 , cardOpDU, runParaFile, psamBeenList, mBankCard);
@@ -1068,7 +1080,7 @@ public class M1CardManager {
                         // 返回RETRY错，提示请重刷
                         return new CardBackBean(ReturnVal.CAD_RETRY, cardOpDU);
                     }
-                } else if (fSysSta == CAD_PAUSEC) {
+                } else if (MyApplication.fSysSta == CAD_PAUSEC) {
                     while (true) {
                         if (!pauseC()) {
                             break;
@@ -1076,7 +1088,7 @@ public class M1CardManager {
                     }
 
                     // 当前卡扣款异常,请重刷处理
-                    if (fSysSta == CAD_PAUSEA) {
+                    if (MyApplication.fSysSta == CAD_PAUSEA) {
                         // TODO: 2019/3/22 写记录
                         CardMethods.onAppendRecordTrade(context, cardOpDU.ucProcSec == 2 ? (byte) 0x01 : (byte) 0x03
                                 , cardOpDU, runParaFile, psamBeenList, mBankCard);
@@ -1084,7 +1096,7 @@ public class M1CardManager {
                         // 返回RETRY错，提示请重刷
                         return new CardBackBean(ReturnVal.CAD_RETRY, cardOpDU);
                     }
-                } else if (fSysSta == CAD_PAUSE0) {
+                } else if (MyApplication.fSysSta == CAD_PAUSE0) {
                     if (!CardMethods.modifyInfoArea(cardOpDU.ucProcSec + secOffset,
                             cinfo, mBankCard, lodkey, snUid)) {
                         return new CardBackBean(ReturnVal.CAD_ACCESS, cardOpDU);
@@ -1137,7 +1149,7 @@ public class M1CardManager {
                                 }
                             }
                             // 当前卡扣款异常,请重刷处理
-                            if (fSysSta == CAD_PAUSE0) {
+                            if (MyApplication.fSysSta == CAD_PAUSE0) {
                                 // 添加钱包灰记录或月票灰记录
                                 // TODO: 2019/3/22
                                 CardMethods.onAppendRecordTrade(context, cardOpDU.ucProcSec == 2 ? (byte) 0x01 : (byte) 0x03
@@ -1159,7 +1171,7 @@ public class M1CardManager {
                                 }
                             }
                             // 当前卡扣款异常,请重刷处理
-                            if (fSysSta == CAD_PAUSE0) {
+                            if (MyApplication.fSysSta == CAD_PAUSE0) {
                                 // 添加钱包灰记录或月票灰记录
                                 // TODO: 2019/3/22
                                 CardMethods.onAppendRecordTrade(context, cardOpDU.ucProcSec == 2 ? (byte) 0x01 : (byte) 0x03
@@ -1180,7 +1192,7 @@ public class M1CardManager {
                                 }
                             }
                             // 当前卡扣款异常,请重刷处理
-                            if (fSysSta == CAD_PAUSE0) {
+                            if (MyApplication.fSysSta == CAD_PAUSE0) {
                                 // 添加钱包灰记录或月票灰记录
                                 // TODO: 2019/3/22
                                 CardMethods.onAppendRecordTrade(context, cardOpDU.ucProcSec == 2 ? (byte) 0x01 : (byte) 0x03
@@ -1202,7 +1214,7 @@ public class M1CardManager {
                                 }
                             }
                             // 当前卡扣款异常,请重刷处理
-                            if (fSysSta == CAD_PAUSE0) {
+                            if (MyApplication.fSysSta == CAD_PAUSE0) {
                                 // 添加钱包灰记录或月票灰记录
                                 // TODO: 2019/3/22
                                 CardMethods.onAppendRecordTrade(context, cardOpDU.ucProcSec == 2 ? (byte) 0x01 : (byte) 0x03
@@ -1213,7 +1225,7 @@ public class M1CardManager {
                         }
                     }
 
-                } else if (fSysSta == CAD_PAUSE1) {
+                } else if (MyApplication.fSysSta == CAD_PAUSE1) {
                     while (true) {
                         if (!pause1(blk)) {
                             break;
@@ -1223,7 +1235,7 @@ public class M1CardManager {
                         }
                     }
                     // 当前卡扣款异常,请重刷处理
-                    if (fSysSta == CAD_PAUSE0) {
+                    if (MyApplication.fSysSta == CAD_PAUSE0) {
                         // 添加钱包灰记录或月票灰记录
                         // TODO: 2019/3/22
                         CardMethods.onAppendRecordTrade(context, cardOpDU.ucProcSec == 2 ? (byte) 0x01 : (byte) 0x03
@@ -1231,14 +1243,14 @@ public class M1CardManager {
                         //返回RETRY错，提示请重刷
                         return new CardBackBean(ReturnVal.CAD_RETRY, cardOpDU);
                     }
-                } else if (fSysSta == CAD_PAUSE2) {
+                } else if (MyApplication.fSysSta == CAD_PAUSE2) {
                     while (true) {
                         if (!pause2()) {
                             break;
                         }
                     }
                     // 当前卡扣款异常,请重刷处理
-                    if (fSysSta == CAD_PAUSE0) {
+                    if (MyApplication.fSysSta == CAD_PAUSE0) {
                         // 添加钱包灰记录或月票灰记录
                         // TODO: 2019/3/22
                         CardMethods.onAppendRecordTrade(context, cardOpDU.ucProcSec == 2 ? (byte) 0x01 : (byte) 0x03
@@ -1249,7 +1261,7 @@ public class M1CardManager {
                 }
             } else {
                 //非同一张卡
-                fSysSta = CAD_NORMAL;
+                MyApplication.fSysSta = CAD_NORMAL;
 //                return new CardBackBean(ReturnVal.CAD_NOTSAME, cardOpDU);
             }
 
@@ -1264,8 +1276,8 @@ public class M1CardManager {
                 , Datautils.cutBytes(cardOpDU.ucBlk5, 12, 3));
         cardOpDU.fStartUsePur = (byte) 0x01;
         //老人卡,残疾人卡
-        if ((cardOpDU.cardType == (byte) 0x01) || (cardOpDU.cardType == (byte) 0x02)
-                || (cardOpDU.cardType == (byte) 0x11)) {
+        if ((cardOpDU.ucMainCardType == (byte) 0x01) || (cardOpDU.ucMainCardType == (byte) 0x02)
+                || (cardOpDU.ucMainCardType == (byte) 0x11)) {
 
         } else {
 
@@ -1776,11 +1788,11 @@ public class M1CardManager {
             return new CardBackBean(ReturnVal.CAD_BL1, cardOpDU);
 
         }
-        if ((cardOpDU.cardType == (byte) 0x01) || (cardOpDU.cardType == (byte) 0x02)
-                || (cardOpDU.cardType == (byte) 0x11))//老人卡
+        if ((cardOpDU.ucMainCardType == (byte) 0x01) || (cardOpDU.ucMainCardType == (byte) 0x02)
+                || (cardOpDU.ucMainCardType == (byte) 0x11))//老人卡
         {
             //不再涉及月票区，公交类型为0x01
-            cardOpDU.subType = cardOpDU.cardType;
+            cardOpDU.subType = cardOpDU.ucMainCardType;
             cardOpDU.ucCheckDate = new byte[]{(byte) 0x20, (byte) 0x99, (byte) 0x12, (byte) 0x01};
             //判断年检期是否已过
             byte[] ucDateTimeByte = Datautils.cutBytes(cardOpDU.ucDateTime, 0, 4);
@@ -1808,12 +1820,14 @@ public class M1CardManager {
                 byte[] rcdInCard = Datautils.cutBytes(respdata, 1, resplen[0] - 1);
                 byte[] rcdDevNr = Datautils.cutBytes(rcdInCard, 12, 4);
                 // 刷卡设备号
-                if (!Arrays.equals(rcdDevNr, runParaFile.getDevNr())) {
-                    byte[] carddt = cardOpDU.ucDateTime;
-                    System.arraycopy(rcdInCard, 0, carddt, 2, 4);
-                    String busLastStr = Datautils.byteArrayToString(carddt);
+                if (Arrays.equals(rcdDevNr, runParaFile.getDevNr())) {
+                    byte[] cardTime = new byte[7];
+                    System.arraycopy(cardOpDU.ucDateTime, 0, cardTime, 0, 7);
+                    System.arraycopy(rcdInCard, 0, cardTime, 2, 4);
+                    String busLastStr = Datautils.byteArrayToString(cardTime);
                     // 连续刷卡限制时间
                     int time = Datautils.byteArrayToInt(runParaFile.getUcOldCardTimeLimit());
+//                    int time = 1;
                     SimpleDateFormat format = new SimpleDateFormat("yyyyMMddHHmmss");
                     try {
                         Date busLast = format.parse(busLastStr);
@@ -1980,7 +1994,7 @@ public class M1CardManager {
             }
 
             // 当前卡扣款异常,请重刷处理
-            if (fSysSta == CAD_PAUSEA) {
+            if (MyApplication.fSysSta == CAD_PAUSEA) {
                 // TODO: 2019/3/22 写记录
                 CardMethods.onAppendRecordTrade(context, cardOpDU.ucProcSec == 2 ? (byte) 0x01 : (byte) 0x03
                         , cardOpDU, runParaFile, psamBeenList, mBankCard);
@@ -1995,7 +2009,7 @@ public class M1CardManager {
                 return new CardBackBean(ReturnVal.CAD_WRITE, cardOpDU);
             }
             while (true) {
-                fSysSta = CAD_PAUSE0;
+                MyApplication.fSysSta = CAD_PAUSE0;
                 if (!pause0()) {
                     break;
                 }
@@ -2007,7 +2021,7 @@ public class M1CardManager {
                 }
             }
             // 当前卡扣款异常,请重刷处理
-            if (fSysSta == CAD_PAUSE0) {
+            if (MyApplication.fSysSta == CAD_PAUSE0) {
                 // 添加钱包灰记录或月票灰记录
                 // TODO: 2019/3/22
                 CardMethods.onAppendRecordTrade(context, cardOpDU.ucProcSec == 2 ? (byte) 0x01 : (byte) 0x03
@@ -2017,7 +2031,7 @@ public class M1CardManager {
             }
         }
 
-        fSysSta = CAD_NORMAL;
+        MyApplication.fSysSta = CAD_NORMAL;
         // TODO: 2019/3/22
         CardMethods.onAppendRecordTrade(context, cardOpDU.ucProcSec == 2 ? (byte) 0x00 : (byte) 0x02
                 , cardOpDU, runParaFile, psamBeenList, mBankCard);
@@ -2040,11 +2054,11 @@ public class M1CardManager {
     private final byte CAD_PAUSEB = (byte) 0xFB;
     private final byte CAD_PAUSEC = (byte) 0xFC;
     private final byte CAD_GRAYLOCK = (byte) 0xFD;
-    private byte fSysSta;
+
 
     private boolean pauseA() {
         // 改写24块信息正本
-        fSysSta = CAD_PAUSEA;
+        MyApplication.fSysSta = CAD_PAUSEA;
         if (!CardMethods.modifyInfoArea(24 + secOffset * 4, cinfo, mBankCard, lodkey, snUid)) {
             return false;
         } else {
@@ -2053,7 +2067,7 @@ public class M1CardManager {
     }
 
     private boolean pauseB(int blk) throws Exception {
-        fSysSta = CAD_PAUSEB;
+        MyApplication.fSysSta = CAD_PAUSEB;
         //step 4//认证2扇区8块
         if (!m1CardKeyAuth(blk + secOffset * 4, blk / 4)) {
             return false;
@@ -2077,7 +2091,7 @@ public class M1CardManager {
         rcdToCard[11] = (byte) 0x01;                                            // 记录类型=0x10
         // 写卡内记录,改24块,传输钱包副本,改25块
         retvalue = mBankCard.m1CardWriteBlockData(blk + secOffset * 4
-                , cardOpDU.ucRcdToCard.length, cardOpDU.ucRcdToCard);
+                , rcdToCard.length, rcdToCard);
         if (retvalue != 0) {
             return false;
         }
@@ -2095,13 +2109,13 @@ public class M1CardManager {
     }
 
     private boolean pauseC() {
-        fSysSta = CAD_PAUSEC;
+        MyApplication.fSysSta = CAD_PAUSEC;
         // 改写信息副本(25块)
         if (!CardMethods.modifyInfoArea(25 + secOffset * 4,
                 cinfo, mBankCard, lodkey, snUid)) {
             return false;
         }
-        fSysSta = CAD_NORMAL;
+        MyApplication.fSysSta = CAD_NORMAL;
         return false;
     }
 
@@ -2149,7 +2163,7 @@ public class M1CardManager {
             return false;
         }
 
-        fSysSta = CAD_PAUSE1;
+        MyApplication.fSysSta = CAD_PAUSE1;
         return true;
     }
 
@@ -2211,7 +2225,7 @@ public class M1CardManager {
             return false;
         }
         cinfo.fProc = (byte) ((cinfo.fProc + 1) & 0xfe);// ??+1
-        fSysSta = CAD_PAUSE2;
+        MyApplication.fSysSta = CAD_PAUSE2;
         return true;
     }
 
@@ -2221,7 +2235,7 @@ public class M1CardManager {
                 cinfo, mBankCard, lodkey, snUid)) {
             return false;
         }
-        fSysSta = CAD_NORMAL;
+        MyApplication.fSysSta = CAD_NORMAL;
         // 认证钱包/月票区
         if (!m1CardKeyAuth(cardOpDU.ucProcSec * 4 + secOffset * 4, cardOpDU.ucProcSec)) {
             return false;
@@ -2560,7 +2574,14 @@ public class M1CardManager {
         cardOpDU.setMackNr(Datautils.cutBytes(bytes04, 8, 4));
         cardOpDU.setfStartUse(Datautils.cutBytes(bytes04, 12, 1));
         //卡类型判断表格中没有return
-        cardOpDU.setCardType(Datautils.cutBytes(bytes04, 13, 1)[0]);
+//        cardOpDU.setCardType(Datautils.cutBytes(bytes04, 13, 1)[0]);
+        cardOpDU.ucMainCardType = Datautils.cutBytes(bytes04, 13, 1)[0];
+        if (isSetConfig) {
+            if (cardOpDU.ucMainCardType != (byte) 0x0e) {
+                return ReturnVal.CAD_QINGQIANDAO;
+            }
+        }
+
         //黑名单
         cardOpDU.setfBlackCard(false);
         //判断启用标志

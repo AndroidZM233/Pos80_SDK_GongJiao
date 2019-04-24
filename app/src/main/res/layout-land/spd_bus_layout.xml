@@ -25,6 +25,23 @@
 
     <LinearLayout
         android:visibility="gone"
+        android:id="@+id/ll_set_config"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="@drawable/background"
+        android:orientation="vertical">
+
+        <TextView
+            android:textSize="25sp"
+            android:gravity="center"
+            android:text="参数设置界面"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent" />
+
+    </LinearLayout>
+
+    <LinearLayout
+        android:visibility="gone"
         android:id="@+id/ll_driver"
         android:layout_width="match_parent"
         android:layout_height="match_parent"

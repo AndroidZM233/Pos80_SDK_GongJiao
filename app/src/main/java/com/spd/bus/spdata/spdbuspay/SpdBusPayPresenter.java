@@ -96,7 +96,6 @@ public class SpdBusPayPresenter extends BasePresenterImpl<SpdBusPayContract.View
     }
 
 
-
     /**
      * 调用天津后台接口posInfo
      */
@@ -128,7 +127,6 @@ public class SpdBusPayPresenter extends BasePresenterImpl<SpdBusPayContract.View
     }
 
 
-
     /**
      * 验码
      *
@@ -136,7 +134,6 @@ public class SpdBusPayPresenter extends BasePresenterImpl<SpdBusPayContract.View
      */
     @Override
     public void checkAliQrCode(String code) {
-        Log.e(TAG, "mView11111: " + mView);
         List<RunParaFile> runParaFiles = DbDaoManage.getDaoSession().getRunParaFileDao().loadAll();
         if (runParaFiles.size() == 0) {
             return;
@@ -152,7 +149,7 @@ public class SpdBusPayPresenter extends BasePresenterImpl<SpdBusPayContract.View
         tianjinAlipayRes = alipayJni.checkAliQrCode(tianjinAlipayRes,
                 code, devNr, lineNr, Datautils.byteArrayToInt(runParaFile.getKeyV1())
                 , "SINGLE", outTradeNo);
-        Log.i(TAG, "onHSMDecodeResult: " + tianjinAlipayRes.toString());
+        LogUtils.v("onHSMDecodeResult: " + tianjinAlipayRes.toString());
 
         if (tianjinAlipayRes.result != 1) {
             mView.erro("二维码检测失败");
@@ -176,8 +173,7 @@ public class SpdBusPayPresenter extends BasePresenterImpl<SpdBusPayContract.View
             }
         }
 
-        Log.e(TAG, "mView: " + mView);
-        mView.showCheckAliQrCode(tianjinAlipayRes,runParaFile,outTradeNo);
+        mView.showCheckAliQrCode(tianjinAlipayRes, runParaFile, outTradeNo);
     }
 
     @Override
@@ -560,7 +556,6 @@ public class SpdBusPayPresenter extends BasePresenterImpl<SpdBusPayContract.View
     }
 
 
-
     private void uploadYinLian(Context context) {
         String weiXinUploadData = getYinLianUploadData(context).replace("\\\"", "'");
 
@@ -683,7 +678,7 @@ public class SpdBusPayPresenter extends BasePresenterImpl<SpdBusPayContract.View
                 String msg = netBackBean.getMsg();
                 if ("success".equalsIgnoreCase(msg)) {
                     Log.i(TAG, "onNext: " + netBackBean.toString());
-                    for (UploadSMDB uploadSMDB :uploadSMDBList ) {
+                    for (UploadSMDB uploadSMDB : uploadSMDBList) {
                         uploadSMDB.setIsUpload(true);
                         DbDaoManage.getDaoSession().getUploadSMDBDao().update(uploadSMDB);
                     }

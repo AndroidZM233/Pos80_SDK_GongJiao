@@ -16,6 +16,7 @@ public class Info {
     public static final String BLACK ="BLACK";
     public static final String WHITE ="WHITE";
     public static final String YLSM_KEY ="YLSM_KEY";
+    public static final String IS_CONFIG_CHANGE ="IS_CONFIG_CHANGE";
 
 
 

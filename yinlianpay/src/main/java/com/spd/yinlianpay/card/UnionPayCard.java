@@ -10,6 +10,7 @@ import android.os.SystemClock;
 import android.text.TextUtils;
 import android.util.Log;
 
+import com.spd.base.utils.LogUtils;
 import com.spd.yinlianpay.WeiPassGlobal;
 import com.spd.yinlianpay.comm.ChannelTool;
 import com.spd.yinlianpay.context.MyContext;
@@ -39,6 +40,7 @@ import ui.wangpos.com.utiltool.HEXUitl;
 import ui.wangpos.com.utiltool.MoneyUtil;
 import ui.wangpos.com.utiltool.Util;
 import wangpos.sdk4.emv.ICallbackListener;
+import wangpos.sdk4.libbasebinder.BankCard;
 import wangpos.sdk4.libbasebinder.Core;
 
 
@@ -197,7 +199,12 @@ public class UnionPayCard {
                 public void onResult(TradeInfo info) {
                     msg[0] = info.msg;
                     WeiPassGlobal.tradeInfo = info;
-                    handler.sendMessage(handler.obtainMessage(MyContext.BackMsg, info.msg));
+                    if ("ODA".equals(info.errorMsg)){
+                        handler.sendMessage(handler.obtainMessage(MyContext.DO_ODA, info.msg));
+                    }else {
+                        handler.sendMessage(handler.obtainMessage(MyContext.BackMsg, info.msg));
+                    }
+
                     countDownLatch.countDown();
                     Log.i(TAG, "返回0200发送返回11111111111== " + (System.currentTimeMillis() - systemlongtime));
                 }
@@ -217,13 +224,15 @@ public class UnionPayCard {
                 public void onError(int errorCode, String errorMsg) {
                     msg[0] = null;
                     errMsg[0] = errorMsg;
+//                    handler.sendMessage(handler.obtainMessage(MyContext.MSG_ERROR
+//                            , ErrorMsg.getEmvError(result)));
                     countDownLatch.countDown();
                     Log.i(TAG, "返回0200发送返回2222222222222== " + (System.currentTimeMillis() - systemlongtime));
                 }
 
                 @Override
-                public void onDataBack(Msg msg) {
-//                    handler.sendMessage(handler.obtainMessage(MyContext.BackMsg, msg));
+                public void onDataBack() {
+                    handler.sendMessage(handler.obtainMessage(MyContext.YuYin_ChuLi));
                 }
             });
             countDownLatch.await();
@@ -309,7 +318,7 @@ public class UnionPayCard {
     }
 
     //交易开始 根据不同状态可以使用 Handler 通知主线程更新 UI,请参考 wPos_SDKDemo
-    public static String readBankCardInfo(final String terminalNo, final String merchantName) {
+    public static String readBankCardInfo(BankCard mBankCard,final String terminalNo, final String merchantName) {
         result = 0;//重置结果
         path = 0;
         //回调函数 处理内核数据
@@ -370,7 +379,9 @@ public class UnionPayCard {
                 //非接交易预处理
                 retresult = QPBOC_PreProcess();
                 if (retresult != ErrorMsgType.SUCCESS) {
-                    handler.sendMessage(handler.obtainMessage(MyContext.MSG_ERROR, "transaction failed：" + ErrorMsg.getEmvError(result)));
+                    handler.sendMessage(handler.obtainMessage(MyContext.RETRY
+                            , "transaction failed：" + ErrorMsg.getEmvError(result)));
+                    return "";
                 } else {
                     //非接交易简化流程
                     retresult = PBOC_Simple(terminalNo, merchantName);
@@ -378,7 +389,7 @@ public class UnionPayCard {
                 }
                 if (retresult == ErrorMsgType.SUCCESS) {
                     //交易处理
-                    int transResult = EMV_TransProcess();
+                    int transResult = EMV_TransProcess(mBankCard);
                     if (transResult == 0) {
                         handler.sendMessage(handler.obtainMessage(MyContext.RESULT_SUCCESS, "transaction success" + result));
                     } else {
@@ -386,7 +397,9 @@ public class UnionPayCard {
                     }
                 } else {
                     if (retresult != 8200) {
-                        handler.sendMessage(handler.obtainMessage(MyContext.MSG_ERROR, "transcation failed：" + ErrorMsg.getEmvError(result)));
+                        handler.sendMessage(handler.obtainMessage(MyContext.RETRY
+                                , "transcation failed：" + ErrorMsg.getEmvError(result)));
+                        return "";
                     } else {
                         handler.sendEmptyMessage(8200);
                     }
@@ -414,7 +427,7 @@ public class UnionPayCard {
      * @return
      * @throws RemoteException
      */
-    public static int EMV_TransProcess() throws RemoteException {
+    public static int EMV_TransProcess(BankCard mBankCard) throws RemoteException {
         systemlongtime = System.currentTimeMillis();
         boolean reversalFlag = false;
         int[] outlen = new int[1];
@@ -450,9 +463,11 @@ public class UnionPayCard {
                 if (contantlessOnlineRet != 0) {
                     result = contantlessOnlineRet;
                 }
+                mBankCard.openCloseCardReader(2,2);
                 handler.sendMessage(handler.obtainMessage(MyContext.Hide_Progress, "非接交易"));
                 if (result != ErrorMsgType.SUCCESS) {
-                    handler.sendMessage(handler.obtainMessage(MyContext.MSG_ERROR, "非接交易" + ErrorMsg.getEmvError(result)));
+//                    handler.sendMessage(handler.obtainMessage(MyContext.MSG_ERROR, "非接交易" + ErrorMsg.getEmvError(result)));
+                    LogUtils.v("非接交易 error");
                     return -1;
                 }
                 saveEMVTransInfo();

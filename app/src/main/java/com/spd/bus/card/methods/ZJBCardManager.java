@@ -342,14 +342,14 @@ public class ZJBCardManager {
         //读记录
         byte[] rcdbuffer = new byte[128];
         if (MyApplication.cardRecordList.size() != 0) {
-            for (int j = 0; j < MyApplication.cardRecordList.size(); j++) {
+            for (int j = MyApplication.cardRecordList.size() - 1; j > 0; j--) {
                 CardRecord cardRecord = MyApplication.cardRecordList.get(j);
                 if (cardRecord == null) {
                     continue;
                 }
                 byte[] recordByte = cardRecord.getRecord();
-                byte[] snr = Datautils.cutBytes(recordByte, 7, 4);
-                if (Arrays.equals(snr, tCardOpDU.snr)) {
+                byte[] snr = Datautils.cutBytes(recordByte, 11, 8);
+                if (Arrays.equals(snr, Datautils.cutBytes(tCardOpDU.ucAppSnr, 2, 8))) {
                     rcdbuffer = recordByte;
                     findRecord = true;
                     break;
@@ -389,7 +389,7 @@ public class ZJBCardManager {
                         .byteArrayToString(busLastBytes)) * 1000;
                 Date utcToLocal = DateUtils.transferLongToDate("yyyyMMddHHmmss", string16ToLong);
                 // 连续刷卡限制时间
-                int time = Datautils.byteArrayToInt(runParaFile.getUcCityYueTimeLimit());
+                int time = Datautils.byteArrayToInt(runParaFile.getUcCpuYueTimeLimit());
                 SimpleDateFormat format = new SimpleDateFormat("yyyyMMddHHmmss");
                 try {
                     Date busLast = utcToLocal;
@@ -445,7 +445,9 @@ public class ZJBCardManager {
                         return new CardBackBean(ReturnVal.CAD_READ, tCardOpDU);
                     }
 
+                  //  systemTime = Datautils.HexString2Bytes("20190501080808");
                     ret = CardMethods.cpuCardGetYueBasePos(systemTime, tCardOpDU, resultBytes);
+
                     if (ret == 0) {
                         tCardOpDU.ucProcSec = 2;
                     }
@@ -589,6 +591,7 @@ public class ZJBCardManager {
 //            }
         }//End 本地钱包本地城市第一次消费
 
+        //读余额
         resultBytes = CardMethods.sendApdus(mBankCard, BankCard.CARD_MODE_PICC
                 , new byte[]{(byte) 0x80, (byte) 0x5c, (byte) 0x00, (byte) 0x02, (byte) 0x04});
         if (resultBytes == null || resultBytes.length == 2) {
