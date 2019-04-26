@@ -3,6 +3,7 @@ package com.spd.bus.spdata;
 import android.annotation.SuppressLint;
 import android.content.Intent;
 import android.content.IntentFilter;
+import android.media.MediaPlayer;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
@@ -37,6 +38,7 @@ import com.spd.bus.card.methods.JTBCardManager;
 import com.spd.bus.card.methods.M1CardManager;
 import com.spd.bus.card.methods.ReturnVal;
 import com.spd.bus.card.utils.ConfigUtils;
+import com.spd.bus.card.utils.DataUploadToTianJinUtils;
 import com.spd.bus.spdata.been.ErroCode;
 import com.spd.bus.spdata.mvp.MVPBaseActivity;
 import com.spd.bus.spdata.spdbuspay.SpdBusPayContract;
@@ -48,6 +50,7 @@ import com.spd.yinlianpay.iso8583.Msg;
 import com.spd.yinlianpay.iso8583.RespCode;
 import com.spd.yinlianpay.util.PrefUtil;
 
+import java.io.IOException;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 
@@ -177,10 +180,15 @@ public class PsamIcActivity extends MVPBaseActivity<SpdBusPayContract.View, SpdB
                 }
             }).start();
 
+            updateTime();
             mPresenter.wechatInitJin();
             mPresenter.aliPayInitJni();
+            mPresenter.uploadSM(getApplicationContext());
+            mPresenter.uploadAlipayRe(getApplicationContext());
+            mPresenter.uploadWechatRe(getApplicationContext());
+            mPresenter.uploadYinLian(getApplicationContext());
+            DataUploadToTianJinUtils.uploadCardData(getApplicationContext());
 
-            updateTime();
         } catch (Exception e) {
             e.printStackTrace();
 //            ToastUtil.customToastView(PsamIcActivity.this, "请检查网络连接"
@@ -358,6 +366,11 @@ public class PsamIcActivity extends MVPBaseActivity<SpdBusPayContract.View, SpdB
                         PlaySound.play(PlaySound.QINGTOUBI, 0);
                         break;
                     case ReturnVal.CAD_OK:
+//                        MediaPlayer player = MediaPlayer.create(getApplication(), R.raw.xueshengka);
+//                        player.setVolume(1, 1);
+//                        player.start();//开始播放
+//                        PlaySound.play(PlaySound.initerro, 0);
+
                         updateUI(cardBackBean);
                         break;
                     case ReturnVal.CAD_RETRY:
@@ -369,6 +382,7 @@ public class PsamIcActivity extends MVPBaseActivity<SpdBusPayContract.View, SpdB
                         break;
                     case ReturnVal.CAD_SETCOK:
                         PlaySound.play(PlaySound.setSuccess, 0);
+
                         ToastUtil.customToastView(PsamIcActivity.this, "设置成功"
                                 , Toast.LENGTH_SHORT, (TextView) LayoutInflater
                                         .from(PsamIcActivity.this)
@@ -507,8 +521,6 @@ public class PsamIcActivity extends MVPBaseActivity<SpdBusPayContract.View, SpdB
                     || cardOpDU.ucMainCardType == (byte) 0x0c) {
                 PlaySound.play(PlaySound.DIDI, 0);
             } else if (cardOpDU.ucMainCardType == (byte) 0x03) {
-                PlaySound.play(PlaySound.dang, 0);
-                SystemClock.sleep(100);
                 PlaySound.play(PlaySound.XUESHENGKA, 0);
             } else {
                 PlaySound.play(PlaySound.dang, 0);
@@ -520,7 +532,7 @@ public class PsamIcActivity extends MVPBaseActivity<SpdBusPayContract.View, SpdB
             mTvBalanceTitle.setText("剩余次数");
             mTvBalance.setText(num + "");
         } else {
-            if (cardOpDU.ucMainCardType == (byte) 0x01||cardOpDU.ucMainCardType == (byte) 0x02) {
+            if (cardOpDU.ucMainCardType == (byte) 0x01 || cardOpDU.ucMainCardType == (byte) 0x02) {
                 if (cardOpDU.pursubInt == 0) {
                     PlaySound.play(PlaySound.JINGLAOKA, 0);
                 } else {
@@ -666,6 +678,7 @@ public class PsamIcActivity extends MVPBaseActivity<SpdBusPayContract.View, SpdB
                     }
                     break;
                 case MyContext.YuYin_ChuLi:
+                    LogUtils.v("播放正在处理语音");
                     PlaySound.play(PlaySound.ZHENGZZAICHULI, 0);
 
                     break;

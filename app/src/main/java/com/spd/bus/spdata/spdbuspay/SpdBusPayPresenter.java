@@ -1,6 +1,8 @@
 package com.spd.bus.spdata.spdbuspay;
 
 import android.content.Context;
+import android.os.Environment;
+import android.text.TextUtils;
 import android.util.Log;
 
 import com.example.test.yinlianbarcode.entity.QrEntity;
@@ -51,8 +53,11 @@ import com.spd.base.utils.LogUtils;
 import com.spd.bus.spdata.been.ErroCode;
 import com.spd.bus.spdata.mvp.BasePresenterImpl;
 import com.spd.bus.util.SaveDataUtils;
+import com.spd.bus.util.download.DownloadUtils;
+import com.spd.bus.util.download.JsDownloadListener;
 import com.tencent.wlxsdk.WlxSdk;
 
+import java.io.File;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -180,6 +185,9 @@ public class SpdBusPayPresenter extends BasePresenterImpl<SpdBusPayContract.View
     public void uploadAlipayRe(Context context) {
         String aLiUploadData = getALiUploadData(context).replace("\\\"", "'");
 
+        if (TextUtils.isEmpty(aLiUploadData)){
+            return;
+        }
         HttpMethods.getInstance().produce(aLiUploadData, new Observer<NetBackBean>() {
             @Override
             public void onSubscribe(Disposable d) {
@@ -281,6 +289,8 @@ public class SpdBusPayPresenter extends BasePresenterImpl<SpdBusPayContract.View
                 reqDataBean.setRecord(uploadInfoDB.getRecord());
                 reqDataBeans.add(reqDataBean);
             }
+        }else {
+            return null;
         }
 
         produceZhiFuBao.setReqData(reqDataBeans);
@@ -448,6 +458,9 @@ public class SpdBusPayPresenter extends BasePresenterImpl<SpdBusPayContract.View
     public void uploadWechatRe(Context context) {
         String weiXinUploadData = getWeiXinUploadData(context).replace("\\\"", "'");
 
+        if (TextUtils.isEmpty(weiXinUploadData)){
+            return;
+        }
         HttpMethods.getInstance().produce(weiXinUploadData, new Observer<NetBackBean>() {
             @Override
             public void onSubscribe(Disposable d) {
@@ -519,6 +532,8 @@ public class SpdBusPayPresenter extends BasePresenterImpl<SpdBusPayContract.View
                 payinfoBean.setRecord_in(uploadInfoDB.getRecord_in());
                 weiXinPayinfo.add(payinfoBean);
             }
+        }else {
+            return null;
         }
 
         produceWeiXin.setPayinfo(weiXinPayinfo);
@@ -556,9 +571,13 @@ public class SpdBusPayPresenter extends BasePresenterImpl<SpdBusPayContract.View
     }
 
 
-    private void uploadYinLian(Context context) {
+    @Override
+    public void uploadYinLian(Context context) {
         String weiXinUploadData = getYinLianUploadData(context).replace("\\\"", "'");
 
+        if (TextUtils.isEmpty(weiXinUploadData)){
+            return;
+        }
         HttpMethods.getInstance().produce(weiXinUploadData, new Observer<NetBackBean>() {
             @Override
             public void onSubscribe(Disposable d) {
@@ -592,6 +611,45 @@ public class SpdBusPayPresenter extends BasePresenterImpl<SpdBusPayContract.View
             }
         });
     }
+
+    @Override
+    public void downloadAPK(String url) {
+        DownloadUtils downloadUtils=new DownloadUtils(HttpMethods.BASE_URL, new JsDownloadListener() {
+            @Override
+            public void onStartDownload(long length) {
+
+            }
+
+            @Override
+            public void onProgress(int progress) {
+
+            }
+
+            @Override
+            public void onFail(String errorInfo) {
+
+            }
+        });
+        downloadUtils.download(url,new File(Environment
+                .getExternalStorageDirectory() + "/card.txt"));
+    }
+
+//    //文件路径
+//    public String getApkPath() {
+//        String directoryPath="";
+//        if (Environment.MEDIA_MOUNTED.equals(Environment.getExternalStorageState()) ) {//判断外部存储是否可用
+//            directoryPath =getExternalFilesDir("apk").getAbsolutePath();
+//        }else{//没外部存储就使用内部存储
+//            directoryPath=getFilesDir()+File.separator+"apk";
+//        }
+//        File file = new File(directoryPath);
+//        Log.e("测试路径",directoryPath);
+//        if(!file.exists()){//判断文件目录是否存在
+//            file.mkdirs();
+//        }
+//        return directoryPath;
+//    }
+
 
     public String getYinLianUploadData(Context context) {
         final Gson gson = new GsonBuilder().disableHtmlEscaping().create();
@@ -656,6 +714,8 @@ public class SpdBusPayPresenter extends BasePresenterImpl<SpdBusPayContract.View
                 payinfoBean.setScan_confirm_type(yinLianDB.getScan_confirm_type());
                 yinLianList.add(payinfoBean);
             }
+        }else {
+            return null;
         }
 
         produceYinLian.setPayinfo(yinLianList);
@@ -666,7 +726,9 @@ public class SpdBusPayPresenter extends BasePresenterImpl<SpdBusPayContract.View
     @Override
     public void uploadSM(Context context) {
         String smData = getSMUploadData(context).replace("\\\"", "'");
-
+        if (TextUtils.isEmpty(smData)) {
+            return;
+        }
         HttpMethods.getInstance().produce(smData, new Observer<NetBackBean>() {
             @Override
             public void onSubscribe(Disposable d) {
@@ -743,6 +805,8 @@ public class SpdBusPayPresenter extends BasePresenterImpl<SpdBusPayContract.View
                 shuangMianBean.setCardNo(uploadSMDB.getCardNo());
                 shuangMianBeans.add(shuangMianBean);
             }
+        }else {
+            return null;
         }
 
         produceShuangMian.setPayinfo(shuangMianBeans);

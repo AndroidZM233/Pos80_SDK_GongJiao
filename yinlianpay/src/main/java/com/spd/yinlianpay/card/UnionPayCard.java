@@ -463,7 +463,7 @@ public class UnionPayCard {
                 if (contantlessOnlineRet != 0) {
                     result = contantlessOnlineRet;
                 }
-                mBankCard.openCloseCardReader(2,2);
+//                mBankCard.openCloseCardReader(2,2);
                 handler.sendMessage(handler.obtainMessage(MyContext.Hide_Progress, "非接交易"));
                 if (result != ErrorMsgType.SUCCESS) {
 //                    handler.sendMessage(handler.obtainMessage(MyContext.MSG_ERROR, "非接交易" + ErrorMsg.getEmvError(result)));

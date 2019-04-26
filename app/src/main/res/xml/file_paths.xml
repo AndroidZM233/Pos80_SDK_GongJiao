@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<paths>
+    <!--外部存储路径-->
+    <external-path path="Android/data/com.spd.bus/" name="files_root" />
+    <!--内部存储路径-->
+    <files-path
+        name="Android/data/com.spd.bus/"
+        path="files_root">
+    </files-path>
+</paths>

@@ -14,7 +14,7 @@ import wangpos.sdk4.libbasebinder.BankCard;
 
 public class ConfigCheckContract {
     interface View extends BaseView {
-        void setTextView(String msg);
+        void setTextView(int address,String msg);
 
         void openActivity();
     }

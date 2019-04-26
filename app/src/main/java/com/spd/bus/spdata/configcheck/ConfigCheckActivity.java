@@ -3,19 +3,15 @@ package com.spd.bus.spdata.configcheck;
 
 import android.content.Intent;
 import android.os.Bundle;
-import android.os.SystemClock;
 import android.support.annotation.Nullable;
 import android.widget.TextView;
 
 import com.kaopiz.kprogresshud.KProgressHUD;
-import com.spd.base.been.tianjin.CardBackBean;
 import com.spd.bus.MyApplication;
 import com.spd.bus.R;
-import com.spd.bus.card.methods.ReturnVal;
 import com.spd.bus.card.utils.ConfigUtils;
 import com.spd.bus.spdata.PsamIcActivity;
 import com.spd.bus.spdata.mvp.MVPBaseActivity;
-import com.spd.bus.spdata.utils.PlaySound;
 
 
 /**
@@ -25,8 +21,14 @@ import com.spd.bus.spdata.utils.PlaySound;
 
 public class ConfigCheckActivity extends MVPBaseActivity<ConfigCheckContract.View, ConfigCheckPresenter> implements ConfigCheckContract.View {
 
-    private TextView mTvInfo;
     private KProgressHUD kProgressHUD;
+    private TextView mTvPsam1;
+    private TextView mTvPsam2;
+    private TextView mTvSercet;
+    private TextView mTvAliKey;
+    private TextView mTvYlKey;
+    private TextView mTvWxKey;
+    private TextView mTvYlsmKey;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -51,7 +53,7 @@ public class ConfigCheckActivity extends MVPBaseActivity<ConfigCheckContract.Vie
 
             @Override
             public void onError() {
-                if (kProgressHUD!=null){
+                if (kProgressHUD != null) {
                     kProgressHUD.dismiss();
                 }
 
@@ -67,17 +69,47 @@ public class ConfigCheckActivity extends MVPBaseActivity<ConfigCheckContract.Vie
     }
 
     private void initView() {
-        mTvInfo = findViewById(R.id.tv_info);
-        mTvInfo.setText("");
+        mTvPsam1 = findViewById(R.id.tv_psam1);
+        mTvPsam2 = findViewById(R.id.tv_psam2);
+        mTvSercet = findViewById(R.id.tv_sercet);
+        mTvAliKey = findViewById(R.id.tv_ali_key);
+        mTvYlKey = findViewById(R.id.tv_yl_key);
+        mTvWxKey = findViewById(R.id.tv_wx_key);
+        mTvYlsmKey = findViewById(R.id.tv_ylsm_key);
     }
 
     @Override
-    public void setTextView(String msg) {
+    public void setTextView(int address, String msg) {
         runOnUiThread(new Runnable() {
             @Override
             public void run() {
-                mTvInfo.append(msg);
-                if (kProgressHUD!=null){
+
+                switch (address) {
+                    case 1:
+                        mTvPsam1.setText(msg);
+                        break;
+                    case 2:
+                        mTvPsam2.setText(msg);
+                        break;
+                    case 3:
+                        mTvSercet.setText(msg);
+                        break;
+                    case 4:
+                        mTvAliKey.setText(msg);
+                        break;
+                    case 5:
+                        mTvYlKey.setText(msg);
+                        break;
+                    case 6:
+                        mTvWxKey.setText(msg);
+                        break;
+                    case 7:
+                        mTvYlsmKey.setText(msg);
+                        break;
+                    default:
+                        break;
+                }
+                if (kProgressHUD != null) {
                     kProgressHUD.dismiss();
                 }
             }
@@ -87,7 +119,7 @@ public class ConfigCheckActivity extends MVPBaseActivity<ConfigCheckContract.Vie
 
     @Override
     public void openActivity() {
-        if (kProgressHUD!=null){
+        if (kProgressHUD != null) {
             kProgressHUD.dismiss();
         }
         this.finish();

@@ -111,7 +111,7 @@ public class SaveDataUtils {
         UploadSMDB uploadSMDB = new UploadSMDB();
         uploadSMDB.setBusNo(Datautils.byteArrayToString(runParaFile.getBusNr()));
         //卡序号
-        uploadSMDB.setCardSerialNum(ds[1]);
+        uploadSMDB.setCardSerialNum(ds[22]);
         //批次号
         uploadSMDB.setBatchNumber(PrefUtil.getBatchNo());
         //请款应答码
@@ -158,7 +158,10 @@ public class SaveDataUtils {
         //公司
         uploadSMDB.setDept(Datautils.byteArrayToString(runParaFile.getCorNr()));
         //55域
-        uploadSMDB.setField(Datautils.byteArrayToString(ds[54].getBytes()));
+        String toString = msg.toString();
+        String[] split = toString.split("55:HEX:");
+        String[] result = split[1].split("//IC卡数据域");
+        uploadSMDB.setField(result[0]);
         //交易序号
         uploadSMDB.setTransactionCode(serialNumber);
         //类型 03：云闪付成功 04： 云闪付失败，转ODA
@@ -185,7 +188,7 @@ public class SaveDataUtils {
         payinfoBean.setDriverSignTime(tStaffTb == null ? "20190313113100"
                 : Datautils.byteArrayToString(tStaffTb.getUlBCD()));
         payinfoBean.setTeam(Datautils.byteArrayToString(runParaFile.getTeamNr()));
-        payinfoBean.setRoute("");
+        payinfoBean.setRoute(Datautils.byteArrayToString(runParaFile.getLineNr()));
         // TODO: 2019/4/9 测试先写一分钱
 //        payinfoBean.setAccount(Datautils.byteArrayToInt(runParaFile.getKeyV1()) + "");
         payinfoBean.setAccount("1");

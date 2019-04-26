@@ -357,6 +357,7 @@ public class ChannelTool {
                 try {
                     long times = System.currentTimeMillis();
                     TradeInfo tradeInfo = new TradeInfo();
+                    TradeInfo tradeInfo1 = new TradeInfo();
                     bytes = ChanelPacket.makeSale(money);
                     if (onCommonListener != null) {
                         onCommonListener.onProgress("Message reception。");
@@ -376,12 +377,16 @@ public class ChannelTool {
 //                    byte[] ret2 = CommunAction.doNet(odabyte);
 //                    Log.i("stw", "oda返回： "+ DataConversionUtils.byteArrayToString(ret2));
                     Msg msg = ChanelPacket.decode(ret);
+                    Msg msgSend = ChanelPacket.decode(bytes);
                     boolean insertCard = Utils.cardType == Utils.CardTypeIC_ICC && WeiPassGlobal.getTransactionInfo().getServiceCode().startsWith("05");
                     RespCode rc = msg.getReqCode();
-                    tradeInfo.msg = msg;
+                    tradeInfo.msg = msgSend;
                     tradeInfo.errorCode = rc.getCode();
                     tradeInfo.errorMsg = rc.getErrorMsg();
 
+                    tradeInfo1.msg = msg;
+                    tradeInfo1.errorCode = rc.getCode();
+                    tradeInfo1.errorMsg = rc.getErrorMsg();
                     poscount++;
                     PrefUtil.putSerialNo(poscount);
                     if (msg.getReqCode().getFlag() == 'A') {
@@ -389,7 +394,7 @@ public class ChannelTool {
                         /*if (msg.macResult != Msg.MAC_OK) {
                             onCommonListener.onError(0, "MAC check error");
                         }*/
-                        castResult(tradeInfo);
+                        castResult(tradeInfo1);
                         onCommonListener.onResult(tradeInfo);
                         onCommonListener.onSuccess();
 

@@ -371,8 +371,9 @@ public class M1CardManager {
             //查询数据库黑名单
 //            cardOpDU.fBlackCard = CheckBlacklist(cardOpDU.IssueSnr);
 
+            String arrayToString = Datautils.byteArrayToString(cardOpDU.getIssueSnr());
             List<BlackDB> list = DbDaoManage.getDaoSession().getBlackDBDao().queryBuilder()
-                    .where(BlackDBDao.Properties.Data.eq(cardOpDU.getIssueSnr())).list();
+                    .where(BlackDBDao.Properties.Data.eq(arrayToString)).list();
             if (list != null && list.size() > 0) {
                 cardOpDU.fBlackCard = true;
             }

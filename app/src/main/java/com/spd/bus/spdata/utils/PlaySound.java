@@ -49,7 +49,7 @@ public class PlaySound {
             sp = new SoundPool(1, AudioManager.STREAM_MUSIC, 0);
         }
         mapSRC = new HashMap<>();
-        mapSRC.put(initerro, sp.load(context, R.raw.hsm_beep, 0));
+        mapSRC.put(initerro, sp.load(context, R.raw.test, 0));
         mapSRC.put(dang, sp.load(context, R.raw.dang, 0));
         mapSRC.put(xiaofeiSuccse, sp.load(context, R.raw.xiaofeichenggong, 0));
         mapSRC.put(qingchongshua, sp.load(context, R.raw.qingchongshua, 0));
@@ -78,9 +78,9 @@ public class PlaySound {
      */
     public static void play(int sound, int number) {
         sp.play(mapSRC.get(sound),//播放的声音资源
-                1.0f,//左声道，范围为0--1.0
-                1.0f,//右声道，范围为0--1.0
-                0, //优先级，0为最低优先级
+                1f,//左声道，范围为0--1.0
+                1f,//右声道，范围为0--1.0
+                1, //优先级，0为最低优先级
                 number,//循环次数,0为不循环
                 1);//播放速率，1为正常速率
     }
