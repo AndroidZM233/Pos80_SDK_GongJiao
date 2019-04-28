@@ -9,9 +9,9 @@ import android.widget.TextView;
 import com.kaopiz.kprogresshud.KProgressHUD;
 import com.spd.bus.MyApplication;
 import com.spd.bus.R;
-import com.spd.bus.card.utils.ConfigUtils;
 import com.spd.bus.spdata.PsamIcActivity;
 import com.spd.bus.spdata.mvp.MVPBaseActivity;
+import com.spd.bus.util.ConfigUtils;
 
 
 /**
@@ -29,6 +29,7 @@ public class ConfigCheckActivity extends MVPBaseActivity<ConfigCheckContract.Vie
     private TextView mTvYlKey;
     private TextView mTvWxKey;
     private TextView mTvYlsmKey;
+    private TextView mTvWxMac;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -76,6 +77,7 @@ public class ConfigCheckActivity extends MVPBaseActivity<ConfigCheckContract.Vie
         mTvYlKey = findViewById(R.id.tv_yl_key);
         mTvWxKey = findViewById(R.id.tv_wx_key);
         mTvYlsmKey = findViewById(R.id.tv_ylsm_key);
+        mTvWxMac = findViewById(R.id.tv_wx_mac);
     }
 
     @Override
@@ -105,6 +107,9 @@ public class ConfigCheckActivity extends MVPBaseActivity<ConfigCheckContract.Vie
                         break;
                     case 7:
                         mTvYlsmKey.setText(msg);
+                        break;
+                    case 8:
+                        mTvWxMac.setText(msg);
                         break;
                     default:
                         break;

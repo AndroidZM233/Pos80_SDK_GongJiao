@@ -1,4 +1,4 @@
-package com.spd.bus.spdata.utils;
+package com.spd.bus.util;
 
 import android.content.Context;
 import android.media.AudioManager;

@@ -3,7 +3,6 @@ package com.spd.bus.spdata;
 import android.annotation.SuppressLint;
 import android.content.Intent;
 import android.content.IntentFilter;
-import android.media.MediaPlayer;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
@@ -27,6 +26,7 @@ import com.spd.base.been.tianjin.CardBackBean;
 import com.spd.base.been.tianjin.TCardOpDU;
 import com.spd.base.db.DbDaoManage;
 import com.spd.base.dbbeen.RunParaFile;
+import com.spd.base.utils.AppUtils;
 import com.spd.base.utils.Datautils;
 import com.spd.base.utils.LogUtils;
 import com.spd.base.utils.ToastUtil;
@@ -37,20 +37,19 @@ import com.spd.bus.R;
 import com.spd.bus.card.methods.JTBCardManager;
 import com.spd.bus.card.methods.M1CardManager;
 import com.spd.bus.card.methods.ReturnVal;
-import com.spd.bus.card.utils.ConfigUtils;
-import com.spd.bus.card.utils.DataUploadToTianJinUtils;
 import com.spd.bus.spdata.been.ErroCode;
 import com.spd.bus.spdata.mvp.MVPBaseActivity;
 import com.spd.bus.spdata.spdbuspay.SpdBusPayContract;
 import com.spd.bus.spdata.spdbuspay.SpdBusPayPresenter;
-import com.spd.bus.spdata.utils.PlaySound;
+import com.spd.bus.util.ConfigUtils;
+import com.spd.bus.util.DataUploadToTianJinUtils;
+import com.spd.bus.util.PlaySound;
 import com.spd.bus.util.SaveDataUtils;
 import com.spd.yinlianpay.context.MyContext;
 import com.spd.yinlianpay.iso8583.Msg;
 import com.spd.yinlianpay.iso8583.RespCode;
 import com.spd.yinlianpay.util.PrefUtil;
 
-import java.io.IOException;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 
@@ -127,6 +126,7 @@ public class PsamIcActivity extends MVPBaseActivity<SpdBusPayContract.View, SpdB
     //    private LinearLayout mLlSetConfig;
 //    private boolean isSetConfigUI = false;
     private boolean isConfigChange;
+    private TextView mTvTitle;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -161,6 +161,8 @@ public class PsamIcActivity extends MVPBaseActivity<SpdBusPayContract.View, SpdB
         mLlMain = findViewById(R.id.ll_main);
         mLlShowData = findViewById(R.id.ll_show_data);
 //        mLlSetConfig = findViewById(R.id.ll_set_config);
+        mTvTitle = findViewById(R.id.tv_title);
+        mTvTitle.setText("天津公交"+AppUtils.getVerName(getApplicationContext()));
     }
 
 
@@ -191,10 +193,8 @@ public class PsamIcActivity extends MVPBaseActivity<SpdBusPayContract.View, SpdB
 
         } catch (Exception e) {
             e.printStackTrace();
-//            ToastUtil.customToastView(PsamIcActivity.this, "请检查网络连接"
-//                    , Toast.LENGTH_SHORT, (TextView) LayoutInflater
-//                            .from(PsamIcActivity.this)
-//                            .inflate(R.layout.layout_toast, null));
+            DataUploadToTianJinUtils.postLog(getApplicationContext(), LogUtils.generateTag()
+                    + e.toString());
         }
     }
 
@@ -273,6 +273,8 @@ public class PsamIcActivity extends MVPBaseActivity<SpdBusPayContract.View, SpdB
                         } catch (Exception e) {
                             e.printStackTrace();
                             ConfigUtils.logWrite(e.toString());
+                            DataUploadToTianJinUtils.postLog(getApplicationContext(),
+                                    LogUtils.generateTag() + e.toString());
                         }
 
                         isFlag = 0;
@@ -305,6 +307,8 @@ public class PsamIcActivity extends MVPBaseActivity<SpdBusPayContract.View, SpdB
                         } catch (Exception e) {
                             LogUtils.v(e.toString());
                             ConfigUtils.logWrite(e.toString());
+                            DataUploadToTianJinUtils.postLog(getApplicationContext(),
+                                    LogUtils.generateTag() + e.toString());
                             e.printStackTrace();
                         }
                         isFlag = 0;
@@ -336,6 +340,8 @@ public class PsamIcActivity extends MVPBaseActivity<SpdBusPayContract.View, SpdB
                         } catch (Exception e) {
                             LogUtils.v(e.toString());
                             ConfigUtils.logWrite(e.toString());
+                            DataUploadToTianJinUtils.postLog(getApplicationContext(),
+                                    LogUtils.generateTag() + e.toString());
                             e.printStackTrace();
                         }
                         isFlag = 0;
@@ -641,8 +647,7 @@ public class PsamIcActivity extends MVPBaseActivity<SpdBusPayContract.View, SpdB
                 case MyContext.BackMsg:
                     LogUtils.v("双免消费完成，准备上传信息");
                     Msg msg1 = (Msg) msg.obj;
-                    RespCode reqCode = msg1.getReqCode();
-                    ToastUtil.customToastView(PsamIcActivity.this, reqCode.toString()
+                    ToastUtil.customToastView(PsamIcActivity.this, msg1.head
                             , Toast.LENGTH_SHORT, (TextView) LayoutInflater
                                     .from(PsamIcActivity.this)
                                     .inflate(R.layout.layout_toast, null));

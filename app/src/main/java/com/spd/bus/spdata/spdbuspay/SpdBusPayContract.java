@@ -92,7 +92,6 @@ public class SpdBusPayContract {
 
         void uploadYinLian(Context context);
 
-        void downloadAPK(String url);
 
     }
 }

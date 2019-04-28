@@ -14,7 +14,7 @@ import com.spd.base.utils.Datautils;
 import com.spd.base.been.tianjin.TCardOpDU;
 import com.spd.bus.Info;
 import com.spd.bus.MyApplication;
-import com.spd.bus.card.utils.DataUploadToTianJinUtils;
+import com.spd.bus.util.DataUploadToTianJinUtils;
 import com.spd.base.utils.DateUtils;
 import com.spd.base.utils.LogUtils;
 import com.spd.bus.spdata.been.PsamBeen;

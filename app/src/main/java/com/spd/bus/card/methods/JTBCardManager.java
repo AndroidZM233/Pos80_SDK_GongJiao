@@ -166,7 +166,7 @@ public class JTBCardManager {
                     // 银联双免
                     LogUtils.v("银联双免开始");
                     yinLianPayManage.readCardInfo("07", handler);
-                    return null;
+                    return new CardBackBean(ReturnVal.CAD_READ, tCardOpDU);
                 }
 
             }

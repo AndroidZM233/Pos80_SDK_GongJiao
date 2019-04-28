@@ -2,6 +2,7 @@ package com.spd.bus.timer;
 
 import android.annotation.SuppressLint;
 import android.content.Context;
+import android.os.Environment;
 
 import com.example.test.yinlianbarcode.utils.SharedXmlUtil;
 import com.google.gson.Gson;
@@ -12,11 +13,20 @@ import com.spd.base.been.tianjin.AliWhiteBlackPost;
 import com.spd.base.been.tianjin.BaseInfoBackBean;
 import com.spd.base.been.tianjin.BaseInfoDataPost;
 import com.spd.base.been.tianjin.BlackDB;
+import com.spd.base.been.tianjin.TStaffTb;
 import com.spd.base.db.DbDaoManage;
+import com.spd.base.dbbeen.RunParaFile;
+import com.spd.base.silentinstall.ReflectUtils;
+import com.spd.base.utils.AppUtils;
+import com.spd.base.utils.Datautils;
 import com.spd.bus.Info;
-import com.spd.bus.card.utils.HttpMethods;
+import com.spd.bus.net.HttpMethods;
 import com.spd.base.utils.LogUtils;
+import com.spd.bus.util.DataUploadToTianJinUtils;
+import com.spd.bus.util.download.DownloadUtils;
+import com.spd.bus.util.download.JsDownloadListener;
 
+import java.io.File;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -49,7 +59,7 @@ public class HeartTimer {
     }
 
     public void initTimer() {
-        long period = 60 * 1000;//时间间隔
+        long period = 5 * 60 * 1000;//时间间隔
         mDisposable = Observable.interval(period, TimeUnit.MILLISECONDS)
 //                .observeOn(Schedulers.newThread())
                 .subscribe(aLong -> heart());
@@ -62,6 +72,18 @@ public class HeartTimer {
 
     private void heart() {
         final Gson gson = new GsonBuilder().serializeNulls().create();
+
+        List<RunParaFile> runParaFiles = DbDaoManage.getDaoSession().getRunParaFileDao().loadAll();
+        if (runParaFiles.size() == 0) {
+            return;
+        }
+        RunParaFile runParaFile = runParaFiles.get(0);
+        List<TStaffTb> tStaffTbs = DbDaoManage.getDaoSession().getTStaffTbDao().loadAll();
+        TStaffTb tStaffTb = null;
+        if (tStaffTbs.size() > 0) {
+            tStaffTb = tStaffTbs.get(0);
+        }
+
         Map<String, String> map = new HashMap<>();
         String posID = SharedXmlUtil.getInstance(mContext).read(Info.POS_ID, Info.POS_ID_INIT);
         List<BaseInfoBackBean> beanList = DbDaoManage.getDaoSession()
@@ -74,11 +96,30 @@ public class HeartTimer {
         } else {
             map.put("black", "20180927");
             map.put("white", "20180927");
-            map.put("program", "1.2.79");
+            map.put("program", AppUtils.getVerName(mContext));
         }
 
         map.put("posId", posID);
         BaseInfoDataPost baseInfoDataPost = new BaseInfoDataPost();
+        baseInfoDataPost.setSim_imsi("");
+        baseInfoDataPost.setBusNo("");
+        baseInfoDataPost.setX_version("");
+        baseInfoDataPost.setBlack(map.get("black"));
+        baseInfoDataPost.setDevNumber("");
+        baseInfoDataPost.setDriver(tStaffTb == null ? "300000015165068000"
+                : Datautils.byteArrayToString(tStaffTb.getUcAppSnr()));
+        baseInfoDataPost.setWhite(map.get("white"));
+        baseInfoDataPost.setPsamtricardon("");
+        baseInfoDataPost.setLineCardNO("");
+        baseInfoDataPost.setBinVersion("");
+        baseInfoDataPost.setRoute(Datautils.byteArrayToString(runParaFile.getLineNr()));
+        baseInfoDataPost.setSim_serial("");
+        baseInfoDataPost.setPosId(posID);
+        baseInfoDataPost.setPos_imei("");
+        baseInfoDataPost.setDept(Datautils.byteArrayToString(runParaFile.getCorNr()));
+        baseInfoDataPost.setProgram(AppUtils.getVerName(mContext));
+        baseInfoDataPost.setBusCardNo("");
+        baseInfoDataPost.setPsamurdcardon("");
         map.put("data", gson.toJson(baseInfoDataPost));
 
         HttpMethods.getInstance().baseinfo(map, new Observer<BaseInfoBackBean>() {
@@ -93,17 +134,24 @@ public class HeartTimer {
                     BaseInfoBackBean backBean = beanList.get(0);
                     String black = baseInfoBackBean.getBlack();
                     if (!black.equals(backBean.getBlack())) {
-                        getBlack(black,baseInfoBackBean);
+                        getBlack(black, baseInfoBackBean);
                     }
                     String white = baseInfoBackBean.getWhite();
                     if (!white.equals(backBean.getWhite())) {
                         getWhite(white);
                     }
+
                 } else {
-                    getBlack(baseInfoBackBean.getBlack(),baseInfoBackBean);
+                    getBlack(baseInfoBackBean.getBlack(), baseInfoBackBean);
                     getWhite(baseInfoBackBean.getWhite());
                 }
 
+                String program = baseInfoBackBean.getProgram();
+                String[] vs = program.split("_V");
+                String[] split = vs[1].split(".apk");
+                if (!split[0].equals(AppUtils.getVerName(mContext))) {
+                    downloadAPK(program);
+                }
 
                 LogUtils.d("成功" + gson.toJson(baseInfoBackBean));
             }
@@ -120,7 +168,7 @@ public class HeartTimer {
         });
     }
 
-    private void getBlack(String version,BaseInfoBackBean baseInfoBackBean) {
+    private void getBlack(String version, BaseInfoBackBean baseInfoBackBean) {
         final Gson gson = new GsonBuilder().serializeNulls().create();
         AliWhiteBlackPost aliWhiteBlackPost = new AliWhiteBlackPost();
         String posID = SharedXmlUtil.getInstance(mContext).read(Info.POS_ID, Info.POS_ID_INIT);
@@ -194,5 +242,48 @@ public class HeartTimer {
 
                     }
                 });
+    }
+
+    public void downloadAPK(String url) {
+        DownloadUtils downloadUtils = new DownloadUtils(HttpMethods.BASE_URL, new JsDownloadListener() {
+            @Override
+            public void onStartDownload(long length) {
+                LogUtils.d(length + "");
+            }
+
+            @Override
+            public void onProgress(int progress) {
+            }
+
+            @Override
+            public void onFail(String errorInfo) {
+                LogUtils.e(errorInfo);
+            }
+
+            @Override
+            public void onSuccess() {
+                LogUtils.v("下载完成");
+                //静默安装
+                ReflectUtils.installApk(getApkPath() + "/BUS.apk", mContext);
+            }
+        });
+        File file = new File(getApkPath(), "BUS.apk");
+        downloadUtils.download(url, file);
+    }
+
+    //文件路径
+    private String getApkPath() {
+        String directoryPath = "";
+        if (Environment.MEDIA_MOUNTED.equals(Environment.getExternalStorageState())) {//判断外部存储是否可用
+            directoryPath = mContext.getExternalFilesDir("apk").getAbsolutePath();
+        } else {//没外部存储就使用内部存储
+            directoryPath = mContext.getFilesDir() + File.separator + "apk";
+        }
+        File file = new File(directoryPath);
+        LogUtils.v("测试路径" + directoryPath);
+        if (!file.exists()) {//判断文件目录是否存在
+            file.mkdirs();
+        }
+        return directoryPath;
     }
 }

@@ -1,4 +1,4 @@
-package com.spd.bus.card.utils;
+package com.spd.bus.net;
 
 import com.spd.base.been.tianjin.AliWhiteBackBean;
 import com.spd.base.been.tianjin.AppSercetBackBean;
@@ -80,7 +80,11 @@ public interface ApiService {
 
 
     //车载机程序下载
-    @Streaming
-    @GET("pos/download")
+    @GET
     Observable<ResponseBody> download(@Url String url);
+
+    //错误日志上传
+    @FormUrlEncoded
+    @POST("log/postLog")
+    Observable<ResponseBody> postLog(@FieldMap Map<String, String> params);
 }

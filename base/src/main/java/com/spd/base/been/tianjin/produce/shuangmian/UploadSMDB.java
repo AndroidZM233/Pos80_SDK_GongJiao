@@ -46,7 +46,7 @@ public class UploadSMDB {
 //    }
 
     private String busNo;
-    private String cardSerialNum;
+    private String cardSerialNumber;
     private String batchNumber;
     private String responseCode;
     private String isPay;
@@ -71,11 +71,11 @@ public class UploadSMDB {
     private String cardNo;
     //是否上传
     private boolean isUpload;
-    @Generated(hash = 1338108654)
-    public UploadSMDB(String busNo, String cardSerialNum, String batchNumber, String responseCode, String isPay, String driver, String transactionTime, String towTrackData, String terminalCode, String serialNumber, String transactionAmount, String team, String threeTrackData, String route, String posId,
+    @Generated(hash = 196069609)
+    public UploadSMDB(String busNo, String cardSerialNumber, String batchNumber, String responseCode, String isPay, String driver, String transactionTime, String towTrackData, String terminalCode, String serialNumber, String transactionAmount, String team, String threeTrackData, String route, String posId,
             String retrievingNum, String dept, String field, String transactionCode, String type, String cardNo, boolean isUpload) {
         this.busNo = busNo;
-        this.cardSerialNum = cardSerialNum;
+        this.cardSerialNumber = cardSerialNumber;
         this.batchNumber = batchNumber;
         this.responseCode = responseCode;
         this.isPay = isPay;
@@ -106,11 +106,11 @@ public class UploadSMDB {
     public void setBusNo(String busNo) {
         this.busNo = busNo;
     }
-    public String getCardSerialNum() {
-        return this.cardSerialNum;
+    public String getCardSerialNumber() {
+        return this.cardSerialNumber;
     }
-    public void setCardSerialNum(String cardSerialNum) {
-        this.cardSerialNum = cardSerialNum;
+    public void setCardSerialNumber(String cardSerialNumber) {
+        this.cardSerialNumber = cardSerialNumber;
     }
     public String getBatchNumber() {
         return this.batchNumber;
@@ -232,5 +232,5 @@ public class UploadSMDB {
     public void setIsUpload(boolean isUpload) {
         this.isUpload = isUpload;
     }
-
+    
 }

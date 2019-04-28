@@ -153,7 +153,7 @@ public class ScanUtils {
             } catch (IOException e) {
                 e.printStackTrace();
             }
-            String localLicenseServerURL = "http://218.247.237.138:7070";
+            String localLicenseServerURL = "http://123.150.11.50:4022";
             activationResult = com.honeywell.license.ActivationManager.activate(context,
                     decrypt, localLicenseServerURL, frameBuffer);
             System.out.println("激活" + activationResult.toString());

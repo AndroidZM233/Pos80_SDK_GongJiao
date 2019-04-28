@@ -1,4 +1,4 @@
-package com.spd.bus.card.utils;
+package com.spd.bus.net;
 
 import com.spd.base.been.tianjin.AliBlackBackBean;
 import com.spd.base.been.tianjin.AliWhiteBackBean;
@@ -29,6 +29,7 @@ import okhttp3.ResponseBody;
 public class HttpMethods {
     public static String BASE_URL = "http://42.81.133.17:18056/";
     public static String PRODUCE_URL = "http://42.81.133.17:18058/";
+    public static String TEST_URL = "http://123.150.11.50:4023/logreceive/";
     private static final Object LOCK = new Object();
     private static HttpMethods httpMethods;
 
@@ -227,14 +228,14 @@ public class HttpMethods {
 
 
     /**
-     * 车载机程序下载
+     * 错误日志上传
      *
      * @param sendData
      * @param observer
      */
-    public void download(String url, Observer<ResponseBody> observer) {
-        RetrofitCreateHelper.createApi(ApiService.class, BASE_URL)
-                .download(url)
+    public void postLog(Map<String, String> params, Observer<ResponseBody> observer) {
+        RetrofitCreateHelper.createApi(ApiService.class, TEST_URL)
+                .postLog(params)
                 .subscribeOn(Schedulers.io())
                 .unsubscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())

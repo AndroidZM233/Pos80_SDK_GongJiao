@@ -1,8 +1,9 @@
-package com.spd.bus.card.utils;
+package com.spd.bus.util;
 
 import android.content.Context;
 import android.text.TextUtils;
 
+import com.example.test.yinlianbarcode.utils.SharedXmlUtil;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.spd.base.been.tianjin.CardRecord;
@@ -13,14 +14,19 @@ import com.spd.base.db.DbDaoManage;
 import com.spd.base.dbbeen.RunParaFile;
 import com.spd.base.utils.Datautils;
 import com.spd.base.utils.LogUtils;
+import com.spd.bus.Info;
+import com.spd.bus.net.HttpMethods;
 
 import org.apache.commons.lang3.text.StrBuilder;
 
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import io.reactivex.Observer;
 import io.reactivex.disposables.Disposable;
+import okhttp3.ResponseBody;
 
 /**
  * Created by 张明_ on 2019/3/28.
@@ -111,5 +117,34 @@ public class DataUploadToTianJinUtils {
 
         producePost.setData(String.valueOf(strBuilder));
         return gson.toJson(producePost).toString();
+    }
+
+
+    public static void postLog(Context context, String log) {
+        String logString = SharedXmlUtil.getInstance(context).read(Info.POS_ID, Info.POS_ID_INIT)
+                + "," + log;
+        Map<String, String> map = new HashMap<>();
+        map.put("log", logString);
+        HttpMethods.getInstance().postLog(map, new Observer<ResponseBody>() {
+            @Override
+            public void onSubscribe(Disposable d) {
+
+            }
+
+            @Override
+            public void onNext(ResponseBody responseBody) {
+                LogUtils.d(responseBody.toString());
+            }
+
+            @Override
+            public void onError(Throwable e) {
+                LogUtils.d(e.toString());
+            }
+
+            @Override
+            public void onComplete() {
+
+            }
+        });
     }
 }

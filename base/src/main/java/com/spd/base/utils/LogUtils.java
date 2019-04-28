@@ -23,7 +23,7 @@ public class LogUtils {
      * @return String
      */
     @SuppressLint("DefaultLocale")
-    private static String generateTag() {
+    public static String generateTag() {
         StackTraceElement stackTraceElement = Thread.currentThread().getStackTrace()[4];
         String callerClazzName = stackTraceElement.getClassName();
         callerClazzName = callerClazzName.substring(callerClazzName.lastIndexOf(".") + 1);

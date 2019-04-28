@@ -20,7 +20,7 @@ import com.spd.base.db.DbDaoManage;
 import com.spd.base.utils.DateUtils;
 import com.spd.base.utils.LogUtils;
 import com.spd.bus.spdata.been.PsamBeen;
-import com.spd.bus.spdata.utils.PlaySound;
+import com.spd.bus.util.PlaySound;
 import com.spd.bus.timer.HeartTimer;
 import com.spd.yinlianpay.util.PrefUtil;
 
@@ -207,7 +207,7 @@ public class MyApplication extends Application {
                 errorCallBack();
                 Toast.makeText(context, "激活失败！", Toast.LENGTH_SHORT).show();
             }
-        }, true);
+        }, false);
     }
 
 

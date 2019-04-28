@@ -1,4 +1,4 @@
-package com.spd.bus.card.utils;
+package com.spd.bus.util;
 
 import android.os.Environment;
 import android.text.TextUtils;

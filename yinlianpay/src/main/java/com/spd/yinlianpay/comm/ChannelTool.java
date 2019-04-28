@@ -357,45 +357,36 @@ public class ChannelTool {
                 try {
                     long times = System.currentTimeMillis();
                     TradeInfo tradeInfo = new TradeInfo();
-                    TradeInfo tradeInfo1 = new TradeInfo();
                     bytes = ChanelPacket.makeSale(money);
                     if (onCommonListener != null) {
                         onCommonListener.onProgress("Message reception。");
                     }
                     Log.i("stw", "报文 组0200=====" + (System.currentTimeMillis() - times));
                     times = System.currentTimeMillis();
-                    onCommonListener.onDataBack();
+                    onCommonListener.onDataBack(null);
 
                     LogUtils.v("状态返回-正在处理中" + Datautils.byteArrayToString(bytes));
                     byte[] ret = CommunAction.doNet(bytes);
                     int poscount = PrefUtil.getSerialNo();
-//                    poscount++;
-//                    PrefUtil.putSerialNo(poscount);
-//                    Log.i("stw", "makesale： "+ DataConversionUtils.byteArrayToString(ret));
-//                    byte[] odabyte= ChanelPacket.odaMack(money);
-//                    Log.i("stw", "oda发送： "+ DataConversionUtils.byteArrayToString(odabyte));
-//                    byte[] ret2 = CommunAction.doNet(odabyte);
-//                    Log.i("stw", "oda返回： "+ DataConversionUtils.byteArrayToString(ret2));
+
                     Msg msg = ChanelPacket.decode(ret);
                     Msg msgSend = ChanelPacket.decode(bytes);
                     boolean insertCard = Utils.cardType == Utils.CardTypeIC_ICC && WeiPassGlobal.getTransactionInfo().getServiceCode().startsWith("05");
                     RespCode rc = msg.getReqCode();
-                    tradeInfo.msg = msgSend;
+
+                    tradeInfo.msg = msg;
                     tradeInfo.errorCode = rc.getCode();
                     tradeInfo.errorMsg = rc.getErrorMsg();
-
-                    tradeInfo1.msg = msg;
-                    tradeInfo1.errorCode = rc.getCode();
-                    tradeInfo1.errorMsg = rc.getErrorMsg();
                     poscount++;
                     PrefUtil.putSerialNo(poscount);
                     if (msg.getReqCode().getFlag() == 'A') {
                         Log.i("stw", "發送报文0200报文反回=====" + (System.currentTimeMillis() - times));
-                        /*if (msg.macResult != Msg.MAC_OK) {
-                            onCommonListener.onError(0, "MAC check error");
-                        }*/
-                        castResult(tradeInfo1);
+                        castResult(tradeInfo);
                         onCommonListener.onResult(tradeInfo);
+                        //借用head把消费请求结果传出去
+                        msgSend.head = msg.getReqCode().toString();
+                        msgSend.body.ds[38] = msg.body.ds[38];
+                        onCommonListener.onDataBack(msgSend);
                         onCommonListener.onSuccess();
 
 //                        onCommonListener.onProgress((System.currentTimeMillis() - times) + "ms");

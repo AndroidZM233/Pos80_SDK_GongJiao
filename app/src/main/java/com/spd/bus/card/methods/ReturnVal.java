@@ -1,8 +1,5 @@
 package com.spd.bus.card.methods;
 
-import com.spd.base.been.tianjin.CardBackBean;
-import com.spd.bus.spdata.utils.PlaySound;
-
 /**
  * Created by 张明_ on 2019/2/19.
  * Email 741183142@qq.com

@@ -31,7 +31,7 @@ public class ShuangMianBean {
      */
 
     private String busNo;
-    private String cardSerialNum;
+    private String cardSerialNumber;
     private String batchNumber;
     private String responseCode;
     private String isPay;
@@ -61,11 +61,11 @@ public class ShuangMianBean {
     }
 
     public String getCardSerialNum() {
-        return cardSerialNum;
+        return cardSerialNumber;
     }
 
     public void setCardSerialNum(String cardSerialNum) {
-        this.cardSerialNum = cardSerialNum;
+        this.cardSerialNumber = cardSerialNum;
     }
 
     public String getBatchNumber() {

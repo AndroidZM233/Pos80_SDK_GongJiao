@@ -197,12 +197,11 @@ public class UnionPayCard {
             ChannelTool.doSale(WeiPassGlobal.getTransactionInfo().getAmount(), new OnTraditionListener() {
                 @Override
                 public void onResult(TradeInfo info) {
-                    msg[0] = info.msg;
-                    WeiPassGlobal.tradeInfo = info;
-                    if ("ODA".equals(info.errorMsg)){
+                    if ("ODA".equals(info.errorMsg)) {
                         handler.sendMessage(handler.obtainMessage(MyContext.DO_ODA, info.msg));
                     }else {
-                        handler.sendMessage(handler.obtainMessage(MyContext.BackMsg, info.msg));
+                        msg[0] = info.msg;
+                        WeiPassGlobal.tradeInfo = info;
                     }
 
                     countDownLatch.countDown();
@@ -231,8 +230,13 @@ public class UnionPayCard {
                 }
 
                 @Override
-                public void onDataBack() {
-                    handler.sendMessage(handler.obtainMessage(MyContext.YuYin_ChuLi));
+                public void onDataBack(Msg msg1) {
+                    if (msg1==null){
+                        handler.sendMessage(handler.obtainMessage(MyContext.YuYin_ChuLi));
+                    }else {
+                        handler.sendMessage(handler.obtainMessage(MyContext.BackMsg, msg1));
+                    }
+
                 }
             });
             countDownLatch.await();
@@ -318,7 +322,7 @@ public class UnionPayCard {
     }
 
     //交易开始 根据不同状态可以使用 Handler 通知主线程更新 UI,请参考 wPos_SDKDemo
-    public static String readBankCardInfo(BankCard mBankCard,final String terminalNo, final String merchantName) {
+    public static String readBankCardInfo(BankCard mBankCard, final String terminalNo, final String merchantName) {
         result = 0;//重置结果
         path = 0;
         //回调函数 处理内核数据
@@ -465,7 +469,7 @@ public class UnionPayCard {
                 }
 //                mBankCard.openCloseCardReader(2,2);
                 handler.sendMessage(handler.obtainMessage(MyContext.Hide_Progress, "非接交易"));
-                if (result != ErrorMsgType.SUCCESS) {
+                if (contantlessOnlineRet != ErrorMsgType.SUCCESS) {
 //                    handler.sendMessage(handler.obtainMessage(MyContext.MSG_ERROR, "非接交易" + ErrorMsg.getEmvError(result)));
                     LogUtils.v("非接交易 error");
                     return -1;

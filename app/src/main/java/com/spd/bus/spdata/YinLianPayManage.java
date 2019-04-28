@@ -131,7 +131,7 @@ public class YinLianPayManage implements OnTraditionListener {
                     }
 
                     @Override
-                    public void onDataBack() {
+                    public void onDataBack(Msg msg) {
 
                     }
                 });
@@ -166,7 +166,8 @@ public class YinLianPayManage implements OnTraditionListener {
     }
 
     @Override
-    public void onDataBack() {
+    public void onDataBack(Msg msg) {
+
     }
 
     public void readCardInfo(String s, Handler readCardHandler) {

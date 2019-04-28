@@ -1,6 +1,6 @@
 package com.spd.bus.util.download;
 
-import com.spd.bus.card.utils.ApiService;
+import com.spd.bus.net.ApiService;
 
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -120,6 +120,8 @@ public class DownloadUtils {
 
             inputString.close();
             fos.close();
+
+            listener.onSuccess();
 
         } catch (FileNotFoundException e) {
             listener.onFail("FileNotFoundException");

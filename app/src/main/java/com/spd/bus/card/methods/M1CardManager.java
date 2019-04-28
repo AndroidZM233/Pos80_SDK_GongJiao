@@ -3,7 +3,6 @@ package com.spd.bus.card.methods;
 import android.content.Context;
 import android.os.RemoteException;
 
-import com.spd.base.been.tianjin.AliBlackBackBean;
 import com.spd.base.been.tianjin.BlackDB;
 import com.spd.base.been.tianjin.BlackDBDao;
 import com.spd.base.been.tianjin.CardBackBean;
@@ -20,7 +19,7 @@ import com.spd.base.utils.DateUtils;
 import com.spd.base.utils.LogUtils;
 import com.spd.bus.spdata.been.PsamBeen;
 import com.spd.bus.spdata.been.TCommInfo;
-import com.spd.bus.spdata.utils.TimeDataUtils;
+import com.spd.bus.util.TimeDataUtils;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;

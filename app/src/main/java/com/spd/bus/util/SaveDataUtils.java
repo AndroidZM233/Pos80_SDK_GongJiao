@@ -111,7 +111,11 @@ public class SaveDataUtils {
         UploadSMDB uploadSMDB = new UploadSMDB();
         uploadSMDB.setBusNo(Datautils.byteArrayToString(runParaFile.getBusNr()));
         //卡序号
-        uploadSMDB.setCardSerialNum(ds[22]);
+        String cardNum = ds[22];
+        if (cardNum.length() > 3) {
+            cardNum = cardNum.substring(cardNum.length() - 3);
+        }
+        uploadSMDB.setCardSerialNumber(cardNum);
         //批次号
         uploadSMDB.setBatchNumber(PrefUtil.getBatchNo());
         //请款应答码

@@ -19,7 +19,7 @@ import com.spd.base.db.DbDaoManage;
 import com.spd.base.utils.Datautils;
 import com.spd.bus.Info;
 import com.spd.bus.MyApplication;
-import com.spd.bus.card.utils.HttpMethods;
+import com.spd.bus.net.HttpMethods;
 import com.spd.base.utils.LogUtils;
 import com.spd.bus.spdata.been.PsamBeen;
 import com.spd.bus.spdata.mvp.BasePresenterImpl;
@@ -90,6 +90,7 @@ public class ConfigCheckPresenter extends BasePresenterImpl<ConfigCheckContract.
         String read = SharedXmlUtil.getInstance(context)
                 .read(Info.POS_ID, Info.POS_ID_INIT);
         getShuangMianPubKey(context, "pos/posKeys?data=" + read);
+        getWechatMacTianJin();
         new Thread(new Runnable() {
             @Override
             public void run() {
@@ -202,12 +203,12 @@ public class ConfigCheckPresenter extends BasePresenterImpl<ConfigCheckContract.
                 DbDaoManage.getDaoSession().getGetMacBackBeanDao().deleteAll();
                 DbDaoManage.getDaoSession().getGetMacBackBeanDao()
                         .insertOrReplace(getMacBackBean);
-                mView.setTextView(6,"成功");
+                mView.setTextView(8,"成功");
             }
 
             @Override
             public void onError(Throwable e) {
-                mView.setTextView(6,"失败");
+                mView.setTextView(8,"失败");
             }
 
             @Override
@@ -233,7 +234,7 @@ public class ConfigCheckPresenter extends BasePresenterImpl<ConfigCheckContract.
                 DbDaoManage.getDaoSession().getGetPublicBackBeanDao().deleteAll();
                 DbDaoManage.getDaoSession().getGetPublicBackBeanDao()
                         .insertOrReplace(getPublicBackBean);
-                getWechatMacTianJin();
+                mView.setTextView(6,"成功");
             }
 
             @Override
