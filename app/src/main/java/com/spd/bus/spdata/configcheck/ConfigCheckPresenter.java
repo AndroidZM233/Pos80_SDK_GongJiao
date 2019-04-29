@@ -21,6 +21,7 @@ import com.spd.bus.Info;
 import com.spd.bus.MyApplication;
 import com.spd.bus.net.HttpMethods;
 import com.spd.base.utils.LogUtils;
+import com.spd.bus.spdata.YinLianPayManage;
 import com.spd.bus.spdata.been.PsamBeen;
 import com.spd.bus.spdata.mvp.BasePresenterImpl;
 import com.spd.yinlianpay.util.PrefUtil;
@@ -101,14 +102,14 @@ public class ConfigCheckPresenter extends BasePresenterImpl<ConfigCheckContract.
                 boolean psam2Init = psam2Init();
                 LogUtils.d("" + psam1Init + psam2Init);
                 if (!psam1Init) {
-                    mView.setTextView(1,"失败");
-                }else {
-                    mView.setTextView(1,"成功");
+                    mView.setTextView(1, "失败");
+                } else {
+                    mView.setTextView(1, "成功");
                 }
                 if (!psam2Init) {
-                    mView.setTextView(2,"失败");
-                }else {
-                    mView.setTextView(2,"成功");
+                    mView.setTextView(2, "失败");
+                } else {
+                    mView.setTextView(2, "成功");
                 }
 
 
@@ -135,15 +136,15 @@ public class ConfigCheckPresenter extends BasePresenterImpl<ConfigCheckContract.
 //                    SharedXmlUtil.getInstance(context).write(Info.YLSM_KEY
 //                            , posKeysBackBean.getKey());
                     PrefUtil.setMasterkey(posKeysBackBean.getKey());
-                    mView.setTextView(7,"成功");
-                }else {
-                    mView.setTextView(7,"失败");
+                    mView.setTextView(7, "成功");
+                } else {
+                    mView.setTextView(7, "失败");
                 }
             }
 
             @Override
             public void onError(Throwable e) {
-                mView.setTextView(7,"失败");
+                mView.setTextView(7, "失败");
                 LogUtils.v(e.toString());
             }
 
@@ -169,16 +170,16 @@ public class ConfigCheckPresenter extends BasePresenterImpl<ConfigCheckContract.
                     for (KeysBean key : keys) {
                         DbDaoManage.getDaoSession().getKeysBeanDao().insertOrReplace(key);
                     }
-                    mView.setTextView(5,"成功");
-                }else {
-                    mView.setTextView(5,"失败");
+                    mView.setTextView(5, "成功");
+                } else {
+                    mView.setTextView(5, "失败");
                 }
 
             }
 
             @Override
             public void onError(Throwable e) {
-                mView.setTextView(5,"失败");
+                mView.setTextView(5, "失败");
             }
 
             @Override
@@ -203,12 +204,12 @@ public class ConfigCheckPresenter extends BasePresenterImpl<ConfigCheckContract.
                 DbDaoManage.getDaoSession().getGetMacBackBeanDao().deleteAll();
                 DbDaoManage.getDaoSession().getGetMacBackBeanDao()
                         .insertOrReplace(getMacBackBean);
-                mView.setTextView(8,"成功");
+                mView.setTextView(8, "成功");
             }
 
             @Override
             public void onError(Throwable e) {
-                mView.setTextView(8,"失败");
+                mView.setTextView(8, "失败");
             }
 
             @Override
@@ -234,12 +235,12 @@ public class ConfigCheckPresenter extends BasePresenterImpl<ConfigCheckContract.
                 DbDaoManage.getDaoSession().getGetPublicBackBeanDao().deleteAll();
                 DbDaoManage.getDaoSession().getGetPublicBackBeanDao()
                         .insertOrReplace(getPublicBackBean);
-                mView.setTextView(6,"成功");
+                mView.setTextView(6, "成功");
             }
 
             @Override
             public void onError(Throwable e) {
-                mView.setTextView(6,"失败");
+                mView.setTextView(6, "失败");
             }
 
             @Override
@@ -270,12 +271,12 @@ public class ConfigCheckPresenter extends BasePresenterImpl<ConfigCheckContract.
                 AppSercetBackBean.DataBean data = appSercetBackBean.getData();
                 SharedXmlUtil.getInstance(context).write(Info.ZFB_APP_KEY, data.getAppKey());
                 SharedXmlUtil.getInstance(context).write(Info.ZFB_APP_SERCET, data.getAppSercet());
-                mView.setTextView(3,"成功");
+                mView.setTextView(3, "成功");
             }
 
             @Override
             public void onError(Throwable e) {
-                mView.setTextView(3,"失败");
+                mView.setTextView(3, "失败");
                 LogUtils.v(e.toString());
             }
 
@@ -299,16 +300,16 @@ public class ConfigCheckPresenter extends BasePresenterImpl<ConfigCheckContract.
                 if (!TextUtils.isEmpty(publicKeys)) {
                     DbDaoManage.getDaoSession().getGetZhiFuBaoKeyDao().deleteAll();
                     DbDaoManage.getDaoSession().getGetZhiFuBaoKeyDao().insert(getZhiFuBaoKey);
-                    mView.setTextView(4,"成功");
-                }else {
-                    mView.setTextView(4,"失败");
+                    mView.setTextView(4, "成功");
+                } else {
+                    mView.setTextView(4, "失败");
                 }
 
             }
 
             @Override
             public void onError(Throwable e) {
-                mView.setTextView(4,"失败");
+                mView.setTextView(4, "失败");
             }
 
             @Override

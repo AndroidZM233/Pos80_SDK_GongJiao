@@ -71,6 +71,7 @@ public class HeartTimer {
     }
 
     private void heart() {
+//        DataUploadToTianJinUtils.postLog(mContext, "test");
         final Gson gson = new GsonBuilder().serializeNulls().create();
 
         List<RunParaFile> runParaFiles = DbDaoManage.getDaoSession().getRunParaFileDao().loadAll();
@@ -148,9 +149,12 @@ public class HeartTimer {
 
                 String program = baseInfoBackBean.getProgram();
                 String[] vs = program.split("_V");
-                String[] split = vs[1].split(".apk");
-                if (!split[0].equals(AppUtils.getVerName(mContext))) {
-                    downloadAPK(program);
+                if (vs.length >= 2) {
+                    String[] split = vs[1].split(".apk");
+                    if (!split[0].equals(AppUtils.getVerName(mContext))) {
+                        downloadAPK(program);
+                    }
+
                 }
 
                 LogUtils.d("成功" + gson.toJson(baseInfoBackBean));

@@ -116,7 +116,7 @@ public class PsamIcActivity extends MVPBaseActivity<SpdBusPayContract.View, SpdB
      */
     private TextView mTvXiaofeiMoney;
     private LinearLayout mLayoutXiaofei;
-    private YinLianPayManage yinLianPayManage;
+
     private String balance = "2元";
     private LinearLayout mLlDriver;
     private LinearLayout mLlMain;
@@ -162,7 +162,7 @@ public class PsamIcActivity extends MVPBaseActivity<SpdBusPayContract.View, SpdB
         mLlShowData = findViewById(R.id.ll_show_data);
 //        mLlSetConfig = findViewById(R.id.ll_set_config);
         mTvTitle = findViewById(R.id.tv_title);
-        mTvTitle.setText("天津公交"+AppUtils.getVerName(getApplicationContext()));
+        mTvTitle.setText("天津公交" + AppUtils.getVerName(getApplicationContext()));
     }
 
 
@@ -172,8 +172,6 @@ public class PsamIcActivity extends MVPBaseActivity<SpdBusPayContract.View, SpdB
             //注册系统时间广播 只能动态注册
             IntentFilter filter = new IntentFilter();
             filter.addAction(Intent.ACTION_TIME_TICK);
-            yinLianPayManage = new YinLianPayManage(getApplicationContext());
-            yinLianPayManage.yinLianLogin();
 
             new Thread(new Runnable() {
                 @Override
@@ -193,8 +191,8 @@ public class PsamIcActivity extends MVPBaseActivity<SpdBusPayContract.View, SpdB
 
         } catch (Exception e) {
             e.printStackTrace();
-            DataUploadToTianJinUtils.postLog(getApplicationContext(), LogUtils.generateTag()
-                    + e.toString());
+//            DataUploadToTianJinUtils.postLog(getApplicationContext(), LogUtils.generateTag()
+//                    + e.toString());
         }
     }
 
@@ -263,7 +261,8 @@ public class PsamIcActivity extends MVPBaseActivity<SpdBusPayContract.View, SpdB
                             }
                             cardBackBean = JTBCardManager.getInstance()
                                     .mainMethod(getApplicationContext(), MyApplication.mBankCard
-                                            , MyApplication.psamDatas, yinLianPayManage, handler);
+                                            , MyApplication.psamDatas, MyApplication.getYinLianPayManage()
+                                            , handler);
                             if (cardBackBean == null) {
                                 continue;
                             } else {
@@ -272,9 +271,9 @@ public class PsamIcActivity extends MVPBaseActivity<SpdBusPayContract.View, SpdB
 
                         } catch (Exception e) {
                             e.printStackTrace();
-                            ConfigUtils.logWrite(e.toString());
-                            DataUploadToTianJinUtils.postLog(getApplicationContext(),
-                                    LogUtils.generateTag() + e.toString());
+//                            ConfigUtils.logWrite(e.toString());
+//                            DataUploadToTianJinUtils.postLog(getApplicationContext(),
+//                                    LogUtils.generateTag() + e.toString());
                         }
 
                         isFlag = 0;
@@ -306,9 +305,9 @@ public class PsamIcActivity extends MVPBaseActivity<SpdBusPayContract.View, SpdB
 
                         } catch (Exception e) {
                             LogUtils.v(e.toString());
-                            ConfigUtils.logWrite(e.toString());
-                            DataUploadToTianJinUtils.postLog(getApplicationContext(),
-                                    LogUtils.generateTag() + e.toString());
+//                            ConfigUtils.logWrite(e.toString());
+//                            DataUploadToTianJinUtils.postLog(getApplicationContext(),
+//                                    LogUtils.generateTag() + e.toString());
                             e.printStackTrace();
                         }
                         isFlag = 0;
@@ -340,8 +339,6 @@ public class PsamIcActivity extends MVPBaseActivity<SpdBusPayContract.View, SpdB
                         } catch (Exception e) {
                             LogUtils.v(e.toString());
                             ConfigUtils.logWrite(e.toString());
-                            DataUploadToTianJinUtils.postLog(getApplicationContext(),
-                                    LogUtils.generateTag() + e.toString());
                             e.printStackTrace();
                         }
                         isFlag = 0;
@@ -405,14 +402,7 @@ public class PsamIcActivity extends MVPBaseActivity<SpdBusPayContract.View, SpdB
                         PlaySound.play(PlaySound.MASHANGYIXING, 0);
                         break;
                     case ReturnVal.CODE_ZHIFUBAO_SUCCESS:
-//                        int ulHCSub = cardBackBean.getCardOpDU().ulHCSub;
-//                        if (ulHCSub == 100) {
                         PlaySound.play(PlaySound.ZHIFUBAO, 0);
-//                        } else if (ulHCSub == -2) {
-//                            PlaySound.play(PlaySound.ERWEIMASHIXIAO, 0);
-//                        } else {
-//                            PlaySound.play(PlaySound.QINGTOUBI, 0);
-//                        }
                         LogUtils.v("支付宝消费成功");
                         break;
                     case ReturnVal.CODE_YINLAIN_SUCCESS:
@@ -446,6 +436,10 @@ public class PsamIcActivity extends MVPBaseActivity<SpdBusPayContract.View, SpdB
                         break;
                     case ReturnVal.CODE_PLEASE_SET:
                         PlaySound.play(PlaySound.QINGSHEZHI, 0);
+                        ToastUtil.customToastView(PsamIcActivity.this, "请先设置"
+                                , Toast.LENGTH_SHORT, (TextView) LayoutInflater
+                                        .from(PsamIcActivity.this)
+                                        .inflate(R.layout.layout_toast, null));
                         break;
                     case ReturnVal.CAD_PSAM_ERROR:
                         ToastUtil.customToastView(PsamIcActivity.this, "PSAM-0"
@@ -760,8 +754,10 @@ public class PsamIcActivity extends MVPBaseActivity<SpdBusPayContract.View, SpdB
             switch (decodeDate.substring(0, 2)) {
                 case "TX":
                     //腾讯（微信）
-                    mPresenter.checkWechatTianJin(decodeDate, 1, (byte) 1, (byte) 1
-                            , "17430597", "12");
+                    String posID = SharedXmlUtil.getInstance(getApplicationContext())
+                            .read(Info.POS_ID, Info.POS_ID_INIT);
+                    mPresenter.checkWechatTianJin(decodeDate, (byte) 1, (byte) 1
+                            , posID, "12");
                     break;
                 case "Ah":
                     mPresenter.checkYinLianCode(getApplicationContext(), decodeDate);
@@ -837,8 +833,8 @@ public class PsamIcActivity extends MVPBaseActivity<SpdBusPayContract.View, SpdB
     }
 
     @Override
-    public void erro(String msg) {
-        Log.i(TAG, "erro:::" + msg);
+    public void erro(int msg) {
+        doVal(new CardBackBean(msg, null));
     }
 
 
@@ -869,13 +865,12 @@ public class PsamIcActivity extends MVPBaseActivity<SpdBusPayContract.View, SpdB
         }
     }
 
-    private TianjinAlipayRes codeinfoData;
 
     @Override
     public void showCheckAliQrCode(TianjinAlipayRes tianjinAlipayRes, RunParaFile runParaFile
             , String orderNr) {
-        codeinfoData = tianjinAlipayRes;
-        if (codeinfoData.result == ErroCode.SUCCESS) {
+        tianjinAlipayRes = tianjinAlipayRes;
+        if (tianjinAlipayRes.result == ErroCode.SUCCESS) {
             // TODO: 2019/3/11 存储天津公交需要的数据
             try {
                 SaveDataUtils.saveZhiFuBaoReqDataBean(tianjinAlipayRes, runParaFile, orderNr);
@@ -884,8 +879,8 @@ public class PsamIcActivity extends MVPBaseActivity<SpdBusPayContract.View, SpdB
             }
             doVal(new CardBackBean(ReturnVal.CODE_ZHIFUBAO_SUCCESS, null));
             mPresenter.uploadAlipayRe(getApplicationContext());
-        } else if (codeinfoData.result == ErroCode.QRCODE_INFO_EXPIRED
-                || codeinfoData.result == ErroCode.QRCODE_KEY_EXPIRED) {
+        } else if (tianjinAlipayRes.result == ErroCode.QRCODE_INFO_EXPIRED
+                || tianjinAlipayRes.result == ErroCode.QRCODE_KEY_EXPIRED) {
             PlaySound.play(PlaySound.CODESHIXIAO, 0);
             ToastUtil.customToastView(PsamIcActivity.this, "二维码失效"
                     , Toast.LENGTH_SHORT, (TextView) LayoutInflater
@@ -893,52 +888,22 @@ public class PsamIcActivity extends MVPBaseActivity<SpdBusPayContract.View, SpdB
                             .inflate(R.layout.layout_toast, null));
         } else {
             doVal(new CardBackBean(ReturnVal.CAD_RETRY, null));
-            Log.i(TAG, "\n支付宝校验结果错误:" + codeinfoData.result);
+            Log.i(TAG, "\n支付宝校验结果错误:" + tianjinAlipayRes.result);
         }
     }
 
-    @Override
-    public void showReleseAlipayJni(int result) {
-        if (result == 1) {
-            Log.i(TAG, "showReleseAlipayJni: 支付宝库关闭成功");
-        } else {
-            Log.e(TAG, "showReleseAlipayJni: 支付宝库关闭失败");
-        }
-    }
-
-    private List<WechatQrcodeKey.MacKeyListBean> macKeyListBeans;
-    private List<WechatQrcodeKey.PubKeyListBean> pubKeyListBeans;
 
     @Override
-    public void showWechatPublicKey(WechatQrcodeKey wechatQrcodeKey) {
-        if (wechatQrcodeKey != null) {
-            macKeyListBeans = wechatQrcodeKey.getMacKeyList();
-            pubKeyListBeans = wechatQrcodeKey.getPubKeyList();
-            Log.i(TAG, "微信PblicKey: " + pubKeyListBeans.toString());
-            Log.i(TAG, "微信macklicKey: " + macKeyListBeans.toString());
-            if (macKeyListBeans != null && pubKeyListBeans != null) {
-                mPresenter.wechatInitJin();
-            } else {
-                Log.i(TAG, "获取微信Key失败 " + macKeyListBeans.toString());
-            }
-        }
-    }
-
-    @Override
-    public void showCheckWechatQrCode(int result, String wechatResult, String openId) {
+    public void showCheckWechatQrCode(int result, RunParaFile runParaFile) {
         if (result == ErroCode.EC_SUCCESS) {
-            LogUtils.i("微信结果: " + "openID" + openId + "结果" + wechatResult);
             doVal(new CardBackBean(ReturnVal.CODE_WEIXIN_SUCCESS, null));
             mPresenter.uploadWechatRe(getApplicationContext());
+        } else if (result == ReturnVal.CODE_PLEASE_SET) {
+            doVal(new CardBackBean(ReturnVal.CODE_PLEASE_SET, null));
         } else {
             LogUtils.i("微信校验结果错误 " + result);
             doVal(new CardBackBean(ReturnVal.CAD_EMPTY, null));
         }
-    }
-
-    @Override
-    public void doCheckWechatTianJin() {
-
     }
 
 

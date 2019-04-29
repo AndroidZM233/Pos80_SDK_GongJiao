@@ -19,7 +19,9 @@ import com.spd.base.been.tianjin.CardRecord;
 import com.spd.base.db.DbDaoManage;
 import com.spd.base.utils.DateUtils;
 import com.spd.base.utils.LogUtils;
+import com.spd.bus.spdata.YinLianPayManage;
 import com.spd.bus.spdata.been.PsamBeen;
+import com.spd.bus.util.CrashHandler;
 import com.spd.bus.util.PlaySound;
 import com.spd.bus.timer.HeartTimer;
 import com.spd.yinlianpay.util.PrefUtil;
@@ -52,6 +54,15 @@ public class MyApplication extends Application {
     public static socketpusher log = null;
     public static byte fSysSta = (byte) 0x01;
     private static final String ACTION_SET_SYSTIME_BYSP = "set_systime_with_sp";
+    private static YinLianPayManage yinLianPayManage;
+
+    public static YinLianPayManage getYinLianPayManage() {
+        return yinLianPayManage;
+    }
+
+    public static void setYinLianPayManage(YinLianPayManage yinLianPayManage) {
+        MyApplication.yinLianPayManage = yinLianPayManage;
+    }
 
     public static void setCardRecordList(CardRecord cardRecord) {
         LogUtils.v("start");
@@ -68,6 +79,8 @@ public class MyApplication extends Application {
     @Override
     public void onCreate() {
         super.onCreate();
+        CrashHandler.getInstance().init(getApplicationContext());
+
         DbDaoManage.initDb(this);
 //        CrashReport.initCrashReport(getApplicationContext(),"ca2f83cd2c",true);
         PlaySound.initSoundPool(this);

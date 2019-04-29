@@ -66,7 +66,7 @@ public class PlaySound {
         mapSRC.put(ZHENGZZAICHULI, sp.load(context, R.raw.zhengzaichulizhong, 0));
         mapSRC.put(YINLIAN, sp.load(context, R.raw.unionpay, 0));
         mapSRC.put(JINGLAOKA, sp.load(context, R.raw.jinglaoka, 0));
-        mapSRC.put(DIDI, sp.load(context, R.raw.diddi, 0));
+        mapSRC.put(DIDI, sp.load(context, R.raw.dd1, 0));
         mapSRC.put(AIXINKA, sp.load(context, R.raw.aixinka, 0));
         mapSRC.put(CODESHIXIAO, sp.load(context, R.raw.erweimashixiao, 0));
         mapSRC.put(QINGQIANDAO, sp.load(context, R.raw.qingqiandao, 0));

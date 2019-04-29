@@ -16,9 +16,11 @@
     <uses-permission android:name="android.permission.PROCESS_OUTGOING_CALLS" /> <!-- 开机启动 -->
     <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED" />
     <uses-permission android:name="android.permission.CAMERA" />
-    <uses-permission android:name="android.permission.INSTALL_PACKAGES"
+    <uses-permission
+        android:name="android.permission.INSTALL_PACKAGES"
         tools:ignore="ProtectedPermissions" />
-    <uses-permission android:name="android.permission.DELETE_PACKAGES"
+    <uses-permission
+        android:name="android.permission.DELETE_PACKAGES"
         tools:ignore="ProtectedPermissions" />
 
     <application
@@ -51,9 +53,8 @@
         <provider
             android:name="android.support.v4.content.FileProvider"
             android:authorities="com.spd.bus.fileprovider"
-            android:grantUriPermissions="true"
             android:exported="false"
-            >
+            android:grantUriPermissions="true">
             <meta-data
                 android:name="android.support.FILE_PROVIDER_PATHS"
                 android:resource="@xml/file_paths" />
@@ -63,7 +64,11 @@
             <intent-filter>
                 <action android:name="android.intent.action.BOOT_COMPLETED" />
                 <category android:name="android.intent.category.HOME" />
+            </intent-filter>
+        </receiver>
 
+        <receiver android:name=".spdata.InstallReceiver">
+            <intent-filter>
                 <action android:name="android.intent.action.PACKAGE_REMOVED" />
                 <action android:name="android.intent.action.PACKAGE_REPLACED" />
                 <action android:name="android.intent.action.PACKAGE_ADDED" />
@@ -71,7 +76,6 @@
                 <data android:scheme="package" />
             </intent-filter>
         </receiver>
-
 
     </application>
 

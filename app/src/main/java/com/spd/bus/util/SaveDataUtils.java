@@ -178,9 +178,9 @@ public class SaveDataUtils {
     }
 
 
-    public static void saveWeiXinDataBean(WlxSdk wlxSdk) throws Exception {
-        List<RunParaFile> runParaFiles = DbDaoManage.getDaoSession().getRunParaFileDao().loadAll();
-        RunParaFile runParaFile = runParaFiles.get(0);
+    public static void saveWeiXinDataBean(WlxSdk wlxSdk,RunParaFile runParaFile) throws Exception {
+//        List<RunParaFile> runParaFiles = DbDaoManage.getDaoSession().getRunParaFileDao().loadAll();
+//        RunParaFile runParaFile = runParaFiles.get(0);
         List<TStaffTb> tStaffTbs = DbDaoManage.getDaoSession().getTStaffTbDao().loadAll();
         TStaffTb tStaffTb = null;
         if (tStaffTbs.size() > 0) {
@@ -194,8 +194,8 @@ public class SaveDataUtils {
         payinfoBean.setTeam(Datautils.byteArrayToString(runParaFile.getTeamNr()));
         payinfoBean.setRoute(Datautils.byteArrayToString(runParaFile.getLineNr()));
         // TODO: 2019/4/9 测试先写一分钱
-//        payinfoBean.setAccount(Datautils.byteArrayToInt(runParaFile.getKeyV1()) + "");
-        payinfoBean.setAccount("1");
+        payinfoBean.setAccount(Datautils.byteArrayToInt(runParaFile.getKeyV1()) + "");
+//        payinfoBean.setAccount("1");
 
         payinfoBean.setDept(Datautils.byteArrayToString(runParaFile.getCorNr()));
         payinfoBean.setIn_station_time(DateUtils.getCurrentTimeMillis(DateUtils.FORMAT_YMDHMS));
@@ -208,9 +208,8 @@ public class SaveDataUtils {
         DbDaoManage.getDaoSession().getUploadInfoDBDao().insertOrReplace(payinfoBean);
     }
 
-    public static void saveYinLianDataBean(Context context, String code, QrEntity qrEntity) throws Exception {
-        List<RunParaFile> runParaFiles = DbDaoManage.getDaoSession().getRunParaFileDao().loadAll();
-        RunParaFile runParaFile = runParaFiles.get(0);
+    public static void saveYinLianDataBean(Context context, String code, QrEntity qrEntity
+            ,RunParaFile runParaFile) throws Exception {
         List<TStaffTb> tStaffTbs = DbDaoManage.getDaoSession().getTStaffTbDao().loadAll();
         TStaffTb tStaffTb = null;
         if (tStaffTbs.size() > 0) {

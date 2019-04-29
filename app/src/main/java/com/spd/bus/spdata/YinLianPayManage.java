@@ -30,7 +30,7 @@ import com.spd.yinlianpay.util.PrefUtil;
 import ui.wangpos.com.utiltool.DateUtil;
 import ui.wangpos.com.utiltool.HEXUitl;
 
-public class YinLianPayManage implements OnTraditionListener {
+public class YinLianPayManage  {
     private Context myContext = null;
     private String TAG = "stw";
 
@@ -38,7 +38,7 @@ public class YinLianPayManage implements OnTraditionListener {
         myContext = context;
     }
 
-    public void yinLianLogin() {
+    public void yinLianLogin(Runnable tLoginRun) {
         MyContext.onCreate(myContext, MyApplication.getmKey(), MyApplication.getmCore(), MyApplication.getEmvCore(), MyApplication.getBankCardInstance());
         Log.i(TAG, "yinLianLogin: 开始");
 
@@ -102,71 +102,6 @@ public class YinLianPayManage implements OnTraditionListener {
         PrefUtil.setOperatID("01");
         //签到
         ChannelTool.FIXED_EXECUTOR.execute(tLoginRun);
-
-    }
-
-    Runnable tLoginRun = new Runnable() {
-        @Override
-        public void run() {
-            try {
-                WeiPassGlobal.transactionClear();
-                WeiPassGlobal.getTransactionInfo().setTransType(TradeInfo.Type_Sale);
-                ChannelTool.login("01", "0000", new OnCommonListener() {
-                    @Override
-                    public void onSuccess() {
-                        Log.i(TAG, "onSuccess:签到成功 开始下载 AID CAPK ");
-                        //下载 AID CAPK 并写入内核
-                        ChannelTool.doDownParamter(1, YinLianPayManage.this);
-                        ChannelTool.doDownParamter(2, YinLianPayManage.this);
-                    }
-
-                    @Override
-                    public void onProgress(final String progress) {
-                        Log.i(TAG, "onProgress: " + progress);
-                    }
-
-                    @Override
-                    public void onError(int errorCode, String errorMsg) {
-                        Log.i(TAG, "onError: " + errorMsg);
-                    }
-
-                    @Override
-                    public void onDataBack(Msg msg) {
-
-                    }
-                });
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
-        }
-    };
-
-    @Override
-    public void onResult(TradeInfo info) {
-        Log.i(TAG, "onResult: ");
-    }
-
-    @Override
-    public void onSuccess() {
-        Log.i(TAG, "onSuccess:  ");
-        if (PrefUtil.getICPARAMETER() && (PrefUtil.getICPASSWORD() || PrefUtil.getICSMD())) {
-            PrefUtil.setISFIRSTRUN(true);
-        }
-    }
-
-    @Override
-    public void onProgress(String progress) {
-        Log.i(TAG, "onProgress: ");
-    }
-
-    @Override
-    public void onError(int errorCode, String errorMsg) {
-        Toast.makeText(myContext, errorMsg, Toast.LENGTH_SHORT).show();
-        Log.i(TAG, "onError: ");
-    }
-
-    @Override
-    public void onDataBack(Msg msg) {
 
     }
 

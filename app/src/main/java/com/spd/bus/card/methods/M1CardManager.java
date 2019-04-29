@@ -666,6 +666,7 @@ public class M1CardManager {
 //                String busLastStr = Datautils.byteArrayToString(busLastBytes);
                 // 连续刷卡限制时间
                 int time = Datautils.byteArrayToInt(runParaFile.getUcCpuYueTimeLimit());
+//                int time = 0;
                 SimpleDateFormat format = new SimpleDateFormat("yyyyMMddHHmmss");
                 try {
                     Date busLast = utcToLocal;
@@ -734,17 +735,15 @@ public class M1CardManager {
         }
         if (cardOpDU.ucProcSec != 2) {
             cardOpDU.actYueOriMoney = actRemaining;
-//            ret = judgeYueScope();
-//            if (ret == 255) {
-//                return new CardBackBean(ReturnVal.CAD_READ, cardOpDU);
-//            }
-//            if (ret == F_OVERFLOW) {
-//                return new CardBackBean(ReturnVal.CAD_BROKEN, cardOpDU);
-//            }
-//            if (ret == F_LEAST) {
-//                cardOpDU.ucProcSec = 2;
-//                busPurse();
-//            }
+            ret = judgeYueScope2();
+            if (ret == F_OVERFLOW) {
+                return new CardBackBean(ReturnVal.CAD_BROKEN, cardOpDU);
+            }
+            if (ret == F_LEAST) {
+                cardOpDU.ucProcSec = 2;
+                busPurse();
+            }
+
 //            System.arraycopy(new byte[]{(byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x00}
 //                    , 0, cardOpDU.ucRcdToCard, 20, 5);
 
@@ -2802,7 +2801,7 @@ public class M1CardManager {
             yueDate = Datautils.cutBytes(yueEndDate, 0, 2);
             for (valid = 0, i = 0; ; i++) {
                 if (dateValid(yueDate, Datautils.cutBytes(cardOpDU.ucDateTime, 1, 2)) != 0) {
-                    cardOpDU.yuePositionInt = i;
+                    cardOpDU.yuePosition = (byte) i;
                     System.arraycopy(yueDate, 0, cardOpDU.yueUsingDate, 0, 2);
                     cardOpDU.yueUsingDate[2] = (byte) 0x32;
                     valid = 1;
@@ -2810,7 +2809,8 @@ public class M1CardManager {
                 }
                 yueDate = subYueDate(yueDate);
                 int yueDateInt = Integer.parseInt(Datautils.byteArrayToString(yueDate));
-                int yueStartDateInt = Integer.parseInt(Datautils.byteArrayToString(yueStartDate));
+                byte[] startBytes = Datautils.cutBytes(yueStartDate, 0, 2);
+                int yueStartDateInt = Integer.parseInt(Datautils.byteArrayToString(startBytes));
                 if (yueDateInt < yueStartDateInt) {
                     break;
                 }
@@ -2830,7 +2830,7 @@ public class M1CardManager {
                     if (cardOpDU.yuePosition > 0) {
                         cardOpDU.yuePosition -= 1;
                         nextTime = addYueDate(yueDate);
-                        cardOpDU.yueUsingDate = yueDate;
+                        System.arraycopy(yueDate, 0, cardOpDU.yueUsingDate, 0, 2);
                         cardOpDU.yueUsingDate[2] = (byte) 0x32;
                         valid = 1;
                     }
@@ -3049,6 +3049,24 @@ public class M1CardManager {
             actRemaining += dtZ[3 - i] & 0xFF;
         }
         cardOpDU.actYueOriMoney = actRemaining;
+        cardOpDU.yueSub = 1;
+
+        mifareCardYueMoneyAdjust(cardOpDU.actYueOriMoney, cardOpDU.yueSub);
+
+        if (cardOpDU.yueOriMoney > 100000) {
+            ret = F_OVERFLOW;    //OnRefresh(D_MONEYNOTVALID);
+        } else if (cardOpDU.yueOriMoney > 0) {
+            ret = F_NORMAL;
+        } else {
+            ret = F_LEAST;
+        }
+        return ret;
+    }
+
+    private int judgeYueScope2() {
+        int ret;
+        cardOpDU.ucProcSec = (byte) cardOpDU.yueSec;
+
         cardOpDU.yueSub = 1;
 
         mifareCardYueMoneyAdjust(cardOpDU.actYueOriMoney, cardOpDU.yueSub);

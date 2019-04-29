@@ -28,21 +28,18 @@ public class SpdBusPayContract {
 
         void success(String msg);
 
-        void erro(String msg);
+        void erro(int msg);
 
         void showAliPublicKey(int result);
 
         void showAliPayInit(int result);
 
-        void showWechatPublicKey(WechatQrcodeKey wechatQrcodeKey);
 
         void showCheckAliQrCode(TianjinAlipayRes tianjinAlipayRes, RunParaFile runParaFile, String orderNr);
 
-        void showReleseAlipayJni(int result);
 
-        void showCheckWechatQrCode(int result, String wechatResult, String userId);
+        void showCheckWechatQrCode(int result, RunParaFile runParaFile);
 
-        void doCheckWechatTianJin();
     }
 
     interface Presenter extends BasePresenter<View> {
@@ -73,15 +70,13 @@ public class SpdBusPayContract {
         void releseAlipayJni();
 
 
-        void checkWechatTianJin(String code, int payfee, byte scene,
+        void checkWechatTianJin(String code, byte scene,
                                 byte scantype, String posId, String posTrxId);
 
         /**
          * 初始化微信库
          */
         void wechatInitJin();
-
-        void checkWechatQrCode(String code, List<WechatQrcodeKey.PubKeyListBean> pbKeyList, List<WechatQrcodeKey.MacKeyListBean> macKeyList, int payfee, byte scene, byte scantype, String posId, String posTrxId);
 
         void uploadWechatRe(Context context);
 
