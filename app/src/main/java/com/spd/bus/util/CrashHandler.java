@@ -49,6 +49,7 @@ import android.os.SystemClock;
 import android.util.Log;
 import android.widget.Toast;
 
+import com.spd.base.utils.AppUtils;
 import com.spd.base.utils.LogUtils;
 
 /**
@@ -192,6 +193,8 @@ public class CrashHandler implements UncaughtExceptionHandler {
                     "yyyy-MM-dd HH:mm:ss");
             String date = sDateFormat.format(new Date());
             sb.append("\r\n" + date + "\n");
+            sb.append("AppVersion:" + AppUtils.getVerName(mContext) + "\n");
+            sb.append("————————————————————————————————————————\n");
             for (Map.Entry<String, String> entry : infos.entrySet()) {
                 String key = entry.getKey();
                 String value = entry.getValue();

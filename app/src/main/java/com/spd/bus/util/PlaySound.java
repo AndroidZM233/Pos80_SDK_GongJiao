@@ -46,11 +46,11 @@ public class PlaySound {
     //初始化声音池
     public static void initSoundPool(Context context) {
         if (sp == null) {
-            sp = new SoundPool(1, AudioManager.STREAM_MUSIC, 0);
+            sp = new SoundPool(4, AudioManager.STREAM_NOTIFICATION, 0);
         }
         mapSRC = new HashMap<>();
         mapSRC.put(initerro, sp.load(context, R.raw.test, 0));
-        mapSRC.put(dang, sp.load(context, R.raw.dang, 0));
+        mapSRC.put(dang, sp.load(context, R.raw.di, 0));
         mapSRC.put(xiaofeiSuccse, sp.load(context, R.raw.xiaofeichenggong, 0));
         mapSRC.put(qingchongshua, sp.load(context, R.raw.qingchongshua, 0));
         mapSRC.put(setSuccess, sp.load(context, R.raw.shezhiwancheng, 0));

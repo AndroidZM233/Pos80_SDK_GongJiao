@@ -59,7 +59,7 @@ public class TCardOpDU {
     public byte[] uiIncPurCount;
     public byte[] ucIncPurDate = new byte[4];
 
-//    public int lPurOriMoney;
+    //    public int lPurOriMoney;
 //    public int lPurSub;
 //    public byte[] lPurSubByte = new byte[4];
     public byte[] uiPurCount = new byte[2];
@@ -74,7 +74,7 @@ public class TCardOpDU {
     public int ulYueBase;
     public int[] ulYueBase2 = new int[4];
 
-//    public int lYueOriMoney;
+    //    public int lYueOriMoney;
 //    public int lActYueOriMoney;
 //    public int lYueSub;
 //    public int lActYueSub;
@@ -177,7 +177,7 @@ public class TCardOpDU {
     public byte[] mackNr;//卡认证码
     public byte[] fStartUse;//启用标志
     public boolean fBlackCard;//黑名单标志
-//    public byte cardType;//卡类型
+    //    public byte cardType;//卡类型
     public byte[] issueDate;//发行日期
     public byte[] endUserDate;//有效截止日期
     public byte[] startUserDate;//开始日期日期
@@ -195,7 +195,7 @@ public class TCardOpDU {
 
     public byte subType;
     public byte[] yueBase;
-    public byte[] yueUsingDate=new byte[3];
+    public byte[] yueUsingDate = new byte[3];
     public byte yuePosition;
     public int yueFlag;
     public int yuePositionInt;
@@ -210,7 +210,10 @@ public class TCardOpDU {
     public int yueCount;
     public byte[] ucRcdToCard = new byte[16];
 
-
+    //日志记录
+    public String log;
+    //是否打折
+    public boolean isJTBCardAvailable = false;
 
 
     public byte getfStartUsePur() {

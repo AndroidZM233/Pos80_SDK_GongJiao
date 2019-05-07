@@ -55,6 +55,16 @@ public class MyApplication extends Application {
     public static byte fSysSta = (byte) 0x01;
     private static final String ACTION_SET_SYSTIME_BYSP = "set_systime_with_sp";
     private static YinLianPayManage yinLianPayManage;
+    //激活成功与否
+    public static boolean isScanSuccess = false;
+    /**
+     * 单例
+     */
+    private static MyApplication m_application;
+
+    public static MyApplication getInstance() {
+        return m_application;
+    }
 
     public static YinLianPayManage getYinLianPayManage() {
         return yinLianPayManage;
@@ -199,7 +209,7 @@ public class MyApplication extends Application {
     /**
      * 初始化银联二维码支付
      */
-    public void initScanBards(Context context) {
+    public  void initScanBards(Context context) {
         hsmDecoder = HSMDecoder.getInstance(getApplicationContext());
         hsmDecoder.enableAimer(false);
         hsmDecoder.setOverlayText("");
@@ -210,6 +220,7 @@ public class MyApplication extends Application {
             @Override
             public void onBack() {
                 MyApplication.getHSMDecoder().enableSymbology(QR);
+                isScanSuccess = true;
                 successCallBack();
                 Toast.makeText(context, "激活成功！", Toast.LENGTH_SHORT).show();
             }
@@ -217,6 +228,7 @@ public class MyApplication extends Application {
             @Override
             public void onError(Throwable e) {
                 MyApplication.getHSMDecoder().enableSymbology(QR);
+                isScanSuccess = false;
                 errorCallBack();
                 Toast.makeText(context, "激活失败！", Toast.LENGTH_SHORT).show();
             }

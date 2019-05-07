@@ -145,7 +145,7 @@ public class SpdBusPayPresenter extends BasePresenterImpl<SpdBusPayContract.View
         String devNr = Datautils.byteArrayToString(runParaFile.getDevNr());
         String outTradeNo = lineNr + "_" + devNr + "_"
                 + DateUtils.getCurrentTimeMillis(DateUtils.FORMAT_yyyyMMddHHmmss) + "_"
-                + ((Math.random() * 9 + 1) * 1000);
+                + (int)((Math.random() * 9 + 1) * 1000);
         TianjinAlipayRes tianjinAlipayRes = new TianjinAlipayRes();
 
         tianjinAlipayRes = alipayJni.checkAliQrCode(tianjinAlipayRes,
@@ -330,7 +330,7 @@ public class SpdBusPayPresenter extends BasePresenterImpl<SpdBusPayContract.View
         String devNr = Datautils.byteArrayToString(runParaFile.getDevNr());
         String outTradeNo = lineNr + "_" + devNr + "_"
                 + DateUtils.getCurrentTimeMillis(DateUtils.FORMAT_yyyyMMddHHmmss) + "_"
-                + ((Math.random() * 9 + 1) * 1000);
+                +(int) ((Math.random() * 9 + 1) * 1000);
 
         int result = 0;
         result = wlxSdk.init(code);

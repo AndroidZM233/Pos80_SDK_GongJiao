@@ -421,6 +421,7 @@ public class ChannelTool {
 
                     e.printStackTrace();
                 } catch (PayException ex) {
+                    ex.printStackTrace();
                     if (onCommonListener != null) {
                         onCommonListener.onError(0, ex.getMessage());
                     }

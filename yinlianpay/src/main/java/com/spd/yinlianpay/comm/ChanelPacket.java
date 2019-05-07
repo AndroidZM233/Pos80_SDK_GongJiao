@@ -572,7 +572,8 @@ public class ChanelPacket {
         b.setField(11, WeiPassGlobal.getTransactionInfo().getTransaceNo());//serial no
         b.setField(14, WeiPassGlobal.getTransactionInfo().getExpireDate());// expire date
         b.setField(22, WeiPassGlobal.getTransactionInfo().getServiceCode());// service code
-        b.setField(23, WeiPassGlobal.getTransactionInfo().getCardSn());// card sn
+        String cardSn = WeiPassGlobal.getTransactionInfo().getCardSn();
+        b.setField(23, cardSn);// card sn
         b.setField(25, "00");
         if (WeiPassGlobal.getTransactionInfo().getPin() != null && WeiPassGlobal.getTransactionInfo().getPin().length() > 0) {
             b.setField(26, PrefUtil.getISSUPPORTSM() ? "12" : "06");// max pin

@@ -242,7 +242,7 @@ public class SaveDataUtils {
         //线路号
         payinfoBean.setLine_no(Datautils.byteArrayToString(runParaFile.getLineNr()));
         //金额
-        payinfoBean.setAmount("1");
+        payinfoBean.setAmount(Datautils.byteArrayToInt(runParaFile.getKeyV1()) + "");
         //路队
         payinfoBean.setTeam(Datautils.byteArrayToString(runParaFile.getTeamNr()));
         //线路号

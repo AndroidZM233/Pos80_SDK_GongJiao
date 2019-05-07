@@ -9,6 +9,7 @@ import android.os.Message;
 import android.os.RemoteException;
 import android.os.SystemClock;
 import android.support.annotation.Nullable;
+import android.text.TextUtils;
 import android.util.Log;
 import android.view.KeyEvent;
 import android.view.LayoutInflater;
@@ -234,7 +235,7 @@ public class PsamIcActivity extends MVPBaseActivity<SpdBusPayContract.View, SpdB
                     isFlag = 2;
                 } else if (result == 1 && isFlag == 2) {
                     ltime = System.currentTimeMillis();
-                    LogUtils.d("开始本次读卡等待");
+                    LogUtils.v("开始本次读卡等待");
                     //切换到非接卡读取
                     retvalue = MyApplication.mBankCard.readCard(BankCard.CARD_TYPE_NORMAL, BankCard.CARD_MODE_PICC, 1, respdata, resplen, "app1");
                     if (retvalue != 0) {
@@ -259,6 +260,7 @@ public class PsamIcActivity extends MVPBaseActivity<SpdBusPayContract.View, SpdB
                             if (isDriverUI || isShowDataUI) {
                                 continue;
                             }
+                            LogUtils.v("CPU结束寻卡===" + (System.currentTimeMillis() - ltime));
                             cardBackBean = JTBCardManager.getInstance()
                                     .mainMethod(getApplicationContext(), MyApplication.mBankCard
                                             , MyApplication.psamDatas, MyApplication.getYinLianPayManage()
@@ -287,7 +289,7 @@ public class PsamIcActivity extends MVPBaseActivity<SpdBusPayContract.View, SpdB
                         if (isShowDataUI) {
                             continue;
                         }
-                        Log.i("stw", "m1结束寻卡===" + (System.currentTimeMillis() - ltime));
+                        LogUtils.v("m1结束寻卡===" + (System.currentTimeMillis() - ltime));
                         try {
                             if (isDriverUI) {
                                 CardBackBean cardBackBean = M1CardManager.getInstance()
@@ -356,9 +358,10 @@ public class PsamIcActivity extends MVPBaseActivity<SpdBusPayContract.View, SpdB
             @Override
             public void run() {
                 int value = cardBackBean.getBackValue();
+
                 switch (value) {
                     case ReturnVal.CAD_READ:
-                        LogUtils.d("CAD_READ");
+//                        logToNet(cardBackBean);
                         break;
                     case ReturnVal.CAD_EXPIRE:
                     case ReturnVal.CAD_SELL:
@@ -367,6 +370,7 @@ public class PsamIcActivity extends MVPBaseActivity<SpdBusPayContract.View, SpdB
                                         .from(PsamIcActivity.this)
                                         .inflate(R.layout.layout_toast, null));
                         PlaySound.play(PlaySound.QINGTOUBI, 0);
+                        logToNet(cardBackBean);
                         break;
                     case ReturnVal.CAD_OK:
 //                        MediaPlayer player = MediaPlayer.create(getApplication(), R.raw.xueshengka);
@@ -382,6 +386,7 @@ public class PsamIcActivity extends MVPBaseActivity<SpdBusPayContract.View, SpdB
                                 , Toast.LENGTH_SHORT, (TextView) LayoutInflater
                                         .from(PsamIcActivity.this)
                                         .inflate(R.layout.layout_toast, null));
+                        logToNet(cardBackBean);
                         break;
                     case ReturnVal.CAD_SETCOK:
                         PlaySound.play(PlaySound.setSuccess, 0);
@@ -400,14 +405,17 @@ public class PsamIcActivity extends MVPBaseActivity<SpdBusPayContract.View, SpdB
                         break;
                     case ReturnVal.CODE_WEIXIN_SUCCESS:
                         PlaySound.play(PlaySound.MASHANGYIXING, 0);
+                        codeChangeUI();
                         break;
                     case ReturnVal.CODE_ZHIFUBAO_SUCCESS:
                         PlaySound.play(PlaySound.ZHIFUBAO, 0);
+                        codeChangeUI();
                         LogUtils.v("支付宝消费成功");
                         break;
                     case ReturnVal.CODE_YINLAIN_SUCCESS:
                         LogUtils.d("CODE_YINLAIN_SUCCESS");
                         PlaySound.play(PlaySound.YINLIAN, 0);
+                        codeChangeUI();
                         break;
                     case ReturnVal.CAD_REUSE:
                         LogUtils.d("CAD_REUSE");
@@ -446,6 +454,7 @@ public class PsamIcActivity extends MVPBaseActivity<SpdBusPayContract.View, SpdB
                                 , Toast.LENGTH_SHORT, (TextView) LayoutInflater
                                         .from(PsamIcActivity.this)
                                         .inflate(R.layout.layout_toast, null));
+                        logToNet(cardBackBean);
                         break;
                     case ReturnVal.CAD_MAC1:
                     case ReturnVal.CAD_MAC2:
@@ -454,6 +463,7 @@ public class PsamIcActivity extends MVPBaseActivity<SpdBusPayContract.View, SpdB
                                         .from(PsamIcActivity.this)
                                         .inflate(R.layout.layout_toast, null));
                         PlaySound.play(PlaySound.QINGTOUBI, 0);
+                        logToNet(cardBackBean);
                         break;
                     case ReturnVal.CAD_BL1:
                     case ReturnVal.CAD_BL2:
@@ -470,6 +480,7 @@ public class PsamIcActivity extends MVPBaseActivity<SpdBusPayContract.View, SpdB
                                         .from(PsamIcActivity.this)
                                         .inflate(R.layout.layout_toast, null));
                         PlaySound.play(PlaySound.QINGTOUBI, 0);
+                        logToNet(cardBackBean);
                         break;
                     case ReturnVal.CAD_QINGQIANDAO:
                         ToastUtil.customToastView(PsamIcActivity.this, "请签到"
@@ -478,12 +489,41 @@ public class PsamIcActivity extends MVPBaseActivity<SpdBusPayContract.View, SpdB
                                         .inflate(R.layout.layout_toast, null));
                         PlaySound.play(PlaySound.QINGQIANDAO, 0);
                         break;
+                    case ReturnVal.CAD_WRITE:
+                        logToNet(cardBackBean);
+                        break;
+                    case ReturnVal.CAD_HLERR:
+                        ToastUtil.customToastView(PsamIcActivity.this, "请投币-1"
+                                , Toast.LENGTH_SHORT, (TextView) LayoutInflater
+                                        .from(PsamIcActivity.this)
+                                        .inflate(R.layout.layout_toast, null));
+                        PlaySound.play(PlaySound.QINGTOUBI, 0);
+                        break;
                     default:
                         break;
                 }
             }
         });
 
+    }
+
+    private void codeChangeUI() {
+        mTvXiaofeiTitle.setText("消费");
+        mTvXiaofeiMoney.setText(balance);
+        mLayoutLineInfo.setVisibility(View.GONE);
+        mLayoutXiaofei.setVisibility(View.VISIBLE);
+        handler.postDelayed(runnable, 3000);
+    }
+
+    private void logToNet(CardBackBean cardBackBean) {
+        TCardOpDU cardOpDU = cardBackBean.getCardOpDU();
+        if (cardOpDU != null) {
+            String log = cardOpDU.log;
+            if (!TextUtils.isEmpty(log)) {
+                //上传网络
+                DataUploadToTianJinUtils.postLog(getApplicationContext(), log);
+            }
+        }
     }
 
     private void updateConfigUI() {
@@ -541,8 +581,8 @@ public class PsamIcActivity extends MVPBaseActivity<SpdBusPayContract.View, SpdB
 
             } else if (cardOpDU.ucMainCardType == (byte) 0x11) {
                 if (cardOpDU.pursubInt == 0) {
-                    PlaySound.play(PlaySound.dang, 0);
-                    SystemClock.sleep(100);
+//                    PlaySound.play(PlaySound.dang, 0);
+//                    SystemClock.sleep(100);
                     PlaySound.play(PlaySound.AIXINKA, 0);
                 } else {
                     PlaySound.play(PlaySound.dang, 0);
@@ -551,6 +591,7 @@ public class PsamIcActivity extends MVPBaseActivity<SpdBusPayContract.View, SpdB
             } else {
                 PlaySound.play(PlaySound.dang, 0);
             }
+            mTvXiaofeiTitle.setText("消费");
             mTvBalanceTitle.setText("余额");
             int balance = cardOpDU.purorimoneyInt - cardOpDU.pursubInt;
             mTvBalance.setText(((double) balance / 100) + "元");
@@ -566,34 +607,6 @@ public class PsamIcActivity extends MVPBaseActivity<SpdBusPayContract.View, SpdB
         public void handleMessage(Message msg) {
             super.handleMessage(msg);
             switch (msg.what) {
-                case 1: //CPU卡消费成功UI更新
-                    int balances = (int) msg.obj;
-                    PlaySound.play(PlaySound.dang, 0);
-                    mLayoutLineInfo.setVisibility(View.GONE);
-                    mLayoutXiaofei.setVisibility(View.VISIBLE);
-                    mTvBalanceTitle.setText("余额");
-                    mTvXiaofeiMoney.setText("0.01元");
-                    Log.i("rerer", "余额：：：" + ((double) balances / 100));
-                    mTvBalance.setText(((double) balances / 100) + "元");
-                    handler.postDelayed(runnable, 2000);
-                    break;
-                case 2: //M1卡消费成功
-//                    PlaySound.play(PlaySound.dang, 0);
-//                    int blance = Datautils.byteArrayToInt(icCardBeen.getPurorimoney(), false) - Datautils.byteArrayToInt(icCardBeen.getPursub());
-//                    mTvBalance.setVisibility(View.VISIBLE);
-//                    mTvBalance.setText("余额：" + (double) blance / 100 + "元");
-//                    handler.postDelayed(runnable, 2000);
-                    break;
-                case 3:
-                    //扫码支付成功
-                    PlaySound.play(PlaySound.xiaofeiSuccse, 0);
-                    mLayoutLineInfo.setVisibility(View.GONE);
-                    mTvBalance.setText("1.00元");
-                    mLayoutXiaofei.setVisibility(View.VISIBLE);
-                    mTvXiaofeiMoney.setVisibility(View.GONE);
-                    mTvXiaofeiTitle.setText("消费成功!");
-                    handler.postDelayed(runnable, 2000);
-                    break;
                 case 123:
                     Log.i(TAG, "handleMessage:  返回 卡號");
                     Log.i(TAG, "卡号: " + msg.obj.toString());
@@ -603,7 +616,12 @@ public class PsamIcActivity extends MVPBaseActivity<SpdBusPayContract.View, SpdB
                     Log.i(TAG, "handleMessage:  返回 Hide_Progress" + msg.obj.toString());
                     break;
                 case MyContext.MSG_ERROR:
-                    Log.i("stw", "主界面==交易失败银联时间111111== " + (System.currentTimeMillis() - ltime));
+                    LogUtils.v("请投币");
+                    String obj = "请投币" + (String) msg.obj;
+                    ToastUtil.customToastView(PsamIcActivity.this, obj
+                            , Toast.LENGTH_SHORT, (TextView) LayoutInflater
+                                    .from(PsamIcActivity.this)
+                                    .inflate(R.layout.layout_toast, null));
                     PlaySound.play(PlaySound.QINGTOUBI, 0);
                     isFlag = 1;
                     try {
@@ -620,15 +638,10 @@ public class PsamIcActivity extends MVPBaseActivity<SpdBusPayContract.View, SpdB
                     break;
 
                 case MyContext.RESULT_SUCCESS:
-                    Log.i("stw", "主界面==交易成功银联时间22222== " + (System.currentTimeMillis() - ltime));
+                    LogUtils.v("主界面==交易成功银联");
                     PrefUtil.putReversal(null);
                     PlaySound.play(PlaySound.YINLIAN, 0);
-                    mLayoutLineInfo.setVisibility(View.GONE);
-                    mTvBalance.setText("1.00元");
-                    mLayoutXiaofei.setVisibility(View.VISIBLE);
-                    mTvXiaofeiMoney.setVisibility(View.GONE);
-                    mTvXiaofeiTitle.setText("消费成功!");
-                    handler.postDelayed(runnable, 2000);
+                    codeChangeUI();
                     isFlag = 0;
                     break;
 
@@ -641,10 +654,13 @@ public class PsamIcActivity extends MVPBaseActivity<SpdBusPayContract.View, SpdB
                 case MyContext.BackMsg:
                     LogUtils.v("双免消费完成，准备上传信息");
                     Msg msg1 = (Msg) msg.obj;
-                    ToastUtil.customToastView(PsamIcActivity.this, msg1.head
-                            , Toast.LENGTH_SHORT, (TextView) LayoutInflater
-                                    .from(PsamIcActivity.this)
-                                    .inflate(R.layout.layout_toast, null));
+//                    if (!msg1.head.contains("交易成功")){
+//                        ToastUtil.customToastView(PsamIcActivity.this, msg1.head
+//                                , Toast.LENGTH_SHORT, (TextView) LayoutInflater
+//                                        .from(PsamIcActivity.this)
+//                                        .inflate(R.layout.layout_toast, null));
+//                    }
+
                     try {
                         SaveDataUtils.saveSMDataBean(msg1, "1", "03");
                         mPresenter.uploadSM(getApplicationContext());
@@ -655,21 +671,19 @@ public class PsamIcActivity extends MVPBaseActivity<SpdBusPayContract.View, SpdB
                 case MyContext.DO_ODA:
                     LogUtils.v("发送ODA，准备上传信息");
                     Msg msg2 = (Msg) msg.obj;
-                    RespCode reqCode2 = msg2.getReqCode();
-                    ToastUtil.customToastView(PsamIcActivity.this, reqCode2.toString()
-                            , Toast.LENGTH_SHORT, (TextView) LayoutInflater
-                                    .from(PsamIcActivity.this)
-                                    .inflate(R.layout.layout_toast, null));
+//                    RespCode reqCode2 = msg2.getReqCode();
+//                    if (!reqCode2.toString().contains("交易成功")){
+//                        ToastUtil.customToastView(PsamIcActivity.this, reqCode2.toString()
+//                                , Toast.LENGTH_SHORT, (TextView) LayoutInflater
+//                                        .from(PsamIcActivity.this)
+//                                        .inflate(R.layout.layout_toast, null));
+//                    }
+
                     try {
                         SaveDataUtils.saveSMDataBean(msg2, "0", "04");
                         PrefUtil.putReversal(null);
                         PlaySound.play(PlaySound.YINLIAN, 0);
-                        mLayoutLineInfo.setVisibility(View.GONE);
-                        mTvBalance.setText("1.00元");
-                        mLayoutXiaofei.setVisibility(View.VISIBLE);
-                        mTvXiaofeiMoney.setVisibility(View.GONE);
-                        mTvXiaofeiTitle.setText("消费成功!");
-                        handler.postDelayed(runnable, 2000);
+                        codeChangeUI();
                         isFlag = 0;
                         mPresenter.uploadSM(getApplicationContext());
                     } catch (Exception e) {

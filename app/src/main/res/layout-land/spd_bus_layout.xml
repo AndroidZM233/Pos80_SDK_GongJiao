@@ -80,7 +80,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="天津公交"
-                android:textSize="35sp" />
+                android:textSize="25sp" />
 
             <View
                 android:layout_width="match_parent"
@@ -132,7 +132,7 @@
                     android:layout_height="wrap_content"
                     android:layout_gravity="center"
                     android:text="消费额"
-                    android:textSize="35sp" />
+                    android:textSize="@dimen/textSize" />
 
                 <TextView
                     android:id="@+id/tv_xiaofei_money"
@@ -157,7 +157,7 @@
                     android:layout_height="wrap_content"
                     android:layout_gravity="center"
                     android:text="636路"
-                    android:textSize="35sp" />
+                    android:textSize="@dimen/textSize" />
 
                 <TextView
                     android:id="@+id/tv_time"
@@ -165,7 +165,7 @@
                     android:layout_height="wrap_content"
                     android:layout_gravity="center"
                     android:text="10:52:50"
-                    android:textSize="20sp" />
+                    android:textSize="30sp" />
 
                 <TextView
                     android:id="@+id/tv_date"
@@ -173,7 +173,7 @@
                     android:layout_height="wrap_content"
                     android:layout_gravity="center"
                     android:text="2018年12月06日"
-                    android:textSize="25sp" />
+                    android:textSize="35sp" />
 
             </LinearLayout>
 
@@ -190,7 +190,7 @@
                     android:layout_height="wrap_content"
                     android:layout_gravity="center"
                     android:text="票价"
-                    android:textSize="35sp" />
+                    android:textSize="@dimen/textSize" />
 
                 <TextView
                     android:id="@+id/tv_balance"

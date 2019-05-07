@@ -24,6 +24,7 @@ import com.spd.base.utils.LogUtils;
 import com.spd.bus.spdata.YinLianPayManage;
 import com.spd.bus.spdata.been.PsamBeen;
 import com.spd.bus.spdata.mvp.BasePresenterImpl;
+import com.spd.bus.util.ConfigUtils;
 import com.spd.yinlianpay.util.PrefUtil;
 
 import java.util.Arrays;
@@ -97,6 +98,7 @@ public class ConfigCheckPresenter extends BasePresenterImpl<ConfigCheckContract.
             public void run() {
 
                 ConfigCheckPresenter.this.mBankCard = MyApplication.getmBankCard();
+                ConfigUtils.jsonToDB();
 
                 boolean psam1Init = psam1Init();
                 boolean psam2Init = psam2Init();

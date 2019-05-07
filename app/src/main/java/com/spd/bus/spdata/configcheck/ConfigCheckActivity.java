@@ -9,6 +9,7 @@ import android.widget.TextView;
 
 import com.kaopiz.kprogresshud.KProgressHUD;
 import com.spd.base.utils.LogUtils;
+import com.spd.base.utils.NetWorkUtils;
 import com.spd.bus.MyApplication;
 import com.spd.bus.R;
 import com.spd.bus.spdata.PsamIcActivity;
@@ -43,14 +44,18 @@ public class ConfigCheckActivity extends MVPBaseActivity<ConfigCheckContract.Vie
     private TextView mTvWxMac;
     private YinLianPayManage yinLianPayManage;
     private boolean isDownloadOne = false;
+    //第一次打开软件
+    private boolean isFirst = true;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_config_check);
+        while (!NetWorkUtils.isNetworkConnected(getApplicationContext())) {
+
+        }
         initView();
         ConfigUtils.loadTxtConfig();
-
 
         MyApplication.setInitDevListener(new MyApplication.InitDevListener() {
             @Override
@@ -73,7 +78,6 @@ public class ConfigCheckActivity extends MVPBaseActivity<ConfigCheckContract.Vie
 
             }
         });
-
     }
 
 
@@ -117,7 +121,22 @@ public class ConfigCheckActivity extends MVPBaseActivity<ConfigCheckContract.Vie
     @Override
     protected void onResume() {
         super.onResume();
-
+//        if (!isFirst) {
+//            if (MyApplication.isScanSuccess) {
+//                kProgressHUD = KProgressHUD.create(ConfigCheckActivity.this);
+//                kProgressHUD.setStyle(KProgressHUD.Style.SPIN_INDETERMINATE)
+//                        .setLabel("初始化中...")
+//                        .setCancellable(true)
+//                        .setAnimationSpeed(2)
+//                        .setDimAmount(0.5f)
+//                        .show();
+//                mPresenter.initPsam(getApplicationContext());
+//            } else {
+//                MyApplication.getInstance().initScanBards(getApplicationContext());
+//            }
+//        }
+//
+//        isFirst = false;
     }
 
     private void initView() {

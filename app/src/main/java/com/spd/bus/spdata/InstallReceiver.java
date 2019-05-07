@@ -6,6 +6,7 @@ import android.content.Intent;
 import android.text.TextUtils;
 import android.widget.Toast;
 
+import com.spd.base.utils.LogUtils;
 import com.spd.bus.spdata.configcheck.ConfigCheckActivity;
 
 /**
@@ -15,6 +16,7 @@ import com.spd.bus.spdata.configcheck.ConfigCheckActivity;
 public class InstallReceiver extends BroadcastReceiver {
     @Override
     public void onReceive(Context context, Intent intent) {
+        LogUtils.v(intent.getAction());
         //新的应用安装
         if (TextUtils.equals(intent.getAction(), Intent.ACTION_PACKAGE_ADDED)) {
             String packageName = intent.getData().getSchemeSpecificPart();

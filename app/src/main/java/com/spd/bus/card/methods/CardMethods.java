@@ -469,7 +469,12 @@ public class CardMethods {
         if (tCardOpDu.cardClass == 0x07)//交通部CPU卡
         {
             //取城市卡普通卡折扣率
-            radio = 100;
+            if (tCardOpDu.isJTBCardAvailable) {
+                radio = runParaFile.getUcCitySubRadioP()[0];
+            } else {
+                radio = 100;
+            }
+
         } else if (tCardOpDu.cardClass == 0x03)//CPU卡
         {
             byte[] ucCpuRadioP = runParaFile.getUcCpuRadioP();
