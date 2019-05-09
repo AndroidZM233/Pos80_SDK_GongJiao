@@ -393,7 +393,7 @@ public class ChannelTool {
                     } else {
 
                         Log.i("stw", "發送报文0200报文反回=====" + (System.currentTimeMillis() - times));
-                        onCommonListener.onError(0, msg.getField39Code());
+                        onCommonListener.onToastError(0, msg.getField39Code());
                     }
                 } catch (ODAException e) {
                     try {

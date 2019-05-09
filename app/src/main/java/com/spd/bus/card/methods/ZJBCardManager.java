@@ -67,7 +67,7 @@ public class ZJBCardManager {
 
 
     public CardBackBean mainMethod(Context context, BankCard mBankCard, List<PsamBeen> psamBeenList
-    , YinLianPayManage yinLianPayManage, Handler handler) {
+            , YinLianPayManage yinLianPayManage, Handler handler) {
         this.context = context;
         this.handler = handler;
         this.yinLianPayManage = yinLianPayManage;
@@ -296,7 +296,7 @@ public class ZJBCardManager {
 
         List<RunParaFile> runParaFiles = DbDaoManage.getDaoSession()
                 .getRunParaFileDao().loadAll();
-        if (runParaFiles == null) {
+        if (runParaFiles == null || runParaFiles.size() == 0) {
             return new CardBackBean(ReturnVal.CODE_PLEASE_SET, tCardOpDU);
         }
         runParaFile = runParaFiles.get(0);
@@ -468,7 +468,7 @@ public class ZJBCardManager {
                     }
                 } catch (ParseException e) {
                     e.printStackTrace();
-                    tCardOpDU.log = LogUtils.generateTag() + "\n"+e.toString();
+                    tCardOpDU.log = LogUtils.generateTag() + "\n" + e.toString();
                     return new CardBackBean(ReturnVal.CAD_READ, tCardOpDU);
                 }
 
@@ -502,7 +502,7 @@ public class ZJBCardManager {
                         return new CardBackBean(ReturnVal.CAD_READ, tCardOpDU);
                     }
 
-                  //  systemTime = Datautils.HexString2Bytes("20190501080808");
+                    //  systemTime = Datautils.HexString2Bytes("20190501080808");
                     ret = CardMethods.cpuCardGetYueBasePos(systemTime, tCardOpDU, resultBytes);
 
                     if (ret == 0) {
@@ -738,7 +738,7 @@ public class ZJBCardManager {
                 } else {
                     // 银联双免
                     yinLianPayManage.readCardInfo("07", handler);
-                    return new CardBackBean(ReturnVal.CAD_READ, tCardOpDU);
+                    return new CardBackBean(ReturnVal.CAD_SM, tCardOpDU);
                 }
 
 

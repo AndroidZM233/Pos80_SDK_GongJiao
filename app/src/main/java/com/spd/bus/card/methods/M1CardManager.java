@@ -112,7 +112,7 @@ public class M1CardManager {
         LogUtils.v("M1开始");
         List<RunParaFile> runParaFiles = DbDaoManage.getDaoSession()
                 .getRunParaFileDao().loadAll();
-        if (runParaFiles == null) {
+        if (runParaFiles == null || runParaFiles.size() == 0) {
             return new CardBackBean(ReturnVal.CODE_PLEASE_SET, cardOpDU);
         } else {
             runParaFile = runParaFiles.get(0);
@@ -710,7 +710,7 @@ public class M1CardManager {
                 } catch (ParseException e) {
                     e.printStackTrace();
                     LogUtils.e(e.toString());
-                    cardOpDU.log = LogUtils.generateTag() + "\n"+e.toString();
+                    cardOpDU.log = LogUtils.generateTag() + "\n" + e.toString();
                     return new CardBackBean(ReturnVal.CAD_READ, cardOpDU);
                 }
             }
@@ -1812,7 +1812,7 @@ public class M1CardManager {
                 .where(BlackDBDao.Properties.Data.eq(arrayToString)).list();
         if (list != null && list.size() > 0) {
             cardOpDU.fBlackCard = true;
-        }else {
+        } else {
             cardOpDU.fBlackCard = false;
         }
         // 查黑名单表发现该卡在黑名单内：

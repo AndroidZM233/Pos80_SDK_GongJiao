@@ -111,6 +111,11 @@ public class ConfigCheckActivity extends MVPBaseActivity<ConfigCheckContract.Vie
                     public void onDataBack(Msg msg) {
 
                     }
+
+                    @Override
+                    public void onToastError(int errorCode, String errorMsg) {
+
+                    }
                 });
             } catch (Exception e) {
                 e.printStackTrace();
@@ -240,6 +245,11 @@ public class ConfigCheckActivity extends MVPBaseActivity<ConfigCheckContract.Vie
 
     @Override
     public void onDataBack(Msg msg) {
+
+    }
+
+    @Override
+    public void onToastError(int errorCode, String errorMsg) {
 
     }
 }

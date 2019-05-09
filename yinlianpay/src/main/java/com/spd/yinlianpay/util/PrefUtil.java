@@ -325,7 +325,7 @@ public class PrefUtil {
         if (serNo == 0) {
             putSerialNo(1);
         }
-        return sharedPreferences.getInt(KEY_SERIAL_NO, 1234);
+        return sharedPreferences.getInt(KEY_SERIAL_NO, 3000);
     }
 
     public static String getSerialNoForHttp() {

@@ -135,7 +135,7 @@ public class UnionPayCard {
         int[] icDataLen = new int[1];
         setField55Dara(icData, 512);
         //String icDataStr = WeiPassGlobal.getTransactionInfo().getIcData();
-        Log.i("ZM", "EMV_OnlineProc 2");
+        LogUtils.i("EMV_OnlineProc 2");
         //发送0200 联机交易
         int result = transOnlineProcess(callBackData, callBackLen);
         callBackData[0] = (byte) result;
@@ -150,7 +150,7 @@ public class UnionPayCard {
      * @return
      */
     private static int transOnlineProcess(byte[] outData, int[] outDataLen) {
-        int ret=-1;
+        int ret = -1;
         final String[] errMsg = new String[1];
         errMsg[0] = "Network Error";
         int appResult = 0;
@@ -193,7 +193,7 @@ public class UnionPayCard {
                 }
             }
 
-            Log.i("ZM", "2821准备发送交易== " + (System.currentTimeMillis() - systemlongtime));
+            LogUtils.i("2821准备发送交易== " + (System.currentTimeMillis() - systemlongtime));
             systemlongtime = System.currentTimeMillis();
             //发起联机
             ChannelTool.doSale(WeiPassGlobal.getTransactionInfo().getAmount(), new OnTraditionListener() {
@@ -205,14 +205,14 @@ public class UnionPayCard {
                         msg[0] = info.msg;
                         WeiPassGlobal.tradeInfo = info;
                     }
-                    Log.i("ZM", "EMV_OnlineProc 6");
+                    LogUtils.i("EMV_OnlineProc 6");
                     countDownLatch.countDown();
                     Log.i(TAG, "返回0200发送返回11111111111== " + (System.currentTimeMillis() - systemlongtime));
                 }
 
                 @Override
                 public void onSuccess() {
-                    Log.i("ZM", "EMV_OnlineProc 5");
+                    LogUtils.i("EMV_OnlineProc 5");
                     countDownLatch.countDown();
                 }
 
@@ -226,9 +226,7 @@ public class UnionPayCard {
                 public void onError(int errorCode, String errorMsg) {
                     msg[0] = null;
                     errMsg[0] = errorMsg;
-//                    handler.sendMessage(handler.obtainMessage(MyContext.MSG_ERROR
-//                            , ErrorMsg.getEmvError(result)));
-                    Log.i("ZM", "EMV_OnlineProc 4");
+                    LogUtils.i("EMV_OnlineProc 4");
                     countDownLatch.countDown();
                     LogUtils.d("errorMsg: " + errorMsg);
                 }
@@ -242,9 +240,17 @@ public class UnionPayCard {
                     }
 
                 }
+
+                @Override
+                public void onToastError(int errorCode, String errorMsg) {
+                    handler.sendMessage(handler.obtainMessage(MyContext.MSG_ERROR
+                            , errorMsg));
+                    countDownLatch.countDown();
+                }
+
             });
             countDownLatch.await();
-            Log.i("ZM", "EMV_OnlineProc 3");
+            LogUtils.i("EMV_OnlineProc 3");
             systemlongtime = System.currentTimeMillis();
             if (msg[0] == null) {
                 handler.sendMessage(handler.obtainMessage(MyContext.Hide_Progress, "msg[0] == null"));
@@ -335,19 +341,19 @@ public class UnionPayCard {
             @Override
             public int emvCoreCallback(final int i, final byte[] bytes, final byte[] bytes1, final int[] ints) throws RemoteException {
                 final CountDownLatch countDownLatch = new CountDownLatch(1);
-                Log.e("ZM", "EMV_OnlineProc start" + i);
+                LogUtils.i("EMV_OnlineProc start" + i);
 
                 switch (i) {
                     case Core.CALLBACK_ADVICE:
                         //2822
-                        Log.i("ZM", "emvCoreCallback: 返回2822");
+                        LogUtils.i("emvCoreCallback: 返回2822");
                         countDownLatch.countDown();
                         break;
                     case Core.CALLBACK_ONLINE:
                         // 2821  联机请求  Core.CALLBACK_ONLINE 发起联机交易
-                        Log.i("ZM", "EMV_OnlineProc begin");
+                        LogUtils.i("EMV_OnlineProc begin");
                         contantlessOnlineRet = EMV_OnlineProc(bytes1, ints);
-                        Log.i("ZM", "EMV_OnlineProc end");
+                        LogUtils.i("EMV_OnlineProc end");
                         countDownLatch.countDown();
                         break;
                     case Core.CALLBACK_AMOUNT:
@@ -367,12 +373,12 @@ public class UnionPayCard {
                         am[7] = tmp[0];
                         System.arraycopy(am, 0, bytes1, 1, 5);
                         ints[0] = 10;
-                        Log.i("ZM", "非接交易预处理时间== " + (System.currentTimeMillis() - systemlongtime));
+                        LogUtils.i("非接交易预处理时间== " + (System.currentTimeMillis() - systemlongtime));
                         countDownLatch.countDown();
                         break;
                     default:
-                        if(i != 1048) {
-                            Log.i("ZM", "emvCoreCallback: 返回2822");
+                        if (i != 1048) {
+                            LogUtils.i("emvCoreCallback: 返回2822");
                             countDownLatch.countDown();
                         }
                         break;
@@ -394,7 +400,7 @@ public class UnionPayCard {
                 //非接交易预处理
                 retresult = QPBOC_PreProcess();
                 if (retresult != ErrorMsgType.SUCCESS) {
-                    handler.sendMessage(handler.obtainMessage(MyContext.RETRY
+                    handler.sendMessage(handler.obtainMessage(MyContext.MSG_ERROR
                             , "transaction failed：" + ErrorMsg.getEmvError(result)));
                     return "";
                 } else {
@@ -412,7 +418,7 @@ public class UnionPayCard {
                     }
                 } else {
                     if (retresult != 8200) {
-                        handler.sendMessage(handler.obtainMessage(MyContext.RETRY
+                        handler.sendMessage(handler.obtainMessage(MyContext.MSG_ERROR
                                 , "transcation failed：" + ErrorMsg.getEmvError(result)));
                         return "";
                     } else {
@@ -447,7 +453,19 @@ public class UnionPayCard {
         boolean reversalFlag = false;
         int[] outlen = new int[1];
         byte[] outcomeData = new byte[128];
-        switch (WeiPassGlobal.getTransactionInfo().getTransType()) {
+        result = emvCore.cardAuth();
+        if (result != ErrorMsgType.SUCCESS) {
+            emvCore.getOutCome(outcomeData, outlen);
+            byte[] outComeData = Arrays.copyOf(outcomeData, outlen[0]);
+            //System.arraycopy(outData,0,outComeData,0,len[0]);
+            if (outComeData != null && outComeData.length > 0) {
+                TLVList tlvList = TLVList.fromBinary(outComeData);
+                String value = tlvList.getTLV("DF8129").getValue();
+                handler.sendMessage(handler.obtainMessage(MyContext.RESULT_OUTCOME, ParamDefine.getOutCome(HEXUitl.hexToBytes(value)[0])));
+            }
+            return result;
+        }
+        /*switch (WeiPassGlobal.getTransactionInfo().getTransType()) {
             case TradeInfo.Type_Sale:
                 result = emvCore.cardAuth();
                 if (result != ErrorMsgType.SUCCESS) {
@@ -464,7 +482,7 @@ public class UnionPayCard {
                 break;
             default:
                 break;
-        }
+        }*/
         LogUtils.d("EMV_TransProcess:" + result);
         if (result == ErrorMsgType.SUCCESS) {
             //AnalyseTVRTSI();
@@ -482,17 +500,17 @@ public class UnionPayCard {
 //                mBankCard.openCloseCardReader(2,2);
                 handler.sendMessage(handler.obtainMessage(MyContext.Hide_Progress, "非接交易"));
                 if (contantlessOnlineRet != ErrorMsgType.SUCCESS) {
-                    handler.sendMessage(handler.obtainMessage(MyContext.MSG_ERROR
-                            , contantlessOnlineRet + ""));
+//                    handler.sendMessage(handler.obtainMessage(MyContext.MSG_ERROR
+//                            , contantlessOnlineRet + ""));
                     LogUtils.v("交易 error" + contantlessOnlineRet);
                     return -1;
                 }
-               // saveEMVTransInfo();
-               // AnalyseTVRTSI();
+                // saveEMVTransInfo();
+                // AnalyseTVRTSI();
                 //QPBOC tvr
                 //emvCore.setTLV(0x95, new byte[]{0x00, 0x00, 0x00, 0x00, 0x00});
-              //  emvCore.setTLV(0x9B, new byte[]{0x00, 0x00});
-               // getEMVTransResult();
+                //  emvCore.setTLV(0x9B, new byte[]{0x00, 0x00});
+                // getEMVTransResult();
 
             } else {
                 // TODO: 2019/4/3  接触交易
@@ -532,13 +550,13 @@ public class UnionPayCard {
         int[] outStaus = {1024};
         WeiPassGlobal.getTransactionInfo().setTermId(TerminalNo);
         WeiPassGlobal.getTransactionInfo().setMerchantName(MerchantName);
-        emvCore.getParam(outData, outStaus);
+        /*emvCore.getParam(outData, outStaus);
         EmvParam emvParam = new EmvParam(context);
         emvParam.setTransType(WeiPassGlobal.getTransactionInfo().getTransType());
         emvParam.parseByteArray(outData);
         emvParam.setSupportPSESel(1);
         emvParam.setTermCapab(0xE060C8);
-        emvCore.setParam(emvParam.toByteArray());
+        emvCore.setParam(emvParam.toByteArray());*/
         handler.obtainMessage(MyContext.MSG_PROGRESS, "Read card data, please wait。。").sendToTarget();
         // 流水号
         int traceNo = PrefUtil.getSerialNo();
@@ -1088,7 +1106,7 @@ public class UnionPayCard {
         String f55 = TLV.pack(map, F55 + "," + ex_title);
         WeiPassGlobal.getTransactionInfo().setIcData(f55);
 //        System.out.println(map);
-       // String ex = TLV.pack(map, ex_title);
+        // String ex = TLV.pack(map, ex_title);
     }
 
     private static int getAIDAndCardType() throws RemoteException {
@@ -1272,8 +1290,9 @@ public class UnionPayCard {
                 int result = emvCore.getAID(i, outAIDdata, outAIDLen);
                 Log.e("getAid", i + "--->" + result);
                 outAIDdata = Arrays.copyOf(outAIDdata, outAIDLen[0]);
-                if (result != 0)
+                if (result != 0) {
                     continue;
+                }
                 EmvAppList emvAppList = new EmvAppList(context);
                 emvAppList.parseByteArray(outAIDdata);
                 emvAIDList.add(emvAppList);
@@ -1337,6 +1356,12 @@ public class UnionPayCard {
         emvParam.setTermTransQuali("27804080");//9f66
         emvParam.setCountryCode("0156");
         emvParam.setTransCurrCode("0156");
+
+        emvParam.setTransType(WeiPassGlobal.getTransactionInfo().getTransType());
+        emvParam.parseByteArray(outData);
+        emvParam.setSupportPSESel(1);
+        emvParam.setTermCapab(0xE060C8);
+
         emvCore.setParam(emvParam.toByteArray());
         emvCore.transInit();//交易初始化
         int result = emvCore.qPBOCPreProcess(iCallbackListener);//非接预处理  非接 IC 卡有此过程，回调 2819 设置金额

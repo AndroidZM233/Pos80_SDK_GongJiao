@@ -12,9 +12,9 @@ public class LogUtils {
     public static String tagPrefix = "ZM";
     public static boolean showV = true;
     public static boolean showD = true;
-    public static boolean showI = false;
+    public static boolean showI = true;
     public static boolean showW = false;
-    public static boolean showE = false;
+    public static boolean showE = true;
     public static boolean showWTF = false;
 
     /**

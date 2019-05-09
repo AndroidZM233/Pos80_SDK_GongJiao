@@ -178,7 +178,7 @@ public class JTBCardManager {
                 } else {
                     // 银联双免
                     yinLianPayManage.readCardInfo("07", handler);
-                    return new CardBackBean(ReturnVal.CAD_READ, tCardOpDU);
+                    return new CardBackBean(ReturnVal.CAD_SM, tCardOpDU);
                 }
 
             }
@@ -407,7 +407,7 @@ public class JTBCardManager {
 
         List<RunParaFile> runParaFiles = DbDaoManage.getDaoSession()
                 .getRunParaFileDao().loadAll();
-        if (runParaFiles == null) {
+        if (runParaFiles == null || runParaFiles.size() == 0) {
             return ReturnVal.CODE_PLEASE_SET;
         }
         runParaFile = runParaFiles.get(0);

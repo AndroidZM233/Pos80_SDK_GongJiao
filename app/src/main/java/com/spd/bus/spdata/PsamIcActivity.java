@@ -260,6 +260,7 @@ public class PsamIcActivity extends MVPBaseActivity<SpdBusPayContract.View, SpdB
                             if (isDriverUI || isShowDataUI) {
                                 continue;
                             }
+
                             LogUtils.v("CPU结束寻卡===" + (System.currentTimeMillis() - ltime));
                             cardBackBean = JTBCardManager.getInstance()
                                     .mainMethod(getApplicationContext(), MyApplication.mBankCard
@@ -279,6 +280,13 @@ public class PsamIcActivity extends MVPBaseActivity<SpdBusPayContract.View, SpdB
                         }
 
                         isFlag = 0;
+//                        if (cardBackBean != null) {
+//                            if (cardBackBean.getBackValue() != ReturnVal.CAD_SM) {
+//                                isFlag = 0;
+//                            }
+//                        } else {
+//                            isFlag = 0;
+//                        }
                     } else if (respdata[0] == 0x37) {
                         //检测到 M1-S50 卡
 //                        if (MyApplication.psamDatas.size() != 2) {
@@ -290,15 +298,16 @@ public class PsamIcActivity extends MVPBaseActivity<SpdBusPayContract.View, SpdB
                             continue;
                         }
                         LogUtils.v("m1结束寻卡===" + (System.currentTimeMillis() - ltime));
+                        CardBackBean cardBackBean = null;
                         try {
                             if (isDriverUI) {
-                                CardBackBean cardBackBean = M1CardManager.getInstance()
+                                cardBackBean = M1CardManager.getInstance()
                                         .mainMethod(getApplicationContext(), MyApplication.mBankCard
                                                 , M1CardManager.M150, 0
                                                 , MyApplication.psamDatas, isConfigChange);
                                 doVal(cardBackBean);
                             } else {
-                                CardBackBean cardBackBean = M1CardManager.getInstance()
+                                cardBackBean = M1CardManager.getInstance()
                                         .mainMethod(getApplicationContext(), MyApplication.mBankCard
                                                 , M1CardManager.M150, 2
                                                 , MyApplication.psamDatas, isConfigChange);
@@ -313,6 +322,8 @@ public class PsamIcActivity extends MVPBaseActivity<SpdBusPayContract.View, SpdB
                             e.printStackTrace();
                         }
                         isFlag = 0;
+
+
                     } else if (respdata[0] == 0x47) {
                         // 检测到 M1-S70 卡
 //                        if (MyApplication.psamDatas.size() != 2) {
@@ -617,13 +628,13 @@ public class PsamIcActivity extends MVPBaseActivity<SpdBusPayContract.View, SpdB
                     break;
                 case MyContext.MSG_ERROR:
                     LogUtils.v("请投币");
-                    String obj = "请投币" + (String) msg.obj;
+                    String obj = "请投币:" + (String) msg.obj;
                     ToastUtil.customToastView(PsamIcActivity.this, obj
                             , Toast.LENGTH_SHORT, (TextView) LayoutInflater
                                     .from(PsamIcActivity.this)
                                     .inflate(R.layout.layout_toast, null));
                     PlaySound.play(PlaySound.QINGTOUBI, 0);
-                    isFlag = 1;
+                    isFlag = 0;
                     try {
                         MyApplication.mBankCard.breakOffCommand();
                     } catch (RemoteException e) {
@@ -697,6 +708,7 @@ public class PsamIcActivity extends MVPBaseActivity<SpdBusPayContract.View, SpdB
                     break;
                 case MyContext.RETRY:
                     PlaySound.play(PlaySound.qingchongshua, 0);
+                    isFlag = 0;
                     break;
                 default:
                     Log.i(TAG, "handleMessage:  返回 default");
