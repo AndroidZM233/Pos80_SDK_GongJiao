@@ -128,6 +128,7 @@ public class PsamIcActivity extends MVPBaseActivity<SpdBusPayContract.View, SpdB
 //    private boolean isSetConfigUI = false;
     private boolean isConfigChange;
     private TextView mTvTitle;
+    private long xunka;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -297,7 +298,8 @@ public class PsamIcActivity extends MVPBaseActivity<SpdBusPayContract.View, SpdB
                         if (isShowDataUI) {
                             continue;
                         }
-                        LogUtils.v("m1结束寻卡===" + (System.currentTimeMillis() - ltime));
+                        xunka = System.currentTimeMillis() - ltime;
+                        LogUtils.v("m1结束寻卡===" + xunka);
                         CardBackBean cardBackBean = null;
                         try {
                             if (isDriverUI) {
@@ -389,7 +391,11 @@ public class PsamIcActivity extends MVPBaseActivity<SpdBusPayContract.View, SpdB
 //                        player.start();//开始播放
 //                        PlaySound.play(PlaySound.initerro, 0);
 
-                        updateUI(cardBackBean);
+                        mTvBalance.setTextSize(20);
+                        mTvBalance.setText("寻卡：" + xunka + "ms\n" + "总共：" +
+                                (System.currentTimeMillis() - ltime) + "ms");
+                        PlaySound.play(PlaySound.dang, 0);
+//                        updateUI(cardBackBean);
                         break;
                     case ReturnVal.CAD_RETRY:
                         PlaySound.play(PlaySound.qingchongshua, 0);
