@@ -327,6 +327,8 @@ public class UnionPayCard {
             System.arraycopy(inputData[0], 0, outData, 1, pos + 1);
             outDataLen[0] = pos + 1;
 
+        } else {
+            return -1;
         }
         Log.i(TAG, "结束正确==== " + (System.currentTimeMillis() - systemlongtime));
         return appResult;
@@ -377,10 +379,10 @@ public class UnionPayCard {
                         countDownLatch.countDown();
                         break;
                     default:
-                        if (i != 1048) {
+                        /*if (i != 1048) {
                             LogUtils.i("emvCoreCallback: 返回2822");
                             countDownLatch.countDown();
-                        }
+                        }*/
                         break;
                 }
                 try {
@@ -571,11 +573,11 @@ public class UnionPayCard {
         if (result != 0) {
             return result;
         }
-        //EMV参数设置
+       /* //EMV参数设置
         result = setEMVConfig();
         if (result != 0) {
             return result;
-        }
+        }*/
         handler.obtainMessage(MyContext.MSG_PROGRESS, "Getting card number。").sendToTarget();
         // 读应用数据 非接： 没有应用选择过程，此命令直接返回结果；
         //接触： 普通 IC 卡直接返回结果;
@@ -588,24 +590,24 @@ public class UnionPayCard {
             return result;
         }
         Log.i("stw", "应用选择22222222222222=====" + (System.currentTimeMillis() - time));
-        time = System.currentTimeMillis();
+        /*time = System.currentTimeMillis();
         emvCore.getTLV(0x9F6e, outData, outStaus);
         if (outStaus[0] != 0x00 && (outData[2] & (byte) 0x80) == (byte) 0x00) {
             byte[] devicetype = new byte[2];
             System.arraycopy(outData, 4, devicetype, 0, 2);
             WeiPassGlobal.getTransactionInfo().setDevicetype(new String(devicetype));
-        }
+        }*/
         result = getEMVTransInfo();
         if (result != ErrorMsgType.SUCCESS) {
             return result;
         }
-        if (WeiPassGlobal.getTransactionInfo().getTransType() == TradeInfo.Type_Void
+       /* if (WeiPassGlobal.getTransactionInfo().getTransType() == TradeInfo.Type_Void
                 || WeiPassGlobal.getTransactionInfo().getTransType() == TradeInfo.Type_CompleteVoid) {
             if (!WeiPassGlobal.getTransactionInfo().getCardNo().equals(oldCardNo)) {
 //                handler.obtainMessage(MyContext.MSG_ERROR, "Undo card number is inconsistent").sendToTarget();
                 return -1;
             }
-        }
+        }*/
         Log.i("stw", "应用选择3333333333333=====" + (System.currentTimeMillis() - time));
         return result;
     }
@@ -1081,29 +1083,40 @@ public class UnionPayCard {
         if (!map.containsKey("84")) {
             map.put("84", HEXUitl.bytesToHex(Arrays.copyOf(outData, outDataLen[0])));
         }
-        if (WeiPassGlobal.getTransactionInfo().getTransType() == TradeInfo.Type_Sale ||
-                WeiPassGlobal.getTransactionInfo().getTransType() == TradeInfo.Type_Auth ||
-                WeiPassGlobal.getTransactionInfo().getTransType() == TradeInfo.Type_QueryBalance
-                ) {
-            emvCore.getTLV(0x9F63, outData, outDataLen);
-        }
-        if (!map.containsKey("9F63")) {
-            map.put("9F63", HEXUitl.bytesToHex(Arrays.copyOf(outData, outDataLen[0])));
-        }
+//        if (WeiPassGlobal.getTransactionInfo().getTransType() == TradeInfo.Type_Sale ||
+//                WeiPassGlobal.getTransactionInfo().getTransType() == TradeInfo.Type_Auth ||
+//                WeiPassGlobal.getTransactionInfo().getTransType() == TradeInfo.Type_QueryBalance
+//                ) {
+//            emvCore.getTLV(0x9F63, outData, outDataLen);
+//        }
+//
+//        if (!map.containsKey("9F63")) {
+//            map.put("9F63", HEXUitl.bytesToHex(Arrays.copyOf(outData, outDataLen[0])));
+//        }
+
+
         if (WeiPassGlobal.getTransactionInfo().getServiceCode().startsWith("07")) {
-            map.put("9F27", "00");
+//            map.put("9F27", "00");
+            emvCore.getTLV(0x9F27, outData, outDataLen);
+            map.put("9F27", HEXUitl.bytesToHex(Arrays.copyOf(outData, outDataLen[0])));
             if (!map.containsKey("9F03")) {
                 map.put("9F03", "000000000000");
             }
         }
+//        emvCore.getTLV(0x9F34, outData, outDataLen);
+//        map.put("9F34", HEXUitl.bytesToHex(Arrays.copyOf(outData, outDataLen[0])));
+//        map.put("9F34", "5E0300");
+
         final String F55 = "9F26,9F27,9F10,9F37,9F36,95,9A,9C,9F02,5F2A,82,9F1A,9F03,9F33";
-        String ex_title = "9F34,9F35,9F1E,9F63,9F41,9F09,84";
+//        String ex_title = "9F34,9F35,9F1E,9F63,9F41,9F09,84";
+        String ex_title = "9F34,9F35,9F1E,9F41,9F09,84";
         final String onLineTag = "74,8A";
         if (WeiPassGlobal.getTransactionInfo().getTransType() == TradeInfo.Type_OffLine_Sale &&
                 tlvMsg.contains("74") || tlvMsg.contains("8A")) {
             ex_title += onLineTag;
         }
         String f55 = TLV.pack(map, F55 + "," + ex_title);
+//        f55 = f55.replace("9F270100", "9F270180");
         WeiPassGlobal.getTransactionInfo().setIcData(f55);
 //        System.out.println(map);
         // String ex = TLV.pack(map, ex_title);
@@ -1239,7 +1252,8 @@ public class UnionPayCard {
             Log.i(TAG, "getEMVTransInfo: cardNo" + WeiPassGlobal.getTransactionInfo().getCardNo());
             int track2Len = tagTLV57.indexOf("F");
             if (track2Len >= 0) {
-                WeiPassGlobal.getTransactionInfo().setTrack2(tagTLV57.substring(0, track2Len));
+                String track2 = tagTLV57.substring(0, track2Len);
+                WeiPassGlobal.getTransactionInfo().setTrack2(track2);
             } else {
                 WeiPassGlobal.getTransactionInfo().setTrack2(tagTLV57);
             }
@@ -1250,7 +1264,8 @@ public class UnionPayCard {
         outDataLen = new int[1];
         emvCore.getTLV(0x5F24, outData, outDataLen);
         if (outDataLen[0] != 0) {
-            WeiPassGlobal.getTransactionInfo().setExpireDate(HEXUitl.bytesToHex(Arrays.copyOf(outData, outDataLen[0])).substring(0, 4));
+            String expireDate = HEXUitl.bytesToHex(Arrays.copyOf(outData, outDataLen[0])).substring(0, 4);
+            WeiPassGlobal.getTransactionInfo().setExpireDate(expireDate);
             Log.e("expire date", WeiPassGlobal.getTransactionInfo().getExpireDate());
         }
         return 0;

@@ -110,7 +110,7 @@ public class ChanelPacket {
                 if (info.getTransType() != TradeInfo.Type_Void
                         && info.getTransType() != TradeInfo.Type_Refund
                         && info.getTransType() != TradeInfo.Type_CompleteVoid
-                ) {
+                        ) {
                     tcList.add(info);
                 }
             }
@@ -372,7 +372,7 @@ public class ChanelPacket {
         b.setField(42, WeiPassGlobal.getTransactionInfo().getMerchantId());
         b.setField(60, "00" + PrefUtil.getBatchNo() + (PrefUtil.getISSUPPORTSM() ? "005" : "003"));
         b.setField(63, "0" + operatorNo);
-        Log.i("stw", "login:=================="+ PrefUtil.getBatchNo()+"==");
+        Log.i("stw", "login:==================" + PrefUtil.getBatchNo() + "==");
         return makeMsg(b, false);
     }
 
@@ -409,6 +409,7 @@ public class ChanelPacket {
 
     /**
      * 解析报文
+     *
      * @param b
      * @param mac
      * @return
@@ -437,7 +438,7 @@ public class ChanelPacket {
                     || WeiPassGlobal.getTransactionInfo().getTransType() == TradeInfo.Type_Cancel
                     || WeiPassGlobal.getTransactionInfo().getTransType() == TradeInfo.Type_AuthComplete
                     || WeiPassGlobal.getTransactionInfo().getTransType() == TradeInfo.Type_CompleteVoid)
-            ) {
+                    ) {
                 //保存冲正记录
                 byte[] reversalData = Arrays.copyOfRange(baos.toByteArray(), 11, baos.toByteArray().length);
                 PrefUtil.putReversal(new Reversal(WeiPassGlobal.getTransactionInfo().getTransType(), reversalData));
@@ -571,6 +572,7 @@ public class ChanelPacket {
         WeiPassGlobal.getTransactionInfo().setTransaceNo(Util.to(PrefUtil.getSerialNo(), 6));
         b.setField(11, WeiPassGlobal.getTransactionInfo().getTransaceNo());//serial no
         b.setField(14, WeiPassGlobal.getTransactionInfo().getExpireDate());// expire date
+//        b.setField(14, "2506");// expire date
         b.setField(22, WeiPassGlobal.getTransactionInfo().getServiceCode());// service code
         String cardSn = WeiPassGlobal.getTransactionInfo().getCardSn();
         b.setField(23, cardSn);// card sn
@@ -602,9 +604,9 @@ public class ChanelPacket {
             b.setFieldData(55, HEXUitl.hexToBytes(WeiPassGlobal.getTransactionInfo().getIcData()));// IC card data
             //b.setField(55,"9F2608E7B33BDAB05F4D2F9F2701809F100807010103A02002019F3704BB9E542C9F36020006950500800080009A031703029C01199F02060000000000015F2A02034482027C009F1A0203449F03060000000000009F3303E0E1C89F34031E03009F3501229F1E0839303632323336348408A0000003330101029F090200009F410400000077");
         }
-        b.setField(60, "22" + WeiPassGlobal.getTransactionInfo().getBacthNo() + "11160");
+        b.setField(60, "22" + WeiPassGlobal.getTransactionInfo().getBacthNo() + "00060");
         if (WeiPassGlobal.getTransactionInfo().getTransType() == TradeInfo.TYPE_HELP_FARMERS_DRAW) {
-            b.setField(60, "01" + WeiPassGlobal.getTransactionInfo().getBacthNo() + "11160");
+            b.setField(60, "01" + WeiPassGlobal.getTransactionInfo().getBacthNo() + "00060");
         }
         Log.i("stw", "makeSale:组报文@@@@@@@@@@=== " + (System.currentTimeMillis() - time));
 
