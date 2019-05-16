@@ -55,6 +55,7 @@ public class ReturnVal {
     public final static int CAD_PSAM_ERROR = 46;
     public final static int CAD_QINGQIANDAO = 47;
     public final static int CAD_SM = 48;
+    public final static int CAD_DUTY = 49;
 //    public final static int CAD_NORMAL		 	0x01
 //    public final static int CAD_PAUSE			0x40
 //    public final static int CAD_PAUSE0		 	0xF0

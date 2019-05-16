@@ -25,6 +25,7 @@ import com.spd.alipay.been.TianjinAlipayRes;
 import com.spd.base.been.WechatQrcodeKey;
 import com.spd.base.been.tianjin.CardBackBean;
 import com.spd.base.been.tianjin.TCardOpDU;
+import com.spd.base.been.tianjin.TStaffTb;
 import com.spd.base.db.DbDaoManage;
 import com.spd.base.dbbeen.RunParaFile;
 import com.spd.base.utils.AppUtils;
@@ -40,6 +41,7 @@ import com.spd.bus.card.methods.M1CardManager;
 import com.spd.bus.card.methods.ReturnVal;
 import com.spd.bus.spdata.been.ErroCode;
 import com.spd.bus.spdata.mvp.MVPBaseActivity;
+import com.spd.bus.spdata.showdata.ShowDataActivity;
 import com.spd.bus.spdata.spdbuspay.SpdBusPayContract;
 import com.spd.bus.spdata.spdbuspay.SpdBusPayPresenter;
 import com.spd.bus.util.ConfigUtils;
@@ -119,6 +121,7 @@ public class PsamIcActivity extends MVPBaseActivity<SpdBusPayContract.View, SpdB
     private LinearLayout mLayoutXiaofei;
 
     private String balance = "2元";
+    private float balanceFloat = 0.0f;
     private LinearLayout mLlDriver;
     private LinearLayout mLlMain;
     private boolean isDriverUI = false;
@@ -128,6 +131,7 @@ public class PsamIcActivity extends MVPBaseActivity<SpdBusPayContract.View, SpdB
 //    private boolean isSetConfigUI = false;
     private boolean isConfigChange;
     private TextView mTvTitle;
+    private boolean isQianDao = false;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -135,6 +139,13 @@ public class PsamIcActivity extends MVPBaseActivity<SpdBusPayContract.View, SpdB
         setContentView(R.layout.spd_bus_layout);
         isConfigChange = SharedXmlUtil.getInstance(getApplicationContext()).read(
                 Info.IS_CONFIG_CHANGE, false);
+
+        List<TStaffTb> tStaffTbs = DbDaoManage.getDaoSession().getTStaffTbDao().loadAll();
+        if (tStaffTbs.size() == 0) {
+            isQianDao = false;
+        } else {
+            isQianDao = true;
+        }
         initView();
         initCard();
     }
@@ -163,7 +174,7 @@ public class PsamIcActivity extends MVPBaseActivity<SpdBusPayContract.View, SpdB
         mLlShowData = findViewById(R.id.ll_show_data);
 //        mLlSetConfig = findViewById(R.id.ll_set_config);
         mTvTitle = findViewById(R.id.tv_title);
-        mTvTitle.setText("天津公交" + AppUtils.getVerName(getApplicationContext()));
+        mTvTitle.setText("版本号：" + AppUtils.getVerName(getApplicationContext()));
     }
 
 
@@ -242,6 +253,14 @@ public class PsamIcActivity extends MVPBaseActivity<SpdBusPayContract.View, SpdB
                         isFlag = 1;
                         return;
                     }
+                    if (!isDriverUI) {
+                        if (!isQianDao) {
+                            doVal(new CardBackBean(ReturnVal.CAD_QINGQIANDAO, null));
+                            isFlag = 0;
+                            continue;
+                        }
+                    }
+
                     //检测到非接IC卡
                     if (respdata[0] == 0x07) {
                         CardBackBean cardBackBean = null;
@@ -258,6 +277,7 @@ public class PsamIcActivity extends MVPBaseActivity<SpdBusPayContract.View, SpdB
                                 continue;
                             }
                             if (isDriverUI || isShowDataUI) {
+                                isFlag = 0;
                                 continue;
                             }
 
@@ -430,6 +450,10 @@ public class PsamIcActivity extends MVPBaseActivity<SpdBusPayContract.View, SpdB
                         break;
                     case ReturnVal.CAD_REUSE:
                         LogUtils.d("CAD_REUSE");
+                        ToastUtil.customToastView(PsamIcActivity.this, "请投币"
+                                , Toast.LENGTH_SHORT, (TextView) LayoutInflater
+                                        .from(PsamIcActivity.this)
+                                        .inflate(R.layout.layout_toast, null));
                         PlaySound.play(PlaySound.QINGTOUBI, 0);
                         break;
                     case ReturnVal.CAD_LOGON:
@@ -440,7 +464,14 @@ public class PsamIcActivity extends MVPBaseActivity<SpdBusPayContract.View, SpdB
                                         .inflate(R.layout.layout_toast, null));
                         SharedXmlUtil.getInstance(getApplicationContext()).write(
                                 Info.IS_CONFIG_CHANGE, false);
+                        SharedXmlUtil.getInstance(getApplicationContext())
+                                .write(Info.DRIVER_YUE, 0);
+                        SharedXmlUtil.getInstance(getApplicationContext())
+                                .write(Info.DRIVER_PEOPLE, 0);
+                        SharedXmlUtil.getInstance(getApplicationContext())
+                                .write(Info.DRIVER_MONEY, 0.0f);
                         isConfigChange = false;
+                        isQianDao = true;
                         handler.postDelayed(new Runnable() {
                             @Override
                             public void run() {
@@ -493,6 +524,14 @@ public class PsamIcActivity extends MVPBaseActivity<SpdBusPayContract.View, SpdB
                         PlaySound.play(PlaySound.QINGTOUBI, 0);
                         logToNet(cardBackBean);
                         break;
+                    case ReturnVal.CAD_DUTY:
+                        ToastUtil.customToastView(PsamIcActivity.this, "当班司机"
+                                , Toast.LENGTH_SHORT, (TextView) LayoutInflater
+                                        .from(PsamIcActivity.this)
+                                        .inflate(R.layout.layout_toast, null));
+                        PlaySound.play(PlaySound.QINGTOUBI, 0);
+                        logToNet(cardBackBean);
+                        break;
                     case ReturnVal.CAD_QINGQIANDAO:
                         ToastUtil.customToastView(PsamIcActivity.this, "请签到"
                                 , Toast.LENGTH_SHORT, (TextView) LayoutInflater
@@ -523,7 +562,31 @@ public class PsamIcActivity extends MVPBaseActivity<SpdBusPayContract.View, SpdB
         mTvXiaofeiMoney.setText(balance);
         mLayoutLineInfo.setVisibility(View.GONE);
         mLayoutXiaofei.setVisibility(View.VISIBLE);
+        statisticalAddition();
+
         handler.postDelayed(runnable, 3000);
+    }
+
+    /**
+     * 要统计的数据进行相加
+     */
+    private void statisticalAddition() {
+        float allMoney = SharedXmlUtil.getInstance(getApplicationContext())
+                .read(Info.ALL_MONEY, 0.0f);
+        float driverMoney = SharedXmlUtil.getInstance(getApplicationContext())
+                .read(Info.DRIVER_MONEY, 0.0f);
+        SharedXmlUtil.getInstance(getApplicationContext())
+                .write(Info.ALL_MONEY, allMoney + balanceFloat);
+        SharedXmlUtil.getInstance(getApplicationContext())
+                .write(Info.DRIVER_MONEY, driverMoney + balanceFloat);
+        int allPeople = SharedXmlUtil.getInstance(getApplicationContext())
+                .read(Info.ALL_PEOPLE, 0);
+        int driverPeople = SharedXmlUtil.getInstance(getApplicationContext())
+                .read(Info.DRIVER_PEOPLE, 0);
+        SharedXmlUtil.getInstance(getApplicationContext())
+                .write(Info.ALL_YUE, allPeople + 1);
+        SharedXmlUtil.getInstance(getApplicationContext())
+                .write(Info.DRIVER_YUE, driverPeople + 1);
     }
 
     private void logToNet(CardBackBean cardBackBean) {
@@ -546,10 +609,10 @@ public class PsamIcActivity extends MVPBaseActivity<SpdBusPayContract.View, SpdB
             String line = Datautils.byteArrayToString(runParaFile.getLineNr());
             mTvLine.setText(Integer.parseInt(line) + "路");
             balance = (double) Datautils.byteArrayToInt(runParaFile.getKeyV1()) / 100 + "元";
-
+            balanceFloat = ((float) Datautils.byteArrayToInt(runParaFile.getKeyV1()));
             mTvBalance.setText(balance);
             String busNr = SharedXmlUtil.getInstance(getApplicationContext())
-                    .read(Info.BUS_NO, "");
+                    .read(Info.BUS_NO, "000000");
             StringBuffer stringBuffer = new StringBuffer();
             stringBuffer.append("车辆号：" + busNr + "\n");
             String posID = SharedXmlUtil.getInstance(getApplicationContext())
@@ -580,6 +643,14 @@ public class PsamIcActivity extends MVPBaseActivity<SpdBusPayContract.View, SpdB
             int num = cardOpDU.yueOriMoney - cardOpDU.yueSub;
             mTvXiaofeiTitle.setText("月票");
             mTvXiaofeiMoney.setText("1");
+            int allYue = SharedXmlUtil.getInstance(getApplicationContext())
+                    .read(Info.ALL_YUE, 0);
+            int driverYue = SharedXmlUtil.getInstance(getApplicationContext())
+                    .read(Info.DRIVER_YUE, 0);
+            SharedXmlUtil.getInstance(getApplicationContext())
+                    .write(Info.ALL_YUE, allYue + 1);
+            SharedXmlUtil.getInstance(getApplicationContext())
+                    .write(Info.DRIVER_YUE, driverYue + 1);
             mTvBalanceTitle.setText("剩余次数");
             mTvBalance.setText(num + "");
         } else {
@@ -607,7 +678,26 @@ public class PsamIcActivity extends MVPBaseActivity<SpdBusPayContract.View, SpdB
             int balance = cardOpDU.purorimoneyInt - cardOpDU.pursubInt;
             mTvBalance.setText(((double) balance / 100) + "元");
             mTvXiaofeiMoney.setText(((double) cardOpDU.pursubInt / 100) + "元");
+            float allMoney = SharedXmlUtil.getInstance(getApplicationContext())
+                    .read(Info.ALL_MONEY, 0.0f);
+            float driverMoney = SharedXmlUtil.getInstance(getApplicationContext())
+                    .read(Info.DRIVER_MONEY, 0.0f);
+            SharedXmlUtil.getInstance(getApplicationContext())
+                    .write(Info.ALL_MONEY, allMoney + ((float) cardOpDU.pursubInt));
+            float driverMoneyAll = driverMoney + ((float) cardOpDU.pursubInt);
+            SharedXmlUtil.getInstance(getApplicationContext())
+                    .write(Info.DRIVER_MONEY, driverMoneyAll);
+
         }
+
+        int allPeople = SharedXmlUtil.getInstance(getApplicationContext())
+                .read(Info.ALL_PEOPLE, 0);
+        int driverPeople = SharedXmlUtil.getInstance(getApplicationContext())
+                .read(Info.DRIVER_PEOPLE, 0);
+        SharedXmlUtil.getInstance(getApplicationContext())
+                .write(Info.ALL_PEOPLE, allPeople + 1);
+        SharedXmlUtil.getInstance(getApplicationContext())
+                .write(Info.DRIVER_PEOPLE, driverPeople + 1);
         handler.postDelayed(runnable, 3000);
     }
 
@@ -653,6 +743,7 @@ public class PsamIcActivity extends MVPBaseActivity<SpdBusPayContract.View, SpdB
                     PrefUtil.putReversal(null);
                     PlaySound.play(PlaySound.YINLIAN, 0);
                     codeChangeUI();
+                    statisticalAddition();
                     isFlag = 0;
                     break;
 
@@ -665,13 +756,6 @@ public class PsamIcActivity extends MVPBaseActivity<SpdBusPayContract.View, SpdB
                 case MyContext.BackMsg:
                     LogUtils.v("双免消费完成，准备上传信息");
                     Msg msg1 = (Msg) msg.obj;
-//                    if (!msg1.head.contains("交易成功")){
-//                        ToastUtil.customToastView(PsamIcActivity.this, msg1.head
-//                                , Toast.LENGTH_SHORT, (TextView) LayoutInflater
-//                                        .from(PsamIcActivity.this)
-//                                        .inflate(R.layout.layout_toast, null));
-//                    }
-
                     try {
                         SaveDataUtils.saveSMDataBean(msg1, "1", "03");
                         mPresenter.uploadSM(getApplicationContext());
@@ -682,19 +766,12 @@ public class PsamIcActivity extends MVPBaseActivity<SpdBusPayContract.View, SpdB
                 case MyContext.DO_ODA:
                     LogUtils.v("发送ODA，准备上传信息");
                     Msg msg2 = (Msg) msg.obj;
-//                    RespCode reqCode2 = msg2.getReqCode();
-//                    if (!reqCode2.toString().contains("交易成功")){
-//                        ToastUtil.customToastView(PsamIcActivity.this, reqCode2.toString()
-//                                , Toast.LENGTH_SHORT, (TextView) LayoutInflater
-//                                        .from(PsamIcActivity.this)
-//                                        .inflate(R.layout.layout_toast, null));
-//                    }
-
                     try {
                         SaveDataUtils.saveSMDataBean(msg2, "0", "04");
                         PrefUtil.putReversal(null);
                         PlaySound.play(PlaySound.YINLIAN, 0);
                         codeChangeUI();
+                        statisticalAddition();
                         isFlag = 0;
                         mPresenter.uploadSM(getApplicationContext());
                     } catch (Exception e) {
@@ -770,10 +847,13 @@ public class PsamIcActivity extends MVPBaseActivity<SpdBusPayContract.View, SpdB
                 return;
             }
             codes = decodeDate;
-            if (isConfigChange) {
-                doVal(new CardBackBean(ReturnVal.CAD_QINGQIANDAO, null));
-                return;
+            if (!"sp".equals(decodeDate.substring(0, 2))) {
+                if (isConfigChange || !isQianDao) {
+                    doVal(new CardBackBean(ReturnVal.CAD_QINGQIANDAO, null));
+                    return;
+                }
             }
+
 
             LogUtils.v("二维码: " + decodeDate);
             ltime = System.currentTimeMillis();
@@ -790,7 +870,7 @@ public class PsamIcActivity extends MVPBaseActivity<SpdBusPayContract.View, SpdB
                     break;
                 case "sp":
                     String read = SharedXmlUtil.getInstance(getApplicationContext())
-                            .read(Info.BUS_NO, "");
+                            .read(Info.BUS_NO, "000000");
                     String[] split = decodeDate.split(":");
                     if (read.equals(split[1])) {
                         LogUtils.v(split[1]);
@@ -820,7 +900,7 @@ public class PsamIcActivity extends MVPBaseActivity<SpdBusPayContract.View, SpdB
                         @Override
                         public void run() {
                             String busNr = SharedXmlUtil.getInstance(getApplicationContext())
-                                    .read(Info.BUS_NO, "");
+                                    .read(Info.BUS_NO, "000000");
                             StringBuffer stringBuffer = new StringBuffer();
                             stringBuffer.append("车辆号：" + busNr + "\n");
                             String posID = SharedXmlUtil.getInstance(getApplicationContext())
@@ -940,6 +1020,10 @@ public class PsamIcActivity extends MVPBaseActivity<SpdBusPayContract.View, SpdB
         }
 
         if (event.getAction() == KeyEvent.ACTION_DOWN) {
+            if (keyCode == KeyEvent.KEYCODE_ENTER) {
+                Intent intent = new Intent(PsamIcActivity.this, ShowDataActivity.class);
+                startActivity(intent);
+            }
             if (keyCode == KeyEvent.KEYCODE_DPAD_UP) {
                 if (isDriverUI) {
                     mLlShowData.setVisibility(View.VISIBLE);

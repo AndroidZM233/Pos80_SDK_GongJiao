@@ -1,6 +1,7 @@
 package com.spd.base;
 
 import com.spd.base.dbbeen.RunParaFile;
+import com.spd.base.utils.AppUtils;
 import com.spd.base.utils.Datautils;
 
 import org.junit.Test;
@@ -8,6 +9,11 @@ import org.junit.Test;
 import static org.junit.Assert.*;
 
 public class ExampleUnitTest {
+    @Test
+    public void test(){
+        String deviceSN = AppUtils.getDeviceSN2();
+        System.out.println(deviceSN);
+    }
     /**
      * 语言       1个字节    2个字节      4个字节       8个字节
      * java       byte    char、short    int           long

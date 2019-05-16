@@ -1,0 +1,223 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:id="@+id/ll_all"
+    android:layout_height="match_parent"
+    android:background="@color/white"
+    android:orientation="vertical">
+
+    <TextView
+        android:textSize="@dimen/data_text_size"
+        android:id="@+id/tv_title"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1"
+        android:background="#6ea7c2"
+        android:gravity="center"
+        android:text="信息查询1" />
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_marginTop="3dp"
+        android:layout_weight="1"
+        android:background="#4f98cb"
+        android:orientation="horizontal">
+
+        <TextView
+            android:textSize="@dimen/data_text_size"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:gravity="center"
+            android:text="当前车辆总金额"
+            android:textColor="@color/black" />
+
+        <View
+            android:layout_width="3dp"
+            android:layout_height="match_parent"
+            android:background="@color/white">
+
+        </View>
+
+        <TextView
+            android:textSize="@dimen/data_text_size"
+            android:id="@+id/tv_all_money"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:gravity="center"
+            android:textColor="@color/black" />
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_marginTop="3dp"
+        android:layout_weight="1"
+        android:background="#4f98cb"
+        android:orientation="horizontal">
+
+        <TextView
+            android:textSize="@dimen/data_text_size"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:gravity="center"
+            android:text="当前车辆总人次"
+            android:textColor="@color/black" />
+
+        <View
+            android:layout_width="3dp"
+            android:layout_height="match_parent"
+            android:background="@color/white">
+
+        </View>
+
+        <TextView
+            android:textSize="@dimen/data_text_size"
+            android:id="@+id/tv_all_people"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:gravity="center"
+            android:textColor="@color/black" />
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_marginTop="3dp"
+        android:layout_weight="1"
+        android:background="#4f98cb"
+        android:orientation="horizontal">
+
+        <TextView
+            android:textSize="@dimen/data_text_size"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:gravity="center"
+            android:text="当前车辆月票总人次"
+            android:textColor="@color/black" />
+
+        <View
+            android:layout_width="3dp"
+            android:layout_height="match_parent"
+            android:background="@color/white">
+
+        </View>
+
+        <TextView
+            android:textSize="@dimen/data_text_size"
+            android:id="@+id/tv_all_yue"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:gravity="center"
+            android:textColor="@color/black" />
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_marginTop="3dp"
+        android:layout_weight="1"
+        android:background="#4f98cb"
+        android:orientation="horizontal">
+
+        <TextView
+            android:textSize="@dimen/data_text_size"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:gravity="center"
+            android:text="黑名单版本"
+            android:textColor="@color/black" />
+
+        <View
+            android:layout_width="3dp"
+            android:layout_height="match_parent"
+            android:background="@color/white">
+
+        </View>
+
+        <TextView
+            android:textSize="@dimen/data_text_size"
+            android:id="@+id/tv_black"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:gravity="center"
+            android:textColor="@color/black" />
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_marginTop="3dp"
+        android:layout_weight="1"
+        android:background="#4f98cb"
+        android:orientation="horizontal">
+
+        <TextView
+            android:textSize="@dimen/data_text_size"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:gravity="center"
+            android:text="线路号"
+            android:textColor="@color/black" />
+
+        <View
+            android:layout_width="3dp"
+            android:layout_height="match_parent"
+            android:background="@color/white">
+
+        </View>
+
+        <TextView
+            android:textSize="@dimen/data_text_size"
+            android:id="@+id/tv_line"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:gravity="center"
+            android:textColor="@color/black" />
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_marginTop="3dp"
+        android:layout_weight="1"
+        android:background="#4f98cb"
+        android:orientation="horizontal">
+
+        <TextView
+            android:textSize="@dimen/data_text_size"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:gravity="center"
+            android:text="车辆号"
+            android:textColor="@color/black" />
+
+        <View
+            android:layout_width="3dp"
+            android:layout_height="match_parent"
+            android:background="@color/white">
+
+        </View>
+
+        <TextView
+            android:textSize="@dimen/data_text_size"
+            android:id="@+id/tv_bus_num"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:gravity="center"
+            android:textColor="@color/black" />
+    </LinearLayout>
+</LinearLayout>

@@ -103,6 +103,14 @@ public class DateUtils {
         return new Date(millSec);
     }
 
+    /**
+     * 把long 转换成 日期 再转换成String类型
+     */
+    public static String transferLongToString(String dateFormat, Long millSec) {
+        SimpleDateFormat sdf = new SimpleDateFormat(dateFormat);
+        Date date = new Date(millSec);
+        return sdf.format(date);
+    }
 
     /**
      * 转换时间日期格式字串为long型

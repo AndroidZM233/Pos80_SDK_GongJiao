@@ -33,7 +33,9 @@
         android:theme="@style/AppTheme.NoActionBar"
         tools:ignore="GoogleAppIndexingWarning"
         tools:replace="android:icon,android:theme,android:allowBackup">
-        <activity android:name=".spdata.PsamIcActivity">
+        <activity
+            android:name=".spdata.PsamIcActivity"
+            android:launchMode="singleInstance">
 
         </activity>
 
@@ -44,6 +46,8 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+
+        <activity android:name=".spdata.showdata.ShowDataActivity" />
 
         <meta-data
             android:name="companyId"

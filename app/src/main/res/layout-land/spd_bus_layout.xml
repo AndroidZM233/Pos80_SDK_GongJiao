@@ -3,57 +3,58 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@drawable/background"
+    android:background="#b4d465"
     android:orientation="vertical"
     tools:ignore="MissingDefaultResource">
+
     <LinearLayout
-        android:visibility="gone"
         android:id="@+id/ll_show_data"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:background="@drawable/background"
-        android:orientation="vertical">
+        android:background="@mipmap/bg"
+        android:orientation="vertical"
+        android:visibility="gone">
 
         <TextView
-            android:textSize="25sp"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
             android:gravity="center"
             android:text="运营统计界面"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent" />
+            android:textSize="25sp" />
 
     </LinearLayout>
 
     <LinearLayout
-        android:visibility="gone"
         android:id="@+id/ll_set_config"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:background="@drawable/background"
-        android:orientation="vertical">
+        android:background="@mipmap/bg"
+        android:orientation="vertical"
+        android:visibility="gone">
 
         <TextView
-            android:textSize="25sp"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
             android:gravity="center"
             android:text="参数设置界面"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent" />
+            android:textSize="25sp" />
 
     </LinearLayout>
 
     <LinearLayout
-        android:visibility="gone"
         android:id="@+id/ll_driver"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:background="@drawable/background"
-        android:orientation="vertical">
+        android:background="@mipmap/bg"
+        android:orientation="vertical"
+        android:visibility="gone">
 
         <TextView
-            android:textSize="25sp"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
             android:gravity="center"
             android:text="司机签到界面"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent" />
+            android:textSize="25sp" />
 
     </LinearLayout>
 
@@ -61,37 +62,28 @@
         android:id="@+id/ll_main"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:background="@drawable/background"
+        android:background="@mipmap/bg"
         android:orientation="vertical">
 
         <LinearLayout
             android:layout_width="match_parent"
-            android:layout_height="60dp"
+            android:layout_height="70dp"
+            android:gravity="center"
             android:orientation="horizontal">
 
-            <ImageView
-                android:layout_width="60dp"
-                android:layout_height="60dp"
-                android:background="@mipmap/launchers"
-                android:visibility="gone" />
-
-            <TextView
-                android:id="@+id/tv_title"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="天津公交"
-                android:textSize="25sp" />
+            <com.spd.base.view.SignalView
+                android:id="@+id/xinhao"
+                android:layout_width="45dp"
+                android:layout_height="25dp"
+                android:layout_marginLeft="5dp"
+                android:layout_marginRight="3dp" />
 
             <View
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:layout_weight="1" />
 
-            <com.spd.base.view.SignalView
-                android:id="@+id/xinhao"
-                android:layout_width="45dp"
-                android:layout_height="25dp"
-                android:layout_marginRight="3dp" />
+
         </LinearLayout>
 
         <LinearLayout
@@ -156,7 +148,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_gravity="center"
-                    android:text="636路"
+                    android:text="0路"
                     android:textSize="@dimen/textSize" />
 
                 <TextView
@@ -173,14 +165,14 @@
                     android:layout_height="wrap_content"
                     android:layout_gravity="center"
                     android:text="2018年12月06日"
-                    android:textSize="35sp" />
+                    android:textSize="30sp" />
 
             </LinearLayout>
 
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
-                android:layout_weight="1"
+                android:layout_weight="1.6"
                 android:gravity="center"
                 android:orientation="vertical">
 
@@ -190,6 +182,7 @@
                     android:layout_height="wrap_content"
                     android:layout_gravity="center"
                     android:text="票价"
+                    android:textColor="@color/red"
                     android:textSize="@dimen/textSize" />
 
                 <TextView
@@ -197,8 +190,9 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_gravity="center"
-                    android:text="2.00元"
-                    android:textSize="60sp" />
+                    android:text="0元"
+                    android:textColor="@color/red"
+                    android:textSize="50sp" />
 
             </LinearLayout>
         </LinearLayout>
@@ -208,14 +202,28 @@
             android:layout_height="wrap_content"
             android:orientation="horizontal">
 
-            <TextView
-                android:id="@+id/tv_device_message"
+            <LinearLayout
+                android:layout_marginLeft="3dp"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_gravity="center"
-                android:layout_marginLeft="3dp"
-                android:text="@string/_123465_id_123654987_20181206"
-                android:textSize="20sp" />
+                android:orientation="vertical">
+
+                <TextView
+                    android:id="@+id/tv_device_message"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center"
+                    android:text="@string/_123465_id_123654987_20181206"
+                    android:textSize="20sp" />
+
+                <TextView
+                    android:id="@+id/tv_title"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="V1.0"
+                    android:textSize="20sp" />
+            </LinearLayout>
+
 
             <View
                 android:layout_width="match_parent"
@@ -225,21 +233,10 @@
             <com.honeywell.barcode.HSMDecodeComponent
                 android:id="@+id/hsm_decodeComponent"
                 android:layout_width="148dp"
-                android:layout_height="91dp" />
+                android:layout_height="91dp"
+                android:layout_marginRight="200dp" />
 
 
-            <ImageView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_gravity="bottom"
-                android:layout_marginBottom="3dp"
-                android:background="@mipmap/yinlian2" />
-
-            <ImageView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_gravity="bottom"
-                android:background="@mipmap/jiaotong" />
         </LinearLayout>
     </LinearLayout>
 </LinearLayout>

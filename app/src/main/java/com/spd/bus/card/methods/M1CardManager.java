@@ -440,7 +440,7 @@ public class M1CardManager {
                     cardOpDU.purIncMoneyInt = 0;
 //                    MachStatusFile.MyApplication.fSysSta = CAD_NORMAL;
                     cardOpDU.log = LogUtils.generateTag() + "\n";
-                    return new CardBackBean(ReturnVal.CAD_EMPTY, cardOpDU);
+                    return new CardBackBean(ReturnVal.CAD_DUTY, cardOpDU);
                 }
             } else {
                 byte[] lodkey6 = lodkey[6];
@@ -495,6 +495,10 @@ public class M1CardManager {
                 CardMethods.onAppendRecordSelf(context, (byte) 0xE1, cardOpDU
                         , runParaFile, psamBeenList);
                 return new CardBackBean(ReturnVal.CAD_LOGON, cardOpDU);
+            }
+        } else {
+            if (devMode == 0) {
+                return new CardBackBean(ReturnVal.CAD_READ, cardOpDU);
             }
         }
 
@@ -1354,8 +1358,11 @@ public class M1CardManager {
         fOldDisable = 0;
         //查询数据库最近一条记录，是否是相同的卡号
         long dbCount = DbDaoManage.getDaoSession().getCardRecordDao().count();
-        CardRecord cardRecord = DbDaoManage.getDaoSession().getCardRecordDao().loadByRowId(dbCount);
-        rcdbuffer = cardRecord.getRecord();
+        if (dbCount > 0) {
+            CardRecord cardRecord = DbDaoManage.getDaoSession().getCardRecordDao().loadByRowId(dbCount);
+            rcdbuffer = cardRecord.getRecord();
+        }
+
         if (Arrays.equals(cardOpDU.snr, Datautils.cutBytes(rcdbuffer, 7, 4))) {
             if ((rcdbuffer[2] & (byte) 0x01) == (byte) 0x00) {
 
@@ -1807,7 +1814,11 @@ public class M1CardManager {
         cardOpDU.yueCount = cinfo.iYueCount;
         // 查黑名单表,结果赋黑名单标志
 //        cardOpDU.fBlackCard = CheckBlacklist(cardOpDU.issueSnr);
-        String arrayToString = Datautils.byteArrayToString(cardOpDU.getIssueSnr());
+//        BlackDB blackDB = new BlackDB();
+//        blackDB.setVersion("20190415");
+//        blackDB.setData("0000300000000097453c");
+//        DbDaoManage.getDaoSession().getBlackDBDao().insertOrReplace(blackDB);
+        String arrayToString = "0000" + Datautils.byteArrayToString(cardOpDU.getIssueSnr());
         List<BlackDB> list = DbDaoManage.getDaoSession().getBlackDBDao().queryBuilder()
                 .where(BlackDBDao.Properties.Data.eq(arrayToString)).list();
         if (list != null && list.size() > 0) {

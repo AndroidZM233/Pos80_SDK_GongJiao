@@ -199,6 +199,7 @@ public class HeartTimer {
                         }
                         DbDaoManage.getDaoSession().getBlackDBDao().deleteAll();
                         DbDaoManage.getDaoSession().getBlackDBDao().insertInTx(list);
+                        SharedXmlUtil.getInstance(mContext).write(Info.BLACK, version);
                         LogUtils.v("结束存储黑名单");
                         DbDaoManage.getDaoSession().getBaseInfoBackBeanDao().deleteAll();
                         DbDaoManage.getDaoSession().getBaseInfoBackBeanDao().insert(baseInfoBackBean);

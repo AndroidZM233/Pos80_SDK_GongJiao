@@ -57,4 +57,6 @@ dependencies {
     implementation files('libs/SDK4EmvBinderV2.1.4.jar')
     implementation files('libs/javax.xml.bind.jar')
     implementation files('libs/bcprov-jdk16-1.45.jar')
+
+    api 'com.github.CymChad:BaseRecyclerViewAdapterHelper:2.9.40'
 }
