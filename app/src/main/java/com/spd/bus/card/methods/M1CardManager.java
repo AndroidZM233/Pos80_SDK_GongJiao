@@ -216,15 +216,19 @@ public class M1CardManager {
         cardOpDU.fBlackCard = false;
         switch (cardOpDU.fStartUse[0]) {
             case 0x01:
+                LogUtils.d(cardOpDU.fStartUse[0] + "CAD_READ");
+                cardOpDU.log = LogUtils.generateTag() + "\n";
+                return new CardBackBean(ReturnVal.CAD_SELL, cardOpDU);
             case 0x03:
                 LogUtils.d(cardOpDU.fStartUse[0] + "CAD_READ");
                 cardOpDU.log = LogUtils.generateTag() + "\n";
-                return new CardBackBean(ReturnVal.CAD_READ, cardOpDU);
+                return new CardBackBean(ReturnVal.CAD_EXPIRE, cardOpDU);
             case 0x02:  //Start
                 break;
             case 0x04:
-                cardOpDU.fBlackCard = true;//Black
-                break;
+//                cardOpDU.fBlackCard = true;//Black
+                return new CardBackBean(ReturnVal.CAD_BL1, cardOpDU);
+//                break;
             default:
                 LogUtils.d("CAD_BROKEN");
                 cardOpDU.log = LogUtils.generateTag() + "\n";
@@ -1031,7 +1035,7 @@ public class M1CardManager {
         int money, fYueDisable, fOldDisable;
         int chk, ret;
         int ulV = 0, lVf, lVz;
-        int blk = 0;
+//        int blk = 0;
         cardOpDU.ucOtherCity = (byte) 0x00;
         //系统时间
         byte[] systemTime = Datautils.getDateTime();

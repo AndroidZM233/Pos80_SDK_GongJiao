@@ -3,6 +3,7 @@ package com.spd.bus.spdata.configcheck;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.os.RemoteException;
 import android.support.annotation.Nullable;
 import android.util.Log;
 import android.widget.TextView;
@@ -18,6 +19,7 @@ import com.spd.bus.spdata.mvp.MVPBaseActivity;
 import com.spd.bus.util.ConfigUtils;
 import com.spd.yinlianpay.WeiPassGlobal;
 import com.spd.yinlianpay.comm.ChannelTool;
+import com.spd.yinlianpay.context.MyContext;
 import com.spd.yinlianpay.iso8583.Msg;
 import com.spd.yinlianpay.listener.OnCommonListener;
 import com.spd.yinlianpay.listener.OnTraditionListener;
@@ -60,14 +62,20 @@ public class ConfigCheckActivity extends MVPBaseActivity<ConfigCheckContract.Vie
         MyApplication.setInitDevListener(new MyApplication.InitDevListener() {
             @Override
             public void onSuccess() {
-                kProgressHUD = KProgressHUD.create(ConfigCheckActivity.this);
-                kProgressHUD.setStyle(KProgressHUD.Style.SPIN_INDETERMINATE)
-                        .setLabel("初始化中...")
-                        .setCancellable(true)
-                        .setAnimationSpeed(2)
-                        .setDimAmount(0.5f)
-                        .show();
-                mPresenter.initPsam(getApplicationContext());
+                runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        kProgressHUD = KProgressHUD.create(ConfigCheckActivity.this);
+                        kProgressHUD.setStyle(KProgressHUD.Style.SPIN_INDETERMINATE)
+                                .setLabel("初始化中...")
+                                .setCancellable(true)
+                                .setAnimationSpeed(2)
+                                .setDimAmount(0.5f)
+                                .show();
+                        mPresenter.initPsam(getApplicationContext());
+                    }
+                });
+
             }
 
             @Override
@@ -85,6 +93,7 @@ public class ConfigCheckActivity extends MVPBaseActivity<ConfigCheckContract.Vie
         @Override
         public void run() {
             try {
+
                 WeiPassGlobal.transactionClear();
                 WeiPassGlobal.getTransactionInfo().setTransType(TradeInfo.Type_Sale);
                 ChannelTool.login("01", "0000", new OnCommonListener() {
@@ -219,7 +228,21 @@ public class ConfigCheckActivity extends MVPBaseActivity<ConfigCheckContract.Vie
         if (isDownloadOne) {
             if (kProgressHUD != null) {
                 kProgressHUD.dismiss();
-
+//                MyContext.onCreate(getApplicationContext(), MyApplication.getmKey()
+//                        , MyApplication.getmCore(), MyApplication.getEmvCore()
+//                        , MyApplication.getBankCardInstance());
+//                byte[] outData = new byte[256];
+//                int[] outLen = new int[1];
+//                int capk = 0;
+//                try {
+//                    capk = MyContext.emvCore.getCAPK(1, outData, outLen);
+//                } catch (RemoteException e) {
+//                    e.printStackTrace();
+//                }
+//
+//                if (capk == 0 && outLen[0] > 0) {
+//
+//                }
                 MyApplication.setYinLianPayManage(yinLianPayManage);
                 this.finish();
                 Intent intent = new Intent(ConfigCheckActivity.this, PsamIcActivity.class);

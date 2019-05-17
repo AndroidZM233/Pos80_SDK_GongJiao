@@ -30,7 +30,7 @@ import com.spd.yinlianpay.util.PrefUtil;
 import ui.wangpos.com.utiltool.DateUtil;
 import ui.wangpos.com.utiltool.HEXUitl;
 
-public class YinLianPayManage  {
+public class YinLianPayManage {
     private Context myContext = null;
     private String TAG = "stw";
 
@@ -39,7 +39,9 @@ public class YinLianPayManage  {
     }
 
     public void yinLianLogin(Runnable tLoginRun) {
-        MyContext.onCreate(myContext, MyApplication.getmKey(), MyApplication.getmCore(), MyApplication.getEmvCore(), MyApplication.getBankCardInstance());
+        MyContext.onCreate(myContext, MyApplication.getmKey()
+                , MyApplication.getmCore(), MyApplication.getEmvCore()
+                , MyApplication.getBankCardInstance());
         Log.i(TAG, "yinLianLogin: 开始");
 
 //        PrefUtil.setIP("140.207.168.62");

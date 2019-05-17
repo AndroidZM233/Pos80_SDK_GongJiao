@@ -5,6 +5,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.os.Build;
 import android.os.RemoteException;
+import android.os.SystemClock;
 import android.support.annotation.RequiresApi;
 import android.util.Log;
 import android.widget.Toast;
@@ -209,7 +210,7 @@ public class MyApplication extends Application {
     /**
      * 初始化银联二维码支付
      */
-    public  void initScanBards(Context context) {
+    public void initScanBards(Context context) {
         hsmDecoder = HSMDecoder.getInstance(getApplicationContext());
         hsmDecoder.enableAimer(false);
         hsmDecoder.setOverlayText("");

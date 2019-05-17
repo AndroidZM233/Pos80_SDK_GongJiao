@@ -260,7 +260,7 @@ public class PsamIcActivity extends MVPBaseActivity<SpdBusPayContract.View, SpdB
                             continue;
                         }
                     }
-
+                    ToastUtil.cancelToast();
                     //检测到非接IC卡
                     if (respdata[0] == 0x07) {
                         CardBackBean cardBackBean = null;
@@ -395,8 +395,15 @@ public class PsamIcActivity extends MVPBaseActivity<SpdBusPayContract.View, SpdB
 //                        logToNet(cardBackBean);
                         break;
                     case ReturnVal.CAD_EXPIRE:
+                        ToastUtil.customToastView(PsamIcActivity.this, "卡过期"
+                                , Toast.LENGTH_SHORT, (TextView) LayoutInflater
+                                        .from(PsamIcActivity.this)
+                                        .inflate(R.layout.layout_toast, null));
+                        PlaySound.play(PlaySound.QINGTOUBI, 0);
+                        logToNet(cardBackBean);
+                        break;
                     case ReturnVal.CAD_SELL:
-                        ToastUtil.customToastView(PsamIcActivity.this, "未启用及过期卡"
+                        ToastUtil.customToastView(PsamIcActivity.this, "未启用"
                                 , Toast.LENGTH_SHORT, (TextView) LayoutInflater
                                         .from(PsamIcActivity.this)
                                         .inflate(R.layout.layout_toast, null));
@@ -408,7 +415,7 @@ public class PsamIcActivity extends MVPBaseActivity<SpdBusPayContract.View, SpdB
 //                        player.setVolume(1, 1);
 //                        player.start();//开始播放
 //                        PlaySound.play(PlaySound.initerro, 0);
-
+                        handler.removeCallbacks(runnable);
                         updateUI(cardBackBean);
                         break;
                     case ReturnVal.CAD_RETRY:
@@ -509,6 +516,7 @@ public class PsamIcActivity extends MVPBaseActivity<SpdBusPayContract.View, SpdB
                         break;
                     case ReturnVal.CAD_BL1:
                     case ReturnVal.CAD_BL2:
+                    case ReturnVal.CAD_BROKEN:
                         ToastUtil.customToastView(PsamIcActivity.this, "无效卡"
                                 , Toast.LENGTH_SHORT, (TextView) LayoutInflater
                                         .from(PsamIcActivity.this)
@@ -654,25 +662,28 @@ public class PsamIcActivity extends MVPBaseActivity<SpdBusPayContract.View, SpdB
             mTvBalanceTitle.setText("剩余次数");
             mTvBalance.setText(num + "");
         } else {
-            if (cardOpDU.ucMainCardType == (byte) 0x01 || cardOpDU.ucMainCardType == (byte) 0x02) {
-                if (cardOpDU.pursubInt == 0) {
-                    PlaySound.play(PlaySound.JINGLAOKA, 0);
-                } else {
-                    PlaySound.play(PlaySound.dang, 0);
-                }
-
-            } else if (cardOpDU.ucMainCardType == (byte) 0x11) {
-                if (cardOpDU.pursubInt == 0) {
-//                    PlaySound.play(PlaySound.dang, 0);
-//                    SystemClock.sleep(100);
-                    PlaySound.play(PlaySound.AIXINKA, 0);
-                } else {
-                    PlaySound.play(PlaySound.dang, 0);
-                }
-
+            if (cardOpDU.purorimoneyInt < 500 && cardOpDU.pursubInt != 0) {
+                PlaySound.play(PlaySound.QINGCHOGNZHI, 0);
             } else {
-                PlaySound.play(PlaySound.dang, 0);
+                if (cardOpDU.ucMainCardType == (byte) 0x01 || cardOpDU.ucMainCardType == (byte) 0x02) {
+                    if (cardOpDU.pursubInt == 0) {
+                        PlaySound.play(PlaySound.JINGLAOKA, 0);
+                    } else {
+                        PlaySound.play(PlaySound.dang, 0);
+                    }
+
+                } else if (cardOpDU.ucMainCardType == (byte) 0x11) {
+                    if (cardOpDU.pursubInt == 0) {
+                        PlaySound.play(PlaySound.AIXINKA, 0);
+                    } else {
+                        PlaySound.play(PlaySound.dang, 0);
+                    }
+
+                } else {
+                    PlaySound.play(PlaySound.dang, 0);
+                }
             }
+
             mTvXiaofeiTitle.setText("消费");
             mTvBalanceTitle.setText("余额");
             int balance = cardOpDU.purorimoneyInt - cardOpDU.pursubInt;
@@ -687,6 +698,7 @@ public class PsamIcActivity extends MVPBaseActivity<SpdBusPayContract.View, SpdB
             float driverMoneyAll = driverMoney + ((float) cardOpDU.pursubInt);
             SharedXmlUtil.getInstance(getApplicationContext())
                     .write(Info.DRIVER_MONEY, driverMoneyAll);
+
 
         }
 

@@ -34,7 +34,7 @@ public class ToastUtil {
     /**
      * 取消Toast显示
      */
-    public void cancelToast() {
+    public static void cancelToast() {
         if (isShow && mToast != null) {
             mToast.cancel();
         }
