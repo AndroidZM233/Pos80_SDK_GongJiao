@@ -298,6 +298,11 @@ public class JTBCardManager {
             if (!Arrays.equals(ucAppSnr, problemIssue2)) {
                 fSysSta = false;
             } else {
+                byte[] resultBytes = CardMethods.sendApdus(mBankCard, BankCard.CARD_MODE_PICC
+                        , CardMethods.SELECT_ICCARD_QIANBAO);
+                if (resultBytes == null || resultBytes.length == 2) {
+                    return ReturnVal.CAD_READ;
+                }
                 byte[] dBCmd = new byte[8];
                 System.arraycopy(new byte[]{(byte) 0x80, (byte) 0x5a, (byte) 0x00, (byte) 0x00, (byte) 0x02}
                         , 0, dBCmd, 0, 5);
@@ -308,7 +313,7 @@ public class JTBCardManager {
                 dBCmd[7] = (byte) 0x08;
                 dBCmd[3] = problemIssueCode[21] == (byte) 0x00 ? (byte) 0x06 : (byte) 0x09;
 
-                byte[] resultBytes = CardMethods.sendApdus(mBankCard, BankCard.CARD_MODE_PICC, dBCmd);
+                resultBytes = CardMethods.sendApdus(mBankCard, BankCard.CARD_MODE_PICC, dBCmd);
                 if (resultBytes == null || resultBytes.length == 2) {
                     fSysSta = false;
                 } else {
@@ -346,14 +351,14 @@ public class JTBCardManager {
         }
 
         // TODO: 2019/2/20 去获取当前卡号是否在黑名单
-//        String arrayToString = Datautils.byteArrayToString(tCardOpDU.ucAppSnr);
-//        List<BlackDB> list = DbDaoManage.getDaoSession().getBlackDBDao().queryBuilder()
-//                .where(BlackDBDao.Properties.Data.eq(arrayToString)).list();
-//        if (list != null && list.size() > 0) {
-//            fBlackCard = true;
-//        }else {
-//            fBlackCard = false;
-//        }
+        String arrayToString = Datautils.byteArrayToString(tCardOpDU.ucAppSnr);
+        List<BlackDB> list = DbDaoManage.getDaoSession().getBlackDBDao().queryBuilder()
+                .where(BlackDBDao.Properties.Data.eq(arrayToString)).list();
+        if (list != null && list.size() > 0) {
+            fBlackCard = true;
+        }else {
+            fBlackCard = false;
+        }
 
         if (fBlackCard) {
             //801A指令
@@ -477,6 +482,7 @@ public class JTBCardManager {
                 Date utcToLocal = DateUtils.transferLongToDate("yyyyMMddHHmmss", string16ToLong);
                 // 连续刷卡限制时间
                 int time = Datautils.byteArrayToInt(runParaFile.getUcCityYueTimeLimit());
+//                int time = 0;
                 SimpleDateFormat format = new SimpleDateFormat("yyyyMMddHHmmss");
                 try {
                     Date busLast = utcToLocal;
@@ -490,6 +496,7 @@ public class JTBCardManager {
                         tCardOpDU.fPermit = 1;
                     }
                     time = Datautils.byteArrayToInt(runParaFile.getUcOldCardTimeLimit());
+//                    time = 0;
 
 //                    busLast = format.parse(busLastStr);
                     dateTime = format.parse(Datautils.byteArrayToString(tCardOpDU.ucDateTime));
@@ -571,7 +578,7 @@ public class JTBCardManager {
                 Date utcToLocal = DateUtils.transferLongToDate("yyyyMMddHHmmss", string16ToLong);
                 // 连续刷卡限制时间
                 int timeLimit = Datautils.byteArrayToInt(runParaFile.getUcOldCardTimeLimit());
-//                int timeLimit = 10;
+//                int timeLimit = 0;
                 SimpleDateFormat format = new SimpleDateFormat("yyyyMMddHHmmss");
                 try {
                     Date busLast = utcToLocal;
@@ -741,8 +748,8 @@ public class JTBCardManager {
                     + Datautils.byteArrayToString(resultBytes);
             return new CardBackBean(ReturnVal.CAD_MAC1, tCardOpDU);
         }
-        if (resultBytes == null || resultBytes.length == 2) {
-//        if (resultBytes != null) {
+//        if (resultBytes == null || resultBytes.length == 2) {
+        if (resultBytes != null) {
             byte[] value = new byte[8];
             value[0] = (byte) (tCardOpDU.ulTradeValue >> 24);
             value[1] = (byte) (tCardOpDU.ulTradeValue >> 16);

@@ -220,6 +220,13 @@ public class PsamIcActivity extends MVPBaseActivity<SpdBusPayContract.View, SpdB
         }
     };
 
+    Runnable runnableScan = new Runnable() {
+        @Override
+        public void run() {
+            MyApplication.getHSMDecoder().addResultListener(PsamIcActivity.this);
+        }
+    };
+
     @SuppressLint("CheckResult")
     private void updateTime() {
         Flowable.interval(0, 1, TimeUnit.SECONDS)
@@ -837,6 +844,8 @@ public class PsamIcActivity extends MVPBaseActivity<SpdBusPayContract.View, SpdB
      */
     @Override
     public void onHSMDecodeResult(HSMDecodeResult[] hsmDecodeResults) {
+        MyApplication.getHSMDecoder().removeResultListener(PsamIcActivity.this);
+        handler.postDelayed(runnableScan, 500);
         if (hsmDecodeResults.length > 0) {
             HSMDecodeResult firstResult = hsmDecodeResults[0];
             if (Datautils.isUTF8(firstResult.getBarcodeDataBytes())) {
@@ -850,12 +859,13 @@ public class PsamIcActivity extends MVPBaseActivity<SpdBusPayContract.View, SpdB
             }
 
             if (decodeDate.equals(codes)) {
-                if ("sp".equals(decodeDate.substring(0, 2))) {
-                    ToastUtil.customToastView(PsamIcActivity.this, "二维码重复"
-                            , Toast.LENGTH_SHORT, (TextView) LayoutInflater
-                                    .from(PsamIcActivity.this)
-                                    .inflate(R.layout.layout_toast, null));
-                }
+//                if ("sp".equals(decodeDate.substring(0, 2))) {
+                ToastUtil.customToastView(PsamIcActivity.this, "二维码重复"
+                        , Toast.LENGTH_SHORT, (TextView) LayoutInflater
+                                .from(PsamIcActivity.this)
+                                .inflate(R.layout.layout_toast, null));
+                PlaySound.play(PlaySound.ERWEIMASHIXIAO,0);
+//                }
                 return;
             }
             codes = decodeDate;

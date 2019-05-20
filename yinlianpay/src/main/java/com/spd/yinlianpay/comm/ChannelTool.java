@@ -587,10 +587,10 @@ public class ChannelTool {
                 }
                 try {
                     if (type == 2) {
-                        MyContext.emvCore.delAllAID();
+//                        MyContext.emvCore.delAllAID();
                     }
                     if (type == 1) {
-                        MyContext.emvCore.delAllCAPK();
+//                        MyContext.emvCore.delAllCAPK();
                     }
                     if (type == 2) {
                         //IC paramter

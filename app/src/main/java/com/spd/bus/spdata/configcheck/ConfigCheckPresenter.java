@@ -115,9 +115,9 @@ public class ConfigCheckPresenter extends BasePresenterImpl<ConfigCheckContract.
                 }
 
 
-                if (psam1Init && psam2Init) {
+//                if (psam1Init && psam2Init) {
                     mView.openActivity();
-                }
+//                }
 
             }
         }).start();
