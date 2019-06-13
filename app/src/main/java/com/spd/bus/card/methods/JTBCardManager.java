@@ -748,8 +748,8 @@ public class JTBCardManager {
                     + Datautils.byteArrayToString(resultBytes);
             return new CardBackBean(ReturnVal.CAD_MAC1, tCardOpDU);
         }
-//        if (resultBytes == null || resultBytes.length == 2) {
-        if (resultBytes != null) {
+        if (resultBytes == null || resultBytes.length == 2) {
+//        if (resultBytes != null) {
             byte[] value = new byte[8];
             value[0] = (byte) (tCardOpDU.ulTradeValue >> 24);
             value[1] = (byte) (tCardOpDU.ulTradeValue >> 16);

@@ -148,6 +148,8 @@ public class PsamIcActivity extends MVPBaseActivity<SpdBusPayContract.View, SpdB
         }
         initView();
         initCard();
+
+
     }
 
 
