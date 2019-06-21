@@ -14,7 +14,7 @@ public class DbDaoManage {
      * @param application
      */
     public static void initDb(Application application) {
-        DaoMaster.DevOpenHelper devOpenHelper = new DaoMaster.DevOpenHelper(application, "spdBusDb", null);
+        DaoMaster.DevOpenHelper devOpenHelper = new DaoMaster.DevOpenHelper(application, "Pickrand1", null);
         DaoMaster daoMaster = new DaoMaster(devOpenHelper.getReadableDb());
         daoSession = daoMaster.newSession();
     }

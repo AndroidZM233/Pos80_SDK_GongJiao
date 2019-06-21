@@ -21,11 +21,9 @@ import com.spd.bus.Info;
 import com.spd.bus.MyApplication;
 import com.spd.bus.net.HttpMethods;
 import com.spd.base.utils.LogUtils;
-import com.spd.bus.spdata.YinLianPayManage;
 import com.spd.bus.spdata.been.PsamBeen;
 import com.spd.bus.spdata.mvp.BasePresenterImpl;
 import com.spd.bus.util.ConfigUtils;
-import com.spd.yinlianpay.util.PrefUtil;
 
 import java.util.Arrays;
 import java.util.HashMap;
@@ -97,31 +95,54 @@ public class ConfigCheckPresenter extends BasePresenterImpl<ConfigCheckContract.
             @Override
             public void run() {
 
-                ConfigCheckPresenter.this.mBankCard = MyApplication.getmBankCard();
+//                ConfigCheckPresenter.this.mBankCard = MyApplication.getmBankCard();
                 ConfigUtils.jsonToDB();
 
-                boolean psam1Init = psam1Init();
-                boolean psam2Init = psam2Init();
-                LogUtils.d("" + psam1Init + psam2Init);
-                if (!psam1Init) {
-                    mView.setTextView(1, "失败");
-                } else {
-                    mView.setTextView(1, "成功");
+//                boolean psam1Init = psam1Init();
+//                boolean psam2Init = psam2Init();
+
+                String result = com.yht.q6jni.Jni.Psamtest("00000000");
+                String version = com.yht.q6jni.Jni.GetVesion();
+                if ((!result.equals("") || result != null) && (result.length() > 31)) {
+                    showPsam(version, result);
                 }
-                if (!psam2Init) {
-                    mView.setTextView(2, "失败");
-                } else {
-                    mView.setTextView(2, "成功");
-                }
+
+//                LogUtils.d("" + psam1Init + psam2Init);
+//                if (!psam1Init) {
+//                    mView.setTextView(1, "失败");
+//                } else {
+//                    mView.setTextView(1, "成功");
+//                }
+//                if (!psam2Init) {
+//                    mView.setTextView(2, "失败");
+//                } else {
+//                    mView.setTextView(2, "成功");
+//                }
 
 
 //                if (psam1Init && psam2Init) {
-                    mView.openActivity();
+                mView.openActivity();
 //                }
 
             }
         }).start();
 
+    }
+
+    //psam自检显示
+    public void showPsam(String version, String psamData) {
+        String psam1 = psamData.substring(4, 6);
+        String psam3 = psamData.substring(8, 10);
+        if (!psam1.equals("01")) {
+            mView.setTextView(1, "失败");
+        } else {
+            mView.setTextView(1, "成功");
+        }
+        if (!psam3.equals("01")) {
+            mView.setTextView(2, "失败");
+        } else {
+            mView.setTextView(2, "成功");
+        }
     }
 
     public void getShuangMianPubKey(Context context, String url) {
@@ -137,7 +158,6 @@ public class ConfigCheckPresenter extends BasePresenterImpl<ConfigCheckContract.
                 if (code.equals("00")) {
 //                    SharedXmlUtil.getInstance(context).write(Info.YLSM_KEY
 //                            , posKeysBackBean.getKey());
-                    PrefUtil.setMasterkey(posKeysBackBean.getKey());
                     mView.setTextView(7, "成功");
                 } else {
                     mView.setTextView(7, "失败");

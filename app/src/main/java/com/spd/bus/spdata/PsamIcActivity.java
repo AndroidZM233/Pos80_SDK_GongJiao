@@ -48,10 +48,6 @@ import com.spd.bus.util.ConfigUtils;
 import com.spd.bus.util.DataUploadToTianJinUtils;
 import com.spd.bus.util.PlaySound;
 import com.spd.bus.util.SaveDataUtils;
-import com.spd.yinlianpay.context.MyContext;
-import com.spd.yinlianpay.iso8583.Msg;
-import com.spd.yinlianpay.iso8583.RespCode;
-import com.spd.yinlianpay.util.PrefUtil;
 
 import java.util.List;
 import java.util.concurrent.TimeUnit;
@@ -247,149 +243,149 @@ public class PsamIcActivity extends MVPBaseActivity<SpdBusPayContract.View, SpdB
     private long ltime = 0;
 
     private void startTimer(boolean isStart) {
-        while (isStart) {
-            try {
-                //非接卡在位检测;
-                int result = MyApplication.mBankCard.piccDetect();
-                if (result == 0) {
-                    isFlag = 2;
-                } else if (result == 1 && isFlag == 2) {
-                    ltime = System.currentTimeMillis();
-                    LogUtils.v("开始本次读卡等待");
-                    //切换到非接卡读取
-                    retvalue = MyApplication.mBankCard.readCard(BankCard.CARD_TYPE_NORMAL, BankCard.CARD_MODE_PICC, 1, respdata, resplen, "app1");
-                    if (retvalue != 0) {
-                        isFlag = 1;
-                        return;
-                    }
-                    if (!isDriverUI) {
-                        if (!isQianDao) {
-                            doVal(new CardBackBean(ReturnVal.CAD_QINGQIANDAO, null));
-                            isFlag = 0;
-                            continue;
-                        }
-                    }
-                    ToastUtil.cancelToast();
-                    //检测到非接IC卡
-                    if (respdata[0] == 0x07) {
-                        CardBackBean cardBackBean = null;
-                        try {
-//                            if (MyApplication.psamDatas.size() != 2) {
-//                                doVal(new CardBackBean(ReturnVal.CAD_PSAM_ERROR, null));
+//        while (isStart) {
+//            try {
+//                //非接卡在位检测;
+//                int result = MyApplication.mBankCard.piccDetect();
+//                if (result == 0) {
+//                    isFlag = 2;
+//                } else if (result == 1 && isFlag == 2) {
+//                    ltime = System.currentTimeMillis();
+//                    LogUtils.v("开始本次读卡等待");
+//                    //切换到非接卡读取
+//                    retvalue = MyApplication.mBankCard.readCard(BankCard.CARD_TYPE_NORMAL, BankCard.CARD_MODE_PICC, 1, respdata, resplen, "app1");
+//                    if (retvalue != 0) {
+//                        isFlag = 1;
+//                        return;
+//                    }
+//                    if (!isDriverUI) {
+//                        if (!isQianDao) {
+//                            doVal(new CardBackBean(ReturnVal.CAD_QINGQIANDAO, null));
+//                            isFlag = 0;
+//                            continue;
+//                        }
+//                    }
+//                    ToastUtil.cancelToast();
+//                    //检测到非接IC卡
+//                    if (respdata[0] == 0x07) {
+//                        CardBackBean cardBackBean = null;
+//                        try {
+////                            if (MyApplication.psamDatas.size() != 2) {
+////                                doVal(new CardBackBean(ReturnVal.CAD_PSAM_ERROR, null));
+////                                isFlag = 0;
+////                                continue;
+////                            }
+//
+//                            if (isConfigChange) {
+//                                doVal(new CardBackBean(ReturnVal.CAD_QINGQIANDAO, null));
 //                                isFlag = 0;
 //                                continue;
 //                            }
-
-                            if (isConfigChange) {
-                                doVal(new CardBackBean(ReturnVal.CAD_QINGQIANDAO, null));
-                                isFlag = 0;
-                                continue;
-                            }
-                            if (isDriverUI || isShowDataUI) {
-                                isFlag = 0;
-                                continue;
-                            }
-
-                            LogUtils.v("CPU结束寻卡===" + (System.currentTimeMillis() - ltime));
-                            cardBackBean = JTBCardManager.getInstance()
-                                    .mainMethod(getApplicationContext(), MyApplication.mBankCard
-                                            , MyApplication.psamDatas, MyApplication.getYinLianPayManage()
-                                            , handler);
-                            if (cardBackBean == null) {
-                                continue;
-                            } else {
-                                doVal(cardBackBean);
-                            }
-
-                        } catch (Exception e) {
-                            e.printStackTrace();
-//                            ConfigUtils.logWrite(e.toString());
-//                            DataUploadToTianJinUtils.postLog(getApplicationContext(),
-//                                    LogUtils.generateTag() + e.toString());
-                        }
-
-                        isFlag = 0;
-//                        if (cardBackBean != null) {
-//                            if (cardBackBean.getBackValue() != ReturnVal.CAD_SM) {
+//                            if (isDriverUI || isShowDataUI) {
 //                                isFlag = 0;
+//                                continue;
 //                            }
-//                        } else {
-//                            isFlag = 0;
+//
+//                            LogUtils.v("CPU结束寻卡===" + (System.currentTimeMillis() - ltime));
+//                            cardBackBean = JTBCardManager.getInstance()
+//                                    .mainMethod(getApplicationContext(), MyApplication.mBankCard
+//                                            , MyApplication.psamDatas, MyApplication.getYinLianPayManage()
+//                                            , handler);
+//                            if (cardBackBean == null) {
+//                                continue;
+//                            } else {
+//                                doVal(cardBackBean);
+//                            }
+//
+//                        } catch (Exception e) {
+//                            e.printStackTrace();
+////                            ConfigUtils.logWrite(e.toString());
+////                            DataUploadToTianJinUtils.postLog(getApplicationContext(),
+////                                    LogUtils.generateTag() + e.toString());
 //                        }
-                    } else if (respdata[0] == 0x37) {
-                        //检测到 M1-S50 卡
-//                        if (MyApplication.psamDatas.size() != 2) {
-//                            doVal(new CardBackBean(ReturnVal.CAD_PSAM_ERROR, null));
-//                            isFlag = 0;
+//
+//                        isFlag = 0;
+////                        if (cardBackBean != null) {
+////                            if (cardBackBean.getBackValue() != ReturnVal.CAD_SM) {
+////                                isFlag = 0;
+////                            }
+////                        } else {
+////                            isFlag = 0;
+////                        }
+//                    } else if (respdata[0] == 0x37) {
+//                        //检测到 M1-S50 卡
+////                        if (MyApplication.psamDatas.size() != 2) {
+////                            doVal(new CardBackBean(ReturnVal.CAD_PSAM_ERROR, null));
+////                            isFlag = 0;
+////                            continue;
+////                        }
+//                        if (isShowDataUI) {
 //                            continue;
 //                        }
-                        if (isShowDataUI) {
-                            continue;
-                        }
-                        LogUtils.v("m1结束寻卡===" + (System.currentTimeMillis() - ltime));
-                        CardBackBean cardBackBean = null;
-                        try {
-                            if (isDriverUI) {
-                                cardBackBean = M1CardManager.getInstance()
-                                        .mainMethod(getApplicationContext(), MyApplication.mBankCard
-                                                , M1CardManager.M150, 0
-                                                , MyApplication.psamDatas, isConfigChange);
-                                doVal(cardBackBean);
-                            } else {
-                                cardBackBean = M1CardManager.getInstance()
-                                        .mainMethod(getApplicationContext(), MyApplication.mBankCard
-                                                , M1CardManager.M150, 2
-                                                , MyApplication.psamDatas, isConfigChange);
-                                doVal(cardBackBean);
-                            }
-
-                        } catch (Exception e) {
-                            LogUtils.v(e.toString());
+//                        LogUtils.v("m1结束寻卡===" + (System.currentTimeMillis() - ltime));
+//                        CardBackBean cardBackBean = null;
+//                        try {
+//                            if (isDriverUI) {
+//                                cardBackBean = M1CardManager.getInstance()
+//                                        .mainMethod(getApplicationContext(), MyApplication.mBankCard
+//                                                , M1CardManager.M150, 0
+//                                                , MyApplication.psamDatas, isConfigChange);
+//                                doVal(cardBackBean);
+//                            } else {
+//                                cardBackBean = M1CardManager.getInstance()
+//                                        .mainMethod(getApplicationContext(), MyApplication.mBankCard
+//                                                , M1CardManager.M150, 2
+//                                                , MyApplication.psamDatas, isConfigChange);
+//                                doVal(cardBackBean);
+//                            }
+//
+//                        } catch (Exception e) {
+//                            LogUtils.v(e.toString());
+////                            ConfigUtils.logWrite(e.toString());
+////                            DataUploadToTianJinUtils.postLog(getApplicationContext(),
+////                                    LogUtils.generateTag() + e.toString());
+//                            e.printStackTrace();
+//                        }
+//                        isFlag = 0;
+//
+//
+//                    } else if (respdata[0] == 0x47) {
+//                        // 检测到 M1-S70 卡
+////                        if (MyApplication.psamDatas.size() != 2) {
+////                            doVal(new CardBackBean(ReturnVal.CAD_PSAM_ERROR, null));
+////                            isFlag = 0;
+////                            continue;
+////                        }
+//                        if (isShowDataUI) {
+//                            continue;
+//                        }
+//                        try {
+//                            if (isDriverUI) {
+//                                CardBackBean cardBackBean = M1CardManager.getInstance()
+//                                        .mainMethod(getApplicationContext(), MyApplication.mBankCard
+//                                                , M1CardManager.M170, 0
+//                                                , MyApplication.psamDatas, isConfigChange);
+//                                doVal(cardBackBean);
+//                            } else {
+//                                CardBackBean cardBackBean = M1CardManager.getInstance()
+//                                        .mainMethod(getApplicationContext(), MyApplication.mBankCard
+//                                                , M1CardManager.M170, 2
+//                                                , MyApplication.psamDatas, isConfigChange);
+//                                doVal(cardBackBean);
+//                            }
+//
+//                        } catch (Exception e) {
+//                            LogUtils.v(e.toString());
 //                            ConfigUtils.logWrite(e.toString());
-//                            DataUploadToTianJinUtils.postLog(getApplicationContext(),
-//                                    LogUtils.generateTag() + e.toString());
-                            e.printStackTrace();
-                        }
-                        isFlag = 0;
-
-
-                    } else if (respdata[0] == 0x47) {
-                        // 检测到 M1-S70 卡
-//                        if (MyApplication.psamDatas.size() != 2) {
-//                            doVal(new CardBackBean(ReturnVal.CAD_PSAM_ERROR, null));
-//                            isFlag = 0;
-//                            continue;
+//                            e.printStackTrace();
 //                        }
-                        if (isShowDataUI) {
-                            continue;
-                        }
-                        try {
-                            if (isDriverUI) {
-                                CardBackBean cardBackBean = M1CardManager.getInstance()
-                                        .mainMethod(getApplicationContext(), MyApplication.mBankCard
-                                                , M1CardManager.M170, 0
-                                                , MyApplication.psamDatas, isConfigChange);
-                                doVal(cardBackBean);
-                            } else {
-                                CardBackBean cardBackBean = M1CardManager.getInstance()
-                                        .mainMethod(getApplicationContext(), MyApplication.mBankCard
-                                                , M1CardManager.M170, 2
-                                                , MyApplication.psamDatas, isConfigChange);
-                                doVal(cardBackBean);
-                            }
-
-                        } catch (Exception e) {
-                            LogUtils.v(e.toString());
-                            ConfigUtils.logWrite(e.toString());
-                            e.printStackTrace();
-                        }
-                        isFlag = 0;
-                    }
-                }
-            } catch (RemoteException e) {
-                e.printStackTrace();
-            }
-        }
+//                        isFlag = 0;
+//                    }
+//                }
+//            } catch (RemoteException e) {
+//                e.printStackTrace();
+//            }
+//        }
     }
 
 
@@ -729,85 +725,6 @@ public class PsamIcActivity extends MVPBaseActivity<SpdBusPayContract.View, SpdB
         public void handleMessage(Message msg) {
             super.handleMessage(msg);
             switch (msg.what) {
-                case 123:
-                    Log.i(TAG, "handleMessage:  返回 卡號");
-                    Log.i(TAG, "卡号: " + msg.obj.toString());
-                    break;
-                case MyContext.Hide_Progress:
-
-                    Log.i(TAG, "handleMessage:  返回 Hide_Progress" + msg.obj.toString());
-                    break;
-                case MyContext.MSG_ERROR:
-                    LogUtils.v("请投币");
-                    String obj = "请投币:" + (String) msg.obj;
-                    ToastUtil.customToastView(PsamIcActivity.this, obj
-                            , Toast.LENGTH_SHORT, (TextView) LayoutInflater
-                                    .from(PsamIcActivity.this)
-                                    .inflate(R.layout.layout_toast, null));
-                    PlaySound.play(PlaySound.QINGTOUBI, 0);
-                    isFlag = 0;
-                    try {
-                        MyApplication.mBankCard.breakOffCommand();
-                    } catch (RemoteException e) {
-                        e.printStackTrace();
-                    }
-                    break;
-                case MyContext.MSG_PROGRESS:
-                    Log.e(TAG, "银联双免MSG_PROGRESS==" + msg.obj.toString());
-                    break;
-                case 12313:
-//                    mTvDeviceMessage.setText(msg.obj.toString());
-                    break;
-
-                case MyContext.RESULT_SUCCESS:
-                    LogUtils.v("主界面==交易成功银联");
-                    PrefUtil.putReversal(null);
-                    PlaySound.play(PlaySound.YINLIAN, 0);
-                    codeChangeUI();
-                    statisticalAddition();
-                    isFlag = 0;
-                    break;
-
-                case MyContext.RESULT_OUTCOME:
-                    if (msg.obj != null) {
-                        Log.d("SwipCard RESULT_OUTCOME", msg.obj.toString());
-                    }
-                    break;
-
-                case MyContext.BackMsg:
-                    LogUtils.v("双免消费完成，准备上传信息");
-                    Msg msg1 = (Msg) msg.obj;
-                    try {
-                        SaveDataUtils.saveSMDataBean(msg1, "1", "03");
-                        mPresenter.uploadSM(getApplicationContext());
-                    } catch (Exception e) {
-                        e.printStackTrace();
-                    }
-                    break;
-                case MyContext.DO_ODA:
-                    LogUtils.v("发送ODA，准备上传信息");
-                    Msg msg2 = (Msg) msg.obj;
-                    try {
-                        SaveDataUtils.saveSMDataBean(msg2, "0", "04");
-                        PrefUtil.putReversal(null);
-                        PlaySound.play(PlaySound.YINLIAN, 0);
-                        codeChangeUI();
-                        statisticalAddition();
-                        isFlag = 0;
-                        mPresenter.uploadSM(getApplicationContext());
-                    } catch (Exception e) {
-                        e.printStackTrace();
-                    }
-                    break;
-                case MyContext.YuYin_ChuLi:
-                    LogUtils.v("播放正在处理语音");
-                    PlaySound.play(PlaySound.ZHENGZZAICHULI, 0);
-
-                    break;
-                case MyContext.RETRY:
-                    PlaySound.play(PlaySound.qingchongshua, 0);
-                    isFlag = 0;
-                    break;
                 default:
                     Log.i(TAG, "handleMessage:  返回 default");
                     try {

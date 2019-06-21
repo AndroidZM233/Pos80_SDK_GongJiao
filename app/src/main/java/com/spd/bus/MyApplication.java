@@ -2,10 +2,7 @@ package com.spd.bus;
 
 import android.app.Application;
 import android.content.Context;
-import android.content.Intent;
 import android.os.Build;
-import android.os.RemoteException;
-import android.os.SystemClock;
 import android.support.annotation.RequiresApi;
 import android.util.Log;
 import android.widget.Toast;
@@ -20,23 +17,14 @@ import com.spd.base.been.tianjin.CardRecord;
 import com.spd.base.db.DbDaoManage;
 import com.spd.base.utils.DateUtils;
 import com.spd.base.utils.LogUtils;
-import com.spd.bus.spdata.YinLianPayManage;
 import com.spd.bus.spdata.been.PsamBeen;
 import com.spd.bus.util.CrashHandler;
 import com.spd.bus.util.PlaySound;
 import com.spd.bus.timer.HeartTimer;
-import com.spd.yinlianpay.util.PrefUtil;
 
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.List;
 
-import sdk4.wangpos.libemvbinder.EmvCore;
-import wangpos.sdk4.libbasebinder.BankCard;
-import wangpos.sdk4.libbasebinder.Core;
-import wangpos.sdk4.libkeymanagerbinder.Key;
-import wiseasy.socketpusher.socketpusher;
 
 import static com.honeywell.barcode.Symbology.QR;
 
@@ -47,15 +35,14 @@ public class MyApplication extends Application {
     public static List<CardRecord> cardRecordList = new ArrayList<>();
     public static List<PsamBeen> psamDatas = new ArrayList<>();
     //SDK 4.0
-    public static Key mKey = null;
-    public static Core mCore = null;
-    public static EmvCore emvCore = null;
-    public static BankCard mBankCard = null;
-    //log to pc
-    public static socketpusher log = null;
+//    public static Key mKey = null;
+//    public static Core mCore = null;
+//    public static EmvCore emvCore = null;
+//    public static BankCard mBankCard = null;
+//    //log to pc
+//    public static socketpusher log = null;
     public static byte fSysSta = (byte) 0x01;
     private static final String ACTION_SET_SYSTIME_BYSP = "set_systime_with_sp";
-    private static YinLianPayManage yinLianPayManage;
     //激活成功与否
     public static boolean isScanSuccess = false;
     /**
@@ -67,13 +54,6 @@ public class MyApplication extends Application {
         return m_application;
     }
 
-    public static YinLianPayManage getYinLianPayManage() {
-        return yinLianPayManage;
-    }
-
-    public static void setYinLianPayManage(YinLianPayManage yinLianPayManage) {
-        MyApplication.yinLianPayManage = yinLianPayManage;
-    }
 
     public static void setCardRecordList(CardRecord cardRecord) {
         LogUtils.v("start");
@@ -95,47 +75,48 @@ public class MyApplication extends Application {
         DbDaoManage.initDb(this);
 //        CrashReport.initCrashReport(getApplicationContext(),"ca2f83cd2c",true);
         PlaySound.initSoundPool(this);
-        PrefUtil.getSharedPreferences(getApplicationContext());
+//        PrefUtil.getSharedPreferences(getApplicationContext());
+
 
         new Thread(new Runnable() {
             @Override
             public void run() {
-                if (mBankCard == null) {
-                    mBankCard = new BankCard(getApplicationContext());
-                }
-                if (mCore == null) {
-                    mCore = new Core(getApplicationContext());
-                }
-                if (mKey == null) {
-                    mKey = new Key(getApplicationContext());
-                }
-                if (emvCore == null) {
-                    emvCore = new EmvCore(getApplicationContext());
-                }
-                if (log == null) {
-                    log = new socketpusher();
-                }
+//                if (mBankCard == null) {
+//                    mBankCard = new BankCard(getApplicationContext());
+//                }
+//                if (mCore == null) {
+//                    mCore = new Core(getApplicationContext());
+//                }
+//                if (mKey == null) {
+//                    mKey = new Key(getApplicationContext());
+//                }
+//                if (emvCore == null) {
+//                    emvCore = new EmvCore(getApplicationContext());
+//                }
+//                if (log == null) {
+//                    log = new socketpusher();
+//                }
 
-                try {
+//                try {
                     //更新sp时间到系统时间
-                    byte[] dateTime = new byte[14];
-                    mCore.getDateTime(dateTime);
-                    String strDate = new String(dateTime);
-                    SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyyMMddHHmmss");
-                    long timeToLong = simpleDateFormat.parse(strDate).getTime();
-                    LogUtils.i("时间：" + timeToLong);
-                    Intent intent = new Intent();
-                    intent.setAction(ACTION_SET_SYSTIME_BYSP);
-                    intent.putExtra("sp_time", timeToLong);
-                    sendBroadcast(intent);
+//                    byte[] dateTime = new byte[14];
+//                    mCore.getDateTime(dateTime);
+//                    String strDate = new String(dateTime);
+//                    SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyyMMddHHmmss");
+//                    long timeToLong = simpleDateFormat.parse(strDate).getTime();
+//                    LogUtils.i("时间：" + timeToLong);
+//                    Intent intent = new Intent();
+//                    intent.setAction(ACTION_SET_SYSTIME_BYSP);
+//                    intent.putExtra("sp_time", timeToLong);
+//                    sendBroadcast(intent);
 
 //                    successCallBack();
                     initScanBards(getApplicationContext());
-                } catch (RemoteException e) {
-                    e.printStackTrace();
-                } catch (ParseException e) {
-                    e.printStackTrace();
-                }
+//                } catch (RemoteException e) {
+//                    e.printStackTrace();
+//                } catch (ParseException e) {
+//                    e.printStackTrace();
+//                }
             }
         }).start();
 
@@ -162,37 +143,39 @@ public class MyApplication extends Application {
 
     }
 
-    public static BankCard getmBankCard() {
-        return mBankCard;
-    }
 
-    public static void setmBankCard(BankCard mBankCard) {
-        MyApplication.mBankCard = mBankCard;
-    }
 
-    public static Core getmCore() {
-        return mCore;
-    }
-
-    public static void setmCore(Core mCore) {
-        MyApplication.mCore = mCore;
-    }
-
-    public static Key getmKey() {
-        return mKey;
-    }
-
-    public static EmvCore getEmvCore() {
-        return emvCore;
-    }
-
-    public static BankCard getBankCardInstance() {
-        if (mBankCard != null) {
-            return mBankCard;
-        } else {
-            return null;
-        }
-    }
+//    public static BankCard getmBankCard() {
+//        return mBankCard;
+//    }
+//
+//    public static void setmBankCard(BankCard mBankCard) {
+//        MyApplication.mBankCard = mBankCard;
+//    }
+//
+//    public static Core getmCore() {
+//        return mCore;
+//    }
+//
+//    public static void setmCore(Core mCore) {
+//        MyApplication.mCore = mCore;
+//    }
+//
+//    public static Key getmKey() {
+//        return mKey;
+//    }
+//
+//    public static EmvCore getEmvCore() {
+//        return emvCore;
+//    }
+//
+//    public static BankCard getBankCardInstance() {
+//        if (mBankCard != null) {
+//            return mBankCard;
+//        } else {
+//            return null;
+//        }
+//    }
 
     @Override
     public void onTrimMemory(int level) {
@@ -242,12 +225,12 @@ public class MyApplication extends Application {
         Log.i(TAG, "onTerminate:    application 结束");
         HSMDecoder.disposeInstance();
         HeartTimer.getIntance(getApplicationContext()).dispose();
-        try {
-            mBankCard.breakOffCommand();
-            mBankCard = null;
-        } catch (RemoteException e) {
-            e.printStackTrace();
-        }
+//        try {
+//            mBankCard.breakOffCommand();
+//            mBankCard = null;
+//        } catch (RemoteException e) {
+//            e.printStackTrace();
+//        }
         super.onTerminate();
     }
 

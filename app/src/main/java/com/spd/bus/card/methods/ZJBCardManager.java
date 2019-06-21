@@ -9,10 +9,6 @@ import com.example.test.yinlianbarcode.utils.SharedXmlUtil;
 import com.google.gson.Gson;
 import com.spd.base.been.tianjin.CardBackBean;
 import com.spd.base.been.tianjin.CardRecord;
-import com.spd.base.been.tianjin.CityCode;
-import com.spd.base.been.tianjin.CityCodeDao;
-import com.spd.base.been.tianjin.White;
-import com.spd.base.been.tianjin.WhiteDao;
 import com.spd.base.db.DbDaoManage;
 import com.spd.base.utils.Datautils;
 import com.spd.base.dbbeen.RunParaFile;
@@ -22,7 +18,6 @@ import com.spd.bus.Info;
 import com.spd.bus.MyApplication;
 import com.spd.base.utils.DateUtils;
 import com.spd.base.utils.LogUtils;
-import com.spd.bus.spdata.YinLianPayManage;
 import com.spd.bus.spdata.been.PsamBeen;
 
 import java.text.ParseException;
@@ -53,7 +48,6 @@ public class ZJBCardManager {
     private byte[] ulDevUTCByte;
     private List<PsamBeen> psamBeenList;
     private Context context;
-    private YinLianPayManage yinLianPayManage;
     private Handler handler;
 
     public static ZJBCardManager getInstance() {
@@ -67,10 +61,9 @@ public class ZJBCardManager {
 
 
     public CardBackBean mainMethod(Context context, BankCard mBankCard, List<PsamBeen> psamBeenList
-            , YinLianPayManage yinLianPayManage, Handler handler) {
+            ,  Handler handler) {
         this.context = context;
         this.handler = handler;
-        this.yinLianPayManage = yinLianPayManage;
         long ltime = System.currentTimeMillis();
         LogUtils.v("ZJB开始");
         tCardOpDU = new TCardOpDU();
@@ -737,7 +730,6 @@ public class ZJBCardManager {
                     return new CardBackBean(ReturnVal.CAD_EMPTY, tCardOpDU);
                 } else {
                     // 银联双免
-                    yinLianPayManage.readCardInfo("07", handler);
                     return new CardBackBean(ReturnVal.CAD_SM, tCardOpDU);
                 }
 

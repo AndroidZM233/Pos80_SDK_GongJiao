@@ -18,13 +18,10 @@ import com.spd.base.been.tianjin.TCardOpDU;
 import com.spd.bus.MyApplication;
 import com.spd.base.utils.DateUtils;
 import com.spd.base.utils.LogUtils;
-import com.spd.bus.spdata.YinLianPayManage;
 import com.spd.bus.spdata.been.PsamBeen;
-import com.spd.bus.util.TLV;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
@@ -53,7 +50,6 @@ public class JTBCardManager {
     private int fOldDisable = 0;
     private List<PsamBeen> psamBeenList;
     private Context context;
-    private YinLianPayManage yinLianPayManage;
     private Handler handler;
 
     public static JTBCardManager getInstance() {
@@ -68,9 +64,8 @@ public class JTBCardManager {
 
 
     public CardBackBean mainMethod(Context context, BankCard mBankCard, List<PsamBeen> psamBeenList
-            , YinLianPayManage yinLianPayManage, Handler handler) throws Exception {
+            ,  Handler handler) throws Exception {
         this.handler = handler;
-        this.yinLianPayManage = yinLianPayManage;
         this.context = context;
         LogUtils.v("JTB开始");
         this.psamBeenList = psamBeenList;
@@ -177,15 +172,13 @@ public class JTBCardManager {
                     return new CardBackBean(ReturnVal.CAD_READ, tCardOpDU);
                 } else {
                     // 银联双免
-                    yinLianPayManage.readCardInfo("07", handler);
                     return new CardBackBean(ReturnVal.CAD_SM, tCardOpDU);
                 }
 
             }
 
         } else {
-            return ZJBCardManager.getInstance().mainMethod(context, mBankCard, psamBeenList
-                    , yinLianPayManage, handler);
+            return ZJBCardManager.getInstance().mainMethod(context, mBankCard, psamBeenList, handler);
         }
     }
 
