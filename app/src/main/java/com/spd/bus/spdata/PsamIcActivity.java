@@ -70,18 +70,6 @@ public class PsamIcActivity extends MVPBaseActivity<SpdBusPayContract.View, SpdB
      */
     private int isFlag = 0;
 
-    /**
-     * 微智接口返回数据
-     */
-    private byte[] respdata = new byte[512];
-    /**
-     * 微智接口返回数据长度
-     */
-    private int[] resplen = new int[1];
-    /**
-     * 微智接口返回状态 非0错误
-     */
-    private int retvalue = -1;
     private SignalView mXinhao;
     /**
      * 636路
@@ -123,11 +111,40 @@ public class PsamIcActivity extends MVPBaseActivity<SpdBusPayContract.View, SpdB
     private boolean isDriverUI = false;
     private LinearLayout mLlShowData;
     private boolean isShowDataUI = false;
-    //    private LinearLayout mLlSetConfig;
-//    private boolean isSetConfigUI = false;
     private boolean isConfigChange;
     private TextView mTvTitle;
     private boolean isQianDao = false;
+    //——————————————————————————————————————分界线 单片机方案
+    boolean key;
+    public static int unionTag = 0;
+    private int intPrices;//扣款价格
+    private double priceDou;//double price
+    private String driversNo = "";
+    private String busNo = "";
+    private int fieldLength = 0;
+    private int countLength = 0;
+    private String uninonSign;
+    private String signRecord;//司机记录
+    private String driverSignTime;//司机签到时间
+    private String grcardcode = "00000000000000000000";
+    private String getIcCardResult;//尋卡結果
+    private String stateRfid;//尋卡結果状态
+    private String rfidDectValue;//消费寻卡结果
+    private String rfidDectState;//消費結果狀態
+    private int whitelists;//白名單查詢結果
+    private int unionSignResult;//union签到结果
+    private int len;//银联卡数据总长度---暂时未用到
+    private String smRecord;//双免记录
+    private String primaryAcountNum;//主账号
+    private String amount;//交易金额
+    private String tradingFlow;//交易流水
+    private String stationTime;//进站时间
+    private String cardSerial;//卡片序号
+    private String TwoTrackData;//二磁道数据
+    private String ICCardDataDomain;//ic卡数据域
+    private String batchNumber;//批次号
+    private String cardType;//ic卡類型
+    private String cardCode;//卡号
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -144,10 +161,357 @@ public class PsamIcActivity extends MVPBaseActivity<SpdBusPayContract.View, SpdB
         }
         initView();
         initCard();
-
-
+        init();
     }
 
+    private void init() {
+        priceDou = intPrices / 100.00;
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        key = true;
+        MyThread myThread = new MyThread();
+        myThread.start();
+    }
+
+    class MyThread extends Thread {
+        @Override
+        public void run() {
+            super.run();
+            while (key) {
+                {
+                    getIcCardResult = com.yht.q6jni.Jni.Rfidcard();
+                    if (getIcCardResult.length() > 38) {
+                        stateRfid = getIcCardResult.substring(0, 2);
+                        // Logger.i( "stateRfid"+stateRfid );
+                        if (stateRfid.equals("00")) {
+                            if ("90".equals(getIcCardResult.substring(44, 46))) {
+                                if (intPrices != 0 && intPrices < 100000 && !"000000".equals(busNo)) {
+                                    if (driversNo.length() > 16) {
+                                        unionTag = 1;
+                                        PlaySound.play(PlaySound.ZHENGZAICHULI, 0);
+                                        len = Integer.parseInt(getIcCardResult.substring(46, 50), 16) * 2 + 50;
+                                        //双免记录长度
+                                        fieldLength = Integer.parseInt(getIcCardResult.substring(50, 54), 16);
+                                        //双免记录
+                                        smRecord = getIcCardResult.substring(54, 54 + fieldLength * 2);
+                                        countLength = fieldLength * 2 + 54;
+                                        //主賬號長度
+                                        fieldLength = Integer.parseInt(getIcCardResult.substring(countLength, countLength + 4), 16);
+                                        countLength = countLength + 4;
+                                        //主賬號
+                                        primaryAcountNum = getIcCardResult.substring(countLength, countLength + fieldLength * 2);
+                                        if (primaryAcountNum.indexOf("f") != -1) {
+                                            primaryAcountNum = primaryAcountNum.substring(0, primaryAcountNum.lastIndexOf("f"));
+                                        }
+                                        countLength = countLength + fieldLength * 2;
+                                        //交易金额长度
+                                        fieldLength = Integer.parseInt(getIcCardResult.substring(countLength, countLength + 4), 16);
+                                        countLength = countLength + 4;
+                                        //交易金额
+                                        amount = getIcCardResult.substring(countLength, countLength + fieldLength * 2);
+                                        countLength = countLength + fieldLength * 2;
+                                        //交易流水长度
+                                        fieldLength = Integer.parseInt(getIcCardResult.substring(countLength, countLength + 4), 16);
+                                        countLength = countLength + 4;
+                                        // 交易流水
+                                        tradingFlow = getIcCardResult.substring(countLength, countLength + fieldLength * 2);
+                                        countLength = countLength + fieldLength * 2;
+                                        // 进站时间长度
+                                        fieldLength = Integer.parseInt(getIcCardResult.substring(countLength, countLength + 4), 16);
+                                        countLength = countLength + 4;
+                                        // 进站时间
+                                        stationTime = getIcCardResult.substring(countLength, countLength + fieldLength * 2);
+                                        countLength = countLength + fieldLength * 2;
+                                        // 卡片序列号长度
+                                        fieldLength = Integer.parseInt(getIcCardResult.substring(countLength, countLength + 4), 16);
+                                        countLength = countLength + 4;
+                                        // 卡片序列号
+                                        cardSerial = getIcCardResult.substring(countLength, countLength + fieldLength * 2);
+                                        countLength = countLength + fieldLength * 2;
+                                        //二磁道數據長度
+                                        fieldLength = Integer.parseInt(getIcCardResult.substring(countLength, countLength + 4), 16);
+                                        countLength = countLength + 4;
+                                        // 二磁道数据
+
+                                        TwoTrackData = getIcCardResult.substring(countLength, countLength + fieldLength * 2);
+                                        if (TwoTrackData.indexOf("f") != -1) {
+                                            TwoTrackData = TwoTrackData.substring(0, TwoTrackData.lastIndexOf("f"));
+                                        }
+                                        countLength = countLength + fieldLength * 2;
+                                        //IC卡數據與長度
+                                        fieldLength = Integer.parseInt(getIcCardResult.substring(countLength, countLength + 4), 16);
+                                        countLength = countLength + 4;
+                                        //IC卡数据域
+                                        ICCardDataDomain = getIcCardResult.substring(countLength, countLength + fieldLength * 2);
+                                        countLength = countLength + fieldLength * 2;
+                                        //批次號長度
+                                        fieldLength = Integer.parseInt(getIcCardResult.substring(countLength, countLength + 4), 16);
+                                        countLength = countLength + 4;
+                                        //批次號
+                                        batchNumber = getIcCardResult.substring(countLength, countLength + fieldLength * 2);
+                                        // TODO: 2019/6/24 记录存储
+
+                                        // TODO: 2019/6/24 判断走双免还是ODA
+                                        if (uninonSign.equals("1")) {
+//                                            new UnionSocketThread(tradingFlow, smRecord, primaryAcountNum).start();
+                                            // TODO: 2019/6/24 上传记录
+                                        } else {
+                                            // TODO: 2019/6/24 判断是不是黑名单
+//                                            if (SqlStatement.SelectUnionBlack(primaryAcountNum) == 0) {
+//                                                SqlStatement.updataUnionODASUC(tradingFlow);
+//                                                handler.sendMessage(handler.obtainMessage(7, "ODA"));
+//                                                SystemClock.sleep(650);
+//                                                unionTag = 0;
+//                                            } else {
+//                                                unionTag = 0;
+//                                                handler.sendMessage(handler
+//                                                        .obtainMessage(8, "无效卡号"));
+//                                                SystemClock.sleep(550);
+//                                            }
+                                        }
+                                    } else {
+                                        PlaySound.play(PlaySound.QINGQIANDAO, 0);
+                                    }
+                                } else {
+                                    PlaySound.play(PlaySound.QINGSHEZHI, 0);
+                                }
+                                continue;
+                            }
+                            cardType = getIcCardResult.substring(2, 4);
+                            cardCode = getIcCardResult.substring(4, 24);
+                            // 0本地卡，1外地卡.住建部 0 交通部 1
+                            if ("01".equals(getIcCardResult.substring(26, 28))) {
+//                                if (("01".equals(getIcCardResult.substring(24, 26)))) {
+//                                    whitelists = SqlStatement
+//                                            .SelectCardWhite(new StringBuffer().append("003").append(
+//                                                    getIcCardResult.substring(30, 38)).toString());
+//                                    Logger.i("whitelists=" + whitelists);
+//                                    if ((whitelists != 1)) {
+//                                        handler.sendMessage(handler
+//                                                .obtainMessage(8,
+//                                                        "无效卡bai"));
+//                                        continue;
+//                                    }
+//                                } else if ("00".equals(getIcCardResult.substring(24, 26))) {
+//                                    whitelists = SqlStatement
+//                                            .SelectCardWhite(new StringBuffer().append("001").append(getIcCardResult.substring(30, 38)).toString());
+//                                    if ((whitelists != 1)) {
+//                                        handler.sendMessage(handler
+//                                                .obtainMessage(8,
+//                                                        "无效卡bai"));
+//                                        continue;
+//                                    }
+//                                }
+                            }
+                            if (driversNo.equals(cardCode)) {
+                                // 当班司机卡不能消费
+                                handler.sendMessage(handler
+                                        .obtainMessage(12, "当班司机"));
+                                continue;
+                            }
+                            if (cardType.equals("91")) {
+                                // 请设置车辆号
+                                key = false;
+//                                startActivity(intent.setClass(MainActivity.this, SettingActivity.class));
+                                continue;
+                            }
+                            if (signRecord.length() < 120) {
+                                PlaySound.play(PlaySound.QINGQIANDAO, 0);
+                                continue;
+                            }
+                            //消费
+                            if (intPrices != 0 && intPrices < 100000 && !"000000".equals(busNo)) {
+                                if (driversNo.length() > 16) {
+                                    // TODO: 2019/6/24  1.查询本次交易卡是否是黑名单
+//                                    rfidDectValue = com.yht.q6jni.Jni.RfidDectValue(SqlStatement.SelectCard(cardCode));
+                                    if (rfidDectValue.length() > 2) {
+                                        rfidDectState = rfidDectValue.substring(0, 2);
+                                        if ("00".equals(rfidDectState)) {
+//                                            if (cardCode.equalsIgnoreCase(grcardcode)) {
+//                                                counts++;
+//                                            } else {
+//                                                counts = 1;
+//                                            }
+                                            grcardcode = cardCode;
+                                            handler.sendMessage(handler.obtainMessage(2, rfidDectValue));
+                                            SystemClock.sleep(350);
+                                            continue;
+                                        }
+                                        if ("0a".equalsIgnoreCase(rfidDectState)) {
+                                            double tb_yue_xs1 = (Integer.parseInt(rfidDectValue.substring(8, 12), 16) / 100.00);
+                                            if (tb_yue_xs1 > priceDou) {
+                                                tb_yue_xs1 = 0.0;
+                                            }
+                                            handler.sendMessage(handler.obtainMessage(12, "消费：0元\n剩余：" + tb_yue_xs1 + "元"));
+                                            continue;
+                                        }
+                                        if ("0b".equalsIgnoreCase(rfidDectState)) {
+                                            handler.sendMessage(handler.obtainMessage(9, rfidDectValue));
+                                            continue;
+                                        }
+                                        if ("0d".equalsIgnoreCase(rfidDectState)) {
+                                            handler.sendMessage(handler.obtainMessage(12, "投币0d"));
+                                            continue;
+                                        }
+                                        if ("09".equals(rfidDectState)) {
+                                            handler.sendMessage(handler.obtainMessage(12, "未启用09"));
+                                            continue;
+                                        }
+                                        if ("08".equals(rfidDectState)) {
+                                            handler.sendMessage(handler.obtainMessage(12, "卡过期08"));
+                                            continue;
+                                        }
+                                        if ("07".equals(rfidDectState)) {
+                                            handler.sendMessage(handler.obtainMessage(8, "warning07"));
+                                            continue;
+                                        }
+                                        if ("06".equals(rfidDectState) || "05".equals(rfidDectState)) {
+                                            handler.sendMessage(handler.obtainMessage(8, rfidDectValue));
+                                            continue;
+                                        }
+                                        if ("02".equals(rfidDectState) || "03".equals(rfidDectState) || "04".equals(rfidDectState)) {
+                                            handler.sendMessage(handler.obtainMessage(9, "warning234"));
+                                            continue;
+                                        }
+                                        if ("fb".equalsIgnoreCase(rfidDectState)) {
+                                            handler.sendMessage(handler.obtainMessage(9, "fb"));
+                                            continue;
+                                        }
+                                        if ("90".equals(rfidDectState)) {
+                                            PlaySound.play(PlaySound.ZHENGZAICHULI, 0);
+                                            len = Integer.parseInt(rfidDectValue.substring(2, 6), 16) * 2 + 2;
+                                            //双免记录长度
+                                            fieldLength = Integer.parseInt(rfidDectValue.substring(6, 10), 16);
+                                            //双免记录
+                                            smRecord = rfidDectValue.substring(10, 10 + fieldLength * 2);
+                                            countLength = fieldLength * 2 + 10;
+                                            //主賬號長度
+                                            fieldLength = Integer.parseInt(rfidDectValue.substring(countLength, countLength + 4), 16);
+                                            countLength = countLength + 4;
+                                            //主賬號
+                                            primaryAcountNum = rfidDectValue.substring(countLength, countLength + fieldLength * 2);
+                                            if (primaryAcountNum.indexOf("f") != -1) {
+                                                primaryAcountNum = primaryAcountNum.substring(0, primaryAcountNum.lastIndexOf("f"));
+                                            }
+                                            countLength = countLength + fieldLength * 2;
+                                            //交易金额长度
+                                            fieldLength = Integer.parseInt(rfidDectValue.substring(countLength, countLength + 4), 16);
+                                            countLength = countLength + 4;
+                                            //交易金额
+                                            amount = rfidDectValue.substring(countLength, countLength + fieldLength * 2);
+                                            countLength = countLength + fieldLength * 2;
+                                            //交易流水长度
+                                            fieldLength = Integer.parseInt(rfidDectValue.substring(countLength, countLength + 4), 16);
+                                            countLength = countLength + 4;
+                                            // 交易流水
+                                            tradingFlow = rfidDectValue.substring(countLength, countLength + fieldLength * 2);
+                                            countLength = countLength + fieldLength * 2;
+                                            // 进站时间长度
+                                            fieldLength = Integer.parseInt(rfidDectValue.substring(countLength, countLength + 4), 16);
+                                            countLength = countLength + 4;
+                                            // 进站时间
+                                            stationTime = rfidDectValue.substring(countLength, countLength + fieldLength * 2);
+                                            countLength = countLength + fieldLength * 2;
+                                            // 卡片序列号长度
+                                            fieldLength = Integer.parseInt(rfidDectValue.substring(countLength, countLength + 4), 16);
+                                            countLength = countLength + 4;
+                                            // 卡片序列号
+                                            cardSerial = rfidDectValue.substring(countLength, countLength + fieldLength * 2);
+                                            countLength = countLength + fieldLength * 2;
+                                            //二磁道數據長度
+                                            fieldLength = Integer.parseInt(rfidDectValue.substring(countLength, countLength + 4), 16);
+                                            countLength = countLength + 4;
+                                            // 二磁道数据
+
+                                            TwoTrackData = rfidDectValue.substring(countLength, countLength + fieldLength * 2);
+                                            if (TwoTrackData.indexOf("f") != -1) {
+                                                TwoTrackData = TwoTrackData.substring(0, TwoTrackData.lastIndexOf("f"));
+                                            }
+                                            countLength = countLength + fieldLength * 2;
+                                            //IC卡數據與長度
+                                            fieldLength = Integer.parseInt(rfidDectValue.substring(countLength, countLength + 4), 16);
+                                            countLength = countLength + 4;
+                                            //IC卡数据域
+                                            ICCardDataDomain = rfidDectValue.substring(countLength, countLength + fieldLength * 2);
+                                            countLength = countLength + fieldLength * 2;
+                                            //批次號長度
+                                            fieldLength = Integer.parseInt(rfidDectValue.substring(countLength, countLength + 4), 16);
+                                            countLength = countLength + 4;
+                                            //批次號
+                                            batchNumber = rfidDectValue.substring(countLength, countLength + fieldLength * 2);
+                                            // TODO: 2019/6/24 ODA存储
+                                            if (uninonSign.equals("1")) {
+                                                // TODO: 2019/6/24 上传记录
+//                                                new UnionSocketThread(tradingFlow, smRecord, primaryAcountNum).start();
+                                            } else {
+                                                // TODO: 2019/6/24 黑名单判断
+//                                                if (SqlStatement.SelectUnionBlack(primaryAcountNum) == 0) {
+//                                                    SqlStatement.updataUnionODASUC(tradingFlow);
+//                                                    handler.sendMessage(handler.obtainMessage(7, "ODA"));
+//                                                    SystemClock.sleep(650);
+//                                                    unionTag = 0;
+//                                                } else {
+//                                                    unionTag = 0;
+//                                                    handler.sendMessage(handler
+//                                                            .obtainMessage(8, "无效卡号"));
+//                                                    SystemClock.sleep(550);
+//                                                }
+                                            }
+                                            continue;
+                                        }
+                                    }
+                                } else {
+                                    PlaySound.play(PlaySound.QINGQIANDAO, 0);
+                                }
+                            } else {
+                                PlaySound.play(PlaySound.QINGSHEZHI, 0);
+                            }
+                            continue;
+                        }
+                        if ("7f".equalsIgnoreCase(stateRfid)) {
+                            // TODO: 2019/6/24 银联签到
+//                            new UnionSign(getIcCardResult.substring(6, 6 + Integer.parseInt(getIcCardResult.substring(2, 6), 16) * 2)).start();
+                            SystemClock.sleep(300);
+                            continue;
+                        }
+                        if ("09".equalsIgnoreCase(stateRfid)) {
+                            handler.sendMessage(handler.obtainMessage(12, "未启用09"));
+                            continue;
+                        }
+                        if ("08".equalsIgnoreCase(stateRfid)) {
+                            handler.sendMessage(handler.obtainMessage(12, "卡过期08"));
+                            continue;
+                        }
+                        if ("07".equalsIgnoreCase(stateRfid)) {
+                            handler.sendMessage(handler.obtainMessage(8, "warning07"));
+                            continue;
+                        }
+                        if ("06".equalsIgnoreCase(stateRfid) || "05".equalsIgnoreCase(stateRfid)) {
+                            handler.sendMessage(handler.obtainMessage(8, "无效卡56"));
+                            continue;
+                        }
+                        if ("03".equalsIgnoreCase(stateRfid) || "02".equalsIgnoreCase(stateRfid) || "04".equalsIgnoreCase(stateRfid)) {
+                            handler.sendMessage(handler.obtainMessage(9, "warning234"));
+                            continue;
+                        }
+                        if ("fb".equalsIgnoreCase(stateRfid)) {
+                            handler.sendMessage(handler.obtainMessage(9, "warningfb"));
+                            continue;
+                        }
+                        if ("26".equalsIgnoreCase(stateRfid)) {
+                            handler.sendMessage(handler.obtainMessage(9, "warningfb"));
+                            continue;
+                        }
+
+                    }
+
+                }
+            }
+        }
+    }
 
     @SuppressLint("SetTextI18n")
     private void initView() {
@@ -783,7 +1147,7 @@ public class PsamIcActivity extends MVPBaseActivity<SpdBusPayContract.View, SpdB
                         , Toast.LENGTH_SHORT, (TextView) LayoutInflater
                                 .from(PsamIcActivity.this)
                                 .inflate(R.layout.layout_toast, null));
-                PlaySound.play(PlaySound.ERWEIMASHIXIAO,0);
+                PlaySound.play(PlaySound.ERWEIMASHIXIAO, 0);
 //                }
                 return;
             }
