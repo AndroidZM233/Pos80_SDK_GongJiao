@@ -48,7 +48,14 @@ import com.spd.bus.util.ConfigUtils;
 import com.spd.bus.util.DataUploadToTianJinUtils;
 import com.spd.bus.util.PlaySound;
 import com.spd.bus.util.SaveDataUtils;
+import com.spd.bus.util.StringUtils;
 
+import java.io.DataOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.net.InetSocketAddress;
+import java.net.Socket;
+import java.net.SocketTimeoutException;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 
@@ -145,6 +152,15 @@ public class PsamIcActivity extends MVPBaseActivity<SpdBusPayContract.View, SpdB
     private String batchNumber;//批次号
     private String cardType;//ic卡類型
     private String cardCode;//卡号
+    private String rfidResultValueHan;//case2中msg.obj值
+    private String alreadyCode;//展示卡号
+    private String cpuCard;//交通部标志
+    private String yueIc;//余额
+    private String consumption;//消费金额
+    private int yueCase2;//余额为负时
+    private TextView dateTime;//时钟
+    private String msgValue = "";//handler
+
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -172,8 +188,7 @@ public class PsamIcActivity extends MVPBaseActivity<SpdBusPayContract.View, SpdB
     protected void onResume() {
         super.onResume();
         key = true;
-        MyThread myThread = new MyThread();
-        myThread.start();
+
     }
 
     class MyThread extends Thread {
@@ -185,7 +200,6 @@ public class PsamIcActivity extends MVPBaseActivity<SpdBusPayContract.View, SpdB
                     getIcCardResult = com.yht.q6jni.Jni.Rfidcard();
                     if (getIcCardResult.length() > 38) {
                         stateRfid = getIcCardResult.substring(0, 2);
-                        // Logger.i( "stateRfid"+stateRfid );
                         if (stateRfid.equals("00")) {
                             if ("90".equals(getIcCardResult.substring(44, 46))) {
                                 if (intPrices != 0 && intPrices < 100000 && !"000000".equals(busNo)) {
@@ -253,24 +267,29 @@ public class PsamIcActivity extends MVPBaseActivity<SpdBusPayContract.View, SpdB
                                         //批次號
                                         batchNumber = getIcCardResult.substring(countLength, countLength + fieldLength * 2);
                                         // TODO: 2019/6/24 记录存储
-
-                                        // TODO: 2019/6/24 判断走双免还是ODA
+                                        try {
+                                            SaveDataUtils.saveSMDataBean(cardSerial, batchNumber, "", "0", TwoTrackData, amount
+                                                    , "", ICCardDataDomain, "04", primaryAcountNum);
+                                        } catch (Exception e) {
+                                            e.printStackTrace();
+                                        }
                                         if (uninonSign.equals("1")) {
-//                                            new UnionSocketThread(tradingFlow, smRecord, primaryAcountNum).start();
                                             // TODO: 2019/6/24 上传记录
+                                            mPresenter.uploadSM(getApplicationContext());
                                         } else {
                                             // TODO: 2019/6/24 判断是不是黑名单
-//                                            if (SqlStatement.SelectUnionBlack(primaryAcountNum) == 0) {
+                                            int blackDB = SaveDataUtils.queryBlackDB(primaryAcountNum);
+                                            if (blackDB == 1) {
+                                                unionTag = 0;
+                                                handler.sendMessage(handler
+                                                        .obtainMessage(8, "无效卡号"));
+                                                SystemClock.sleep(550);
+                                            } else {
 //                                                SqlStatement.updataUnionODASUC(tradingFlow);
-//                                                handler.sendMessage(handler.obtainMessage(7, "ODA"));
-//                                                SystemClock.sleep(650);
-//                                                unionTag = 0;
-//                                            } else {
-//                                                unionTag = 0;
-//                                                handler.sendMessage(handler
-//                                                        .obtainMessage(8, "无效卡号"));
-//                                                SystemClock.sleep(550);
-//                                            }
+                                                handler.sendMessage(handler.obtainMessage(7, "ODA"));
+                                                SystemClock.sleep(650);
+                                                unionTag = 0;
+                                            }
                                         }
                                     } else {
                                         PlaySound.play(PlaySound.QINGQIANDAO, 0);
@@ -326,7 +345,7 @@ public class PsamIcActivity extends MVPBaseActivity<SpdBusPayContract.View, SpdB
                             if (intPrices != 0 && intPrices < 100000 && !"000000".equals(busNo)) {
                                 if (driversNo.length() > 16) {
                                     // TODO: 2019/6/24  1.查询本次交易卡是否是黑名单
-//                                    rfidDectValue = com.yht.q6jni.Jni.RfidDectValue(SqlStatement.SelectCard(cardCode));
+                                    rfidDectValue = com.yht.q6jni.Jni.RfidDectValue(SaveDataUtils.queryBlackDB(cardCode));
                                     if (rfidDectValue.length() > 2) {
                                         rfidDectState = rfidDectValue.substring(0, 2);
                                         if ("00".equals(rfidDectState)) {
@@ -443,22 +462,29 @@ public class PsamIcActivity extends MVPBaseActivity<SpdBusPayContract.View, SpdB
                                             //批次號
                                             batchNumber = rfidDectValue.substring(countLength, countLength + fieldLength * 2);
                                             // TODO: 2019/6/24 ODA存储
+                                            try {
+                                                SaveDataUtils.saveSMDataBean(cardSerial, batchNumber, "", "0", TwoTrackData, amount
+                                                        , "", ICCardDataDomain, "04", primaryAcountNum);
+                                            } catch (Exception e) {
+                                                e.printStackTrace();
+                                            }
                                             if (uninonSign.equals("1")) {
                                                 // TODO: 2019/6/24 上传记录
-//                                                new UnionSocketThread(tradingFlow, smRecord, primaryAcountNum).start();
+                                                mPresenter.uploadSM(getApplicationContext());
                                             } else {
-                                                // TODO: 2019/6/24 黑名单判断
-//                                                if (SqlStatement.SelectUnionBlack(primaryAcountNum) == 0) {
-//                                                    SqlStatement.updataUnionODASUC(tradingFlow);
-//                                                    handler.sendMessage(handler.obtainMessage(7, "ODA"));
-//                                                    SystemClock.sleep(650);
-//                                                    unionTag = 0;
-//                                                } else {
-//                                                    unionTag = 0;
-//                                                    handler.sendMessage(handler
-//                                                            .obtainMessage(8, "无效卡号"));
-//                                                    SystemClock.sleep(550);
-//                                                }
+                                                // TODO: 2019/6/24 判断是不是黑名单
+                                                int blackDB = SaveDataUtils.queryBlackDB(primaryAcountNum);
+                                                if (blackDB == 1) {
+                                                    unionTag = 0;
+                                                    handler.sendMessage(handler
+                                                            .obtainMessage(8, "无效卡号"));
+                                                    SystemClock.sleep(550);
+                                                } else {
+//                                                SqlStatement.updataUnionODASUC(tradingFlow);
+                                                    handler.sendMessage(handler.obtainMessage(7, "ODA"));
+                                                    SystemClock.sleep(650);
+                                                    unionTag = 0;
+                                                }
                                             }
                                             continue;
                                         }
@@ -473,7 +499,7 @@ public class PsamIcActivity extends MVPBaseActivity<SpdBusPayContract.View, SpdB
                         }
                         if ("7f".equalsIgnoreCase(stateRfid)) {
                             // TODO: 2019/6/24 银联签到
-//                            new UnionSign(getIcCardResult.substring(6, 6 + Integer.parseInt(getIcCardResult.substring(2, 6), 16) * 2)).start();
+                            new UnionSign(getIcCardResult.substring(6, 6 + Integer.parseInt(getIcCardResult.substring(2, 6), 16) * 2)).start();
                             SystemClock.sleep(300);
                             continue;
                         }
@@ -513,6 +539,60 @@ public class PsamIcActivity extends MVPBaseActivity<SpdBusPayContract.View, SpdB
         }
     }
 
+    /**
+     * 銀聯簽到，
+     */
+    class UnionSign extends Thread {
+        private String recordSigns;
+
+        public UnionSign(String recordSign) {
+            this.recordSigns = recordSign;
+        }
+
+        @Override
+        public void run() {
+            super.run();
+            try {
+                Socket socket = new Socket();
+                socket.connect(new InetSocketAddress("123.150.11.50", 18000),
+                        3000);
+                LogUtils.i("结果：" + socket.isConnected());
+                socket.setSoTimeout(3000);
+                DataOutputStream out = new DataOutputStream(
+                        socket.getOutputStream());
+                out.write(Datautils.hexStringToByteArray(recordSigns));
+                out.flush();
+                InputStream inputStream = socket.getInputStream();
+                byte[] temp = new byte[1024];
+                int bytes = 0;
+                bytes = inputStream.read(temp);
+                String input = Datautils.byteArrayToString(temp);
+                if (!temp.equals("") || temp != null || temp.length != 0) {
+                    String result = input
+                            .substring(
+                                    0,
+                                    Integer.parseInt(input.substring(0, 4), 16) * 2 + 4);
+                    unionSignResult = com.yht.q6jni.Jni.QapassSignUnPack(result);
+                    if (1 == unionSignResult) {
+                        uninonSign = "1";
+                        SharedXmlUtil.getInstance(getApplicationContext()).write("UNIONSIGN", "1");
+                    } else {
+                        SharedXmlUtil.getInstance(getApplicationContext()).write("UNIONSIGN", "0");
+                    }
+                    LogUtils.i("签到结果==" + unionSignResult);
+                }
+                // 关闭各种输入输出流
+                out.close();
+                socket.close();
+            } catch (SocketTimeoutException aa) {
+                LogUtils.i("SocketTimeoutException:" + aa.getMessage());
+            } catch (IOException e) {
+                LogUtils.i("IOException:" + e.getMessage());
+            }
+        }
+    }
+
+
     @SuppressLint("SetTextI18n")
     private void initView() {
 
@@ -547,12 +627,8 @@ public class PsamIcActivity extends MVPBaseActivity<SpdBusPayContract.View, SpdB
             IntentFilter filter = new IntentFilter();
             filter.addAction(Intent.ACTION_TIME_TICK);
 
-            new Thread(new Runnable() {
-                @Override
-                public void run() {
-                    startTimer(true);
-                }
-            }).start();
+            MyThread myThread = new MyThread();
+            myThread.start();
 
             updateTime();
             mPresenter.wechatInitJin();
@@ -1089,13 +1165,368 @@ public class PsamIcActivity extends MVPBaseActivity<SpdBusPayContract.View, SpdB
         public void handleMessage(Message msg) {
             super.handleMessage(msg);
             switch (msg.what) {
-                default:
-                    Log.i(TAG, "handleMessage:  返回 default");
-                    try {
-                        Log.d("SwipCard", msg.toString());
-                    } catch (Exception ex) {
-                        ex.printStackTrace();
+                case 1:
+                    //按键跳转
+                    break;
+                case 2:
+                    //ic卡消费
+                    rfidResultValueHan = msg.obj.toString();
+                    if (rfidResultValueHan.length() > 147) {
+                        cpuCard = rfidResultValueHan.substring(28, 30);
+                        yueIc = rfidResultValueHan.substring(4, 12);
+                        consumption = rfidResultValueHan.substring(12, 20);
+                        if (8 == (Integer.parseInt(rfidResultValueHan.substring(4, 5), 16) & 8)) {
+                            yueCase2 = 0;
+                        } else {
+                            yueCase2 = Integer.parseInt(yueIc, 16);
+                        }
+
+                        if ("00".equals(rfidResultValueHan.substring(2, 4))) {
+                            // TODO: 2019/6/24 记录存储
+//                            saveICCardRecoed( rfidResultValueHan.substring( 20, 148 ), 1, String.valueOf( System.currentTimeMillis() ), Integer.parseInt( rfidResultValueHan.substring( 12, 20 ), 16 ), 0, 1, 1,
+//                                    0, getDriverRecord.getlimtId() );
+                            SaveDataUtils.saveCardRecord(getApplicationContext(), false, "",
+                                    Datautils.hexStringToByteArray(rfidResultValueHan.substring(20, 148)));
+
+                            if ("07".equals(cpuCard)) {
+                                SystemClock.sleep(50);
+//                                saveICCardRecoed( rfidResultValueHan.substring( 148, rfidResultValueHan.length() ), 1, String.valueOf( System.currentTimeMillis() ), 0, 0, 1, 1, 1,
+//                                        getDriverRecord.getlimtId() );
+                                SaveDataUtils.saveCardRecord(getApplicationContext(), true, "",
+                                        Datautils.hexStringToByteArray(rfidResultValueHan.substring(148, rfidResultValueHan.length())));
+                            }
+                            if ("01".equals(cardType) && !"03".equals(cpuCard) && !"01".equals(cpuCard)) {
+                                if (Integer.parseInt(consumption, 16) > 0) {
+                                    PlaySound.play(PlaySound.DIDI, 0);
+                                } else {
+                                    PlaySound.play(PlaySound.JINGLAOKA, 0);
+                                }
+                            } else if ("02".equals(cardType) || "11".equals(cardType) && !"03".equals(cpuCard) && !"01".equals(cpuCard)) {
+                                if (Integer.parseInt(consumption, 16) > 0) {
+                                    PlaySound.play(PlaySound.DIDI, 0);
+                                } else {
+                                    PlaySound.play(PlaySound.AIXINKA, 0);
+                                }
+                            } else {
+                                if (Integer.parseInt(yueIc, 16) < 500) {
+                                    PlaySound.play(PlaySound.QINGCHOGNZHI, 0);
+                                } else {
+                                    PlaySound.play(PlaySound.DIDI, 0);
+                                }
+                            }
+                            handler.post(new Runnable() {
+                                @Override
+                                public void run() {
+                                    // TODO: 2019/6/24 更新UI
+//                                    consumecode2.setText("");
+//                                    cstLayout.setVisibility(View.GONE);
+//                                    includeRelative.setVisibility(View.VISIBLE);
+//                                    showYue.setText("消费：" + Integer.parseInt(consumption, 16) / 100.00 + "元  "
+//                                            + "余额：" + yueCase2 / 100.00 + "元");
+                                    mTvXiaofeiTitle.setText("消费");
+                                    mTvBalanceTitle.setText("余额");
+                                    mTvBalance.setText(((double) yueCase2 / 100) + "元");
+                                    int pursubInt = Integer.parseInt(consumption, 16);
+                                    mTvXiaofeiMoney.setText(((double) pursubInt / 100) + "元");
+                                    float allMoney = SharedXmlUtil.getInstance(getApplicationContext())
+                                            .read(Info.ALL_MONEY, 0.0f);
+                                    float driverMoney = SharedXmlUtil.getInstance(getApplicationContext())
+                                            .read(Info.DRIVER_MONEY, 0.0f);
+                                    SharedXmlUtil.getInstance(getApplicationContext())
+                                            .write(Info.ALL_MONEY, allMoney + ((float) pursubInt));
+                                    float driverMoneyAll = driverMoney + ((float) pursubInt);
+                                    SharedXmlUtil.getInstance(getApplicationContext())
+                                            .write(Info.DRIVER_MONEY, driverMoneyAll);
+
+
+                                    handler.sendMessage(handler.obtainMessage(3, cardCode));
+                                }
+                            });
+//                            if (counts < 10) {
+//                                com.yht.q6jni.Jni.BackDisplayShow( "   " + counts );
+//                            } else {
+//                                com.yht.q6jni.Jni.BackDisplayShow( "  " + counts );
+//                            }
+                            return;
+                        }
+                        if ("02".equals(rfidResultValueHan.substring(2, 4))) {
+                            // TODO: 2019/6/24 记录存储
+//                            saveICCardRecoed( rfidResultValueHan.substring( 20, 148 ), 1, String.valueOf( System.currentTimeMillis() ), 0, 0, 2, 1, 0,
+//                                    getDriverRecord.getlimtId() );
+                            SaveDataUtils.saveCardRecord(getApplicationContext(), false, "",
+                                    Datautils.hexStringToByteArray(rfidResultValueHan.substring(20, 148)));
+                            if ("0e".equalsIgnoreCase(cardType) || "0f".equalsIgnoreCase(cardType)) {
+                                PlaySound.play(PlaySound.DIDI, 0);
+                            } else if ("03".equalsIgnoreCase(cardType)) {
+                                PlaySound.play(PlaySound.XUESHENGKA, 0);
+                            } else {
+                                PlaySound.play(PlaySound.DIDI, 0);
+                            }
+                            handler.post(new Runnable() {
+                                @Override
+                                public void run() {
+                                    // TODO: 2019/6/24 更新UI
+//                                    cstLayout.setVisibility(View.GONE);
+//                                    includeRelative.setVisibility(View.VISIBLE);
+//                                    consumecode2.setText("");
+//                                    showYue.setText("消费：" + Integer.parseInt(consumption, 16) + "次  "
+//                                            + "剩余：" + yueCase2 + "次");
+                                    mTvXiaofeiTitle.setText("月票");
+                                    mTvXiaofeiMoney.setText("1");
+                                    int allYue = SharedXmlUtil.getInstance(getApplicationContext())
+                                            .read(Info.ALL_YUE, 0);
+                                    int driverYue = SharedXmlUtil.getInstance(getApplicationContext())
+                                            .read(Info.DRIVER_YUE, 0);
+                                    SharedXmlUtil.getInstance(getApplicationContext())
+                                            .write(Info.ALL_YUE, allYue + 1);
+                                    SharedXmlUtil.getInstance(getApplicationContext())
+                                            .write(Info.DRIVER_YUE, driverYue + 1);
+                                    mTvBalanceTitle.setText("剩余次数");
+                                    mTvBalance.setText(yueCase2 + "");
+
+                                    handler.sendMessage(handler.obtainMessage(3, cardCode));
+                                }
+                            });
+//                            if (counts < 10) {
+//                                com.yht.q6jni.Jni.BackDisplayShow("   " + counts);
+//                            } else {
+//                                com.yht.q6jni.Jni.BackDisplayShow("  " + counts);
+//                            }
+                            return;
+                        }
                     }
+                    break;
+                case 3:
+                    //狀態返回
+                    if (msg.obj.toString().length() > 15) {
+                        alreadyCode = msg.obj.toString().substring(12, 20);
+                    }
+                    SystemClock.sleep(800);
+                    handler.post(new Runnable() {
+                        public void run() {
+                            // TODO: 2019/6/24 更新UI
+//                            cstLayout.setVisibility(View.VISIBLE);
+//                            //if (includeRelative != null) {
+//                            includeRelative.setVisibility(View.GONE);
+//                            //} else {
+//                            line.setText(new EN_CH_NumberDate(DatabaseTabInfo.line).setShowLine());
+//                            line.setTextSize(80);
+//                            showprice.setText("票  价\n" + "￥ " + price_dou);
+//                            showDetails.setText("车辆号:" + DatabaseTabInfo.busno +
+//                                    "\n终端号:" + DatabaseTabInfo.deviceNo +
+//                                    "\nAlipay:" + DatabaseTabInfo.getIntence("Alipay").getKeyVersion() +
+//                                    "\nV" + app.getSoftwareVersion() +
+//                                    "/" + DatabaseTabInfo.k21Version);
+//                            //}
+//                            consumecode.setText("已消费卡号:***" + alreadyCode);
+                        }
+                    });
+                    if (intPrices >= 1000) {
+                        com.yht.q6jni.Jni.BackDisplayShow(" " + priceDou);
+                    } else {
+                        com.yht.q6jni.Jni.BackDisplayShow(" " + priceDou + "0");
+                    }
+                    break;
+                case 4:
+                    dateTime.setText(msg.obj.toString());
+//                    downloadTag = spUtil.getString("DOWNLOAD", "0");
+//                    if (downloadTag.equals("1")) {
+//                        imageteup.setBackgroundResource(R.mipmap.shuju);
+//                    } else if (downloadTag.equals("2")) {
+//                        // tenlnetconnect.setText("");
+//                        imageteup.setBackgroundResource(R.mipmap.download);
+//                    } else if (downloadTag.equals("3")) {
+//                        imageteup.setBackgroundResource(R.mipmap.upload);
+//                    } else {
+//                        imageteup.setBackgroundResource(R.mipmap.moren);
+//                    }
+
+//                    if (driversNo.length() < 20 || signRecord.length() < 120) {
+//                        signdriver.setText( "待签到" );
+//                    }else{signdriver.setText( "" );}
+                    //时钟
+                    break;
+                case 5:
+                    //支付寶
+                    break;
+                case 6:
+                    //微信
+                    break;
+                case 7:
+                    //銀聯
+                    break;
+                case 8:
+                    //卡错误状态吗--请投币系列
+                    if (msg.obj.toString().length() > 147) {
+                        // TODO: 2019/6/24 记录保存
+//                        saveICCardRecoed(msg.obj.toString().substring(20, 148), 1, String.valueOf(System
+//                                        .currentTimeMillis()), 0, 4, 3, 1, 3,
+//                                getDriverRecord.getlimtId());
+                        msgValue = "无效卡";
+                    } else {
+                        msgValue = msg.obj.toString();
+                    }
+                    PlaySound.play(PlaySound.WUXIAOKA, 0);
+                    handler.post(new Runnable() {
+                        @Override
+                        public void run() {
+                            // TODO: 2019/6/24 更新UI
+//                            showprice.setText("请\n投\n币");
+//                            line.setText(msgValue);
+//                            line.setTextSize(46);
+//                            showDetails.setText("");
+                            handler.sendMessage(handler.obtainMessage(3,
+                                    grcardcode));
+                        }
+                    });
+
+                    break;
+                case 9:
+                    //卡错误状态吗--请重刷系列
+                    if (msg.obj.toString().length() > 147) {
+                        // TODO: 2019/6/24 记录保存
+//                        saveICCardRecoed(msg.obj.toString().substring(20, 148), 1, String.valueOf(System
+//                                        .currentTimeMillis()), 0, 1, 3, 1,
+//                                0, getDriverRecord.getlimtId());
+                        msgValue = "请重刷";
+                    } else {
+                        msgValue = msg.obj.toString();
+                    }
+                    PlaySound.play(PlaySound.qingchongshua, 0);
+                    handler.post(new Runnable() {
+                        @Override
+                        public void run() {
+                            // TODO: 2019/6/24 更新UI
+//                            showprice.setText("请\n重\n刷");
+//                            line.setText(msgValue);
+//                            line.setTextSize(46);
+//                            showDetails.setText("");
+                            handler.sendMessage(handler.obtainMessage(3,
+                                    grcardcode));
+                        }
+                    });
+
+                    break;
+                case 10:
+                    //码错误状态吗
+//                    msgValue = msg.obj.toString();
+//                    if ("G".equalsIgnoreCase(msgValue.substring(0, 1))) {
+//                        soundPoolUtil.palyErWeiMaGuoQi();
+//                    }
+//                    if ("S".equalsIgnoreCase(msgValue.substring(0, 1))) {
+//                        soundPoolUtil.palyErWeiMaShiXiao();
+//                    }
+//                    if ("C".equalsIgnoreCase(msgValue.substring(0, 1))) {
+//                        soundPoolUtil.palyQingTouBi();
+//                    }
+//                    handler.post(new Runnable() {
+//                        @Override
+//                        public void run() {
+//                            showprice.setText("二\n维\n码");
+//                            line.setText(msgValue);
+//                            line.setTextSize(46);
+//                            showDetails.setText("");
+//                            handler.sendMessage(handler.obtainMessage(3,
+//                                    qr));
+//                        }
+//                    });
+
+                    break;
+                case 11:
+                    //银联码
+//                    alipayPrice = msg.obj.toString();
+//                    soundPoolUtil.palyUnion();
+//                    saveUnionRecord(alipayPrice.substring(4, 8), alipayPrice.substring(8, alipayPrice.length()));
+//                    SystemClock.sleep(100);
+//                    handler.post(new Runnable() {
+//                        @Override
+//                        public void run() {
+//                            cstLayout.setVisibility(View.GONE);
+//                            includeRelative.setVisibility(View.VISIBLE);
+//                            showYue.setText("消费：" + Integer.parseInt(alipayPrice.substring(4, 8), 16) / 100.00 + "元");
+//                            handler.sendMessage(handler.obtainMessage(3, qr));
+//                        }
+//                    });
+                    break;
+                case 12:
+                    //卡错误状态吗
+                    //卡错误状态吗--请投币系列
+                    if (msg.obj.toString().length() > 147) {
+                        // TODO: 2019/6/24 记录保存
+//                        saveICCardRecoed(msg.obj.toString().substring(20, 148), 1, String.valueOf(System
+//                                        .currentTimeMillis()), 0, 4, 3, 1, 3,
+//                                getDriverRecord.getlimtId());
+                        msgValue = "投币";
+                    } else {
+                        msgValue = msg.obj.toString();
+                    }
+                    PlaySound.play(PlaySound.QINGTOUBI, 0);
+                    handler.post(new Runnable() {
+                        @Override
+                        public void run() {
+                            // TODO: 2019/6/24 更新UI
+//                            consumecode2.setText("");
+//                            showprice.setText("请\n投\n币");
+//                            line.setText(msgValue);
+//                            line.setTextSize(46);
+//                            showDetails.setText("");
+                            ToastUtil.customToastView(PsamIcActivity.this, "请投币"
+                                    , Toast.LENGTH_SHORT, (TextView) LayoutInflater
+                                            .from(PsamIcActivity.this)
+                                            .inflate(R.layout.layout_toast, null));
+                            handler.sendMessage(handler.obtainMessage(3,
+                                    grcardcode));
+                        }
+                    });
+                    break;
+                case 13:
+//                    soundPoolUtil.palyMaSHangYiXing();
+//                    handler.post(new Runnable() {
+//                        @Override
+//                        public void run() {
+//                            cstLayout.setVisibility(View.GONE);
+//                            includeRelative.setVisibility(View.VISIBLE);
+//                            consumecode2.setText("");
+//                            showYue.setText("消费：" + price_dou + "元");
+//                            handler.sendMessage(handler.obtainMessage(3, qr));
+//                        }
+//                    });
+                    break;
+                case 14:
+//                    soundPoolUtil.palyQingTouBi();
+//                    msgValue = msg.obj.toString();
+//                    handler.post(new Runnable() {
+//                        @Override
+//                        public void run() {
+//                            showprice.setText("二\n维\n码");
+//                            line.setText(msgValue);
+//                            line.setTextSize(46);
+//                            showDetails.setText("");
+//                            handler.sendMessage(handler.obtainMessage(3,
+//                                    qr));
+//                        }
+//                    });
+                    break;
+                case 15:
+                    //中交金码
+                    break;
+                case 16:
+                    //异地互联互通卡
+//                    soundPoolUtil.palyQingTouBi();
+//                    msgValue = msg.obj.toString();
+//                    handler.post(new Runnable() {
+//                        @Override
+//                        public void run() {
+//                            consumecode2.setText("");
+//                            showprice.setText("请\n投\n币");
+//                            line.setText(msgValue);
+//                            line.setTextSize(46);
+//                            showDetails.setText("");
+//                            handler.sendMessage(handler.obtainMessage(3,
+//                                    grcardcode));
+//                        }
+//                    });
+
                     break;
             }
         }
@@ -1106,14 +1537,9 @@ public class PsamIcActivity extends MVPBaseActivity<SpdBusPayContract.View, SpdB
     protected void onDestroy() {
         super.onDestroy();
         mPresenter.releseAlipayJni();
-//        hsmDecoder.removeResultListener(this);
-//        HSMDecoder.disposeInstance();
         MyApplication.getHSMDecoder().removeResultListener(this);
-
-        //停止巡卡
-        startTimer(false);
-//        handler.removeCallbacks(runnable);
-
+        key = false;
+        handler.removeCallbacksAndMessages( null );
     }
 
 
@@ -1335,31 +1761,16 @@ public class PsamIcActivity extends MVPBaseActivity<SpdBusPayContract.View, SpdB
                     isShowDataUI = true;
                     isDriverUI = false;
                     mLlDriver.setVisibility(View.GONE);
-//                    isSetConfigUI = false;
-//                    mLlSetConfig.setVisibility(View.GONE);
                 } else if (isShowDataUI) {
                     mLlShowData.setVisibility(View.GONE);
                     isShowDataUI = false;
                     isDriverUI = false;
                     mLlDriver.setVisibility(View.GONE);
-//                    isSetConfigUI = false;
-//                    mLlSetConfig.setVisibility(View.GONE);
-                }
-//                else if (isSetConfigUI) {
-//                    mLlShowData.setVisibility(View.GONE);
-//                    isShowDataUI = false;
-//                    isDriverUI = true;
-//                    mLlDriver.setVisibility(View.VISIBLE);
-//                    isSetConfigUI = false;
-//                    mLlSetConfig.setVisibility(View.GONE);
-//                }
-                else {
+                } else {
                     mLlShowData.setVisibility(View.GONE);
                     isShowDataUI = false;
                     isDriverUI = true;
                     mLlDriver.setVisibility(View.VISIBLE);
-//                    isSetConfigUI = true;
-//                    mLlSetConfig.setVisibility(View.VISIBLE);
                 }
             }
             if (keyCode == KeyEvent.KEYCODE_DPAD_DOWN) {
@@ -1368,31 +1779,16 @@ public class PsamIcActivity extends MVPBaseActivity<SpdBusPayContract.View, SpdB
                     isShowDataUI = false;
                     isDriverUI = false;
                     mLlDriver.setVisibility(View.GONE);
-//                    isSetConfigUI=true;
-//                    mLlSetConfig.setVisibility(View.VISIBLE);
                 } else if (isShowDataUI) {
                     mLlShowData.setVisibility(View.GONE);
                     isShowDataUI = false;
                     isDriverUI = true;
                     mLlDriver.setVisibility(View.VISIBLE);
-//                    isSetConfigUI=false;
-//                    mLlSetConfig.setVisibility(View.GONE);
-                }
-//                else if (isSetConfigUI) {
-//                    mLlShowData.setVisibility(View.GONE);
-//                    isShowDataUI = false;
-//                    isDriverUI = false;
-//                    mLlDriver.setVisibility(View.GONE);
-//                    isSetConfigUI = false;
-//                    mLlSetConfig.setVisibility(View.GONE);
-//                }
-                else {
+                } else {
                     mLlShowData.setVisibility(View.VISIBLE);
                     isShowDataUI = true;
                     isDriverUI = false;
                     mLlDriver.setVisibility(View.GONE);
-//                    isSetConfigUI = false;
-//                    mLlSetConfig.setVisibility(View.GONE);
                 }
             }
         }

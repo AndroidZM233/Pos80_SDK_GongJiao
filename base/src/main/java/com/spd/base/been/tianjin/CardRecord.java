@@ -17,6 +17,7 @@ public class CardRecord {
     private Long recordId;
     private byte[] record;
     private boolean isUpload;
+    //司机记录
     private String busRecord;
     @Generated(hash = 720913872)
     public CardRecord(Long id, Long recordId, byte[] record, boolean isUpload,
