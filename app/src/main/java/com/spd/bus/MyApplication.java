@@ -35,7 +35,8 @@ public class MyApplication extends Application {
     public static List<CardRecord> cardRecordList = new ArrayList<>();
     public static List<PsamBeen> psamDatas = new ArrayList<>();
     public static byte fSysSta = (byte) 0x01;
-    private static final String ACTION_SET_SYSTIME_BYSP = "set_systime_with_sp";
+    public static final String FILENAME_INFO = "/sdcard/mydownload/info.conf";
+    public static final String FILENAME_ICCARD = "/sdcard/mydownload/sijirecord.conf";
     //激活成功与否
     public static boolean isScanSuccess = false;
     /**

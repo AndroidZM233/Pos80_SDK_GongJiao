@@ -26,6 +26,7 @@ public class Info {
     public static final String DRIVER_YUE = "DRIVER_YUE";
 
     public static final int PARAMETER = 99;
+    public static final int VERIFY_BUS = 100;
 
 
 }

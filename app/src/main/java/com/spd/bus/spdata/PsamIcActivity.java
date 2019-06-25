@@ -4,10 +4,8 @@ import android.annotation.SuppressLint;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.os.Bundle;
-import android.os.Environment;
 import android.os.Handler;
 import android.os.Message;
-import android.os.RemoteException;
 import android.os.SystemClock;
 import android.support.annotation.Nullable;
 import android.text.TextUtils;
@@ -22,11 +20,9 @@ import android.widget.Toast;
 import com.activeandroid.ActiveAndroid;
 import com.busll.buscard.scan.BusllPosManage;
 import com.example.test.yinlianbarcode.utils.SharedXmlUtil;
-import com.google.gson.Gson;
 import com.honeywell.barcode.HSMDecodeResult;
 import com.honeywell.plugins.decode.DecodeResultListener;
 import com.spd.alipay.been.TianjinAlipayRes;
-import com.spd.base.been.WechatQrcodeKey;
 import com.spd.base.been.tianjin.CardBackBean;
 import com.spd.base.been.tianjin.TCardOpDU;
 import com.spd.base.been.tianjin.TStaffTb;
@@ -34,7 +30,6 @@ import com.spd.base.db.DbDaoManage;
 import com.spd.base.dbbeen.RunParaFile;
 import com.spd.base.utils.AppUtils;
 import com.spd.base.utils.Datautils;
-import com.spd.base.utils.FileUtils;
 import com.spd.base.utils.LogUtils;
 import com.spd.base.utils.ToastUtil;
 import com.spd.base.view.SignalView;
@@ -42,9 +37,9 @@ import com.spd.bus.Info;
 import com.spd.bus.MyApplication;
 import com.spd.bus.OverallSituationState;
 import com.spd.bus.R;
-import com.spd.bus.card.methods.JTBCardManager;
-import com.spd.bus.card.methods.M1CardManager;
 import com.spd.bus.card.methods.ReturnVal;
+import com.spd.bus.entity.Payrecord;
+import com.spd.bus.entity.TransportCard;
 import com.spd.bus.entity.UnionPay;
 import com.spd.bus.spdata.been.ErroCode;
 import com.spd.bus.spdata.mvp.MVPBaseActivity;
@@ -54,12 +49,13 @@ import com.spd.bus.spdata.spdbuspay.SpdBusPayPresenter;
 import com.spd.bus.sql.SqlStatement;
 import com.spd.bus.threads.RecoverData;
 import com.spd.bus.threads.UnionSocketThread;
-import com.spd.bus.util.ConfigUtils;
+import com.spd.bus.util.Configurations;
+import com.spd.bus.util.CreateJsonConfig;
 import com.spd.bus.util.DataUploadToTianJinUtils;
+import com.spd.bus.util.DatabaseTabInfo;
 import com.spd.bus.util.GetDriverRecord;
 import com.spd.bus.util.PlaySound;
 import com.spd.bus.util.SaveDataUtils;
-import com.spd.bus.util.StringUtils;
 
 import java.io.DataOutputStream;
 import java.io.IOException;
@@ -76,8 +72,8 @@ import io.reactivex.Flowable;
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.annotations.NonNull;
 import io.reactivex.functions.Consumer;
-import wangpos.sdk4.libbasebinder.BankCard;
 
+import static com.spd.bus.MyApplication.FILENAME_INFO;
 import static com.spd.bus.spdata.been.ErroCode.ILLEGAL_PARAM;
 import static com.spd.bus.spdata.been.ErroCode.NO_ENOUGH_MEMORY;
 import static com.spd.bus.spdata.been.ErroCode.SYSTEM_ERROR;
@@ -199,7 +195,7 @@ public class PsamIcActivity extends MVPBaseActivity<SpdBusPayContract.View, SpdB
         priceDou = intPrices / 100.00;
         driversNo = SharedXmlUtil.getInstance(getApplicationContext())
                 .read("TAGS", "0");
-        BusllPosManage.init( this );
+        BusllPosManage.init(this);
     }
 
     @Override
@@ -221,7 +217,35 @@ public class PsamIcActivity extends MVPBaseActivity<SpdBusPayContract.View, SpdB
                             isFlag = 0;
                             continue;
                         }
+                    } else {
+                        String reultVerify = com.yht.q6jni.Jni.DriverSign();
+                        if ("00".equals(reultVerify.substring(0, 2))) {
+                            if ("0000".equals(DatabaseTabInfo.price)) {
+                                PlaySound.play(PlaySound.QINGSHEZHI, 0);
+                            } else if ("0e".equals(reultVerify.substring(2, 4))) {
+                                Payrecord ap = new Payrecord();
+                                ap.setRecord(reultVerify.substring(24, 152));
+                                ap.setDatatime(String.valueOf(System.currentTimeMillis()));
+                                ap.setTag(1);
+                                ap.setXiaofei(0);
+                                ap.setBuscard(0);
+                                ap.setJilu(2);
+                                ap.setWritetag(1);
+                                ap.setTraffic(0);
+                                ap.setTradingflow(getDriverRecord.getlimtId());
+                                ap.save();
+                                //存储备份司机记录
+                                Configurations.writlog(reultVerify.substring(24, 152),
+                                        MyApplication.FILENAME_ICCARD);
+                                SharedXmlUtil.getInstance(getApplicationContext())
+                                        .write("TAGS", reultVerify.substring(4, 24));
+                                handler.sendMessage(handler.obtainMessage(Info.VERIFY_BUS
+                                        , reultVerify.substring(4, 24)));
+                            }
+
+                        }
                     }
+
                     ToastUtil.cancelToast();
                     if (isShowDataUI) {
                         String resultCard = com.yht.q6jni.Jni.Parameter();
@@ -1304,15 +1328,15 @@ public class PsamIcActivity extends MVPBaseActivity<SpdBusPayContract.View, SpdB
 
                         if ("00".equals(rfidResultValueHan.substring(2, 4))) {
                             // TODO: 2019/6/24 记录存储
-                            saveICCardRecoed( rfidResultValueHan.substring( 20, 148 ), 1, String.valueOf( System.currentTimeMillis() ), Integer.parseInt( rfidResultValueHan.substring( 12, 20 ), 16 ), 0, 1, 1,
-                                    0, getDriverRecord.getlimtId() );
+                            saveICCardRecoed(rfidResultValueHan.substring(20, 148), 1, String.valueOf(System.currentTimeMillis()), Integer.parseInt(rfidResultValueHan.substring(12, 20), 16), 0, 1, 1,
+                                    0, getDriverRecord.getlimtId());
 //                            SaveDataUtils.saveCardRecord(getApplicationContext(), false, "",
 //                                    Datautils.hexStringToByteArray(rfidResultValueHan.substring(20, 148)));
 
                             if ("07".equals(cpuCard)) {
                                 SystemClock.sleep(50);
-                                saveICCardRecoed( rfidResultValueHan.substring( 148, rfidResultValueHan.length() ), 1, String.valueOf( System.currentTimeMillis() ), 0, 0, 1, 1, 1,
-                                        getDriverRecord.getlimtId() );
+                                saveICCardRecoed(rfidResultValueHan.substring(148, rfidResultValueHan.length()), 1, String.valueOf(System.currentTimeMillis()), 0, 0, 1, 1, 1,
+                                        getDriverRecord.getlimtId());
 //                                SaveDataUtils.saveCardRecord(getApplicationContext(), true, "",
 //                                        Datautils.hexStringToByteArray(rfidResultValueHan.substring(148, rfidResultValueHan.length())));
                             }
@@ -1372,8 +1396,8 @@ public class PsamIcActivity extends MVPBaseActivity<SpdBusPayContract.View, SpdB
                         }
                         if ("02".equals(rfidResultValueHan.substring(2, 4))) {
                             // TODO: 2019/6/24 记录存储
-                            saveICCardRecoed( rfidResultValueHan.substring( 20, 148 ), 1, String.valueOf( System.currentTimeMillis() ), 0, 0, 2, 1, 0,
-                                    getDriverRecord.getlimtId() );
+                            saveICCardRecoed(rfidResultValueHan.substring(20, 148), 1, String.valueOf(System.currentTimeMillis()), 0, 0, 2, 1, 0,
+                                    getDriverRecord.getlimtId());
 //                            SaveDataUtils.saveCardRecord(getApplicationContext(), false, "",
 //                                    Datautils.hexStringToByteArray(rfidResultValueHan.substring(20, 148)));
                             if ("0e".equalsIgnoreCase(cardType) || "0f".equalsIgnoreCase(cardType)) {
@@ -1661,6 +1685,15 @@ public class PsamIcActivity extends MVPBaseActivity<SpdBusPayContract.View, SpdB
                             .read("TAGS", "");
                     BusllPosManage.getPosDevice().setDriverNo(driverNo,
                             getDriverRecord.getDrivertime2());
+                    //备份新修改的参数信息Info
+                    List<TransportCard> listInfo = SqlStatement.getParameterAll();
+                    boolean resultWriteInfo = Configurations.writlog(CreateJsonConfig.jsonInfo(listInfo.get(0).getBus_number()
+                            , listInfo.get(0).getDevice_number()
+                            , listInfo.get(0).getPrice()
+                            , listInfo.get(0).getInfo())
+                            , FILENAME_INFO);
+                    LogUtils.i("參數信息Tr备份成功,狀態：" + resultWriteInfo);
+
 
 //                    RunParaFile runParaFile = new RunParaFile();
 //                    runParaFile.setTeamNr(Datautils.hexStringToByteArray
@@ -1683,17 +1716,26 @@ public class PsamIcActivity extends MVPBaseActivity<SpdBusPayContract.View, SpdB
 //                    FileUtils.writeFile(Environment.getExternalStorageDirectory() + "/card.txt"
 //                            , toJson, false);
                     break;
+                case Info.VERIFY_BUS:
+                    // TODO: 2019/6/25 更新Ui
+//                    yiqiandao.setText( "已签到" );
+//                    driver_cardno.setText( msg.obj.toString() );
+                    PlaySound.play(PlaySound.SIJISHANGBAN, 0);
+                    BusllPosManage.getPosDevice().setDriverNo(msg.obj.toString(),
+                            getDriverRecord.getDrivertime2());
+                    break;
             }
         }
     };
 
 
     ExecutorService ex = Executors.newCachedThreadPool();
+
     //IC存储
     private void saveICCardRecoed(String jilu, int TAG, String datatime, double times, int JILU
             , int buscard, int writetag, int traffic, long tradingflow) {
-        ex.execute( new RecoverData( jilu, TAG, datatime, times,
-                JILU, buscard, writetag, traffic, tradingflow ) );
+        ex.execute(new RecoverData(jilu, TAG, datatime, times,
+                JILU, buscard, writetag, traffic, tradingflow));
     }
 
 
