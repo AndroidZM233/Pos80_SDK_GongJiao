@@ -4,6 +4,7 @@ import android.annotation.SuppressLint;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.os.Bundle;
+import android.os.Environment;
 import android.os.Handler;
 import android.os.Message;
 import android.os.RemoteException;
@@ -18,7 +19,10 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.activeandroid.ActiveAndroid;
+import com.busll.buscard.scan.BusllPosManage;
 import com.example.test.yinlianbarcode.utils.SharedXmlUtil;
+import com.google.gson.Gson;
 import com.honeywell.barcode.HSMDecodeResult;
 import com.honeywell.plugins.decode.DecodeResultListener;
 import com.spd.alipay.been.TianjinAlipayRes;
@@ -30,22 +34,29 @@ import com.spd.base.db.DbDaoManage;
 import com.spd.base.dbbeen.RunParaFile;
 import com.spd.base.utils.AppUtils;
 import com.spd.base.utils.Datautils;
+import com.spd.base.utils.FileUtils;
 import com.spd.base.utils.LogUtils;
 import com.spd.base.utils.ToastUtil;
 import com.spd.base.view.SignalView;
 import com.spd.bus.Info;
 import com.spd.bus.MyApplication;
+import com.spd.bus.OverallSituationState;
 import com.spd.bus.R;
 import com.spd.bus.card.methods.JTBCardManager;
 import com.spd.bus.card.methods.M1CardManager;
 import com.spd.bus.card.methods.ReturnVal;
+import com.spd.bus.entity.UnionPay;
 import com.spd.bus.spdata.been.ErroCode;
 import com.spd.bus.spdata.mvp.MVPBaseActivity;
 import com.spd.bus.spdata.showdata.ShowDataActivity;
 import com.spd.bus.spdata.spdbuspay.SpdBusPayContract;
 import com.spd.bus.spdata.spdbuspay.SpdBusPayPresenter;
+import com.spd.bus.sql.SqlStatement;
+import com.spd.bus.threads.RecoverData;
+import com.spd.bus.threads.UnionSocketThread;
 import com.spd.bus.util.ConfigUtils;
 import com.spd.bus.util.DataUploadToTianJinUtils;
+import com.spd.bus.util.GetDriverRecord;
 import com.spd.bus.util.PlaySound;
 import com.spd.bus.util.SaveDataUtils;
 import com.spd.bus.util.StringUtils;
@@ -57,6 +68,8 @@ import java.net.InetSocketAddress;
 import java.net.Socket;
 import java.net.SocketTimeoutException;
 import java.util.List;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
 
 import io.reactivex.Flowable;
@@ -117,6 +130,7 @@ public class PsamIcActivity extends MVPBaseActivity<SpdBusPayContract.View, SpdB
     private LinearLayout mLlMain;
     private boolean isDriverUI = false;
     private LinearLayout mLlShowData;
+    //参数设置
     private boolean isShowDataUI = false;
     private boolean isConfigChange;
     private TextView mTvTitle;
@@ -160,6 +174,7 @@ public class PsamIcActivity extends MVPBaseActivity<SpdBusPayContract.View, SpdB
     private int yueCase2;//余额为负时
     private TextView dateTime;//时钟
     private String msgValue = "";//handler
+    private GetDriverRecord getDriverRecord;
 
 
     @Override
@@ -182,13 +197,16 @@ public class PsamIcActivity extends MVPBaseActivity<SpdBusPayContract.View, SpdB
 
     private void init() {
         priceDou = intPrices / 100.00;
+        driversNo = SharedXmlUtil.getInstance(getApplicationContext())
+                .read("TAGS", "0");
+        BusllPosManage.init( this );
     }
 
     @Override
     protected void onResume() {
         super.onResume();
         key = true;
-
+        getDriverRecord = new GetDriverRecord();
     }
 
     class MyThread extends Thread {
@@ -197,10 +215,29 @@ public class PsamIcActivity extends MVPBaseActivity<SpdBusPayContract.View, SpdB
             super.run();
             while (key) {
                 {
+                    if (!isDriverUI) {
+                        if (!isQianDao) {
+                            doVal(new CardBackBean(ReturnVal.CAD_QINGQIANDAO, null));
+                            isFlag = 0;
+                            continue;
+                        }
+                    }
+                    ToastUtil.cancelToast();
+                    if (isShowDataUI) {
+                        String resultCard = com.yht.q6jni.Jni.Parameter();
+                        if (resultCard.length() > 13) {
+                            if ("0c".equalsIgnoreCase(resultCard.substring(0, 2))) {
+                                handler.sendMessage(handler.obtainMessage(Info.PARAMETER, resultCard));
+                            }
+                        }
+                        continue;
+                    }
+
                     getIcCardResult = com.yht.q6jni.Jni.Rfidcard();
                     if (getIcCardResult.length() > 38) {
                         stateRfid = getIcCardResult.substring(0, 2);
                         if (stateRfid.equals("00")) {
+                            //01公交M1卡 51一卡通M1卡 71一卡通M1卡 03住建部卡 07交通部卡 90银联
                             if ("90".equals(getIcCardResult.substring(44, 46))) {
                                 if (intPrices != 0 && intPrices < 100000 && !"000000".equals(busNo)) {
                                     if (driversNo.length() > 16) {
@@ -267,28 +304,70 @@ public class PsamIcActivity extends MVPBaseActivity<SpdBusPayContract.View, SpdB
                                         //批次號
                                         batchNumber = getIcCardResult.substring(countLength, countLength + fieldLength * 2);
                                         // TODO: 2019/6/24 记录存储
+                                        ActiveAndroid.beginTransaction();
                                         try {
-                                            SaveDataUtils.saveSMDataBean(cardSerial, batchNumber, "", "0", TwoTrackData, amount
-                                                    , "", ICCardDataDomain, "04", primaryAcountNum);
-                                        } catch (Exception e) {
-                                            e.printStackTrace();
+                                            UnionPay uPayODA = new UnionPay();
+                                            uPayODA.setDoubleState(OverallSituationState.SM_PAYRECODE_UNPAID);
+                                            uPayODA.setoDAState(OverallSituationState.ODA_PAYRDCODE_NOENABLE);
+                                            uPayODA.setType(OverallSituationState.MOREN_TYPE);
+                                            uPayODA.setDateTime(System.currentTimeMillis());
+                                            uPayODA.setSmRecord(smRecord);
+                                            uPayODA.setPrimaryAcountNum(primaryAcountNum);
+                                            uPayODA.setAmount(amount);
+                                            uPayODA.setTradingFlow(tradingFlow);
+                                            uPayODA.setStationTime(stationTime);
+                                            uPayODA.setCardSerial(cardSerial);
+                                            uPayODA.setTwoTrackData(TwoTrackData);
+                                            uPayODA.setICCardDataDomain(ICCardDataDomain);
+                                            uPayODA.setBatchNumber(batchNumber);
+                                            uPayODA.setIsPay(OverallSituationState.ISPAY_FAILED);
+                                            uPayODA.setPayStatus(OverallSituationState.SM_PAYSTATUS_FAILED);
+                                            uPayODA.setResponseCode("");
+                                            uPayODA.setRetrievingNum("");
+                                            uPayODA.setTag(1);
+                                            uPayODA.setPriority(6);
+                                            uPayODA.setRemake("");
+                                            uPayODA.save();
+                                            ActiveAndroid.setTransactionSuccessful();
+                                        } finally {
+                                            ActiveAndroid.endTransaction();
                                         }
+//                                        try {
+//                                            SaveDataUtils.saveSMDataBean(cardSerial, batchNumber, "", "0", TwoTrackData, amount
+//                                                    , "", ICCardDataDomain, "04", primaryAcountNum);
+//                                        } catch (Exception e) {
+//                                            e.printStackTrace();
+//                                        }
                                         if (uninonSign.equals("1")) {
                                             // TODO: 2019/6/24 上传记录
-                                            mPresenter.uploadSM(getApplicationContext());
+//                                            mPresenter.uploadSM(getApplicationContext());
+                                            new UnionSocketThread(tradingFlow, smRecord, primaryAcountNum
+                                                    , handler).start();
                                         } else {
                                             // TODO: 2019/6/24 判断是不是黑名单
-                                            int blackDB = SaveDataUtils.queryBlackDB(primaryAcountNum);
-                                            if (blackDB == 1) {
+//                                            int blackDB = SaveDataUtils.queryBlackDB(primaryAcountNum);
+//                                            if (blackDB == 1) {
+//                                                unionTag = 0;
+//                                                handler.sendMessage(handler
+//                                                        .obtainMessage(8, "无效卡号"));
+//                                                SystemClock.sleep(550);
+//                                            } else {
+////                                                SqlStatement.updataUnionODASUC(tradingFlow);
+//                                                handler.sendMessage(handler.obtainMessage(7, "ODA"));
+//                                                SystemClock.sleep(650);
+//                                                unionTag = 0;
+//                                            }
+
+                                            if (SqlStatement.SelectUnionBlack(primaryAcountNum) == 0) {
+                                                SqlStatement.updataUnionODASUC(tradingFlow);
+                                                handler.sendMessage(handler.obtainMessage(7, "ODA"));
+                                                SystemClock.sleep(650);
+                                                unionTag = 0;
+                                            } else {
                                                 unionTag = 0;
                                                 handler.sendMessage(handler
                                                         .obtainMessage(8, "无效卡号"));
                                                 SystemClock.sleep(550);
-                                            } else {
-//                                                SqlStatement.updataUnionODASUC(tradingFlow);
-                                                handler.sendMessage(handler.obtainMessage(7, "ODA"));
-                                                SystemClock.sleep(650);
-                                                unionTag = 0;
                                             }
                                         }
                                     } else {
@@ -304,10 +383,9 @@ public class PsamIcActivity extends MVPBaseActivity<SpdBusPayContract.View, SpdB
                             // 0本地卡，1外地卡.住建部 0 交通部 1
                             if ("01".equals(getIcCardResult.substring(26, 28))) {
 //                                if (("01".equals(getIcCardResult.substring(24, 26)))) {
-//                                    whitelists = SqlStatement
-//                                            .SelectCardWhite(new StringBuffer().append("003").append(
-//                                                    getIcCardResult.substring(30, 38)).toString());
-//                                    Logger.i("whitelists=" + whitelists);
+//                                    String toString = new StringBuffer().append("003").append(
+//                                            getIcCardResult.substring(30, 38)).toString();
+//                                    whitelists = SaveDataUtils.queryWhiteDB(toString);
 //                                    if ((whitelists != 1)) {
 //                                        handler.sendMessage(handler
 //                                                .obtainMessage(8,
@@ -315,8 +393,8 @@ public class PsamIcActivity extends MVPBaseActivity<SpdBusPayContract.View, SpdB
 //                                        continue;
 //                                    }
 //                                } else if ("00".equals(getIcCardResult.substring(24, 26))) {
-//                                    whitelists = SqlStatement
-//                                            .SelectCardWhite(new StringBuffer().append("001").append(getIcCardResult.substring(30, 38)).toString());
+//                                    String toString = new StringBuffer().append("001").append(getIcCardResult.substring(30, 38)).toString();
+//                                    whitelists = SaveDataUtils.queryWhiteDB(toString);
 //                                    if ((whitelists != 1)) {
 //                                        handler.sendMessage(handler
 //                                                .obtainMessage(8,
@@ -324,6 +402,28 @@ public class PsamIcActivity extends MVPBaseActivity<SpdBusPayContract.View, SpdB
 //                                        continue;
 //                                    }
 //                                }
+
+                                if (("01".equals(getIcCardResult.substring(24, 26)))) {
+                                    whitelists = SqlStatement
+                                            .SelectCardWhite(new StringBuffer().append("003").append(
+                                                    getIcCardResult.substring(30, 38)).toString());
+                                    LogUtils.i("whitelists=" + whitelists);
+                                    if ((whitelists != 1)) {
+                                        handler.sendMessage(handler
+                                                .obtainMessage(8,
+                                                        "无效卡bai"));
+                                        continue;
+                                    }
+                                } else if ("00".equals(getIcCardResult.substring(24, 26))) {
+                                    whitelists = SqlStatement
+                                            .SelectCardWhite(new StringBuffer().append("001").append(getIcCardResult.substring(30, 38)).toString());
+                                    if ((whitelists != 1)) {
+                                        handler.sendMessage(handler
+                                                .obtainMessage(8,
+                                                        "无效卡bai"));
+                                        continue;
+                                    }
+                                }
                             }
                             if (driversNo.equals(cardCode)) {
                                 // 当班司机卡不能消费
@@ -341,7 +441,7 @@ public class PsamIcActivity extends MVPBaseActivity<SpdBusPayContract.View, SpdB
                                 PlaySound.play(PlaySound.QINGQIANDAO, 0);
                                 continue;
                             }
-                            //消费
+                            //____________________消费____________________________
                             if (intPrices != 0 && intPrices < 100000 && !"000000".equals(busNo)) {
                                 if (driversNo.length() > 16) {
                                     // TODO: 2019/6/24  1.查询本次交易卡是否是黑名单
@@ -462,28 +562,48 @@ public class PsamIcActivity extends MVPBaseActivity<SpdBusPayContract.View, SpdB
                                             //批次號
                                             batchNumber = rfidDectValue.substring(countLength, countLength + fieldLength * 2);
                                             // TODO: 2019/6/24 ODA存储
+                                            ActiveAndroid.beginTransaction();
                                             try {
-                                                SaveDataUtils.saveSMDataBean(cardSerial, batchNumber, "", "0", TwoTrackData, amount
-                                                        , "", ICCardDataDomain, "04", primaryAcountNum);
-                                            } catch (Exception e) {
-                                                e.printStackTrace();
+                                                UnionPay uPayODA = new UnionPay();
+                                                uPayODA.setDoubleState(OverallSituationState.SM_PAYRECODE_UNPAID);
+                                                uPayODA.setoDAState(OverallSituationState.ODA_PAYRDCODE_NOENABLE);
+                                                uPayODA.setType(OverallSituationState.MOREN_TYPE);
+                                                uPayODA.setDateTime(System.currentTimeMillis());
+                                                uPayODA.setSmRecord(smRecord);
+                                                uPayODA.setPrimaryAcountNum(primaryAcountNum);
+                                                uPayODA.setAmount(amount);
+                                                uPayODA.setTradingFlow(tradingFlow);
+                                                uPayODA.setStationTime(stationTime);
+                                                uPayODA.setCardSerial(cardSerial);
+                                                uPayODA.setTwoTrackData(TwoTrackData);
+                                                uPayODA.setICCardDataDomain(ICCardDataDomain);
+                                                uPayODA.setBatchNumber(batchNumber);
+                                                uPayODA.setIsPay(OverallSituationState.ISPAY_FAILED);
+                                                uPayODA.setPayStatus(OverallSituationState.SM_PAYSTATUS_FAILED);
+                                                uPayODA.setResponseCode("");
+                                                uPayODA.setRetrievingNum("");
+                                                uPayODA.setTag(1);
+                                                uPayODA.setPriority(6);
+                                                uPayODA.setRemake("");
+                                                uPayODA.save();
+                                                ActiveAndroid.setTransactionSuccessful();
+                                            } finally {
+                                                ActiveAndroid.endTransaction();
                                             }
                                             if (uninonSign.equals("1")) {
-                                                // TODO: 2019/6/24 上传记录
-                                                mPresenter.uploadSM(getApplicationContext());
+                                                new UnionSocketThread(tradingFlow, smRecord, primaryAcountNum
+                                                        , handler).start();
                                             } else {
-                                                // TODO: 2019/6/24 判断是不是黑名单
-                                                int blackDB = SaveDataUtils.queryBlackDB(primaryAcountNum);
-                                                if (blackDB == 1) {
+                                                if (SqlStatement.SelectUnionBlack(primaryAcountNum) == 0) {
+                                                    SqlStatement.updataUnionODASUC(tradingFlow);
+                                                    handler.sendMessage(handler.obtainMessage(7, "ODA"));
+                                                    SystemClock.sleep(650);
+                                                    unionTag = 0;
+                                                } else {
                                                     unionTag = 0;
                                                     handler.sendMessage(handler
                                                             .obtainMessage(8, "无效卡号"));
                                                     SystemClock.sleep(550);
-                                                } else {
-//                                                SqlStatement.updataUnionODASUC(tradingFlow);
-                                                    handler.sendMessage(handler.obtainMessage(7, "ODA"));
-                                                    SystemClock.sleep(650);
-                                                    unionTag = 0;
                                                 }
                                             }
                                             continue;
@@ -1164,6 +1284,7 @@ public class PsamIcActivity extends MVPBaseActivity<SpdBusPayContract.View, SpdB
         @Override
         public void handleMessage(Message msg) {
             super.handleMessage(msg);
+            unionTag = 0;
             switch (msg.what) {
                 case 1:
                     //按键跳转
@@ -1183,17 +1304,17 @@ public class PsamIcActivity extends MVPBaseActivity<SpdBusPayContract.View, SpdB
 
                         if ("00".equals(rfidResultValueHan.substring(2, 4))) {
                             // TODO: 2019/6/24 记录存储
-//                            saveICCardRecoed( rfidResultValueHan.substring( 20, 148 ), 1, String.valueOf( System.currentTimeMillis() ), Integer.parseInt( rfidResultValueHan.substring( 12, 20 ), 16 ), 0, 1, 1,
-//                                    0, getDriverRecord.getlimtId() );
-                            SaveDataUtils.saveCardRecord(getApplicationContext(), false, "",
-                                    Datautils.hexStringToByteArray(rfidResultValueHan.substring(20, 148)));
+                            saveICCardRecoed( rfidResultValueHan.substring( 20, 148 ), 1, String.valueOf( System.currentTimeMillis() ), Integer.parseInt( rfidResultValueHan.substring( 12, 20 ), 16 ), 0, 1, 1,
+                                    0, getDriverRecord.getlimtId() );
+//                            SaveDataUtils.saveCardRecord(getApplicationContext(), false, "",
+//                                    Datautils.hexStringToByteArray(rfidResultValueHan.substring(20, 148)));
 
                             if ("07".equals(cpuCard)) {
                                 SystemClock.sleep(50);
-//                                saveICCardRecoed( rfidResultValueHan.substring( 148, rfidResultValueHan.length() ), 1, String.valueOf( System.currentTimeMillis() ), 0, 0, 1, 1, 1,
-//                                        getDriverRecord.getlimtId() );
-                                SaveDataUtils.saveCardRecord(getApplicationContext(), true, "",
-                                        Datautils.hexStringToByteArray(rfidResultValueHan.substring(148, rfidResultValueHan.length())));
+                                saveICCardRecoed( rfidResultValueHan.substring( 148, rfidResultValueHan.length() ), 1, String.valueOf( System.currentTimeMillis() ), 0, 0, 1, 1, 1,
+                                        getDriverRecord.getlimtId() );
+//                                SaveDataUtils.saveCardRecord(getApplicationContext(), true, "",
+//                                        Datautils.hexStringToByteArray(rfidResultValueHan.substring(148, rfidResultValueHan.length())));
                             }
                             if ("01".equals(cardType) && !"03".equals(cpuCard) && !"01".equals(cpuCard)) {
                                 if (Integer.parseInt(consumption, 16) > 0) {
@@ -1251,10 +1372,10 @@ public class PsamIcActivity extends MVPBaseActivity<SpdBusPayContract.View, SpdB
                         }
                         if ("02".equals(rfidResultValueHan.substring(2, 4))) {
                             // TODO: 2019/6/24 记录存储
-//                            saveICCardRecoed( rfidResultValueHan.substring( 20, 148 ), 1, String.valueOf( System.currentTimeMillis() ), 0, 0, 2, 1, 0,
-//                                    getDriverRecord.getlimtId() );
-                            SaveDataUtils.saveCardRecord(getApplicationContext(), false, "",
-                                    Datautils.hexStringToByteArray(rfidResultValueHan.substring(20, 148)));
+                            saveICCardRecoed( rfidResultValueHan.substring( 20, 148 ), 1, String.valueOf( System.currentTimeMillis() ), 0, 0, 2, 1, 0,
+                                    getDriverRecord.getlimtId() );
+//                            SaveDataUtils.saveCardRecord(getApplicationContext(), false, "",
+//                                    Datautils.hexStringToByteArray(rfidResultValueHan.substring(20, 148)));
                             if ("0e".equalsIgnoreCase(cardType) || "0f".equalsIgnoreCase(cardType)) {
                                 PlaySound.play(PlaySound.DIDI, 0);
                             } else if ("03".equalsIgnoreCase(cardType)) {
@@ -1303,6 +1424,7 @@ public class PsamIcActivity extends MVPBaseActivity<SpdBusPayContract.View, SpdB
                     }
                     SystemClock.sleep(800);
                     handler.post(new Runnable() {
+                        @Override
                         public void run() {
                             // TODO: 2019/6/24 更新UI
 //                            cstLayout.setVisibility(View.VISIBLE);
@@ -1359,9 +1481,9 @@ public class PsamIcActivity extends MVPBaseActivity<SpdBusPayContract.View, SpdB
                     //卡错误状态吗--请投币系列
                     if (msg.obj.toString().length() > 147) {
                         // TODO: 2019/6/24 记录保存
-//                        saveICCardRecoed(msg.obj.toString().substring(20, 148), 1, String.valueOf(System
-//                                        .currentTimeMillis()), 0, 4, 3, 1, 3,
-//                                getDriverRecord.getlimtId());
+                        saveICCardRecoed(msg.obj.toString().substring(20, 148), 1, String.valueOf(System
+                                        .currentTimeMillis()), 0, 4, 3, 1, 3,
+                                getDriverRecord.getlimtId());
                         msgValue = "无效卡";
                     } else {
                         msgValue = msg.obj.toString();
@@ -1385,9 +1507,9 @@ public class PsamIcActivity extends MVPBaseActivity<SpdBusPayContract.View, SpdB
                     //卡错误状态吗--请重刷系列
                     if (msg.obj.toString().length() > 147) {
                         // TODO: 2019/6/24 记录保存
-//                        saveICCardRecoed(msg.obj.toString().substring(20, 148), 1, String.valueOf(System
-//                                        .currentTimeMillis()), 0, 1, 3, 1,
-//                                0, getDriverRecord.getlimtId());
+                        saveICCardRecoed(msg.obj.toString().substring(20, 148), 1, String.valueOf(System
+                                        .currentTimeMillis()), 0, 1, 3, 1,
+                                0, getDriverRecord.getlimtId());
                         msgValue = "请重刷";
                     } else {
                         msgValue = msg.obj.toString();
@@ -1453,9 +1575,9 @@ public class PsamIcActivity extends MVPBaseActivity<SpdBusPayContract.View, SpdB
                     //卡错误状态吗--请投币系列
                     if (msg.obj.toString().length() > 147) {
                         // TODO: 2019/6/24 记录保存
-//                        saveICCardRecoed(msg.obj.toString().substring(20, 148), 1, String.valueOf(System
-//                                        .currentTimeMillis()), 0, 4, 3, 1, 3,
-//                                getDriverRecord.getlimtId());
+                        saveICCardRecoed(msg.obj.toString().substring(20, 148), 1, String.valueOf(System
+                                        .currentTimeMillis()), 0, 4, 3, 1, 3,
+                                getDriverRecord.getlimtId());
                         msgValue = "投币";
                     } else {
                         msgValue = msg.obj.toString();
@@ -1528,9 +1650,51 @@ public class PsamIcActivity extends MVPBaseActivity<SpdBusPayContract.View, SpdB
 //                    });
 
                     break;
+                case Info.PARAMETER:
+                    //解析保存参数卡信息
+                    String rfidResultParam = msg.obj.toString();
+                    PlaySound.play(PlaySound.setSuccess, 0);
+                    BusllPosManage.getPosDevice().setMarkedPrice(
+                            Integer.parseInt(rfidResultParam.substring(10, 14), 16));
+                    BusllPosManage.getPosDevice().setLineNo(rfidResultParam.substring(6, 10));
+                    String driverNo = SharedXmlUtil.getInstance(getApplicationContext())
+                            .read("TAGS", "");
+                    BusllPosManage.getPosDevice().setDriverNo(driverNo,
+                            getDriverRecord.getDrivertime2());
+
+//                    RunParaFile runParaFile = new RunParaFile();
+//                    runParaFile.setTeamNr(Datautils.hexStringToByteArray
+//                            (rfidResultParam.substring(2, 6)));
+//                    runParaFile.setLineNr(Datautils.hexStringToByteArray(
+//                            rfidResultParam.substring(6, 10)));
+//                    runParaFile.setKeyV1(Datautils.hexStringToByteArray
+//                            (rfidResultParam.substring(10, 14)));
+//                    String isHave = rfidResultParam.substring(14, 16);
+//                    if ("01".equals(isHave)) {
+//                        String bus = rfidResultParam.substring(16, 80);
+//                        SharedXmlUtil.getInstance(getApplicationContext()).write(Info.BUS_RECORD, bus);
+//                    }
+//
+//                    //保存信息
+//                    DbDaoManage.getDaoSession().getRunParaFileDao().deleteAll();
+//                    DbDaoManage.getDaoSession().getRunParaFileDao().insert(runParaFile);
+//                    Gson gson = new Gson();
+//                    String toJson = gson.toJson(runParaFile);
+//                    FileUtils.writeFile(Environment.getExternalStorageDirectory() + "/card.txt"
+//                            , toJson, false);
+                    break;
             }
         }
     };
+
+
+    ExecutorService ex = Executors.newCachedThreadPool();
+    //IC存储
+    private void saveICCardRecoed(String jilu, int TAG, String datatime, double times, int JILU
+            , int buscard, int writetag, int traffic, long tradingflow) {
+        ex.execute( new RecoverData( jilu, TAG, datatime, times,
+                JILU, buscard, writetag, traffic, tradingflow ) );
+    }
 
 
     @Override
@@ -1539,7 +1703,7 @@ public class PsamIcActivity extends MVPBaseActivity<SpdBusPayContract.View, SpdB
         mPresenter.releseAlipayJni();
         MyApplication.getHSMDecoder().removeResultListener(this);
         key = false;
-        handler.removeCallbacksAndMessages( null );
+        handler.removeCallbacksAndMessages(null);
     }
 
 

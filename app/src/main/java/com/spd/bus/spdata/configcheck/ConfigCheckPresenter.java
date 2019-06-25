@@ -91,42 +91,26 @@ public class ConfigCheckPresenter extends BasePresenterImpl<ConfigCheckContract.
                 .read(Info.POS_ID, Info.POS_ID_INIT);
         getShuangMianPubKey(context, "pos/posKeys?data=" + read);
         getWechatMacTianJin();
+
+    }
+
+    private void init(Context context) {
         new Thread(new Runnable() {
             @Override
             public void run() {
 
-//                ConfigCheckPresenter.this.mBankCard = MyApplication.getmBankCard();
                 ConfigUtils.jsonToDB();
-
-//                boolean psam1Init = psam1Init();
-//                boolean psam2Init = psam2Init();
-
-                String result = com.yht.q6jni.Jni.Psamtest("00000000");
+                String key = SharedXmlUtil.getInstance(context)
+                        .read(Info.YLSM_KEY, "00000000");
+                String result = com.yht.q6jni.Jni.Psamtest(key);
                 String version = com.yht.q6jni.Jni.GetVesion();
-                if ((!result.equals("") || result != null) && (result.length() > 31)) {
+                if (!TextUtils.isEmpty(result) && (result.length() > 31)) {
                     showPsam(version, result);
                 }
-
-//                LogUtils.d("" + psam1Init + psam2Init);
-//                if (!psam1Init) {
-//                    mView.setTextView(1, "失败");
-//                } else {
-//                    mView.setTextView(1, "成功");
-//                }
-//                if (!psam2Init) {
-//                    mView.setTextView(2, "失败");
-//                } else {
-//                    mView.setTextView(2, "成功");
-//                }
-
-
-//                if (psam1Init && psam2Init) {
                 mView.openActivity();
-//                }
 
             }
         }).start();
-
     }
 
     //psam自检显示
@@ -156,18 +140,22 @@ public class ConfigCheckPresenter extends BasePresenterImpl<ConfigCheckContract.
             public void onNext(PosKeysBackBean posKeysBackBean) {
                 String code = posKeysBackBean.getCode();
                 if (code.equals("00")) {
-//                    SharedXmlUtil.getInstance(context).write(Info.YLSM_KEY
-//                            , posKeysBackBean.getKey());
+                    SharedXmlUtil.getInstance(context).write(Info.YLSM_KEY
+                            , posKeysBackBean.getKey());
                     mView.setTextView(7, "成功");
                 } else {
                     mView.setTextView(7, "失败");
                 }
+
+                init(context);
             }
 
             @Override
             public void onError(Throwable e) {
                 mView.setTextView(7, "失败");
                 LogUtils.v(e.toString());
+
+                init(context);
             }
 
             @Override

@@ -25,5 +25,7 @@ public class Info {
     public static final String DRIVER_PEOPLE = "DRIVER_PEOPLE";
     public static final String DRIVER_YUE = "DRIVER_YUE";
 
+    public static final int PARAMETER = 99;
+
 
 }

@@ -7,6 +7,7 @@ import android.support.annotation.RequiresApi;
 import android.util.Log;
 import android.widget.Toast;
 
+import com.activeandroid.ActiveAndroid;
 import com.example.test.yinlianbarcode.interfaces.OnBackListener;
 import com.example.test.yinlianbarcode.utils.ScanUtils;
 import com.honeywell.barcode.HSMDecodeComponent;
@@ -29,18 +30,10 @@ import java.util.List;
 import static com.honeywell.barcode.Symbology.QR;
 
 public class MyApplication extends Application {
-    String TAG = "PsamIcActivity";
     private static HSMDecoder hsmDecoder;
     private HSMDecodeComponent hsmDecodeComponent;
     public static List<CardRecord> cardRecordList = new ArrayList<>();
     public static List<PsamBeen> psamDatas = new ArrayList<>();
-    //SDK 4.0
-//    public static Key mKey = null;
-//    public static Core mCore = null;
-//    public static EmvCore emvCore = null;
-//    public static BankCard mBankCard = null;
-//    //log to pc
-//    public static socketpusher log = null;
     public static byte fSysSta = (byte) 0x01;
     private static final String ACTION_SET_SYSTIME_BYSP = "set_systime_with_sp";
     //激活成功与否
@@ -71,11 +64,11 @@ public class MyApplication extends Application {
     public void onCreate() {
         super.onCreate();
         CrashHandler.getInstance().init(getApplicationContext());
-
+        // 初始化ActiveAndroid
+        ActiveAndroid.initialize(this);
         DbDaoManage.initDb(this);
 //        CrashReport.initCrashReport(getApplicationContext(),"ca2f83cd2c",true);
         PlaySound.initSoundPool(this);
-//        PrefUtil.getSharedPreferences(getApplicationContext());
 
 
         new Thread(new Runnable() {
@@ -98,7 +91,7 @@ public class MyApplication extends Application {
 //                }
 
 //                try {
-                    //更新sp时间到系统时间
+                //更新sp时间到系统时间
 //                    byte[] dateTime = new byte[14];
 //                    mCore.getDateTime(dateTime);
 //                    String strDate = new String(dateTime);
@@ -111,7 +104,7 @@ public class MyApplication extends Application {
 //                    sendBroadcast(intent);
 
 //                    successCallBack();
-                    initScanBards(getApplicationContext());
+                initScanBards(getApplicationContext());
 //                } catch (RemoteException e) {
 //                    e.printStackTrace();
 //                } catch (ParseException e) {
@@ -142,7 +135,6 @@ public class MyApplication extends Application {
 
 
     }
-
 
 
 //    public static BankCard getmBankCard() {
@@ -222,15 +214,11 @@ public class MyApplication extends Application {
 
     @Override
     public void onTerminate() {
-        Log.i(TAG, "onTerminate:    application 结束");
+        LogUtils.i("onTerminate:    application 结束");
         HSMDecoder.disposeInstance();
         HeartTimer.getIntance(getApplicationContext()).dispose();
-//        try {
-//            mBankCard.breakOffCommand();
-//            mBankCard = null;
-//        } catch (RemoteException e) {
-//            e.printStackTrace();
-//        }
+        //清理
+        ActiveAndroid.dispose();
         super.onTerminate();
     }
 

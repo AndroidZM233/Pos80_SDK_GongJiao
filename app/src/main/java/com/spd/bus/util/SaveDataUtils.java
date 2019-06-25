@@ -9,6 +9,8 @@ import com.spd.base.been.tianjin.BlackDB;
 import com.spd.base.been.tianjin.BlackDBDao;
 import com.spd.base.been.tianjin.CardRecord;
 import com.spd.base.been.tianjin.TStaffTb;
+import com.spd.base.been.tianjin.White;
+import com.spd.base.been.tianjin.WhiteDao;
 import com.spd.base.been.tianjin.produce.shuangmian.UploadSMDB;
 import com.spd.base.been.tianjin.produce.weixin.UploadInfoDB;
 import com.spd.base.been.tianjin.produce.yinlian.UploadInfoYinLianDB;
@@ -49,6 +51,23 @@ public class SaveDataUtils {
             return 0;
         }
     }
+
+    /**
+     * 黑名单中是否有当前卡片
+     *
+     * @param snr
+     * @return 0非白名单 1白名单
+     */
+    public static int queryWhiteDB(String snr) {
+        List<White> list = DbDaoManage.getDaoSession().getWhiteDao().queryBuilder()
+                .where(WhiteDao.Properties.Data.eq(snr)).list();
+        if (list != null && list.size() > 0) {
+            return 1;
+        } else {
+            return 0;
+        }
+    }
+
 
     /**
      * 保存CPU卡记录
