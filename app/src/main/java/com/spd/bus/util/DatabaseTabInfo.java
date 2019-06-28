@@ -52,6 +52,9 @@ public class DatabaseTabInfo {
     private static List<TransportCard> getInfos() {
         List<TransportCard> parList = new ArrayList<TransportCard>();
         parList = SqlStatement.getParameterAll();
+        if (parList.size()==0){
+            return null;
+        }
         info = parList.get( 0 ).getInfo();
         if (!info.equals( "00" )) {
             busno = parList.get( 0 ).getBus_number();

@@ -10,9 +10,16 @@ import com.kaopiz.kprogresshud.KProgressHUD;
 import com.spd.base.utils.LogUtils;
 import com.spd.bus.MyApplication;
 import com.spd.bus.R;
+import com.spd.bus.entity.TransportCard;
 import com.spd.bus.spdata.PsamIcActivity;
 import com.spd.bus.spdata.mvp.MVPBaseActivity;
+import com.spd.bus.sql.SqlStatement;
 import com.spd.bus.util.ConfigUtils;
+import com.spd.bus.util.Configurations;
+import com.spd.bus.util.FileConfData;
+
+import java.io.File;
+import java.util.List;
 
 
 /**
@@ -44,7 +51,19 @@ public class ConfigCheckActivity extends MVPBaseActivity<ConfigCheckContract.Vie
 //
 //        }
         initView();
-        ConfigUtils.loadTxtConfig();
+//        ConfigUtils.loadTxtConfig();
+        List<TransportCard> listInfo = SqlStatement.getParameterAll();
+        File file = new File( MyApplication.FILENAME_INFO );
+        if (file.exists() && Configurations.read_config( MyApplication.FILENAME_INFO ).length() > 20 && "00".equals( listInfo.get( 0 ).getInfo() )) {
+            try {
+                FileConfData.writeDB();
+            } catch (Exception e) {
+                e.printStackTrace();
+            } finally {
+                LogUtils.i( "备份恢复失败" );
+            }
+        }
+
         mPresenter.initPsam(getApplicationContext());
         MyApplication.setInitDevListener(new MyApplication.InitDevListener() {
             @Override
@@ -134,7 +153,7 @@ public class ConfigCheckActivity extends MVPBaseActivity<ConfigCheckContract.Vie
 
     @Override
     public void openActivity() {
-
+        startActivity(new Intent(ConfigCheckActivity.this,PsamIcActivity.class));
     }
 
 }

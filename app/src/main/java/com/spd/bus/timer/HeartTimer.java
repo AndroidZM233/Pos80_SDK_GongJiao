@@ -4,6 +4,7 @@ import android.annotation.SuppressLint;
 import android.content.Context;
 import android.os.Environment;
 
+import com.activeandroid.ActiveAndroid;
 import com.example.test.yinlianbarcode.utils.SharedXmlUtil;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
@@ -20,9 +21,12 @@ import com.spd.base.silentinstall.ReflectUtils;
 import com.spd.base.utils.AppUtils;
 import com.spd.base.utils.Datautils;
 import com.spd.bus.Info;
+import com.spd.bus.entity.Blacklist;
 import com.spd.bus.net.HttpMethods;
 import com.spd.base.utils.LogUtils;
+import com.spd.bus.sql.SqlStatement;
 import com.spd.bus.util.DataUploadToTianJinUtils;
+import com.spd.bus.util.DatabaseTabInfo;
 import com.spd.bus.util.download.DownloadUtils;
 import com.spd.bus.util.download.JsDownloadListener;
 
@@ -71,22 +75,10 @@ public class HeartTimer {
     }
 
     private void heart() {
-//        DataUploadToTianJinUtils.postLog(mContext, "test");
         final Gson gson = new GsonBuilder().serializeNulls().create();
-
-        List<RunParaFile> runParaFiles = DbDaoManage.getDaoSession().getRunParaFileDao().loadAll();
-        if (runParaFiles.size() == 0) {
-            return;
-        }
-        RunParaFile runParaFile = runParaFiles.get(0);
-        List<TStaffTb> tStaffTbs = DbDaoManage.getDaoSession().getTStaffTbDao().loadAll();
-        TStaffTb tStaffTb = null;
-        if (tStaffTbs.size() > 0) {
-            tStaffTb = tStaffTbs.get(0);
-        }
-
+        DatabaseTabInfo.getIntence("info");
         Map<String, String> map = new HashMap<>();
-        String posID = SharedXmlUtil.getInstance(mContext).read(Info.POS_ID, Info.POS_ID_INIT);
+        String posID = DatabaseTabInfo.deviceNo;
         List<BaseInfoBackBean> beanList = DbDaoManage.getDaoSession()
                 .getBaseInfoBackBeanDao().loadAll();
         if (beanList.size() != 0) {
@@ -107,17 +99,18 @@ public class HeartTimer {
         baseInfoDataPost.setX_version("");
         baseInfoDataPost.setBlack(map.get("black"));
         baseInfoDataPost.setDevNumber("");
-        baseInfoDataPost.setDriver(tStaffTb == null ? "300000015165068000"
-                : Datautils.byteArrayToString(tStaffTb.getUcAppSnr()));
+        String driversNo = SharedXmlUtil.getInstance(mContext)
+                .read("TAGS", "0");
+        baseInfoDataPost.setDriver(driversNo);
         baseInfoDataPost.setWhite(map.get("white"));
         baseInfoDataPost.setPsamtricardon("");
         baseInfoDataPost.setLineCardNO("");
         baseInfoDataPost.setBinVersion("");
-        baseInfoDataPost.setRoute(Datautils.byteArrayToString(runParaFile.getLineNr()));
+        baseInfoDataPost.setRoute(DatabaseTabInfo.line);
         baseInfoDataPost.setSim_serial("");
         baseInfoDataPost.setPosId(posID);
         baseInfoDataPost.setPos_imei("");
-        baseInfoDataPost.setDept(Datautils.byteArrayToString(runParaFile.getCorNr()));
+        baseInfoDataPost.setDept(DatabaseTabInfo.dept);
         baseInfoDataPost.setProgram(AppUtils.getVerName(mContext));
         baseInfoDataPost.setBusCardNo("");
         baseInfoDataPost.setPsamurdcardon("");
@@ -190,17 +183,25 @@ public class HeartTimer {
                         LogUtils.v("开始存储黑名单");
                         List<BlackDB> list = new ArrayList<>();
                         String data = aliBlackBackBean.getData();
-                        while (data.length() >= 20) {
-                            BlackDB blackDB = new BlackDB();
-                            blackDB.setData(data.substring(0, 20));
-                            data = data.substring(20);
-                            blackDB.setVersion(aliBlackBackBean.getVersion());
-                            list.add(blackDB);
+
+                        SqlStatement.deleteBlackCardcode();
+                        ActiveAndroid.beginTransaction();
+                        try {
+                            for (int i = 0; i < (data.length()); ) {
+                                String card_code = data.substring(i,
+                                        i + 20);
+                                Blacklist blacklist = new Blacklist();
+                                blacklist.setBlackcode(card_code);
+                                blacklist.save();
+                                i = i + 20;
+                            }
+                            SqlStatement.updata_black(version);
+                            ActiveAndroid.setTransactionSuccessful();
+                            LogUtils.i("h黑名单下载安装完成");
+                        } finally {
+                            ActiveAndroid.endTransaction();
                         }
-                        DbDaoManage.getDaoSession().getBlackDBDao().deleteAll();
-                        DbDaoManage.getDaoSession().getBlackDBDao().insertInTx(list);
                         SharedXmlUtil.getInstance(mContext).write(Info.BLACK, version);
-                        LogUtils.v("结束存储黑名单");
                         DbDaoManage.getDaoSession().getBaseInfoBackBeanDao().deleteAll();
                         DbDaoManage.getDaoSession().getBaseInfoBackBeanDao().insert(baseInfoBackBean);
                     }

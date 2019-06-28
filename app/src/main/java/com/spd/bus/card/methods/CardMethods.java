@@ -970,7 +970,7 @@ public class CardMethods {
                 }
                 cardRecord.setRecord(rcdBuffer);
                 cardRecord.setRecordId(id);
-                MyApplication.setCardRecordList(cardRecord);
+//                MyApplication.setCardRecordList(cardRecord);
 
                 if (cardRecord == null || cardRecord.getRecord() == null) {
                     LogUtils.d("记录信息为空");

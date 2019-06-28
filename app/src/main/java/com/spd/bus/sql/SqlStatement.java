@@ -31,6 +31,11 @@ import static com.spd.bus.util.DateTime.getMonthAGO;
  * Description：sql操作语句（select、update、delete）
  */
 public class SqlStatement {
+    //1.全查询，
+    public static List<White> selectWhite() {
+        return new Select().from(White.class).execute();
+    }
+
     /**
      * 类名：Payrecord
      * 表名：Payrecord
@@ -287,6 +292,7 @@ public class SqlStatement {
 //        return 0;
 //    }
 //
+
     /**
      * 类名：TransportCard
      * 表名：parameter
@@ -295,60 +301,60 @@ public class SqlStatement {
     //1.全查询
     public static List<TransportCard> getParameterAll() {
         //   Logger.i( "查询=" + new Select().from( TransportCard.class ).execute() );
-        return new Select().from( TransportCard.class ).execute();
+        return new Select().from(TransportCard.class).execute();
 
     }
 
     //2.更新表中，deviceid（设备号）
     public static int updataSN(String sn) {
-        new Update( TransportCard.class ).set( "device_number=?", sn )
-                .where( "Id=?", 1 ).execute();
+        new Update(TransportCard.class).set("device_number=?", sn)
+                .where("Id=?", 1).execute();
         return 0;
     }
 
     //3.更新k21是否更新标志Tag
     public static int updateBin(String binversion) {
-        new Update( TransportCard.class ).set( "binversion=?", binversion )
-                .where( "Id=?", 1 ).execute();
+        new Update(TransportCard.class).set("binversion=?", binversion)
+                .where("Id=?", 1).execute();
         return 0;
     }
 
     //4.更新K21版本号
     //备注：表中字段交错（softversion字段即为k21版本字段）
     public static int updataBinVersion(String binsoftversion) {
-        new Update( TransportCard.class ).set( "softversion=?", binsoftversion )
-                .where( "Id=?", 1 ).execute();
+        new Update(TransportCard.class).set("softversion=?", binsoftversion)
+                .where("Id=?", 1).execute();
         return 0;
     }
 
     //5.更细车辆号
     public static int updateBusNo(String busNo) {
-        new Update( TransportCard.class ).set( "bus_number=?", busNo )
-                .where( "Id=?", 1 ).execute();
+        new Update(TransportCard.class).set("bus_number=?", busNo)
+                .where("Id=?", 1).execute();
         return 0;
     }
 
     //6.更新黑名单版本，
     public static int updateBlack(String blackData) {
-        new Update( TransportCard.class ).set( "blackversion=?", blackData )
-                .where( "Id=?", 1 ).execute();
+        new Update(TransportCard.class).set("blackversion=?", blackData)
+                .where("Id=?", 1).execute();
         return 0;
     }
 
     //7.更新白名单版本
     public static int updateWhite(String whiteData) {
-        new Update( TransportCard.class ).set( "whiteversion=?", whiteData )
-                .where( "Id=?", 1 ).execute();
+        new Update(TransportCard.class).set("whiteversion=?", whiteData)
+                .where("Id=?", 1).execute();
         return 0;
     }
 
     //8.更新參數列表
     public static int updataDeviceInfo(String deviceId, String busNumber,
                                        String price, String info) {
-        new Update( TransportCard.class )
-                .set( "device_number=?," + "bus_number=?," + "price=?,"
-                        + "info=?", deviceId, busNumber, price, info )
-                .where( "Id=?", 1 ).execute();
+        new Update(TransportCard.class)
+                .set("device_number=?," + "bus_number=?," + "price=?,"
+                        + "info=?", deviceId, busNumber, price, info)
+                .where("Id=?", 1).execute();
         return 0;
     }
 
@@ -397,6 +403,7 @@ public class SqlStatement {
 //        return 0;
 //    }
 //
+
     /***
      * 类名：White
      * 表名：White
@@ -405,7 +412,7 @@ public class SqlStatement {
     //1.查询本次交易卡是否是白名单
     public static int SelectCardWhite(String code) {
         List<White> list = new ArrayList<White>();
-        list = new Select().from( White.class ).where( "data=?", code ).execute();
+        list = new Select().from(White.class).where("data=?", code).execute();
         if (list.size() != 0) {
             // 是白名单
             return 1;
@@ -417,7 +424,7 @@ public class SqlStatement {
 
     //2.更新白名单版本号
     public static int updata_white(String sn) {
-        new Update( TransportCard.class ).set( "whiteversion=?", sn ).where( "Id=?", 1 )
+        new Update(TransportCard.class).set("whiteversion=?", sn).where("Id=?", 1)
                 .execute();
         return 0;
     }
@@ -425,9 +432,9 @@ public class SqlStatement {
     //3.刪除白名單
     public static void deleteWhiteCardcode() {
         try {
-            new Delete().from( White.class ).execute();
+            new Delete().from(White.class).execute();
         } catch (Exception e) {
-            Log.i( "deleterecord_old", "删除错误！" );
+            Log.i("deleterecord_old", "删除错误！");
         }
     }
 
@@ -440,7 +447,7 @@ public class SqlStatement {
     //1.查询本次交易卡是否是黑名单
     public static int SelectCard(String code) {
         List<Blacklist> list = new ArrayList<Blacklist>();
-        list = new Select().from( Blacklist.class ).where( "blackcode=?", code )
+        list = new Select().from(Blacklist.class).where("blackcode=?", code)
                 .execute();
         if (list.size() != 0) {
             // 是黑名单
@@ -453,7 +460,7 @@ public class SqlStatement {
 
     // 2.更新黑名单版本号
     public static int updata_black(String sn) {
-        new Update( TransportCard.class ).set( "blackversion=?", sn ).where( "Id=?", 1 )
+        new Update(TransportCard.class).set("blackversion=?", sn).where("Id=?", 1)
                 .execute();
         return 0;
     }
@@ -461,9 +468,9 @@ public class SqlStatement {
     //3.刪除黑名單
     public static void deleteBlackCardcode() {
         try {
-            new Delete().from( Blacklist.class ).execute();
+            new Delete().from(Blacklist.class).execute();
         } catch (Exception e) {
-            Log.i( "deleterecord_old", "删除错误！" );
+            Log.i("deleterecord_old", "删除错误！");
         }
     }
 //
@@ -494,7 +501,7 @@ public class SqlStatement {
     //1.查询黑名单
     public static int SelectUnionBlack(String code) {
         List<UnionBlack> list = new ArrayList<UnionBlack>();
-        list = new Select().from( UnionBlack.class ).where( "unionCode=?", code )
+        list = new Select().from(UnionBlack.class).where("unionCode=?", code)
                 .execute();
         if (list.size() != 0) {
             // 是黑
@@ -507,9 +514,9 @@ public class SqlStatement {
     //2.删除黑名单
     public static void deleteUnionBlack() {
         try {
-            new Delete().from( UnionBlack.class ).execute();
+            new Delete().from(UnionBlack.class).execute();
         } catch (Exception e) {
-            Log.i( "deleterecord_old", "删除错误！" );
+            Log.i("deleterecord_old", "删除错误！");
         }
     }
 
@@ -519,6 +526,10 @@ public class SqlStatement {
      * 说明：银行卡或者pay
      */
     //1.全查询
+    public static List<UnionPay> getUnionPayAll() {
+        return new Select().from(UnionPay.class).execute();
+
+    }
 
     //2.更新狀態（ODA）
     public static int updataUnionODASUC(String tradingFlow) {

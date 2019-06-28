@@ -15,10 +15,13 @@ import com.spd.base.dbbeen.RunParaFile;
 import com.spd.base.utils.Datautils;
 import com.spd.base.utils.LogUtils;
 import com.spd.bus.Info;
+import com.spd.bus.entity.Payrecord;
 import com.spd.bus.net.HttpMethods;
+import com.spd.bus.sql.SqlStatement;
 
 import org.apache.commons.lang3.text.StrBuilder;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
@@ -33,7 +36,7 @@ import okhttp3.ResponseBody;
  * Email 741183142@qq.com
  */
 public class DataUploadToTianJinUtils {
-    private static List<CardRecord> cardRecordList;
+    private static List<Payrecord> listUpdateRecord = new ArrayList<Payrecord>();
 
     public static void uploadCardData(Context context) {
         String uploadData = getCardData(context);
@@ -52,10 +55,8 @@ public class DataUploadToTianJinUtils {
             public void onNext(NetBackBean netBackBean) {
                 String msg = netBackBean.getMsg();
                 if ("success".equalsIgnoreCase(msg)) {
-                    for (CardRecord cardRecord : cardRecordList) {
-                        cardRecord.setIsUpload(true);
-                        DbDaoManage.getDaoSession().getCardRecordDao().update(cardRecord);
-                    }
+                    SqlStatement.UpdataSubmit(listUpdateRecord);
+                    listUpdateRecord.clear();
                 }
             }
 
@@ -72,50 +73,41 @@ public class DataUploadToTianJinUtils {
     }
 
     public static String getCardData(Context context) {
+        DatabaseTabInfo.getIntence("info");
         final Gson gson = new GsonBuilder().disableHtmlEscaping().create();
         //上传记录到天津后台
         ProducePost producePost = new ProducePost();
         producePost.setType("2200C");
-        List<RunParaFile> runParaFiles = DbDaoManage.getDaoSession().getRunParaFileDao().loadAll();
-        if (runParaFiles.size() != 0) {
-            byte[] lineNr = runParaFiles.get(0).getLineNr();
-            producePost.setRoute(Datautils.byteArrayToString(lineNr));
+        String line = DatabaseTabInfo.line;
+        if (!TextUtils.isEmpty(line)) {
+            producePost.setRoute(line);
         } else {
             producePost.setRoute("11");
         }
-        producePost.setPosId("30001234");
+        producePost.setPosId(DatabaseTabInfo.deviceNo);
 
-        cardRecordList = DbDaoManage.getDaoSession().getCardRecordDao().queryBuilder()
-                .where(CardRecordDao.Properties.IsUpload.eq(false)).list();
-        if (cardRecordList.size() == 0) {
+        List<Payrecord> payRecords = SqlStatement.selectTagRecord();
+        if (payRecords.size() == 0) {
             return null;
         }
-        StrBuilder strBuilder = new StrBuilder();
-//        String bus = SharedXmlUtil.getInstance(context).read(Info.BUS_RECORD, "");
-        String busRecord = cardRecordList.get(0).getBusRecord();
-        strBuilder.append(busRecord);
-        for (CardRecord cardRecord : cardRecordList) {
-            if (!busRecord.equals(cardRecord.getBusRecord())) {
-                break;
-            }
-
-            byte[] record = cardRecord.getRecord();
-            if (record.length == 128) {
-                byte[] secondBytes = Datautils.cutBytes(record, 64, 64);
-                byte[] bytes = new byte[64];
-                if (Arrays.equals(secondBytes, bytes)) {
-                    byte[] firstBytes = Datautils.cutBytes(record, 0, 64);
-                    strBuilder.append(Datautils.byteArrayToString(firstBytes));
-                } else {
-                    strBuilder.append(Datautils.byteArrayToString(record));
-                }
+        String payRecordCount = "";
+        for (int i = 0; i < payRecords.size(); i++) {
+            if (payRecords.get(i).getRecord().substring(124, 128).equalsIgnoreCase(GetDriverRecord
+                    .dirverRecordData().substring(0, 4))) {
+                payRecordCount = payRecordCount + payRecords.get(i).getRecord();
             } else {
-                strBuilder.append(Datautils.byteArrayToString(record));
+                String driverRecord = GetDriverRecord.dirverRecordData2(payRecords.get(i).getRecord());
+                payRecordCount = new StringBuffer().append(payRecordCount).append(driverRecord).append(payRecords.get(i).getRecord()).toString();
             }
 
+            listUpdateRecord.add(payRecords.get(i));
         }
 
-        producePost.setData(String.valueOf(strBuilder));
+        StringBuffer stringBuff = new StringBuffer();
+        stringBuff.append(GetDriverRecord
+                .dirverRecordData());
+        stringBuff.append(payRecordCount);
+        producePost.setData(String.valueOf(stringBuff));
         return gson.toJson(producePost).toString();
     }
 

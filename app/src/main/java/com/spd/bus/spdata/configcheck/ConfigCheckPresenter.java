@@ -24,7 +24,15 @@ import com.spd.base.utils.LogUtils;
 import com.spd.bus.spdata.been.PsamBeen;
 import com.spd.bus.spdata.mvp.BasePresenterImpl;
 import com.spd.bus.util.ConfigUtils;
+import com.spd.bus.util.DataUploadToTianJinUtils;
+import com.spd.bus.util.ModifyTime;
 
+import java.io.DataOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.net.InetSocketAddress;
+import java.net.Socket;
+import java.net.SocketTimeoutException;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
@@ -92,6 +100,7 @@ public class ConfigCheckPresenter extends BasePresenterImpl<ConfigCheckContract.
         getShuangMianPubKey(context, "pos/posKeys?data=" + read);
         getWechatMacTianJin();
 
+
     }
 
     private void init(Context context) {
@@ -99,13 +108,20 @@ public class ConfigCheckPresenter extends BasePresenterImpl<ConfigCheckContract.
             @Override
             public void run() {
 
-                ConfigUtils.jsonToDB();
+//                ConfigUtils.jsonToDB();
                 String key = SharedXmlUtil.getInstance(context)
                         .read(Info.YLSM_KEY, "00000000");
-                String result = com.yht.q6jni.Jni.Psamtest(key);
+
+//                DataUploadToTianJinUtils.uploadCardData(context);
+                ModifyTime.JudgmentTime();
+
                 String version = com.yht.q6jni.Jni.GetVesion();
+//                String result = com.yht.q6jni.Jni.Psamtest(key);
+                String result = "0000000000000000000000000000000000003e003c600073000060220000000008000020000000c00012000002313735313038353038393831323030343131313031393000110000000000300003303031";
+
+
                 if (!TextUtils.isEmpty(result) && (result.length() > 31)) {
-                    showPsam(version, result);
+                    showPsam(context, version, result);
                 }
                 mView.openActivity();
 
@@ -114,9 +130,15 @@ public class ConfigCheckPresenter extends BasePresenterImpl<ConfigCheckContract.
     }
 
     //psam自检显示
-    public void showPsam(String version, String psamData) {
+    public void showPsam(Context context, String version, String psamData) {
         String psam1 = psamData.substring(4, 6);
         String psam3 = psamData.substring(8, 10);
+        int lengthInt = Integer.parseInt(psamData.substring(34, 38), 16);
+        if (psamData.length() > 160) {
+            String result = psamData.substring(38, 38 + lengthInt * 2);
+            new UnionSign(result, context).start();
+        }
+
         if (!psam1.equals("01")) {
             mView.setTextView(1, "失败");
         } else {
@@ -128,6 +150,61 @@ public class ConfigCheckPresenter extends BasePresenterImpl<ConfigCheckContract.
             mView.setTextView(2, "成功");
         }
     }
+
+
+    /**
+     * 銀聯簽到，
+     */
+    class UnionSign extends Thread {
+        private String recordSigns;
+        private Context context;
+
+        public UnionSign(String recordSign, Context context) {
+            this.recordSigns = recordSign;
+            this.context = context;
+        }
+
+        @Override
+        public void run() {
+            super.run();
+            try {
+                Socket socket = new Socket();
+                socket.connect(new InetSocketAddress("123.150.11.50", 18000),
+                        10000);
+                LogUtils.i("结果：" + socket.isConnected());
+                socket.setSoTimeout(10000);
+                DataOutputStream out = new DataOutputStream(
+                        socket.getOutputStream());
+                out.write(Datautils.hexStringToByteArray(recordSigns));
+                out.flush();
+                InputStream inputStream = socket.getInputStream();
+                byte[] temp = new byte[1024];
+                int bytes = 0;
+                bytes = inputStream.read(temp);
+                String input = Datautils.byteArrayToString(temp);
+                if (!temp.equals("") || temp != null || temp.length != 0) {
+                    String result = input.substring(0, Integer.parseInt(input.substring(0, 4), 16) * 2 + 4);
+                    int unionSignResult = com.yht.q6jni.Jni.QapassSignUnPack(result);
+                    if (1 == unionSignResult) {
+//                        uninonSign = "1";
+                        SharedXmlUtil.getInstance(context).write("UNIONSIGN", "1");
+                    } else {
+                        SharedXmlUtil.getInstance(context).write("UNIONSIGN", "0");
+                    }
+                    LogUtils.i("签到结果==" + unionSignResult);
+                }
+                // 关闭各种输入输出流
+                out.close();
+                socket.close();
+            } catch (SocketTimeoutException aa) {
+                LogUtils.i("SocketTimeoutException:" + aa.getMessage());
+            } catch (IOException e) {
+                LogUtils.i("IOException:" + e.getMessage());
+            }
+        }
+
+    }
+
 
     public void getShuangMianPubKey(Context context, String url) {
         HttpMethods.getInstance().posKeys(url, new Observer<PosKeysBackBean>() {

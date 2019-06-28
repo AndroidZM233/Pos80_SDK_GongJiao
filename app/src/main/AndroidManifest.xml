@@ -81,13 +81,24 @@
             </intent-filter>
         </receiver>
 
+        <provider
+            android:name="com.activeandroid.content.ContentProvider"
+            android:authorities="com.spd.bus"
+            android:enabled="true"
+            android:exported="false">
+        </provider>
+
         <meta-data
             android:name="AA_DB_NAME"
             android:value="Pickrand1.db" />
         <meta-data
             android:name="AA_DB_VERSION"
-            android:value="1" />
+            android:value="3" />
 
+        <meta-data
+            android:name="AA_MODELS"
+            android:value="com.spd.bus.entity.Blacklist,com.spd.bus.entity.CityCodeTriff,com.spd.bus.entity.MobileApp,com.spd.bus.entity.Payrecord
+            ,com.spd.bus.entity.TransportCard,com.spd.bus.entity.UnionBlack,com.spd.bus.entity.UnionPay,com.spd.bus.entity.UnionQrKey,com.spd.bus.entity.White" />
     </application>
 
 </manifest>
