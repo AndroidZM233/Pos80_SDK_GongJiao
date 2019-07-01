@@ -9,6 +9,9 @@ import android.net.wifi.WifiManager;
 import android.telephony.TelephonyManager;
 import android.text.TextUtils;
 
+import java.net.HttpURLConnection;
+import java.net.URL;
+
 import static android.content.Context.WIFI_SERVICE;
 
 /**
@@ -22,6 +25,84 @@ public class NetWorkUtils {
     public static final String NETWORK_TYPE_WAP = "wap";
     public static final String NETWORK_TYPE_UNKNOWN = "unknown";
     public static final String NETWORK_TYPE_DISCONNECT = "disconnect";
+
+
+    /**
+     * 获取当前网络连接的类型信息
+     *
+     * @param context
+     * @return
+     */
+    public static int getConnectedType(Context context) {
+        if (context != null) {
+            ConnectivityManager mConnectivityManager = (ConnectivityManager) context
+                    .getSystemService( Context.CONNECTIVITY_SERVICE );
+            NetworkInfo mNetworkInfo = mConnectivityManager
+                    .getActiveNetworkInfo();
+            if (mNetworkInfo != null && mNetworkInfo.isAvailable()) {
+                return mNetworkInfo.getType();
+            }
+        }
+        return -1;
+    }
+
+    /**
+     * 获取当前的网络状态 ：没有网络0：WIFI网络1：3G网络2：2G网络3
+     *
+     * @param context
+     * @return
+     */
+    public static int getAPNType(Context context) {
+        int netType = 0;
+        ConnectivityManager connMgr = (ConnectivityManager) context
+                .getSystemService( Context.CONNECTIVITY_SERVICE );
+        NetworkInfo networkInfo = connMgr.getActiveNetworkInfo();
+        if (networkInfo == null) {
+            return netType;
+        }
+        int nType = networkInfo.getType();
+        if (nType == ConnectivityManager.TYPE_WIFI) {
+            netType = 1;// wifi
+        } else if (nType == ConnectivityManager.TYPE_MOBILE) {
+            int nSubType = networkInfo.getSubtype();
+            TelephonyManager mTelephony = (TelephonyManager) context
+                    .getSystemService( Context.TELEPHONY_SERVICE );
+            if (nSubType == TelephonyManager.NETWORK_TYPE_UMTS
+                    && !mTelephony.isNetworkRoaming()) {
+                netType = 2;// 3G
+            } else {
+                netType = 3;// 2G
+            }
+        }
+        return netType;
+    }
+
+    /**
+     * 判断URL是否可达
+     *
+     * @param url :待判断的URL
+     * @return true: 可达 false: 不可达
+     */
+    public static boolean urlIsReach(String url) {
+        System.out.println( "net" );
+        if (url == null) {
+            return false;
+        }
+        try {
+            HttpURLConnection connection = (HttpURLConnection) new URL( url )
+                    .openConnection();
+            System.out.println( "net2" );
+            if (HttpURLConnection.HTTP_OK == connection.getResponseCode()) {
+                System.out.println( "net3" );
+                return true;
+            }
+        } catch (Exception e) {
+            System.out.println( "net4" );
+            return false;
+        }
+        return false;
+    }
+
 
     /**
      * 拿到ConnectivityManager

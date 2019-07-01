@@ -47,14 +47,19 @@ import com.spd.base.been.tianjin.PosInfoBackBean;
 import com.spd.base.been.tianjin.produce.ProducePost;
 import com.spd.bus.card.methods.ReturnVal;
 import com.spd.base.utils.DateUtils;
+import com.spd.bus.entity.UnionPay;
 import com.spd.bus.net.HttpMethods;
 import com.spd.base.utils.LogUtils;
 import com.spd.bus.spdata.been.ErroCode;
 import com.spd.bus.spdata.mvp.BasePresenterImpl;
+import com.spd.bus.sql.SqlStatement;
+import com.spd.bus.util.DatabaseTabInfo;
 import com.spd.bus.util.SaveDataUtils;
 import com.tencent.wlxsdk.WlxSdk;
 
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -74,8 +79,7 @@ public class SpdBusPayPresenter extends BasePresenterImpl<SpdBusPayContract.View
     private List<UploadInfoDB> uploadInfoDBS;
     private List<UploadInfoZFBDB> uploadInfoZFBDBS;
     private List<UploadInfoYinLianDB> yinLianDBS;
-    private List<UploadSMDB> uploadSMDBList;
-    //    private List<CardRecord> cardRecordList;
+    private List<UnionPay> updataUnionRecord = new ArrayList<UnionPay>();
 
     //===============支付宝二维码==============
 
@@ -135,21 +139,17 @@ public class SpdBusPayPresenter extends BasePresenterImpl<SpdBusPayContract.View
      */
     @Override
     public void checkAliQrCode(String code) {
-        List<RunParaFile> runParaFiles = DbDaoManage.getDaoSession().getRunParaFileDao().loadAll();
-        if (runParaFiles.size() == 0) {
-            mView.erro(ReturnVal.CODE_PLEASE_SET);
-            return;
-        }
-        RunParaFile runParaFile = runParaFiles.get(0);
-        String lineNr = Datautils.byteArrayToString(runParaFile.getLineNr());
-        String devNr = Datautils.byteArrayToString(runParaFile.getDevNr());
+        DatabaseTabInfo.getIntence("info");
+        String lineNr = DatabaseTabInfo.line;
+        String devNr = DatabaseTabInfo.deviceNo;
         String outTradeNo = lineNr + "_" + devNr + "_"
                 + DateUtils.getCurrentTimeMillis(DateUtils.FORMAT_yyyyMMddHHmmss) + "_"
-                + (int)((Math.random() * 9 + 1) * 1000);
+                + (int) ((Math.random() * 9 + 1) * 1000);
         TianjinAlipayRes tianjinAlipayRes = new TianjinAlipayRes();
 
+
         tianjinAlipayRes = alipayJni.checkAliQrCode(tianjinAlipayRes,
-                code, devNr, lineNr, Datautils.byteArrayToInt(runParaFile.getKeyV1())
+                code, devNr, lineNr, Integer.parseInt(DatabaseTabInfo.price, 16)
                 , "SINGLE", outTradeNo);
         LogUtils.v("onHSMDecodeResult: " + tianjinAlipayRes.toString());
 
@@ -175,7 +175,7 @@ public class SpdBusPayPresenter extends BasePresenterImpl<SpdBusPayContract.View
             }
         }
 
-        mView.showCheckAliQrCode(tianjinAlipayRes, runParaFile, outTradeNo);
+        mView.showCheckAliQrCode(tianjinAlipayRes, outTradeNo);
     }
 
     @Override
@@ -227,15 +227,10 @@ public class SpdBusPayPresenter extends BasePresenterImpl<SpdBusPayContract.View
         //上传记录到天津后台
         ProducePost producePost = new ProducePost();
         producePost.setType("2200AQ");
-        List<RunParaFile> runParaFiles = DbDaoManage.getDaoSession().getRunParaFileDao().loadAll();
-        if (runParaFiles.size() == 0) {
-            producePost.setRoute("11");
-        } else {
-            byte[] lineNr = runParaFiles.get(0).getLineNr();
-            producePost.setRoute(Datautils.byteArrayToString(lineNr));
-        }
+        DatabaseTabInfo.getIntence("info");
+        producePost.setRoute(DatabaseTabInfo.line);
 
-        String posId = SharedXmlUtil.getInstance(context).read(Info.POS_ID, Info.POS_ID_INIT);
+        String posId = DatabaseTabInfo.deviceNo;
         producePost.setPosId(posId);
         ProduceZhiFuBao produceZhiFuBao = new ProduceZhiFuBao();
         List<ReqDataBean> reqDataBeans = new ArrayList<>();
@@ -315,28 +310,23 @@ public class SpdBusPayPresenter extends BasePresenterImpl<SpdBusPayContract.View
 
 
     @Override
-    public void checkWechatTianJin(String code, byte scene,
+    public void checkWechatTianJin(Context context, String code, byte scene,
                                    byte scantype, String posId, String posTrxId) {
         if (wlxSdk == null) {
             wlxSdk = new WlxSdk();
         }
-        List<RunParaFile> runParaFiles = DbDaoManage.getDaoSession().getRunParaFileDao().loadAll();
-        if (runParaFiles.size() == 0) {
-            mView.showCheckWechatQrCode(ReturnVal.CODE_PLEASE_SET, null);
-            return;
-        }
-        RunParaFile runParaFile = runParaFiles.get(0);
-        String lineNr = Datautils.byteArrayToString(runParaFile.getLineNr());
-        String devNr = Datautils.byteArrayToString(runParaFile.getDevNr());
+        DatabaseTabInfo.getIntence("info");
+        String lineNr = DatabaseTabInfo.line;
+        String devNr = DatabaseTabInfo.deviceNo;
         String outTradeNo = lineNr + "_" + devNr + "_"
                 + DateUtils.getCurrentTimeMillis(DateUtils.FORMAT_yyyyMMddHHmmss) + "_"
-                +(int) ((Math.random() * 9 + 1) * 1000);
+                + (int) ((Math.random() * 9 + 1) * 1000);
 
         int result = 0;
         result = wlxSdk.init(code);
         if (result != ErroCode.EC_SUCCESS) {
             LogUtils.d(result + "");
-            mView.showCheckWechatQrCode(result, runParaFile);
+            mView.showCheckWechatQrCode(result);
             return;
         }
         String openId = wlxSdk.get_open_id();
@@ -386,21 +376,24 @@ public class SpdBusPayPresenter extends BasePresenterImpl<SpdBusPayContract.View
             }
         }
 
-        result = wlxSdk.verify(openId, pubKey, Datautils.byteArrayToInt(runParaFile.getKeyV1())
+        result = wlxSdk.verify(openId, pubKey, Integer.parseInt(DatabaseTabInfo.price, 16)
                 , scene, scantype, posId, outTradeNo, aesMacRoot);
         if (result != ErroCode.EC_SUCCESS) {
             LogUtils.d(result + "");
-            mView.showCheckWechatQrCode(result, runParaFile);
+            mView.showCheckWechatQrCode(result);
             return;
         }
         try {
-            SaveDataUtils.saveWeiXinDataBean(wlxSdk, runParaFile);
+            //司机号
+            String driversNo = SharedXmlUtil.getInstance(context)
+                    .read("TAGS", "0");
+            SaveDataUtils.saveWeiXinDataBean(wlxSdk, driversNo);
         } catch (Exception e) {
             e.printStackTrace();
             LogUtils.d("微信数据保存失败:" + e.toString());
         }
         String record = wlxSdk.get_record();
-        mView.showCheckWechatQrCode(result, runParaFile);
+        mView.showCheckWechatQrCode(result);
 
     }
 
@@ -454,14 +447,9 @@ public class SpdBusPayPresenter extends BasePresenterImpl<SpdBusPayContract.View
         //上传记录到天津后台
         ProducePost producePost = new ProducePost();
         producePost.setType("2200WQ");
-        List<RunParaFile> runParaFiles = DbDaoManage.getDaoSession().getRunParaFileDao().loadAll();
-        if (runParaFiles.size() == 0) {
-            producePost.setRoute("11");
-        } else {
-            byte[] lineNr = runParaFiles.get(0).getLineNr();
-            producePost.setRoute(Datautils.byteArrayToString(lineNr));
-        }
-        String posId = SharedXmlUtil.getInstance(context).read(Info.POS_ID, Info.POS_ID_INIT);
+        DatabaseTabInfo.getIntence("info");
+        producePost.setRoute(DatabaseTabInfo.line);
+        String posId = DatabaseTabInfo.deviceNo;
         producePost.setPosId(posId);
         ProduceWeiXin produceWeiXin = new ProduceWeiXin();
         List<PayinfoBean> weiXinPayinfo = new ArrayList<>();
@@ -499,20 +487,13 @@ public class SpdBusPayPresenter extends BasePresenterImpl<SpdBusPayContract.View
     @Override
     public void checkYinLianCode(Context context, String qrcode) {
         //银联二维码
-        List<RunParaFile> runParaFiles = DbDaoManage.getDaoSession().getRunParaFileDao().loadAll();
-        if (runParaFiles.size()==0){
-            mView.successCode(new CardBackBean(ReturnVal.CODE_PLEASE_SET
-                    , null));
-            return;
-        }
-        RunParaFile runParaFile = runParaFiles.get(0);
         QrEntity qrEntity = new QrEntity(qrcode);
         try {
             List<KeysBean> keysBeans = DbDaoManage.getDaoSession().getKeysBeanDao().loadAll();
             if (keysBeans.size() > 0) {
                 boolean validation = ValidationUtils.validationTianJin(qrEntity, keysBeans);
                 if (validation) {
-                    SaveDataUtils.saveYinLianDataBean(context, qrcode, qrEntity,runParaFile);
+                    SaveDataUtils.saveYinLianDataBean(context, qrcode, qrEntity);
                     mView.successCode(new CardBackBean(ReturnVal.CODE_YINLAIN_SUCCESS
                             , null));
                     uploadYinLian(context);
@@ -578,15 +559,9 @@ public class SpdBusPayPresenter extends BasePresenterImpl<SpdBusPayContract.View
         //上传记录到天津后台
         ProducePost producePost = new ProducePost();
         producePost.setType("2200UQ");
-        List<RunParaFile> runParaFiles = DbDaoManage.getDaoSession().getRunParaFileDao().loadAll();
-        if (runParaFiles.size() == 0) {
-            producePost.setRoute("11");
-        } else {
-            byte[] lineNr = runParaFiles.get(0).getLineNr();
-            producePost.setRoute(Datautils.byteArrayToString(lineNr));
-        }
-
-        String posId = SharedXmlUtil.getInstance(context).read(Info.POS_ID, Info.POS_ID_INIT);
+        DatabaseTabInfo.getIntence("info");
+        producePost.setRoute(DatabaseTabInfo.line);
+        String posId = DatabaseTabInfo.deviceNo;
         producePost.setPosId(posId);
         ProduceYinLian produceYinLian = new ProduceYinLian();
         List<ProduceYinLian.PayinfoBean> yinLianList = new ArrayList<>();
@@ -663,16 +638,12 @@ public class SpdBusPayPresenter extends BasePresenterImpl<SpdBusPayContract.View
                 String msg = netBackBean.getMsg();
                 if ("success".equalsIgnoreCase(msg)) {
                     Log.i(TAG, "onNext: " + netBackBean.toString());
-                    for (UploadSMDB uploadSMDB : uploadSMDBList) {
-                        uploadSMDB.setIsUpload(true);
-                        DbDaoManage.getDaoSession().getUploadSMDBDao().update(uploadSMDB);
-                    }
+                    SqlStatement.updataICUnion(updataUnionRecord);
                 }
             }
 
             @Override
             public void onError(Throwable e) {
-//                mView.erro(e.toString());
                 Log.i(TAG, "uploadWechatRe: " + e.toString());
             }
 
@@ -684,6 +655,8 @@ public class SpdBusPayPresenter extends BasePresenterImpl<SpdBusPayContract.View
     }
 
     private String getSMUploadData(Context context) {
+        DatabaseTabInfo.getIntence("info");
+        updataUnionRecord.clear();
         final Gson gson = new GsonBuilder().serializeNulls().create();
         //上传记录到天津后台
         ProducePost producePost = new ProducePost();
@@ -696,37 +669,42 @@ public class SpdBusPayPresenter extends BasePresenterImpl<SpdBusPayContract.View
             producePost.setRoute(Datautils.byteArrayToString(lineNr));
         }
 
-        String posId = SharedXmlUtil.getInstance(context).read(Info.POS_ID, Info.POS_ID_INIT);
+        String posId = DatabaseTabInfo.deviceNo;
         producePost.setPosId(posId);
         ProduceShuangMian produceShuangMian = new ProduceShuangMian();
         List<ShuangMianBean> shuangMianBeans = new ArrayList<>();
-        uploadSMDBList = DbDaoManage.getDaoSession().getUploadSMDBDao()
-                .queryBuilder().where(UploadSMDBDao.Properties.IsUpload.eq(false)).list();
-        if (uploadSMDBList.size() != 0) {
-            for (UploadSMDB uploadSMDB : uploadSMDBList) {
+        List<UnionPay> listUnionPay = SqlStatement.getUnionPayReocrdTag();
+        if (listUnionPay.size() != 0) {
+            for (UnionPay unionPay : listUnionPay) {
                 ShuangMianBean shuangMianBean = new ShuangMianBean();
-                shuangMianBean.setBusNo(uploadSMDB.getBusNo());
-                shuangMianBean.setCardSerialNum(uploadSMDB.getCardSerialNumber());
-                shuangMianBean.setBatchNumber(uploadSMDB.getBatchNumber());
-                shuangMianBean.setResponseCode(uploadSMDB.getResponseCode());
-                shuangMianBean.setIsPay(uploadSMDB.getIsPay());
-                shuangMianBean.setDriver(uploadSMDB.getDriver());
-                shuangMianBean.setTransactionTime(uploadSMDB.getTransactionTime());
-                shuangMianBean.setTowTrackData(uploadSMDB.getTowTrackData());
-                shuangMianBean.setTerminalCode(uploadSMDB.getTerminalCode());
-                shuangMianBean.setSerialNumber(uploadSMDB.getSerialNumber());
-                shuangMianBean.setTransactionAmount(uploadSMDB.getTransactionAmount());
-                shuangMianBean.setTeam(uploadSMDB.getTeam());
-                shuangMianBean.setThreeTrackData(uploadSMDB.getThreeTrackData());
-                shuangMianBean.setRoute(uploadSMDB.getRoute());
-                shuangMianBean.setPosId(uploadSMDB.getPosId());
-                shuangMianBean.setRetrievingNum(uploadSMDB.getRetrievingNum());
-                shuangMianBean.setDept(uploadSMDB.getDept());
-                shuangMianBean.setField(uploadSMDB.getField());
-                shuangMianBean.setTransactionCode(uploadSMDB.getTransactionCode());
-                shuangMianBean.setType(uploadSMDB.getType());
-                shuangMianBean.setCardNo(uploadSMDB.getCardNo());
+                shuangMianBean.setBusNo(DatabaseTabInfo.busno);
+                shuangMianBean.setCardSerialNum(unionPay.getCardSerial());
+                shuangMianBean.setBatchNumber(unionPay.getBatchNumber());
+                shuangMianBean.setResponseCode(unionPay.getResponseCode());
+                shuangMianBean.setIsPay(unionPay.getIsPay());
+                shuangMianBean.setDriver(SharedXmlUtil.getInstance(context)
+                        .read("TAGS", "00003000000151650680"));
+                SimpleDateFormat sdf = new SimpleDateFormat("yyyyMMddHHmmss");
+                String stationTime = sdf.format(new Date(Long.parseLong(unionPay
+                        .getStationTime(), 16) * 1000));
+                shuangMianBean.setTransactionTime(stationTime);
+                shuangMianBean.setTowTrackData(unionPay.getTwoTrackData());
+                shuangMianBean.setTerminalCode(DatabaseTabInfo.deviceNo);
+                shuangMianBean.setSerialNumber(unionPay.getTradingFlow());
+                shuangMianBean.setTransactionAmount(unionPay.getAmount());
+                shuangMianBean.setTeam(DatabaseTabInfo.tream);
+                shuangMianBean.setThreeTrackData("");
+                shuangMianBean.setRoute(DatabaseTabInfo.line);
+                shuangMianBean.setPosId(DatabaseTabInfo.deviceNo);
+                shuangMianBean.setRetrievingNum(unionPay.getRetrievingNum());
+                shuangMianBean.setDept(DatabaseTabInfo.dept);
+                shuangMianBean.setField(unionPay.getICCardDataDomain());
+                shuangMianBean.setTransactionCode(unionPay.getTradingFlow());
+                shuangMianBean.setType(unionPay.getType());
+                shuangMianBean.setCardNo(unionPay.getPrimaryAcountNum());
                 shuangMianBeans.add(shuangMianBean);
+
+                updataUnionRecord.add(unionPay);
             }
         } else {
             return null;

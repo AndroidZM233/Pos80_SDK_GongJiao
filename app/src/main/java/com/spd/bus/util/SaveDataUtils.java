@@ -121,22 +121,20 @@ public class SaveDataUtils {
     }
 
     public static void saveZhiFuBaoReqDataBean(TianjinAlipayRes aliCodeinfoData
-            , RunParaFile runParaFile, String orderNr) throws Exception {
+            ,  String orderNr) throws Exception {
 
         List<TStaffTb> tStaffTbs = DbDaoManage.getDaoSession().getTStaffTbDao().loadAll();
         TStaffTb tStaffTb = null;
         if (tStaffTbs.size() > 0) {
             tStaffTb = tStaffTbs.get(0);
         }
-
+        DatabaseTabInfo.getIntence("info");
         UploadInfoZFBDB reqDataBean = new UploadInfoZFBDB();
         String currentTimeMillis = DateUtils.getCurrentTimeMillis(DateUtils.FORMAT_YMDHMS);
-        byte[] lineNr = runParaFile.getLineNr();
-        byte[] devNr = runParaFile.getDevNr();
         // 交易流水
         reqDataBean.setOutTradeNo(orderNr);
         // 设备号
-        reqDataBean.setDeviceId(Datautils.byteArrayToString(devNr));
+        reqDataBean.setDeviceId(DatabaseTabInfo.deviceNo);
         // 司机卡号
         reqDataBean.setDriverCardNo(tStaffTb == null ? "300000015165068000"
                 : Datautils.byteArrayToString(tStaffTb.getUcAppSnr()));
@@ -145,11 +143,11 @@ public class SaveDataUtils {
         // 用户号
         reqDataBean.setUserId(aliCodeinfoData.uid);
         // 车辆号
-        reqDataBean.setCarryCode(Datautils.byteArrayToString(runParaFile.getBusNr()));
+        reqDataBean.setCarryCode(DatabaseTabInfo.busno);
         // 路队号
-        reqDataBean.setBusGroupCode(Datautils.byteArrayToString(runParaFile.getTeamNr()));
+        reqDataBean.setBusGroupCode(DatabaseTabInfo.tream);
         // 公司号
-        reqDataBean.setCompanyCode(Datautils.byteArrayToString(runParaFile.getCorNr()));
+        reqDataBean.setCompanyCode(DatabaseTabInfo.dept);
         // 站点名称
         reqDataBean.setStationName("1");
         // 电子公交卡卡号
@@ -162,9 +160,9 @@ public class SaveDataUtils {
         reqDataBean.setDriverSignTime(tStaffTb == null ? "20190313113100"
                 : Datautils.byteArrayToString(tStaffTb.getUlBCD()));
         // 区域号
-        reqDataBean.setAreaCode(Datautils.byteArrayToString(runParaFile.getAreaNr()));
+        reqDataBean.setAreaCode("00");
         // 票价
-        reqDataBean.setPrice(Datautils.byteArrayToInt(runParaFile.getKeyV1()) + "");
+        reqDataBean.setPrice(Integer.parseInt(DatabaseTabInfo.price, 16)+"");
         // 站点号
         reqDataBean.setStationId("1");
         // 交易时间
@@ -173,9 +171,9 @@ public class SaveDataUtils {
 //        reqDataBean.setCardData(Datautils.byteArrayToString(aliCodeinfoData.cardData));
         reqDataBean.setCardData("31");
         // 真实票价
-        reqDataBean.setActualPrice(Datautils.byteArrayToInt(runParaFile.getKeyV1()) + "");
+        reqDataBean.setActualPrice(Integer.parseInt(DatabaseTabInfo.price, 16)+"");
         // 线路号
-        reqDataBean.setLineCode(Datautils.byteArrayToString(lineNr));
+        reqDataBean.setLineCode(DatabaseTabInfo.line);
         // 记录内容
         reqDataBean.setRecord(aliCodeinfoData.record);
         DbDaoManage.getDaoSession().getUploadInfoZFBDBDao().insertOrReplace(reqDataBean);
@@ -257,47 +255,32 @@ public class SaveDataUtils {
     }
 
 
-    public static void saveWeiXinDataBean(WlxSdk wlxSdk, RunParaFile runParaFile) throws Exception {
-//        List<RunParaFile> runParaFiles = DbDaoManage.getDaoSession().getRunParaFileDao().loadAll();
-//        RunParaFile runParaFile = runParaFiles.get(0);
-        List<TStaffTb> tStaffTbs = DbDaoManage.getDaoSession().getTStaffTbDao().loadAll();
-        TStaffTb tStaffTb = null;
-        if (tStaffTbs.size() > 0) {
-            tStaffTb = tStaffTbs.get(0);
-        }
-
+    public static void saveWeiXinDataBean(WlxSdk wlxSdk,String driverNr) throws Exception {
+        DatabaseTabInfo.getIntence("info");
         UploadInfoDB payinfoBean = new UploadInfoDB();
         payinfoBean.setOpen_id(wlxSdk.get_open_id());
-        payinfoBean.setDriverSignTime(tStaffTb == null ? "20190313113100"
-                : Datautils.byteArrayToString(tStaffTb.getUlBCD()));
-        payinfoBean.setTeam(Datautils.byteArrayToString(runParaFile.getTeamNr()));
-        payinfoBean.setRoute(Datautils.byteArrayToString(runParaFile.getLineNr()));
+        payinfoBean.setDriverSignTime("");
+        payinfoBean.setTeam(DatabaseTabInfo.tream);
+        payinfoBean.setRoute(DatabaseTabInfo.line);
         // TODO: 2019/4/9 测试先写一分钱
-        payinfoBean.setAccount(Datautils.byteArrayToInt(runParaFile.getKeyV1()) + "");
+        payinfoBean.setAccount(Integer.parseInt(DatabaseTabInfo.price, 16)+"");
 //        payinfoBean.setAccount("1");
 
-        payinfoBean.setDept(Datautils.byteArrayToString(runParaFile.getCorNr()));
+        payinfoBean.setDept(DatabaseTabInfo.dept);
         payinfoBean.setIn_station_time(DateUtils.getCurrentTimeMillis(DateUtils.FORMAT_YMDHMS));
-        payinfoBean.setBus_no(Datautils.byteArrayToString(runParaFile.getBusNr()));
-        payinfoBean.setDriver(tStaffTb == null ? "300000015165068000"
-                : Datautils.byteArrayToString(tStaffTb.getUcAppSnr()));
-        payinfoBean.setPos_id(Datautils.byteArrayToString(runParaFile.getDevNr()));
+        payinfoBean.setBus_no(DatabaseTabInfo.busno);
+        payinfoBean.setDriver(driverNr);
+        payinfoBean.setPos_id(DatabaseTabInfo.deviceNo);
         payinfoBean.setRecord_in(wlxSdk.get_record());
         payinfoBean.setIsUpload(false);
         DbDaoManage.getDaoSession().getUploadInfoDBDao().insertOrReplace(payinfoBean);
     }
 
-    public static void saveYinLianDataBean(Context context, String code, QrEntity qrEntity
-            , RunParaFile runParaFile) throws Exception {
-        List<TStaffTb> tStaffTbs = DbDaoManage.getDaoSession().getTStaffTbDao().loadAll();
-        TStaffTb tStaffTb = null;
-        if (tStaffTbs.size() > 0) {
-            tStaffTb = tStaffTbs.get(0);
-        }
-
+    public static void saveYinLianDataBean(Context context, String code, QrEntity qrEntity) throws Exception {
+        DatabaseTabInfo.getIntence("info");
         UploadInfoYinLianDB payinfoBean = new UploadInfoYinLianDB();
         //车辆号
-        payinfoBean.setBusNo(Datautils.byteArrayToString(runParaFile.getBusNr()));
+        payinfoBean.setBusNo(DatabaseTabInfo.busno);
         //交易流水号
         int read = SharedXmlUtil.getInstance(context).read(Info.YL_TRANS_SEQ, 0);
         String valueOf = String.valueOf(read + 1);
@@ -316,23 +299,24 @@ public class SaveDataUtils {
         String customData = qrEntity.getCustomData().substring(20, 36);
         payinfoBean.setTrip_no(customData);
         //司机号
-        payinfoBean.setDriver(tStaffTb == null ? "300000015165068000"
-                : Datautils.byteArrayToString(tStaffTb.getUcAppSnr()));
+        String driversNo = SharedXmlUtil.getInstance(context)
+                .read("TAGS", "0");
+        payinfoBean.setDriver(driversNo);
         //线路号
-        payinfoBean.setLine_no(Datautils.byteArrayToString(runParaFile.getLineNr()));
+        payinfoBean.setLine_no(DatabaseTabInfo.line);
         //金额
-        payinfoBean.setAmount(Datautils.byteArrayToInt(runParaFile.getKeyV1()) + "");
+        payinfoBean.setAmount(Integer.parseInt(DatabaseTabInfo.price, 16)+"");
         //路队
-        payinfoBean.setTeam(Datautils.byteArrayToString(runParaFile.getTeamNr()));
+        payinfoBean.setTeam(DatabaseTabInfo.tream);
         //线路号
-        payinfoBean.setRoute(Datautils.byteArrayToString(runParaFile.getTeamNr()));
+        payinfoBean.setRoute(DatabaseTabInfo.line);
         //机具号
-        payinfoBean.setPosId(Datautils.byteArrayToString(runParaFile.getDevNr()));
+        payinfoBean.setPosId(DatabaseTabInfo.deviceNo);
         //用户凭证类型
         payinfoBean.setVoucher_type("00");
         payinfoBean.setTerminal_no("1751041817510418");
         //公司号
-        payinfoBean.setDept(Datautils.byteArrayToString(runParaFile.getCorNr()));
+        payinfoBean.setDept(DatabaseTabInfo.dept);
         payinfoBean.setVoucher_no(qrEntity.getQrCode());
         //用户标识
         payinfoBean.setUser_id(qrEntity.getUserMark());

@@ -3,6 +3,7 @@ package com.spd.bus;
 import android.annotation.SuppressLint;
 import android.app.Application;
 import android.content.Context;
+import android.hardware.Camera;
 import android.os.Build;
 import android.support.annotation.RequiresApi;
 import android.util.Log;
@@ -64,6 +65,7 @@ public class MyApplication extends Application {
     public static final String FILENAME_ICCARD = "/sdcard/mydownload/sijirecord.conf";
     public static final String FILENAME_UNION_APPID = "/sdcard/mydownload/appid.conf";
     public static final String FILENAME_CITYCODE = "/sdcard/mydownload/citycode.conf";
+    public static String uninonSign;
     //激活成功与否
     public static boolean isScanSuccess = false;
     /**
@@ -229,7 +231,7 @@ public class MyApplication extends Application {
         }
         if (Configurations.read_config(FILENAME_INFO) == null
                 || Configurations.read_config(FILENAME_INFO).equals("")
-                && !list.get(0).getInfo().equals("00")) {
+                && list != null && !list.get(0).getInfo().equals("00")) {
             //备份司机记录
             List<Payrecord> listRecord = SqlStatement.ReciprocalDriverRecord();
             if (listRecord.size() != 0) {

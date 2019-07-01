@@ -28,5 +28,11 @@ public class Info {
     public static final int PARAMETER = 99;
     public static final int VERIFY_BUS = 100;
 
+    public static String REQUEST_CARDRECORD_URL = "http://60.29.169.178:29834";
+    public static final String url1 = REQUEST_CARDRECORD_URL + "/yht-iccard-server/ws";
+    public static final String UNION_NAMESPACE = "http://service.up.com/";
+    public static final String URL_UNION_PAY = "http://123.150.11.50:29838/unionpay/services/NetbarServices/";
+
+
 
 }

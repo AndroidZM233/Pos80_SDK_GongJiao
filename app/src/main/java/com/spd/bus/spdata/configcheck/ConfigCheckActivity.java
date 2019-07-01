@@ -64,7 +64,7 @@ public class ConfigCheckActivity extends MVPBaseActivity<ConfigCheckContract.Vie
             }
         }
 
-        mPresenter.initPsam(getApplicationContext());
+//        mPresenter.initPsam(getApplicationContext());
         MyApplication.setInitDevListener(new MyApplication.InitDevListener() {
             @Override
             public void onSuccess() {

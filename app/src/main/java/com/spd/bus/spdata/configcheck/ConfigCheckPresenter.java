@@ -113,11 +113,13 @@ public class ConfigCheckPresenter extends BasePresenterImpl<ConfigCheckContract.
                         .read(Info.YLSM_KEY, "00000000");
 
 //                DataUploadToTianJinUtils.uploadCardData(context);
-                ModifyTime.JudgmentTime();
+
+//                ModifyTime.JudgmentTime();
 
                 String version = com.yht.q6jni.Jni.GetVesion();
-//                String result = com.yht.q6jni.Jni.Psamtest(key);
-                String result = "0000000000000000000000000000000000003e003c600073000060220000000008000020000000c00012000002313735313038353038393831323030343131313031393000110000000000300003303031";
+                String result = com.yht.q6jni.Jni.Psamtest(key);
+                LogUtils.d("version+result" + version + result);
+//                String result = "0000000000000000000000000000000000003e003c600073000060220032401708000020000000c00012000002313735313038353038393831323030343131313031393000110000019900300003303031";
 
 
                 if (!TextUtils.isEmpty(result) && (result.length() > 31)) {
@@ -186,7 +188,7 @@ public class ConfigCheckPresenter extends BasePresenterImpl<ConfigCheckContract.
                     String result = input.substring(0, Integer.parseInt(input.substring(0, 4), 16) * 2 + 4);
                     int unionSignResult = com.yht.q6jni.Jni.QapassSignUnPack(result);
                     if (1 == unionSignResult) {
-//                        uninonSign = "1";
+                        MyApplication.uninonSign = "1";
                         SharedXmlUtil.getInstance(context).write("UNIONSIGN", "1");
                     } else {
                         SharedXmlUtil.getInstance(context).write("UNIONSIGN", "0");
@@ -197,9 +199,9 @@ public class ConfigCheckPresenter extends BasePresenterImpl<ConfigCheckContract.
                 out.close();
                 socket.close();
             } catch (SocketTimeoutException aa) {
-                LogUtils.i("SocketTimeoutException:" + aa.getMessage());
+                LogUtils.e("SocketTimeoutException:" + aa.getMessage());
             } catch (IOException e) {
-                LogUtils.i("IOException:" + e.getMessage());
+                LogUtils.e("IOException:" + e.getMessage());
             }
         }
 

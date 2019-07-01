@@ -19,7 +19,7 @@
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:gravity="center"
-            android:text="运营统计界面"
+            android:text="参数设置界面"
             android:textSize="45sp" />
 
     </LinearLayout>
@@ -230,11 +230,11 @@
                 android:layout_height="match_parent"
                 android:layout_weight="1" />
 
-            <!--<com.honeywell.barcode.HSMDecodeComponent-->
-                <!--android:id="@+id/hsm_decodeComponent"-->
-                <!--android:layout_width="148dp"-->
-                <!--android:layout_height="91dp"-->
-                <!--android:layout_marginRight="200dp" />-->
+            <com.honeywell.barcode.HSMDecodeComponent
+                android:id="@+id/hsm_decodeComponent"
+                android:layout_width="148dp"
+                android:layout_height="91dp"
+                android:layout_marginRight="200dp" />
 
 
         </LinearLayout>

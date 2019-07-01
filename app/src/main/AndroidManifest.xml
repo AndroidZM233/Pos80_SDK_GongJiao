@@ -35,11 +35,13 @@
         tools:replace="android:icon,android:theme,android:allowBackup">
         <activity
             android:name=".spdata.PsamIcActivity"
+            android:screenOrientation="landscape"
             android:launchMode="singleInstance">
 
         </activity>
 
-        <activity android:name=".spdata.configcheck.ConfigCheckActivity">
+        <activity android:name=".spdata.configcheck.ConfigCheckActivity"
+            android:screenOrientation="landscape">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 

@@ -8,7 +8,6 @@ import com.spd.base.been.AlipayQrcodekey;
 import com.spd.base.been.BosiQrcodeKey;
 import com.spd.base.been.tianjin.CardBackBean;
 import com.spd.base.been.WechatQrcodeKey;
-import com.spd.base.dbbeen.RunParaFile;
 import com.spd.bus.spdata.mvp.BasePresenter;
 import com.spd.bus.spdata.mvp.BaseView;
 
@@ -35,10 +34,10 @@ public class SpdBusPayContract {
         void showAliPayInit(int result);
 
 
-        void showCheckAliQrCode(TianjinAlipayRes tianjinAlipayRes, RunParaFile runParaFile, String orderNr);
+        void showCheckAliQrCode(TianjinAlipayRes tianjinAlipayRes, String orderNr);
 
 
-        void showCheckWechatQrCode(int result, RunParaFile runParaFile);
+        void showCheckWechatQrCode(int result);
 
     }
 
@@ -70,7 +69,7 @@ public class SpdBusPayContract {
         void releseAlipayJni();
 
 
-        void checkWechatTianJin(String code, byte scene,
+        void checkWechatTianJin(Context context,String code, byte scene,
                                 byte scantype, String posId, String posTrxId);
 
         /**
