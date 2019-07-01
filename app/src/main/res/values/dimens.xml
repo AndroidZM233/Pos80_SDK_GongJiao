@@ -19,6 +19,6 @@
     <dimen name="text_xlarge_size">30sp</dimen>
     <dimen name="padding_item">2dp</dimen>
     <dimen name="input_money_yuan_text_size">50sp</dimen>
-    <dimen name="textSize">45sp</dimen>
+    <dimen name="textSize">35sp</dimen>
     <dimen name="data_text_size">20sp</dimen>
 </resources>

@@ -67,7 +67,7 @@
 
         <LinearLayout
             android:layout_width="match_parent"
-            android:layout_height="70dp"
+            android:layout_height="50dp"
             android:gravity="center"
             android:orientation="horizontal">
 
@@ -157,7 +157,7 @@
                     android:layout_height="wrap_content"
                     android:layout_gravity="center"
                     android:text="10:52:50"
-                    android:textSize="30sp" />
+                    android:textSize="20sp" />
 
                 <TextView
                     android:id="@+id/tv_date"
@@ -165,7 +165,7 @@
                     android:layout_height="wrap_content"
                     android:layout_gravity="center"
                     android:text="2018年12月06日"
-                    android:textSize="30sp" />
+                    android:textSize="20sp" />
 
             </LinearLayout>
 
@@ -192,7 +192,7 @@
                     android:layout_gravity="center"
                     android:text="0元"
                     android:textColor="@color/red"
-                    android:textSize="50sp" />
+                    android:textSize="45sp" />
 
             </LinearLayout>
         </LinearLayout>
@@ -203,6 +203,7 @@
             android:orientation="horizontal">
 
             <LinearLayout
+                android:layout_marginTop="10dp"
                 android:layout_marginLeft="3dp"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
@@ -214,14 +215,14 @@
                     android:layout_height="wrap_content"
                     android:layout_gravity="center"
                     android:text="@string/_123465_id_123654987_20181206"
-                    android:textSize="20sp" />
+                    android:textSize="17sp" />
 
                 <TextView
                     android:id="@+id/tv_title"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="V1.0"
-                    android:textSize="20sp" />
+                    android:textSize="17sp" />
             </LinearLayout>
 
 
@@ -232,8 +233,8 @@
 
             <com.honeywell.barcode.HSMDecodeComponent
                 android:id="@+id/hsm_decodeComponent"
-                android:layout_width="148dp"
-                android:layout_height="91dp"
+                android:layout_width="125dp"
+                android:layout_height="80dp"
                 android:layout_marginRight="200dp" />
 
 

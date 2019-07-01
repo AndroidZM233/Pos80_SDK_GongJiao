@@ -121,7 +121,6 @@ public class PsamIcActivity extends MVPBaseActivity<SpdBusPayContract.View, SpdB
     private TextView mTvXiaofeiMoney;
     private LinearLayout mLayoutXiaofei;
 
-    private String balance = "2元";
     private LinearLayout mLlDriver;
     private LinearLayout mLlMain;
     private boolean isDriverUI = false;
@@ -134,7 +133,7 @@ public class PsamIcActivity extends MVPBaseActivity<SpdBusPayContract.View, SpdB
     //——————————————————————————————————————分界线 单片机方案
     boolean key;
     public static int unionTag = 0;
-    private int intPrices;//扣款价格
+    private int intPrices = 0;//扣款价格
     private double priceDou;//double price
     private float priceFloat = 0.0f;
 
@@ -191,7 +190,7 @@ public class PsamIcActivity extends MVPBaseActivity<SpdBusPayContract.View, SpdB
         readConfigChangeUI();
         key = true;
 //        busNo=DatabaseTabInfo.busno +"123567";
-        busNo="123456";
+        busNo = "123456";
         getDriverRecord = new GetDriverRecord();
 
         driversNo = SharedXmlUtil.getInstance(getApplicationContext())
@@ -224,6 +223,7 @@ public class PsamIcActivity extends MVPBaseActivity<SpdBusPayContract.View, SpdB
             stringBuffer.append("设备号：" + DatabaseTabInfo.deviceNo);
             mTvDeviceMessage.setText(stringBuffer + "");
             mTvLine.setText(DatabaseTabInfo.line + "路");
+            mTvBalance.setText(priceDou + "元");
         } else {
             mTvBalanceTitle.setText("");
             mTvBalance.setText("请设置");
@@ -825,7 +825,7 @@ public class PsamIcActivity extends MVPBaseActivity<SpdBusPayContract.View, SpdB
             mLayoutFace.setVisibility(View.GONE);
             mLayoutXiaofei.setVisibility(View.GONE);
             mTvBalanceTitle.setText("票价");
-            mTvBalance.setText(balance);
+            mTvBalance.setText(priceDou + "元");
         }
     };
 
@@ -950,7 +950,7 @@ public class PsamIcActivity extends MVPBaseActivity<SpdBusPayContract.View, SpdB
                             @Override
                             public void run() {
                                 mTvBalanceTitle.setText("票价");
-                                mTvBalance.setText(balance);
+                                mTvBalance.setText(priceDou + "元");
                                 mLlShowData.setVisibility(View.GONE);
                                 isConfigUI = false;
                                 isDriverUI = false;
@@ -1034,7 +1034,7 @@ public class PsamIcActivity extends MVPBaseActivity<SpdBusPayContract.View, SpdB
 
     private void codeChangeUI() {
         mTvXiaofeiTitle.setText("消费");
-        mTvXiaofeiMoney.setText(balance);
+        mTvXiaofeiMoney.setText(priceDou + "元");
         mLayoutLineInfo.setVisibility(View.GONE);
         mLayoutXiaofei.setVisibility(View.VISIBLE);
         statisticalAddition();
@@ -1224,6 +1224,8 @@ public class PsamIcActivity extends MVPBaseActivity<SpdBusPayContract.View, SpdB
 //                                    showYue.setText("消费：" + Integer.parseInt(consumption, 16) / 100.00 + "元  "
 //                                            + "余额：" + yueCase2 / 100.00 + "元");
                                     mTvXiaofeiTitle.setText("消费");
+                                    mLayoutLineInfo.setVisibility(View.GONE);
+                                    mLayoutXiaofei.setVisibility(View.VISIBLE);
                                     mTvBalanceTitle.setText("余额");
                                     mTvBalance.setText(((double) yueCase2 / 100) + "元");
                                     int pursubInt = Integer.parseInt(consumption, 16);
@@ -1482,7 +1484,7 @@ public class PsamIcActivity extends MVPBaseActivity<SpdBusPayContract.View, SpdB
                         @Override
                         public void run() {
                             mTvBalanceTitle.setText("票价");
-                            mTvBalance.setText(balance);
+                            mTvBalance.setText(priceDou + "元");
                             mLlShowData.setVisibility(View.GONE);
                             isConfigUI = false;
                             isDriverUI = false;
@@ -1568,7 +1570,7 @@ public class PsamIcActivity extends MVPBaseActivity<SpdBusPayContract.View, SpdB
                     //腾讯（微信）
                     String posID = SharedXmlUtil.getInstance(getApplicationContext())
                             .read(Info.POS_ID, Info.POS_ID_INIT);
-                    mPresenter.checkWechatTianJin(getApplicationContext(),decodeDate, (byte) 1, (byte) 1
+                    mPresenter.checkWechatTianJin(getApplicationContext(), decodeDate, (byte) 1, (byte) 1
                             , posID, "12");
                     break;
                 case "Ah":
@@ -1675,12 +1677,12 @@ public class PsamIcActivity extends MVPBaseActivity<SpdBusPayContract.View, SpdB
 
 
     @Override
-    public void showCheckAliQrCode(TianjinAlipayRes tianjinAlipayRes,String orderNr) {
+    public void showCheckAliQrCode(TianjinAlipayRes tianjinAlipayRes, String orderNr) {
         tianjinAlipayRes = tianjinAlipayRes;
         if (tianjinAlipayRes.result == ErroCode.SUCCESS) {
             // TODO: 2019/3/11 存储天津公交需要的数据
             try {
-                SaveDataUtils.saveZhiFuBaoReqDataBean(tianjinAlipayRes,orderNr);
+                SaveDataUtils.saveZhiFuBaoReqDataBean(tianjinAlipayRes, orderNr);
             } catch (Exception e) {
                 e.printStackTrace();
             }
