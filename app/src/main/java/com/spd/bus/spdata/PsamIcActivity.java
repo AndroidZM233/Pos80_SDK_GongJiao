@@ -3,7 +3,6 @@ package com.spd.bus.spdata;
 import android.annotation.SuppressLint;
 import android.content.Intent;
 import android.content.IntentFilter;
-import android.hardware.Camera;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
@@ -19,15 +18,12 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.activeandroid.ActiveAndroid;
-import com.busll.buscard.scan.BusllPosManage;
 import com.example.test.yinlianbarcode.utils.SharedXmlUtil;
 import com.honeywell.barcode.HSMDecodeResult;
 import com.honeywell.plugins.decode.DecodeResultListener;
 import com.spd.alipay.been.TianjinAlipayRes;
 import com.spd.base.been.tianjin.CardBackBean;
 import com.spd.base.been.tianjin.TCardOpDU;
-import com.spd.base.been.tianjin.TStaffTb;
-import com.spd.base.db.DbDaoManage;
 import com.spd.base.utils.AppUtils;
 import com.spd.base.utils.Datautils;
 import com.spd.base.utils.LogUtils;
@@ -74,7 +70,6 @@ import io.reactivex.annotations.NonNull;
 import io.reactivex.functions.Consumer;
 
 import static com.spd.bus.MyApplication.FILENAME_INFO;
-import static com.spd.bus.MyApplication.uninonSign;
 import static com.spd.bus.spdata.been.ErroCode.ILLEGAL_PARAM;
 import static com.spd.bus.spdata.been.ErroCode.NO_ENOUGH_MEMORY;
 import static com.spd.bus.spdata.been.ErroCode.SYSTEM_ERROR;
@@ -385,7 +380,7 @@ public class PsamIcActivity extends MVPBaseActivity<SpdBusPayContract.View, SpdB
 //                                        } catch (Exception e) {
 //                                            e.printStackTrace();
 //                                        }
-                                            if (uninonSign.equals("1")) {
+                                            if (MyApplication.uninonSign.equals("1")) {
                                                 // TODO: 2019/6/24 上传记录
 //                                            mPresenter.uploadSM(getApplicationContext());
                                                 new UnionSocketThread(tradingFlow, smRecord, primaryAcountNum
@@ -638,7 +633,7 @@ public class PsamIcActivity extends MVPBaseActivity<SpdBusPayContract.View, SpdB
                                                 } finally {
                                                     ActiveAndroid.endTransaction();
                                                 }
-                                                if (uninonSign.equals("1")) {
+                                                if (MyApplication.uninonSign.equals("1")) {
                                                     new UnionSocketThread(tradingFlow, smRecord, primaryAcountNum
                                                             , handler).start();
                                                 } else {
@@ -667,7 +662,7 @@ public class PsamIcActivity extends MVPBaseActivity<SpdBusPayContract.View, SpdB
                             }
                             if ("7f".equalsIgnoreCase(stateRfid)) {
                                 // TODO: 2019/6/24 银联签到
-                                new UnionSign(getIcCardResult.substring(6, 6 + Integer.parseInt(getIcCardResult.substring(2, 6), 16) * 2)).start();
+                                new UnionSign(getIcCardResult.substring(6, 6 + Integer.parseInt(getIcCardResult.substring(2, 6), 16) * 2).toUpperCase()).start();
                                 SystemClock.sleep(300);
                                 continue;
                             }
@@ -746,7 +741,7 @@ public class PsamIcActivity extends MVPBaseActivity<SpdBusPayContract.View, SpdB
                                     Integer.parseInt(input.substring(0, 4), 16) * 2 + 4);
                     unionSignResult = com.yht.q6jni.Jni.QapassSignUnPack(result);
                     if (1 == unionSignResult) {
-                        uninonSign = "1";
+                        MyApplication.uninonSign = "1";
                         SharedXmlUtil.getInstance(getApplicationContext()).write("UNIONSIGN", "1");
                     } else {
                         SharedXmlUtil.getInstance(getApplicationContext()).write("UNIONSIGN", "0");
@@ -1170,6 +1165,7 @@ public class PsamIcActivity extends MVPBaseActivity<SpdBusPayContract.View, SpdB
                     break;
                 case 2:
                     //ic卡消费
+                    handler.removeCallbacks(runnable);
                     rfidResultValueHan = msg.obj.toString();
                     if (rfidResultValueHan.length() > 147) {
                         cpuCard = rfidResultValueHan.substring(28, 30);
@@ -1325,6 +1321,9 @@ public class PsamIcActivity extends MVPBaseActivity<SpdBusPayContract.View, SpdB
                     break;
                 case 7:
                     //銀聯
+                    PlaySound.play(PlaySound.YINLIAN, 0);
+                    codeChangeUI();
+                    statisticalAddition();
                     break;
                 case 8:
                     //卡错误状态吗--请投币系列
@@ -1568,10 +1567,7 @@ public class PsamIcActivity extends MVPBaseActivity<SpdBusPayContract.View, SpdB
             switch (decodeDate.substring(0, 2)) {
                 case "TX":
                     //腾讯（微信）
-                    String posID = SharedXmlUtil.getInstance(getApplicationContext())
-                            .read(Info.POS_ID, Info.POS_ID_INIT);
-                    mPresenter.checkWechatTianJin(getApplicationContext(), decodeDate, (byte) 1, (byte) 1
-                            , posID, "12");
+                    mPresenter.checkWechatTianJin(getApplicationContext(), decodeDate, (byte) 1, (byte) 1, "12", getDriverRecord.getDrivertime());
                     break;
                 case "Ah":
                     mPresenter.checkYinLianCode(getApplicationContext(), decodeDate);
@@ -1682,7 +1678,8 @@ public class PsamIcActivity extends MVPBaseActivity<SpdBusPayContract.View, SpdB
         if (tianjinAlipayRes.result == ErroCode.SUCCESS) {
             // TODO: 2019/3/11 存储天津公交需要的数据
             try {
-                SaveDataUtils.saveZhiFuBaoReqDataBean(tianjinAlipayRes, orderNr);
+                String driverNr = SharedXmlUtil.getInstance(getApplicationContext()).read("TAGS", "00003000000151650680");
+                SaveDataUtils.saveZhiFuBaoReqDataBean(tianjinAlipayRes, orderNr, driverNr, getDriverRecord.getDrivertime());
             } catch (Exception e) {
                 e.printStackTrace();
             }

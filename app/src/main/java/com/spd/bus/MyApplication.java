@@ -3,14 +3,11 @@ package com.spd.bus;
 import android.annotation.SuppressLint;
 import android.app.Application;
 import android.content.Context;
-import android.hardware.Camera;
 import android.os.Build;
 import android.support.annotation.RequiresApi;
-import android.util.Log;
 import android.widget.Toast;
 
 import com.activeandroid.ActiveAndroid;
-import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 import com.example.test.yinlianbarcode.interfaces.OnBackListener;
 import com.example.test.yinlianbarcode.utils.ScanUtils;
@@ -23,15 +20,12 @@ import com.honeywell.barcode.HSMDecodeComponent;
 import com.honeywell.barcode.HSMDecoder;
 
 import com.honeywell.camera.CameraManager;
-import com.spd.base.been.tianjin.CardRecord;
 import com.spd.base.db.DbDaoManage;
-import com.spd.base.utils.DateUtils;
 import com.spd.base.utils.LogUtils;
 import com.spd.bus.entity.CityCodeTriff;
 import com.spd.bus.entity.MobileApp;
 import com.spd.bus.entity.Payrecord;
 import com.spd.bus.entity.TransportCard;
-import com.spd.bus.entity.UnionPay;
 import com.spd.bus.entity.UnionQrKey;
 import com.spd.bus.entity.White;
 import com.spd.bus.spdata.been.PsamBeen;
@@ -58,14 +52,13 @@ import static com.honeywell.barcode.Symbology.QR;
 public class MyApplication extends Application {
     private static HSMDecoder hsmDecoder;
     private HSMDecodeComponent hsmDecodeComponent;
-    public static List<CardRecord> cardRecordList = new ArrayList<>();
     public static List<PsamBeen> psamDatas = new ArrayList<>();
     public static byte fSysSta = (byte) 0x01;
     public static final String FILENAME_INFO = "/sdcard/mydownload/info.conf";
     public static final String FILENAME_ICCARD = "/sdcard/mydownload/sijirecord.conf";
     public static final String FILENAME_UNION_APPID = "/sdcard/mydownload/appid.conf";
     public static final String FILENAME_CITYCODE = "/sdcard/mydownload/citycode.conf";
-    public static String uninonSign;
+    public static String uninonSign = "";
     //激活成功与否
     public static boolean isScanSuccess = false;
     /**

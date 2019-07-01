@@ -32,6 +32,8 @@ public class Info {
     public static final String url1 = REQUEST_CARDRECORD_URL + "/yht-iccard-server/ws";
     public static final String UNION_NAMESPACE = "http://service.up.com/";
     public static final String URL_UNION_PAY = "http://123.150.11.50:29838/unionpay/services/NetbarServices/";
+    public static final String NAMESPACE = "http://service.iccard.yht.com/";
+    public static final String URL2 = REQUEST_CARDRECORD_URL + "/yht-iccard-server/ws/posXBService";
 
 
 

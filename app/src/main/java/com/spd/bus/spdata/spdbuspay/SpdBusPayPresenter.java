@@ -311,7 +311,7 @@ public class SpdBusPayPresenter extends BasePresenterImpl<SpdBusPayContract.View
 
     @Override
     public void checkWechatTianJin(Context context, String code, byte scene,
-                                   byte scantype, String posId, String posTrxId) {
+                                   byte scantype,  String posTrxId,String driverTime) {
         if (wlxSdk == null) {
             wlxSdk = new WlxSdk();
         }
@@ -377,7 +377,7 @@ public class SpdBusPayPresenter extends BasePresenterImpl<SpdBusPayContract.View
         }
 
         result = wlxSdk.verify(openId, pubKey, Integer.parseInt(DatabaseTabInfo.price, 16)
-                , scene, scantype, posId, outTradeNo, aesMacRoot);
+                , scene, scantype, DatabaseTabInfo.deviceNo, outTradeNo, aesMacRoot);
         if (result != ErroCode.EC_SUCCESS) {
             LogUtils.d(result + "");
             mView.showCheckWechatQrCode(result);
@@ -387,7 +387,7 @@ public class SpdBusPayPresenter extends BasePresenterImpl<SpdBusPayContract.View
             //司机号
             String driversNo = SharedXmlUtil.getInstance(context)
                     .read("TAGS", "0");
-            SaveDataUtils.saveWeiXinDataBean(wlxSdk, driversNo);
+            SaveDataUtils.saveWeiXinDataBean(wlxSdk, driversNo,driverTime);
         } catch (Exception e) {
             e.printStackTrace();
             LogUtils.d("微信数据保存失败:" + e.toString());

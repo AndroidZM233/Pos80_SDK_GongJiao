@@ -6,23 +6,15 @@ import android.text.TextUtils;
 import com.example.test.yinlianbarcode.utils.SharedXmlUtil;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
-import com.spd.base.been.tianjin.CardRecord;
-import com.spd.base.been.tianjin.CardRecordDao;
 import com.spd.base.been.tianjin.NetBackBean;
 import com.spd.base.been.tianjin.produce.ProducePost;
-import com.spd.base.db.DbDaoManage;
-import com.spd.base.dbbeen.RunParaFile;
-import com.spd.base.utils.Datautils;
 import com.spd.base.utils.LogUtils;
 import com.spd.bus.Info;
 import com.spd.bus.entity.Payrecord;
 import com.spd.bus.net.HttpMethods;
 import com.spd.bus.sql.SqlStatement;
 
-import org.apache.commons.lang3.text.StrBuilder;
-
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;

@@ -5,7 +5,6 @@ import android.content.Context;
 import com.spd.alipay.been.AliCodeinfoData;
 import com.spd.alipay.been.TianjinAlipayRes;
 import com.spd.base.been.AlipayQrcodekey;
-import com.spd.base.been.BosiQrcodeKey;
 import com.spd.base.been.tianjin.CardBackBean;
 import com.spd.base.been.WechatQrcodeKey;
 import com.spd.bus.spdata.mvp.BasePresenter;
@@ -70,7 +69,7 @@ public class SpdBusPayContract {
 
 
         void checkWechatTianJin(Context context,String code, byte scene,
-                                byte scantype, String posId, String posTrxId);
+                                byte scantype, String posTrxId,String driverTime);
 
         /**
          * 初始化微信库

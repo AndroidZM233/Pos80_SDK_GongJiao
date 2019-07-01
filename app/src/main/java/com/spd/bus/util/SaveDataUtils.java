@@ -7,21 +7,16 @@ import com.example.test.yinlianbarcode.utils.SharedXmlUtil;
 import com.spd.alipay.been.TianjinAlipayRes;
 import com.spd.base.been.tianjin.BlackDB;
 import com.spd.base.been.tianjin.BlackDBDao;
-import com.spd.base.been.tianjin.CardRecord;
-import com.spd.base.been.tianjin.TStaffTb;
 import com.spd.base.been.tianjin.White;
 import com.spd.base.been.tianjin.WhiteDao;
-import com.spd.base.been.tianjin.produce.shuangmian.UploadSMDB;
 import com.spd.base.been.tianjin.produce.weixin.UploadInfoDB;
 import com.spd.base.been.tianjin.produce.yinlian.UploadInfoYinLianDB;
 import com.spd.base.been.tianjin.produce.zhifubao.UploadInfoZFBDB;
 import com.spd.base.db.DbDaoManage;
-import com.spd.base.dbbeen.RunParaFile;
 import com.spd.base.utils.Datautils;
 import com.spd.base.utils.LogUtils;
 import com.spd.bus.Info;
 import com.spd.base.utils.DateUtils;
-import com.spd.bus.MyApplication;
 import com.tencent.wlxsdk.WlxSdk;
 
 import org.apache.commons.lang3.text.StrBuilder;
@@ -69,65 +64,10 @@ public class SaveDataUtils {
     }
 
 
-    /**
-     * 保存CPU卡记录
-     */
-    public static void saveCardRecord(Context context, boolean isJTB, String driverRecord, byte[] rcdBuffer) {
-        CardRecord cardRecord = new CardRecord();
-        cardRecord.setIsUpload(false);
-        cardRecord.setBusRecord(driverRecord);
-        LogUtils.d("查库开始" + DateUtils.getCurrentTimeMillis(DateUtils.FORMAT_yyyyMMddHHmmss));
-        long count = DbDaoManage.getDaoSession().getCardRecordDao().count();
-        Long id = 0L;
-        if (count != 0L) {
-            CardRecord record = DbDaoManage.getDaoSession().getCardRecordDao().loadByRowId(count);
-            if (record.getRecord() != null) {
-                if (record.getRecord().length == 128) {
-                    byte[] secondBytes = Datautils.cutBytes(record.getRecord()
-                            , 64, 64);
-                    byte[] bytes = new byte[64];
-                    if (Arrays.equals(secondBytes, bytes)) {
-                        id = record.getRecordId() + 1;
-                    } else {
-                        id = record.getRecordId() + 2;
-                    }
-                } else {
-                    id = record.getRecordId() + 1;
-                }
-            }
-        }
-        LogUtils.d("查库开始2" + DateUtils.getCurrentTimeMillis(DateUtils.FORMAT_yyyyMMddHHmmss));
-        char mID = (char) (id & 0xffff);
-        byte[] charToByte = Datautils.charToByte(mID);
-        System.arraycopy(charToByte, 0, rcdBuffer, 0, 2);
-        if (isJTB) {
-            Long secondId = id + 1;
-            char mID2 = (char) (secondId & 0xffff);
-            byte[] charToByte2 = Datautils.charToByte(mID2);
-            System.arraycopy(charToByte2, 0, rcdBuffer, 64, 2);
-            LogUtils.d("查库开始3" + DateUtils.getCurrentTimeMillis(DateUtils.FORMAT_yyyyMMddHHmmss));
-        }
-        cardRecord.setRecord(rcdBuffer);
-        cardRecord.setRecordId(id);
-//        MyApplication.setCardRecordList(cardRecord);
-
-        if (cardRecord == null || cardRecord.getRecord() == null) {
-            LogUtils.d("记录信息为空");
-            return;
-        }
-        DbDaoManage.getDaoSession().getCardRecordDao().insert(cardRecord);
-        DataUploadToTianJinUtils.uploadCardData(context);
-        LogUtils.d("写记录结束" + DateUtils.getCurrentTimeMillis(DateUtils.FORMAT_yyyyMMddHHmmss));
-    }
 
     public static void saveZhiFuBaoReqDataBean(TianjinAlipayRes aliCodeinfoData
-            ,  String orderNr) throws Exception {
+            ,  String orderNr,String driverNr,String driverTime) throws Exception {
 
-        List<TStaffTb> tStaffTbs = DbDaoManage.getDaoSession().getTStaffTbDao().loadAll();
-        TStaffTb tStaffTb = null;
-        if (tStaffTbs.size() > 0) {
-            tStaffTb = tStaffTbs.get(0);
-        }
         DatabaseTabInfo.getIntence("info");
         UploadInfoZFBDB reqDataBean = new UploadInfoZFBDB();
         String currentTimeMillis = DateUtils.getCurrentTimeMillis(DateUtils.FORMAT_YMDHMS);
@@ -136,8 +76,7 @@ public class SaveDataUtils {
         // 设备号
         reqDataBean.setDeviceId(DatabaseTabInfo.deviceNo);
         // 司机卡号
-        reqDataBean.setDriverCardNo(tStaffTb == null ? "300000015165068000"
-                : Datautils.byteArrayToString(tStaffTb.getUcAppSnr()));
+        reqDataBean.setDriverCardNo(driverNr);
         // 卡类型
         reqDataBean.setCardType(aliCodeinfoData.cardType);
         // 用户号
@@ -157,8 +96,7 @@ public class SaveDataUtils {
         // 机具内扫码序号
         reqDataBean.setSeq("001");
         // 司机签到时间
-        reqDataBean.setDriverSignTime(tStaffTb == null ? "20190313113100"
-                : Datautils.byteArrayToString(tStaffTb.getUlBCD()));
+        reqDataBean.setDriverSignTime(driverTime);
         // 区域号
         reqDataBean.setAreaCode("00");
         // 票价
@@ -181,85 +119,85 @@ public class SaveDataUtils {
 
     public static void saveSMDataBean(String cardSerial, String batchNumber, String responseCode, String isPay
             , String twoTrackData, String amount, String retrievingNum, String iCCardDataDomain, String type, String primaryAcountNum) throws Exception {
-        List<RunParaFile> runParaFiles = DbDaoManage.getDaoSession().getRunParaFileDao().loadAll();
-        if (runParaFiles.size() == 0) {
-            return;
-        }
-        RunParaFile runParaFile = runParaFiles.get(0);
-        List<TStaffTb> tStaffTbs = DbDaoManage.getDaoSession().getTStaffTbDao().loadAll();
-        TStaffTb tStaffTb = null;
-        if (tStaffTbs.size() > 0) {
-            tStaffTb = tStaffTbs.get(0);
-        }
-
-        UploadSMDB uploadSMDB = new UploadSMDB();
-        uploadSMDB.setBusNo(Datautils.byteArrayToString(runParaFile.getBusNr()));
-        //卡序号
-        uploadSMDB.setCardSerialNumber(cardSerial);
-        //批次号
-        uploadSMDB.setBatchNumber(batchNumber);
-        //请款应答码
-        uploadSMDB.setResponseCode(responseCode);
-        //是否支付 1：已支付 0： 未支付
-        uploadSMDB.setIsPay(isPay);
-        //司机卡号
-        uploadSMDB.setDriver(tStaffTb == null ? "300000015165068000"
-                : Datautils.byteArrayToString(tStaffTb.getUcAppSnr()));
-        //交易时间
-        uploadSMDB.setTransactionTime(DateUtils.getCurrentTimeMillis(DateUtils.FORMAT_yyyyMMddHHmmss));
-        //二磁道数据
-        uploadSMDB.setTowTrackData(twoTrackData);
-        //终端编号
-        uploadSMDB.setTerminalCode(Datautils.byteArrayToString(runParaFile.getDevNr()));
-        //序号
-        long count = DbDaoManage.getDaoSession().getUploadSMDBDao().count();
-        Long id = 0L;
-        String serialNumber = "000001";
-        if (count != 0L) {
-            UploadSMDB record = DbDaoManage.getDaoSession().getUploadSMDBDao().loadByRowId(count);
-            if (record != null) {
-                int num = Integer.parseInt(record.getSerialNumber()) + 1;
-                serialNumber = String.valueOf(num);
-                for (int i = serialNumber.length(); i < 6; i++) {
-                    serialNumber = "0" + serialNumber;
-                }
-            }
-        }
-
-        uploadSMDB.setSerialNumber(serialNumber);
-        //交易金额
-        uploadSMDB.setTransactionAmount(amount);
-        //路队
-        uploadSMDB.setTeam(Datautils.byteArrayToString(runParaFile.getTeamNr()));
-        //三磁道数据
-        uploadSMDB.setThreeTrackData("");
-        //线路
-        uploadSMDB.setRoute(Datautils.byteArrayToString(runParaFile.getLineNr()));
-        //机具号
-        uploadSMDB.setPosId(Datautils.byteArrayToString(runParaFile.getDevNr()));
-        //追踪码
-        uploadSMDB.setRetrievingNum(retrievingNum);
-        //公司
-        uploadSMDB.setDept(Datautils.byteArrayToString(runParaFile.getCorNr()));
-        //55域
-        uploadSMDB.setField(iCCardDataDomain);
-        //交易序号
-        uploadSMDB.setTransactionCode(serialNumber);
-        //类型 03：云闪付成功 04： 云闪付失败，转ODA
-        uploadSMDB.setType(type);
-        //卡号
-        uploadSMDB.setCardNo(primaryAcountNum);
-        //是否上传
-        uploadSMDB.setIsUpload(false);
-        DbDaoManage.getDaoSession().getUploadSMDBDao().insertOrReplace(uploadSMDB);
+//        List<RunParaFile> runParaFiles = DbDaoManage.getDaoSession().getRunParaFileDao().loadAll();
+//        if (runParaFiles.size() == 0) {
+//            return;
+//        }
+//        RunParaFile runParaFile = runParaFiles.get(0);
+//        List<TStaffTb> tStaffTbs = DbDaoManage.getDaoSession().getTStaffTbDao().loadAll();
+//        TStaffTb tStaffTb = null;
+//        if (tStaffTbs.size() > 0) {
+//            tStaffTb = tStaffTbs.get(0);
+//        }
+//
+//        UploadSMDB uploadSMDB = new UploadSMDB();
+//        uploadSMDB.setBusNo(Datautils.byteArrayToString(runParaFile.getBusNr()));
+//        //卡序号
+//        uploadSMDB.setCardSerialNumber(cardSerial);
+//        //批次号
+//        uploadSMDB.setBatchNumber(batchNumber);
+//        //请款应答码
+//        uploadSMDB.setResponseCode(responseCode);
+//        //是否支付 1：已支付 0： 未支付
+//        uploadSMDB.setIsPay(isPay);
+//        //司机卡号
+//        uploadSMDB.setDriver(tStaffTb == null ? "300000015165068000"
+//                : Datautils.byteArrayToString(tStaffTb.getUcAppSnr()));
+//        //交易时间
+//        uploadSMDB.setTransactionTime(DateUtils.getCurrentTimeMillis(DateUtils.FORMAT_yyyyMMddHHmmss));
+//        //二磁道数据
+//        uploadSMDB.setTowTrackData(twoTrackData);
+//        //终端编号
+//        uploadSMDB.setTerminalCode(Datautils.byteArrayToString(runParaFile.getDevNr()));
+//        //序号
+//        long count = DbDaoManage.getDaoSession().getUploadSMDBDao().count();
+//        Long id = 0L;
+//        String serialNumber = "000001";
+//        if (count != 0L) {
+//            UploadSMDB record = DbDaoManage.getDaoSession().getUploadSMDBDao().loadByRowId(count);
+//            if (record != null) {
+//                int num = Integer.parseInt(record.getSerialNumber()) + 1;
+//                serialNumber = String.valueOf(num);
+//                for (int i = serialNumber.length(); i < 6; i++) {
+//                    serialNumber = "0" + serialNumber;
+//                }
+//            }
+//        }
+//
+//        uploadSMDB.setSerialNumber(serialNumber);
+//        //交易金额
+//        uploadSMDB.setTransactionAmount(amount);
+//        //路队
+//        uploadSMDB.setTeam(Datautils.byteArrayToString(runParaFile.getTeamNr()));
+//        //三磁道数据
+//        uploadSMDB.setThreeTrackData("");
+//        //线路
+//        uploadSMDB.setRoute(Datautils.byteArrayToString(runParaFile.getLineNr()));
+//        //机具号
+//        uploadSMDB.setPosId(Datautils.byteArrayToString(runParaFile.getDevNr()));
+//        //追踪码
+//        uploadSMDB.setRetrievingNum(retrievingNum);
+//        //公司
+//        uploadSMDB.setDept(Datautils.byteArrayToString(runParaFile.getCorNr()));
+//        //55域
+//        uploadSMDB.setField(iCCardDataDomain);
+//        //交易序号
+//        uploadSMDB.setTransactionCode(serialNumber);
+//        //类型 03：云闪付成功 04： 云闪付失败，转ODA
+//        uploadSMDB.setType(type);
+//        //卡号
+//        uploadSMDB.setCardNo(primaryAcountNum);
+//        //是否上传
+//        uploadSMDB.setIsUpload(false);
+//        DbDaoManage.getDaoSession().getUploadSMDBDao().insertOrReplace(uploadSMDB);
     }
 
 
-    public static void saveWeiXinDataBean(WlxSdk wlxSdk,String driverNr) throws Exception {
+    public static void saveWeiXinDataBean(WlxSdk wlxSdk,String driverNr,String driverTime) throws Exception {
         DatabaseTabInfo.getIntence("info");
         UploadInfoDB payinfoBean = new UploadInfoDB();
         payinfoBean.setOpen_id(wlxSdk.get_open_id());
-        payinfoBean.setDriverSignTime("");
+        payinfoBean.setDriverSignTime(driverTime);
         payinfoBean.setTeam(DatabaseTabInfo.tream);
         payinfoBean.setRoute(DatabaseTabInfo.line);
         // TODO: 2019/4/9 测试先写一分钱

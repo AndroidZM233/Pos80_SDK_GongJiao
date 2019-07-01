@@ -13,8 +13,6 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import com.example.test.yinlianbarcode.utils.SharedXmlUtil;
-import com.spd.base.been.tianjin.CardRecord;
-import com.spd.base.been.tianjin.CardRecordDao;
 import com.spd.base.been.tianjin.produce.shuangmian.UploadSMDB;
 import com.spd.base.been.tianjin.produce.shuangmian.UploadSMDBDao;
 import com.spd.base.been.tianjin.produce.weixin.UploadInfoDB;
@@ -29,10 +27,12 @@ import com.spd.base.utils.Datautils;
 import com.spd.base.utils.DateUtils;
 import com.spd.bus.Info;
 import com.spd.bus.R;
+import com.spd.bus.entity.Payrecord;
 import com.spd.bus.spdata.PsamIcActivity;
 import com.spd.bus.spdata.been.XFBean;
 import com.spd.bus.spdata.mvp.MVPBaseActivity;
 import com.spd.bus.spdata.showdata.adapter.RVAdapter;
+import com.spd.bus.sql.SqlStatement;
 import com.spd.bus.view.MarqueeTextView;
 
 import java.util.ArrayList;
@@ -116,9 +116,8 @@ public class ShowDataActivity extends MVPBaseActivity<ShowDataContract.View, Sho
         }
 
         StringBuffer stringBuffer = new StringBuffer();
-        List<CardRecord> cardRecordList = DbDaoManage.getDaoSession().getCardRecordDao()
-                .queryBuilder().where(CardRecordDao.Properties.IsUpload.eq(false)).list();
-        stringBuffer.append("卡" + cardRecordList.size() + ",");
+        List<Payrecord> selectTagRecord = SqlStatement.selectTagRecord();
+        stringBuffer.append("卡" + selectTagRecord.size() + ",");
         List<UploadInfoDB> uploadInfoDBList = DbDaoManage.getDaoSession().getUploadInfoDBDao()
                 .queryBuilder().where(UploadInfoDBDao.Properties.IsUpload.eq(false)).list();
         stringBuffer.append("微信" + uploadInfoDBList.size() + ",");
@@ -137,48 +136,39 @@ public class ShowDataActivity extends MVPBaseActivity<ShowDataContract.View, Sho
 
     private void initRV() {
         List<XFBean> xfBeans = new ArrayList<>();
-        long dbCount = DbDaoManage.getDaoSession().getCardRecordDao().count();
-        if (dbCount > 0L) {
-            int count = 6;
-            if (dbCount < 6L) {
-                count = (int) dbCount;
-            }
-            for (int j = count - 1; j >= 0; j--) {
-                CardRecord cardRecord = DbDaoManage.getDaoSession().getCardRecordDao()
-                        .loadByRowId(dbCount - j);
-                XFBean xfBean = new XFBean();
-                byte[] record = cardRecord.getRecord();
-                if (record != null) {
-                    if (record[4] == (byte) 0x02) {
-                        byte[] id = Datautils.cutBytes(record, 11, 8);
-                        xfBean.setId(Datautils.byteArrayToString(id));
-                    } else {
-                        byte[] id = Datautils.cutBytes(record, 11, 8);
-                        xfBean.setId(Datautils.byteArrayToString(id));
-                    }
-                    byte exchType = record[2];
-                    byte[] money = Datautils.cutBytes(record, 56, 3);
-                    //0钱包2月票
-                    if (exchType == (byte) 0x02) {
-                        xfBean.setMoney("1次");
-                    } else {
-                        int anInt = Datautils.byteArrayToInt(money);
-                        xfBean.setMoney(((double) anInt / 100) + "元");
-                    }
-                    byte[] ucDateTimeUTC = Datautils.cutBytes(record, 24, 4);
-                    long aLong = Long.parseLong(Datautils.byteArrayToString(ucDateTimeUTC), 16);
-                    String longToString = DateUtils.transferLongToString(
-                            DateUtils.FORMAT_YMDHMS, aLong * 1000);
-                    xfBean.setTime(longToString);
-                    xfBeans.add(xfBean);
+        List<Payrecord> listSel = SqlStatement.recordListSel();
+        for (Payrecord payrecord : listSel) {
+            XFBean xfBean = new XFBean();
+            byte[] record = Datautils.hexStringToByteArray(payrecord.getRecord());
+            if (record != null) {
+                if (record[4] == (byte) 0x02) {
+                    byte[] id = Datautils.cutBytes(record, 11, 8);
+                    xfBean.setId(Datautils.byteArrayToString(id));
+                } else {
+                    byte[] id = Datautils.cutBytes(record, 11, 8);
+                    xfBean.setId(Datautils.byteArrayToString(id));
                 }
-
+                byte exchType = record[2];
+                byte[] money = Datautils.cutBytes(record, 56, 3);
+                //0钱包2月票
+                if (exchType == (byte) 0x02) {
+                    xfBean.setMoney("1次");
+                } else {
+                    int anInt = Datautils.byteArrayToInt(money);
+                    xfBean.setMoney(((double) anInt / 100) + "元");
+                }
+                byte[] ucDateTimeUTC = Datautils.cutBytes(record, 24, 4);
+                long aLong = Long.parseLong(Datautils.byteArrayToString(ucDateTimeUTC), 16);
+                String longToString = DateUtils.transferLongToString(
+                        DateUtils.FORMAT_YMDHMS, aLong * 1000);
+                xfBean.setTime(longToString);
+                xfBeans.add(xfBean);
             }
-        }
 
-        mAdapter = new RVAdapter(R.layout.item_rv, xfBeans);
-        mRvContentXF.setLayoutManager(new LinearLayoutManager(getApplicationContext()));
-        mRvContentXF.setAdapter(mAdapter);
+            mAdapter = new RVAdapter(R.layout.item_rv, xfBeans);
+            mRvContentXF.setLayoutManager(new LinearLayoutManager(getApplicationContext()));
+            mRvContentXF.setAdapter(mAdapter);
+        }
     }
 
 

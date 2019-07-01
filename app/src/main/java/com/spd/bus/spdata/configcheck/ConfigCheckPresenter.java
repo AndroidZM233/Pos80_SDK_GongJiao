@@ -15,14 +15,23 @@ import com.spd.base.been.tianjin.GetZhiFuBaoKey;
 import com.spd.base.been.tianjin.KeysBean;
 import com.spd.base.been.tianjin.PosKeysBackBean;
 import com.spd.base.been.tianjin.UnqrkeyBackBean;
+import com.spd.base.been.tianjin.produce.weixin.UploadInfoDB;
+import com.spd.base.been.tianjin.produce.weixin.UploadInfoDBDao;
+import com.spd.base.been.tianjin.produce.yinlian.UploadInfoYinLianDB;
+import com.spd.base.been.tianjin.produce.yinlian.UploadInfoYinLianDBDao;
+import com.spd.base.been.tianjin.produce.zhifubao.UploadInfoZFBDB;
+import com.spd.base.been.tianjin.produce.zhifubao.UploadInfoZFBDBDao;
 import com.spd.base.db.DbDaoManage;
 import com.spd.base.utils.Datautils;
 import com.spd.bus.Info;
 import com.spd.bus.MyApplication;
+import com.spd.bus.entity.Payrecord;
+import com.spd.bus.entity.UnionPay;
 import com.spd.bus.net.HttpMethods;
 import com.spd.base.utils.LogUtils;
 import com.spd.bus.spdata.been.PsamBeen;
 import com.spd.bus.spdata.mvp.BasePresenterImpl;
+import com.spd.bus.sql.SqlStatement;
 import com.spd.bus.util.ConfigUtils;
 import com.spd.bus.util.DataUploadToTianJinUtils;
 import com.spd.bus.util.ModifyTime;
@@ -114,10 +123,10 @@ public class ConfigCheckPresenter extends BasePresenterImpl<ConfigCheckContract.
 
 //                DataUploadToTianJinUtils.uploadCardData(context);
 
-//                ModifyTime.JudgmentTime();
-
+                deleteDB();
+                ModifyTime.JudgmentTime();
                 String version = com.yht.q6jni.Jni.GetVesion();
-                String result = com.yht.q6jni.Jni.Psamtest(key);
+                String result = com.yht.q6jni.Jni.Psamtest(key).toUpperCase();
                 LogUtils.d("version+result" + version + result);
 //                String result = "0000000000000000000000000000000000003e003c600073000060220032401708000020000000c00012000002313735313038353038393831323030343131313031393000110000019900300003303031";
 
@@ -129,6 +138,41 @@ public class ConfigCheckPresenter extends BasePresenterImpl<ConfigCheckContract.
 
             }
         }).start();
+    }
+
+    /**
+     * 如果数据超出 删除已上传数据
+     */
+    private void deleteDB() {
+        //IC卡记录
+        List<Payrecord> listCardRecord = SqlStatement.getUpLoayrecord();
+        if (listCardRecord.size() > 3000) {
+            SqlStatement.deleterecord_old1();
+        }
+
+        //银行卡
+        List<UnionPay> listUnionIc = SqlStatement.getUpLoadUnionPayReocrdTag();
+        if (listUnionIc.size() > 1000) {
+            SqlStatement.deleterecordOldUnion();
+        }
+        //微信
+        List<UploadInfoDB> infoDBList = DbDaoManage.getDaoSession().getUploadInfoDBDao()
+                .queryBuilder().where(UploadInfoDBDao.Properties.IsUpload.eq(true)).list();
+        if (infoDBList.size() > 1000) {
+            DbDaoManage.getDaoSession().getUploadInfoDBDao().deleteInTx(infoDBList);
+        }
+        //支付宝
+        List<UploadInfoZFBDB> infoZFBDBList = DbDaoManage.getDaoSession().getUploadInfoZFBDBDao()
+                .queryBuilder().where(UploadInfoZFBDBDao.Properties.IsUpload.eq(true)).list();
+        if (infoZFBDBList.size() > 1000) {
+            DbDaoManage.getDaoSession().getUploadInfoZFBDBDao().deleteInTx(infoZFBDBList);
+        }
+        //银联二维码
+        List<UploadInfoYinLianDB> infoYinLianDBList = DbDaoManage.getDaoSession().getUploadInfoYinLianDBDao()
+                .queryBuilder().where(UploadInfoYinLianDBDao.Properties.IsUpload.eq(true)).list();
+        if (infoYinLianDBList.size() > 1000) {
+            DbDaoManage.getDaoSession().getUploadInfoYinLianDBDao().deleteInTx(infoYinLianDBList);
+        }
     }
 
     //psam自检显示

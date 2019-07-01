@@ -44,6 +44,9 @@ public class UpdateTimer {
     private SimpleDateFormat sdf = new SimpleDateFormat("yyyyMMddHHmmss");
     private String driverNo;
     private GetDriverRecord gdr = new GetDriverRecord();
+    private List<Payrecord> payRecords;
+    private String payRecordCount = "";
+    private List<Payrecord> listUpdateRecord = new ArrayList<Payrecord>();
 
     public static UpdateTimer getIntance(Context context) {
         mContext = context;
@@ -56,7 +59,7 @@ public class UpdateTimer {
     public void initTimer() {
         long period = 2 * 60 * 1000;//时间间隔
         mDisposable = Observable.interval(period, TimeUnit.MILLISECONDS)
-                .observeOn(Schedulers.newThread())
+//                .observeOn(Schedulers.newThread())
                 .subscribe(aLong -> update());
     }
 
@@ -65,14 +68,67 @@ public class UpdateTimer {
         driverNo = SharedXmlUtil.getInstance(mContext)
                 .read("TAGS", "00003000000151650680");
         listUnionPay = SqlStatement.getUnionPayReocrdTag();
-        List<Payrecord> payRecords = SqlStatement.selectTagRecord();
+        payRecords = SqlStatement.selectTagRecord();
 
         if (payRecords.size() > 0) {
-
+            new UploadRecorddata().start();
         }
 
         if (listUnionPay.size() > 0 && driverNo.length() > 18) {
             new UploadUnionPayRecorddata().start();
+        }
+    }
+
+    class UploadRecorddata extends Thread {
+        @Override
+        public void run() {
+            DatabaseTabInfo.getIntence("info");
+//            Logger.i( "dayinjieguo "+payrecords.get(0 ).getRecord() );
+            for (int i = 0; i < payRecords.size(); i++) {
+                if (payRecords.get(i).getRecord().substring(124, 128).equalsIgnoreCase(GetDriverRecord
+                        .dirverRecordData().substring(0, 4))) {
+                    payRecordCount = payRecordCount + payRecords.get(i).getRecord();
+                } else {
+                    String driverRecord = GetDriverRecord.dirverRecordData2(payRecords.get(i).getRecord());
+                    //payrecordcount = payrecordcount + driverRecord + payrecords.get( i ).getRecord();
+                    payRecordCount = new StringBuffer().append(payRecordCount).append(driverRecord).append(payRecords.get(i).getRecord()).toString();
+                }
+
+                listUpdateRecord.add(payRecords.get(i));
+                if ((i % 100 == 0) || ((i + 1) >= payRecords.size())) {
+                    StringBuffer stringbuff = new StringBuffer();
+                    stringbuff.append(GetDriverRecord
+                            .dirverRecordData());
+                    stringbuff.append(payRecordCount);
+                    if (true == NetWorkUtils.urlIsReach(Info.url1)) {
+                        SoapObject rpc = new SoapObject(Info.NAMESPACE, "uploadRecord");
+                        rpc.addProperty("posid", DatabaseTabInfo.deviceNo);
+                        rpc.addProperty("data", stringbuff.toString());
+                        rpc.addProperty("route", DatabaseTabInfo.line);
+                        SoapSerializationEnvelope envelope = new SoapSerializationEnvelope(
+                                SoapEnvelope.VER11);
+                        envelope.dotNet = false;
+                        envelope.setOutputSoapObject(rpc);
+                        HttpTransportSE ht = new HttpTransportSE(Info.URL2);
+                        try {
+                            ht.call(Info.NAMESPACE + "uploadRecords", envelope);
+                            if (envelope.getResponse() != null) {
+//                                Logger.i( "IC Uplod State=" + envelope.getResponse() );
+                                if ("00".equals(String.valueOf(envelope.getResponse()))) {
+                                    SqlStatement.UpdataSubmit(listUpdateRecord);
+//                                    spUtil.putString( "DOWNLOAD", "1" );
+                                    listUpdateRecord.clear();
+                                }
+                            }
+                        } catch (Exception e) {
+                            e.printStackTrace();
+                        }
+
+                    }
+                }
+            }
+
+            super.run();
         }
     }
 
