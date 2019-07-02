@@ -44,12 +44,12 @@ import com.spd.bus.spdata.spdbuspay.SpdBusPayContract;
 import com.spd.bus.spdata.spdbuspay.SpdBusPayPresenter;
 import com.spd.bus.sql.SqlStatement;
 import com.spd.bus.threads.RecoverData;
-import com.spd.bus.threads.UnionSocketThread;
 import com.spd.bus.util.Configurations;
 import com.spd.bus.util.CreateJsonConfig;
 import com.spd.bus.util.DataUploadToTianJinUtils;
 import com.spd.bus.util.DatabaseTabInfo;
 import com.spd.bus.util.GetDriverRecord;
+import com.spd.bus.util.HzjString;
 import com.spd.bus.util.PlaySound;
 import com.spd.bus.util.SaveDataUtils;
 
@@ -218,7 +218,7 @@ public class PsamIcActivity extends MVPBaseActivity<SpdBusPayContract.View, SpdB
             stringBuffer.append("设备号：" + DatabaseTabInfo.deviceNo);
             mTvDeviceMessage.setText(stringBuffer + "");
             mTvLine.setText(DatabaseTabInfo.line + "路");
-            mTvBalance.setText(priceDou + "元");
+            mTvBalance.setText(priceDou + "");
         } else {
             mTvBalanceTitle.setText("");
             mTvBalance.setText("请设置");
@@ -284,7 +284,6 @@ public class PsamIcActivity extends MVPBaseActivity<SpdBusPayContract.View, SpdB
                                     if (intPrices != 0 && intPrices < 100000 && !"000000".equals(busNo)) {
                                         if (driversNo.length() > 16) {
                                             unionTag = 1;
-                                            PlaySound.play(PlaySound.ZHENGZAICHULI, 0);
                                             len = Integer.parseInt(getIcCardResult.substring(46, 50), 16) * 2 + 50;
                                             //双免记录长度
                                             fieldLength = Integer.parseInt(getIcCardResult.substring(50, 54), 16);
@@ -383,8 +382,7 @@ public class PsamIcActivity extends MVPBaseActivity<SpdBusPayContract.View, SpdB
                                             if (MyApplication.uninonSign.equals("1")) {
                                                 // TODO: 2019/6/24 上传记录
 //                                            mPresenter.uploadSM(getApplicationContext());
-                                                new UnionSocketThread(tradingFlow, smRecord, primaryAcountNum
-                                                        , handler).start();
+                                                new UnionSocketThread(tradingFlow, smRecord, primaryAcountNum).start();
                                             } else {
                                                 // TODO: 2019/6/24 判断是不是黑名单
 //                                            int blackDB = SaveDataUtils.queryBlackDB(primaryAcountNum);
@@ -543,7 +541,7 @@ public class PsamIcActivity extends MVPBaseActivity<SpdBusPayContract.View, SpdB
                                                 continue;
                                             }
                                             if ("90".equals(rfidDectState)) {
-                                                PlaySound.play(PlaySound.ZHENGZAICHULI, 0);
+                                                PlaySound.play(PlaySound.ZHENGZZAICHULI, 0);
                                                 len = Integer.parseInt(rfidDectValue.substring(2, 6), 16) * 2 + 2;
                                                 //双免记录长度
                                                 fieldLength = Integer.parseInt(rfidDectValue.substring(6, 10), 16);
@@ -634,8 +632,7 @@ public class PsamIcActivity extends MVPBaseActivity<SpdBusPayContract.View, SpdB
                                                     ActiveAndroid.endTransaction();
                                                 }
                                                 if (MyApplication.uninonSign.equals("1")) {
-                                                    new UnionSocketThread(tradingFlow, smRecord, primaryAcountNum
-                                                            , handler).start();
+                                                    new UnionSocketThread(tradingFlow, smRecord, primaryAcountNum).start();
                                                 } else {
                                                     if (SqlStatement.SelectUnionBlack(primaryAcountNum) == 0) {
                                                         SqlStatement.updataUnionODASUC(tradingFlow);
@@ -820,7 +817,7 @@ public class PsamIcActivity extends MVPBaseActivity<SpdBusPayContract.View, SpdB
             mLayoutFace.setVisibility(View.GONE);
             mLayoutXiaofei.setVisibility(View.GONE);
             mTvBalanceTitle.setText("票价");
-            mTvBalance.setText(priceDou + "元");
+            mTvBalance.setText(priceDou + "");
         }
     };
 
@@ -945,7 +942,7 @@ public class PsamIcActivity extends MVPBaseActivity<SpdBusPayContract.View, SpdB
                             @Override
                             public void run() {
                                 mTvBalanceTitle.setText("票价");
-                                mTvBalance.setText(priceDou + "元");
+                                mTvBalance.setText(priceDou + "");
                                 mLlShowData.setVisibility(View.GONE);
                                 isConfigUI = false;
                                 isDriverUI = false;
@@ -1029,7 +1026,7 @@ public class PsamIcActivity extends MVPBaseActivity<SpdBusPayContract.View, SpdB
 
     private void codeChangeUI() {
         mTvXiaofeiTitle.setText("消费");
-        mTvXiaofeiMoney.setText(priceDou + "元");
+        mTvXiaofeiMoney.setText(priceDou + "");
         mLayoutLineInfo.setVisibility(View.GONE);
         mLayoutXiaofei.setVisibility(View.VISIBLE);
         statisticalAddition();
@@ -1126,7 +1123,7 @@ public class PsamIcActivity extends MVPBaseActivity<SpdBusPayContract.View, SpdB
             mTvXiaofeiTitle.setText("消费");
             mTvBalanceTitle.setText("余额");
             int balance = cardOpDU.purorimoneyInt - cardOpDU.pursubInt;
-            mTvBalance.setText(((double) balance / 100) + "元");
+            mTvBalance.setText(((double) balance / 100) + "");
             mTvXiaofeiMoney.setText(((double) cardOpDU.pursubInt / 100) + "元");
             float allMoney = SharedXmlUtil.getInstance(getApplicationContext())
                     .read(Info.ALL_MONEY, 0.0f);
@@ -1223,7 +1220,7 @@ public class PsamIcActivity extends MVPBaseActivity<SpdBusPayContract.View, SpdB
                                     mLayoutLineInfo.setVisibility(View.GONE);
                                     mLayoutXiaofei.setVisibility(View.VISIBLE);
                                     mTvBalanceTitle.setText("余额");
-                                    mTvBalance.setText(((double) yueCase2 / 100) + "元");
+                                    mTvBalance.setText(((double) yueCase2 / 100) + "");
                                     int pursubInt = Integer.parseInt(consumption, 16);
                                     mTvXiaofeiMoney.setText(((double) pursubInt / 100) + "元");
                                     float allMoney = SharedXmlUtil.getInstance(getApplicationContext())
@@ -1322,6 +1319,7 @@ public class PsamIcActivity extends MVPBaseActivity<SpdBusPayContract.View, SpdB
                 case 7:
                     //銀聯
                     PlaySound.play(PlaySound.YINLIAN, 0);
+                    LogUtils.d("银联双免ODA消耗时间：" + (System.currentTimeMillis() - timeMillis));
                     codeChangeUI();
                     statisticalAddition();
                     break;
@@ -1483,7 +1481,7 @@ public class PsamIcActivity extends MVPBaseActivity<SpdBusPayContract.View, SpdB
                         @Override
                         public void run() {
                             mTvBalanceTitle.setText("票价");
-                            mTvBalance.setText(priceDou + "元");
+                            mTvBalance.setText(priceDou + "");
                             mLlShowData.setVisibility(View.GONE);
                             isConfigUI = false;
                             isDriverUI = false;
@@ -1764,5 +1762,106 @@ public class PsamIcActivity extends MVPBaseActivity<SpdBusPayContract.View, SpdB
 
 
         return super.onKeyDown(keyCode, event);
+    }
+
+
+    /**
+     * 記錄上傳雙免
+     */
+    class UnionSocketThread extends Thread {
+        private String tradingFlow;
+        private String record;
+        private String unionCardCode;
+
+        public UnionSocketThread(String tradingFlow, String record,
+                                 String unionCardCode) {
+            this.tradingFlow = tradingFlow;
+            this.record = record;
+            this.unionCardCode = unionCardCode;
+        }
+
+        @Override
+        public void run() {
+            try {
+                PlaySound.play(PlaySound.ZHENGZZAICHULI, 0);
+                Socket socket = new Socket();
+                socket.connect(new InetSocketAddress("123.150.11.50", 18000),
+                        3000);
+                DataOutputStream out;
+                byte[] temp = new byte[1024];
+                out = new DataOutputStream(socket.getOutputStream());
+                out.write(HzjString.hexStringToBytes(record));
+                out.flush();
+                // 向服务器发送信息
+                InputStream inputStream = socket.getInputStream();
+                socket.setSoTimeout(3000);
+                int bytes = inputStream.read(temp);
+                //String input = HzjString.BinaryToHexString( temp );
+//                String result =  HzjString.BinaryToHexString( temp ).substring( 0,
+//                        Integer.parseInt(  HzjString.BinaryToHexString( temp ).substring( 0, 4 ), 16 ) * 2 + 4 );
+//                Logger.i( "银联消费result=" + result );
+                String code = com.yht.q6jni.Jni.QapassDectUnPack(HzjString.BinaryToHexString(temp).substring(0,
+                        Integer.parseInt(HzjString.BinaryToHexString(temp).substring(0, 4), 16) * 2 + 4));
+                LogUtils.i("银联消费code=" + code);
+                // String xiangyingma = code.substring( 0, 2 );
+                if (code.substring(0, 2).equals("00")) {
+                    // String jiansuohao = code.substring( 2, 26 );
+                    // doubleState---2双免未结算，0双免结算成功，1双免结算失败，
+                    // oDAState-------ODA状态 -----6 ODA记录启用 5 ODA记录暂未启用
+                    // isPay------- 0 未支付 1已支付（双免）
+                    // /payStatus-----// 00成功，其它失败（双免）
+                    SqlStatement.updataUnionSMSUC(tradingFlow, code.substring(0, 2),
+                            code.substring(2, 26));
+                    unionTag = 0;
+                    handler.sendMessage(handler.obtainMessage(7, "双免"));
+                } else if (code.substring(0, 2).equals("58")) {
+                    if (0 == SqlStatement.SelectUnionBlack(unionCardCode)) {
+                        SqlStatement.updataUnionODASUC(tradingFlow);
+                        unionTag = 0;
+                        handler.sendMessage(handler.obtainMessage(7, "oda"));
+                    } else {
+                        SqlStatement.updataUnionSMSUC_failed(tradingFlow,
+                                code.substring(0, 2), "");
+                        unionTag = 0;
+                        handler.sendMessage(handler.obtainMessage(8, "无效卡号"));
+                    }
+                } else if (code.substring(0, 2).equals("51")) {
+                    SqlStatement.updataUnionSMSUC_failed(tradingFlow, code.substring(0, 2),
+                            "");
+                    unionTag = 0;
+                    handler.sendMessage(handler.obtainMessage(12, "C余额不足"));
+                } else {
+                    SqlStatement.updataUnionSMSUC_failed(tradingFlow, code.substring(0, 2),
+                            "");
+                    unionTag = 0;
+                    handler.sendMessage(handler.obtainMessage(12, "C" + code.substring(0, 2)));
+                }
+                // 关闭各种输入输出流
+                out.close();
+                socket.close();
+            } catch (IOException e) {
+                if (0 == SqlStatement.SelectUnionBlack(unionCardCode)) {
+                    SqlStatement.updataUnionODASUC(tradingFlow);
+                    unionTag = 0;
+                    handler.sendMessage(handler.obtainMessage(7, "oda"));
+                } else {
+                    SqlStatement.updataUnionSMSUC_failed(tradingFlow, "", "");
+                    unionTag = 0;
+                    handler.sendMessage(handler.obtainMessage(8, "无效卡号"));
+                }
+                e.printStackTrace();
+            } catch (Exception e1) {
+                if (0 == SqlStatement.SelectUnionBlack(unionCardCode)) {
+                    SqlStatement.updataUnionODASUC(tradingFlow);
+                    unionTag = 0;
+                    handler.sendMessage(handler.obtainMessage(7, "oda"));
+                } else {
+                    SqlStatement.updataUnionSMSUC_failed(tradingFlow, "", "");
+                    unionTag = 0;
+                    handler.sendMessage(handler.obtainMessage(8, "无效卡号"));
+                }
+            }
+            super.run();
+        }
     }
 }

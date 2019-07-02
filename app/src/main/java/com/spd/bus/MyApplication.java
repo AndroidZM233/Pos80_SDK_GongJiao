@@ -30,6 +30,7 @@ import com.spd.bus.entity.UnionQrKey;
 import com.spd.bus.entity.White;
 import com.spd.bus.spdata.been.PsamBeen;
 import com.spd.bus.sql.SqlStatement;
+import com.spd.bus.timer.UpdateTimer;
 import com.spd.bus.util.Base64Encrypt;
 import com.spd.bus.util.Configurations;
 import com.spd.bus.util.CrashHandler;
@@ -92,6 +93,7 @@ public class MyApplication extends Application {
         }).start();
 
         HeartTimer.getIntance(getApplicationContext()).initTimer();
+        UpdateTimer.getIntance(getApplicationContext()).initTimer();
 
     }
 

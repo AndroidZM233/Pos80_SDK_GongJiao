@@ -10,6 +10,7 @@ import com.spd.bus.Info;
 import com.spd.bus.entity.Payrecord;
 import com.spd.bus.entity.UnionPay;
 import com.spd.bus.sql.SqlStatement;
+import com.spd.bus.util.DataUploadToTianJinUtils;
 import com.spd.bus.util.DatabaseTabInfo;
 import com.spd.bus.util.GetDriverRecord;
 
@@ -67,16 +68,22 @@ public class UpdateTimer {
     private void update() {
         driverNo = SharedXmlUtil.getInstance(mContext)
                 .read("TAGS", "00003000000151650680");
-        listUnionPay = SqlStatement.getUnionPayReocrdTag();
-        payRecords = SqlStatement.selectTagRecord();
 
-        if (payRecords.size() > 0) {
-            new UploadRecorddata().start();
-        }
+        DataUploadToTianJinUtils.uploadCardData(mContext);
+        DataUploadToTianJinUtils.uploadSM(mContext);
 
-        if (listUnionPay.size() > 0 && driverNo.length() > 18) {
-            new UploadUnionPayRecorddata().start();
-        }
+        //天津旧版写法
+//        listUnionPay = SqlStatement.getUnionPayReocrdTag();
+//        payRecords = SqlStatement.selectTagRecord();
+
+//        if (payRecords.size() > 0) {
+//            new UploadRecorddata().start();
+
+//        }
+
+//        if (listUnionPay.size() > 0 && driverNo.length() > 18) {
+//            new UploadUnionPayRecorddata().start();
+//        }
     }
 
     class UploadRecorddata extends Thread {

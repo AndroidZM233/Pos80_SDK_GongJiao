@@ -25,7 +25,6 @@ public class PlaySound {
     public static final int qingchongshua = 3;
     public static final int setSuccess = 4;
     public static final int ZHIFUBAO = 5;
-    public static final int ZHENGZAICHULI = 6;
     public static final int XUESHENGKA = 6;
     public static final int QINGTOUBI = 7;
     public static final int ERWEIMASHIXIAO = 8;
@@ -56,7 +55,6 @@ public class PlaySound {
         mapSRC.put(qingchongshua, sp.load(context, R.raw.qingchongshua, 0));
         mapSRC.put(setSuccess, sp.load(context, R.raw.shezhiwancheng, 0));
         mapSRC.put(ZHIFUBAO, sp.load(context, R.raw.zhifubao, 0));
-        mapSRC.put(ZHENGZAICHULI, sp.load(context, R.raw.zhengzaichulizhong, 0));
         mapSRC.put(XUESHENGKA, sp.load(context, R.raw.xueshengka, 0));
         mapSRC.put(ERWEIMASHIXIAO, sp.load(context, R.raw.erweimashixiao, 0));
         mapSRC.put(QINGTOUBI, sp.load(context, R.raw.qingtoubi, 0));
