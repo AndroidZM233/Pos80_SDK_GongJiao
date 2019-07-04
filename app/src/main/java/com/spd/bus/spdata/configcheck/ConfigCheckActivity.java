@@ -3,11 +3,15 @@ package com.spd.bus.spdata.configcheck;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.os.SystemClock;
 import android.support.annotation.Nullable;
+import android.text.TextUtils;
 import android.widget.TextView;
 
+import com.example.zhoukai.modemtooltest.ModemToolTest;
 import com.kaopiz.kprogresshud.KProgressHUD;
 import com.spd.base.utils.LogUtils;
+import com.spd.base.utils.NetWorkUtils;
 import com.spd.bus.MyApplication;
 import com.spd.bus.R;
 import com.spd.bus.entity.TransportCard;
@@ -47,37 +51,35 @@ public class ConfigCheckActivity extends MVPBaseActivity<ConfigCheckContract.Vie
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_config_check);
-//        while (!NetWorkUtils.isNetworkConnected(getApplicationContext())) {
-//
-//        }
         initView();
-//        ConfigUtils.loadTxtConfig();
-        List<TransportCard> listInfo = SqlStatement.getParameterAll();
-        File file = new File( MyApplication.FILENAME_INFO );
-        if (file.exists() && Configurations.read_config( MyApplication.FILENAME_INFO ).length() > 20 && "00".equals( listInfo.get( 0 ).getInfo() )) {
-            try {
-                FileConfData.writeDB();
-            } catch (Exception e) {
-                e.printStackTrace();
-            } finally {
-                LogUtils.i( "备份恢复失败" );
-            }
+        kProgressHUD = KProgressHUD.create(ConfigCheckActivity.this);
+        kProgressHUD.setStyle(KProgressHUD.Style.SPIN_INDETERMINATE)
+                .setCancellable(true)
+                .setAnimationSpeed(2)
+                .setDimAmount(0.5f)
+                .show();
+        while (!NetWorkUtils.isNetworkConnected(getApplicationContext())) {
+            kProgressHUD.setLabel("没有网络，请检测网络连接");
         }
 
-//        mPresenter.initPsam(getApplicationContext());
+
+//        String sn = ModemToolTest.getItem(7);
+//        if (!"000000".equals(sn)) {
+//            String deviceNId = sn.substring(7, 15);
+//            SqlStatement.updataSN(deviceNId);
+//        }
+
+
+//        ConfigUtils.loadTxtConfig();
+
+        kProgressHUD.setLabel("初始化中...");
         MyApplication.setInitDevListener(new MyApplication.InitDevListener() {
             @Override
             public void onSuccess() {
                 runOnUiThread(new Runnable() {
                     @Override
                     public void run() {
-                        kProgressHUD = KProgressHUD.create(ConfigCheckActivity.this);
-                        kProgressHUD.setStyle(KProgressHUD.Style.SPIN_INDETERMINATE)
-                                .setLabel("初始化中...")
-                                .setCancellable(true)
-                                .setAnimationSpeed(2)
-                                .setDimAmount(0.5f)
-                                .show();
+                        kProgressHUD.setLabel("初始化中...");
                         mPresenter.initPsam(getApplicationContext());
                     }
                 });
@@ -86,14 +88,30 @@ public class ConfigCheckActivity extends MVPBaseActivity<ConfigCheckContract.Vie
 
             @Override
             public void onError() {
-                if (kProgressHUD != null) {
-                    kProgressHUD.dismiss();
-                }
-
+                kProgressHUD.setLabel("激活失败！准备重新激活...");
+                MyApplication.getInstance().initScanBards(getApplicationContext());
             }
         });
-    }
 
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                MyApplication.getInstance().initScanBards(getApplicationContext());
+            }
+        }).start();
+
+        List<TransportCard> listInfo = SqlStatement.getParameterAll();
+        File file = new File(MyApplication.FILENAME_INFO);
+        if (file.exists() && Configurations.read_config(MyApplication.FILENAME_INFO).length() > 20 && "00".equals(listInfo.get(0).getInfo())) {
+            try {
+                FileConfData.writeDB();
+            } catch (Exception e) {
+                e.printStackTrace();
+            } finally {
+                LogUtils.i("备份恢复失败");
+            }
+        }
+    }
 
 
     @Override
@@ -153,7 +171,17 @@ public class ConfigCheckActivity extends MVPBaseActivity<ConfigCheckContract.Vie
 
     @Override
     public void openActivity() {
-        startActivity(new Intent(ConfigCheckActivity.this,PsamIcActivity.class));
+        if (kProgressHUD != null) {
+            kProgressHUD.dismiss();
+        }
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                SystemClock.sleep(2000);
+                startActivity(new Intent(ConfigCheckActivity.this, PsamIcActivity.class));
+            }
+        }).start();
+
     }
 
 }

@@ -21,7 +21,7 @@ import java.util.List;
 public class DatabaseTabInfo {
     public static String appkey = "6FF5BB054CE88470";
     public static String info = "";
-    public static String busno = "";
+    public static String busno = "123456";
     public static String deviceNo = "";
     public static String price = "";
     public static String dept = "";

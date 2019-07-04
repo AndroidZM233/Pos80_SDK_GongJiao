@@ -2,6 +2,7 @@ package com.spd.bus.spdata.configcheck;
 
 import android.content.Context;
 import android.os.RemoteException;
+import android.os.SystemClock;
 import android.text.TextUtils;
 
 import com.example.test.yinlianbarcode.utils.SharedXmlUtil;
@@ -136,6 +137,7 @@ public class ConfigCheckPresenter extends BasePresenterImpl<ConfigCheckContract.
                 }
                 mView.openActivity();
 
+
             }
         }).start();
     }
@@ -177,8 +179,8 @@ public class ConfigCheckPresenter extends BasePresenterImpl<ConfigCheckContract.
 
     //psam自检显示
     public void showPsam(Context context, String version, String psamData) {
-        String psam1 = psamData.substring(4, 6);
-        String psam3 = psamData.substring(8, 10);
+        String psam1 = psamData.substring(2, 4);
+        String psam3 = psamData.substring(6, 8);
         int lengthInt = Integer.parseInt(psamData.substring(34, 38), 16);
         if (psamData.length() > 160) {
             String result = psamData.substring(38, 38 + lengthInt * 2);

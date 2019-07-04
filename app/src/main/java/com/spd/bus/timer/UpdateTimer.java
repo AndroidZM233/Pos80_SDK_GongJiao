@@ -64,6 +64,11 @@ public class UpdateTimer {
                 .subscribe(aLong -> update());
     }
 
+    //取消订阅
+    public void dispose() {
+        mDisposable.dispose();
+    }
+
     //上传
     private void update() {
         driverNo = SharedXmlUtil.getInstance(mContext)

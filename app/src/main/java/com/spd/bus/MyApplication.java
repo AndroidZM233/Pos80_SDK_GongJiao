@@ -5,6 +5,8 @@ import android.app.Application;
 import android.content.Context;
 import android.os.Build;
 import android.support.annotation.RequiresApi;
+import android.view.LayoutInflater;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.activeandroid.ActiveAndroid;
@@ -22,12 +24,14 @@ import com.honeywell.barcode.HSMDecoder;
 import com.honeywell.camera.CameraManager;
 import com.spd.base.db.DbDaoManage;
 import com.spd.base.utils.LogUtils;
+import com.spd.base.utils.ToastUtil;
 import com.spd.bus.entity.CityCodeTriff;
 import com.spd.bus.entity.MobileApp;
 import com.spd.bus.entity.Payrecord;
 import com.spd.bus.entity.TransportCard;
 import com.spd.bus.entity.UnionQrKey;
 import com.spd.bus.entity.White;
+import com.spd.bus.spdata.PsamIcActivity;
 import com.spd.bus.spdata.been.PsamBeen;
 import com.spd.bus.sql.SqlStatement;
 import com.spd.bus.timer.UpdateTimer;
@@ -76,7 +80,7 @@ public class MyApplication extends Application {
     @Override
     public void onCreate() {
         super.onCreate();
-        CrashHandler.getInstance().init(getApplicationContext());
+//        CrashHandler.getInstance().init(getApplicationContext());
         // 初始化ActiveAndroid
         ActiveAndroid.initialize(this);
         DbDaoManage.initDb(this);
@@ -85,12 +89,6 @@ public class MyApplication extends Application {
 
         initTable();
 
-        new Thread(new Runnable() {
-            @Override
-            public void run() {
-                initScanBards(getApplicationContext());
-            }
-        }).start();
 
         HeartTimer.getIntance(getApplicationContext()).initTimer();
         UpdateTimer.getIntance(getApplicationContext()).initTimer();
@@ -110,7 +108,7 @@ public class MyApplication extends Application {
         int s = list.size();
         if (list == null || s == 0) {
             TransportCard tpcd = new TransportCard();
-            tpcd.setBus_number("000000");
+            tpcd.setBus_number("123456");
             tpcd.setDevice_number("17510850");
             tpcd.setInfo("00");
             tpcd.setPrice("0001");
@@ -224,27 +222,28 @@ public class MyApplication extends Application {
                 e.printStackTrace();
             }
         }
-        if (Configurations.read_config(FILENAME_INFO) == null
-                || Configurations.read_config(FILENAME_INFO).equals("")
-                && list != null && !list.get(0).getInfo().equals("00")) {
-            //备份司机记录
-            List<Payrecord> listRecord = SqlStatement.ReciprocalDriverRecord();
-            if (listRecord.size() != 0) {
-                Configurations.writlog(listRecord.get(0).getRecord(),
-                        MyApplication.FILENAME_ICCARD);
-                // 备份参数列表info
-                //list = SqlStatement.getParameterAll();
-                Configurations.writlog(CreateJsonConfig.jsonInfo(list.get(0).getBus_number()
-                        , list.get(0).getDevice_number()
-                        , list.get(0).getPrice()
-                        , list.get(0).getInfo())
-                        , FILENAME_INFO);
-                //备份城市代码
-                Configurations.writlog(cityCode, FILENAME_CITYCODE);
+        if (list != null && list.size() != 0) {
+            if (Configurations.read_config(FILENAME_INFO) == null
+                    || Configurations.read_config(FILENAME_INFO).equals("")
+                    && !list.get(0).getInfo().equals("00")) {
+                //备份司机记录
+                List<Payrecord> listRecord = SqlStatement.ReciprocalDriverRecord();
+                if (listRecord.size() != 0) {
+                    Configurations.writlog(listRecord.get(0).getRecord(),
+                            MyApplication.FILENAME_ICCARD);
+                    // 备份参数列表info
+                    //list = SqlStatement.getParameterAll();
+                    Configurations.writlog(CreateJsonConfig.jsonInfo(list.get(0).getBus_number()
+                            , list.get(0).getDevice_number()
+                            , list.get(0).getPrice()
+                            , list.get(0).getInfo())
+                            , FILENAME_INFO);
+                    //备份城市代码
+                    Configurations.writlog(cityCode, FILENAME_CITYCODE);
+                }
             }
-
-
         }
+
 
     }
 
@@ -264,13 +263,13 @@ public class MyApplication extends Application {
     /**
      * 初始化银联二维码支付
      */
-    public void initScanBards(Context context) {
-        hsmDecoder = HSMDecoder.getInstance(getApplicationContext());
+    public static void initScanBards(Context context) {
+        hsmDecoder = HSMDecoder.getInstance(context);
         hsmDecoder.enableAimer(false);
         hsmDecoder.setOverlayText("");
         hsmDecoder.enableSound(false);
         hsmDecoder.enableSymbology(QR);
-        CameraManager cameraManager = CameraManager.getInstance(getApplicationContext());
+        CameraManager cameraManager = CameraManager.getInstance(context);
         ScanUtils.activateScan(context, new OnBackListener() {
             @Override
             public void onBack() {
@@ -282,12 +281,15 @@ public class MyApplication extends Application {
 
             @Override
             public void onError(Throwable e) {
-                MyApplication.getHSMDecoder().enableSymbology(QR);
+//                MyApplication.getHSMDecoder().enableSymbology(QR);
                 isScanSuccess = false;
                 errorCallBack();
-                Toast.makeText(context, "激活失败！", Toast.LENGTH_SHORT).show();
+//                ToastUtil.customToastView(context, "激活失败！准备重新激活..."
+//                        , Toast.LENGTH_LONG, (TextView) LayoutInflater
+//                                .from(context)
+//                                .inflate(R.layout.layout_toast, null));
             }
-        }, false);
+        }, true);
     }
 
 
@@ -296,6 +298,7 @@ public class MyApplication extends Application {
         LogUtils.i("onTerminate:    application 结束");
         HSMDecoder.disposeInstance();
         HeartTimer.getIntance(getApplicationContext()).dispose();
+        UpdateTimer.getIntance(getApplicationContext()).dispose();
         //清理
         ActiveAndroid.dispose();
         super.onTerminate();
@@ -313,11 +316,11 @@ public class MyApplication extends Application {
         MyApplication.initDevListener = initDevListener;
     }
 
-    private void errorCallBack() {
+    private static void errorCallBack() {
         initDevListener.onError();
     }
 
-    private void successCallBack() {
+    private static void successCallBack() {
         initDevListener.onSuccess();
     }
 }

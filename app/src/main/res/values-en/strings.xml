@@ -108,5 +108,5 @@
     <string name="note_key">注意：使用本功能前先导入秘钥</string>
     <string name="emv_aid_capk">设置Aid_Capk</string>
     <string name="emv_trans">交易</string>
-    <string name="_123465_id_123654987_20181206">车辆号:123465设备ID:123654987版本:20181206</string>
+    <string name="_123465_id_123654987_20181206">车辆号:123465\n设备ID:123654987\n版本:20181206</string>
 </resources>

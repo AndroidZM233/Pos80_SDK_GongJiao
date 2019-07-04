@@ -102,6 +102,7 @@ public class DataUploadToTianJinUtils {
             count = payRecords.size();
         }
         for (int i = 0; i < count; i++) {
+            //判断当前记录的司机标识是否是数据库中的司机记录
             if (payRecords.get(i).getRecord().substring(124, 128).equalsIgnoreCase(GetDriverRecord
                     .dirverRecordData().substring(0, 4))) {
                 payRecordCount = payRecordCount + payRecords.get(i).getRecord();

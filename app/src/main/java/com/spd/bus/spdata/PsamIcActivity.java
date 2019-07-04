@@ -52,6 +52,7 @@ import com.spd.bus.util.GetDriverRecord;
 import com.spd.bus.util.HzjString;
 import com.spd.bus.util.PlaySound;
 import com.spd.bus.util.SaveDataUtils;
+import com.yht.q6jni.Jni;
 
 import java.io.DataOutputStream;
 import java.io.IOException;
@@ -133,7 +134,6 @@ public class PsamIcActivity extends MVPBaseActivity<SpdBusPayContract.View, SpdB
     private float priceFloat = 0.0f;
 
     private String driversNo = "";
-    private String busNo = "";
     private int fieldLength = 0;
     private int countLength = 0;
     private String signRecord;//司机记录
@@ -167,6 +167,7 @@ public class PsamIcActivity extends MVPBaseActivity<SpdBusPayContract.View, SpdB
     private String msgValue = "";//handler
     private GetDriverRecord getDriverRecord;
     private long timeMillis;
+    private TextView mTvUnit;
 
 
     @Override
@@ -185,7 +186,6 @@ public class PsamIcActivity extends MVPBaseActivity<SpdBusPayContract.View, SpdB
         readConfigChangeUI();
         key = true;
 //        busNo=DatabaseTabInfo.busno +"123567";
-        busNo = "123456";
         getDriverRecord = new GetDriverRecord();
 
         driversNo = SharedXmlUtil.getInstance(getApplicationContext())
@@ -219,9 +219,11 @@ public class PsamIcActivity extends MVPBaseActivity<SpdBusPayContract.View, SpdB
             mTvDeviceMessage.setText(stringBuffer + "");
             mTvLine.setText(DatabaseTabInfo.line + "路");
             mTvBalance.setText(priceDou + "");
+            mTvUnit.setVisibility(View.VISIBLE);
         } else {
             mTvBalanceTitle.setText("");
             mTvBalance.setText("请设置");
+            mTvUnit.setVisibility(View.GONE);
         }
     }
 
@@ -235,7 +237,7 @@ public class PsamIcActivity extends MVPBaseActivity<SpdBusPayContract.View, SpdB
 //                isDriverUI = true;
 
                 if (isDriverUI) {
-                    String reultVerify = com.yht.q6jni.Jni.DriverSign();
+                    String reultVerify = Jni.DriverSign();
                     LogUtils.d("司机卡：" + reultVerify);
 //                    reultVerify = "000e000030000001516506800006e111013000d6fa9aa330000001516506800e00000000000009630130000001006666600100000000000000000a5f00000000000000000000000000370006";
                     if ("00".equals(reultVerify.substring(0, 2))) {
@@ -263,7 +265,7 @@ public class PsamIcActivity extends MVPBaseActivity<SpdBusPayContract.View, SpdB
                         }
                     }
                 } else if (isConfigUI) {
-                    String resultCard = com.yht.q6jni.Jni.Parameter();
+                    String resultCard = Jni.Parameter();
                     if (resultCard.length() > 13) {
                         LogUtils.d("参数卡：" + resultCard);
                         if ("0c".equalsIgnoreCase(resultCard.substring(0, 2))) {
@@ -273,7 +275,7 @@ public class PsamIcActivity extends MVPBaseActivity<SpdBusPayContract.View, SpdB
                 } else {
                     if (0 == unionTag) {
                         timeMillis = System.currentTimeMillis();
-                        getIcCardResult = com.yht.q6jni.Jni.Rfidcard();
+                        getIcCardResult = Jni.Rfidcard();
                         if (getIcCardResult.length() > 38) {
                             stateRfid = getIcCardResult.substring(0, 2);
                             if (stateRfid.equals("00")) {
@@ -281,7 +283,7 @@ public class PsamIcActivity extends MVPBaseActivity<SpdBusPayContract.View, SpdB
                                 ToastUtil.cancelToast();
                                 //01公交M1卡 51一卡通M1卡 71一卡通M1卡 03住建部卡 07交通部卡 90银联
                                 if ("90".equals(getIcCardResult.substring(44, 46))) {
-                                    if (intPrices != 0 && intPrices < 100000 && !"000000".equals(busNo)) {
+                                    if (intPrices != 0 && intPrices < 100000 && !"000000".equals(DatabaseTabInfo.busno)) {
                                         if (driversNo.length() > 16) {
                                             unionTag = 1;
                                             len = Integer.parseInt(getIcCardResult.substring(46, 50), 16) * 2 + 50;
@@ -412,9 +414,11 @@ public class PsamIcActivity extends MVPBaseActivity<SpdBusPayContract.View, SpdB
                                             }
                                         } else {
                                             PlaySound.play(PlaySound.QINGQIANDAO, 0);
+                                            playToast("请签到");
                                         }
                                     } else {
                                         PlaySound.play(PlaySound.QINGSHEZHI, 0);
+                                        playToast("请设置");
                                     }
                                     continue;
                                 }
@@ -479,16 +483,19 @@ public class PsamIcActivity extends MVPBaseActivity<SpdBusPayContract.View, SpdB
                                 }
                                 if (signRecord.length() < 120) {
                                     PlaySound.play(PlaySound.QINGQIANDAO, 0);
+                                    playToast("请签到");
                                     continue;
                                 }
                                 //____________________消费____________________________
-                                if (intPrices != 0 && intPrices < 100000 && !"000000".equals(busNo)) {
+                                if (intPrices != 0 && intPrices < 100000 && !"000000".equals(DatabaseTabInfo.busno)) {
                                     if (driversNo.length() > 16) {
                                         // TODO: 2019/6/24  1.查询本次交易卡是否是黑名单
-                                        int isBlock = SaveDataUtils.queryBlackDB(cardCode);
-                                        rfidDectValue = com.yht.q6jni.Jni.RfidDectValue(isBlock);
+//                                        int isBlock = SaveDataUtils.queryBlackDB(cardCode);
+                                        rfidDectValue = Jni.RfidDectValue(SqlStatement.SelectCard(cardCode));
+                                        LogUtils.d("消费" + rfidDectValue);
                                         if (rfidDectValue.length() > 2) {
                                             rfidDectState = rfidDectValue.substring(0, 2);
+                                            LogUtils.e("rfidDectState" + rfidDectState);
                                             if ("00".equals(rfidDectState)) {
 //                                            if (cardCode.equalsIgnoreCase(grcardcode)) {
 //                                                counts++;
@@ -532,14 +539,14 @@ public class PsamIcActivity extends MVPBaseActivity<SpdBusPayContract.View, SpdB
                                                 handler.sendMessage(handler.obtainMessage(8, rfidDectValue));
                                                 continue;
                                             }
-                                            if ("02".equals(rfidDectState) || "03".equals(rfidDectState) || "04".equals(rfidDectState)) {
-                                                handler.sendMessage(handler.obtainMessage(9, "warning234"));
-                                                continue;
-                                            }
-                                            if ("fb".equalsIgnoreCase(rfidDectState)) {
-                                                handler.sendMessage(handler.obtainMessage(9, "fb"));
-                                                continue;
-                                            }
+//                                            if ("02".equals(rfidDectState) || "03".equals(rfidDectState) || "04".equals(rfidDectState)) {
+//                                                handler.sendMessage(handler.obtainMessage(9, "warning234"));
+//                                                continue;
+//                                            }
+//                                            if ("fb".equalsIgnoreCase(rfidDectState)) {
+//                                                handler.sendMessage(handler.obtainMessage(9, "fb"));
+//                                                continue;
+//                                            }
                                             if ("90".equals(rfidDectState)) {
                                                 PlaySound.play(PlaySound.ZHENGZZAICHULI, 0);
                                                 len = Integer.parseInt(rfidDectValue.substring(2, 6), 16) * 2 + 2;
@@ -651,9 +658,11 @@ public class PsamIcActivity extends MVPBaseActivity<SpdBusPayContract.View, SpdB
                                         }
                                     } else {
                                         PlaySound.play(PlaySound.QINGQIANDAO, 0);
+                                        playToast("请签到");
                                     }
                                 } else {
                                     PlaySound.play(PlaySound.QINGSHEZHI, 0);
+                                    playToast("请设置");
                                 }
                                 continue;
                             }
@@ -679,14 +688,14 @@ public class PsamIcActivity extends MVPBaseActivity<SpdBusPayContract.View, SpdB
                                 handler.sendMessage(handler.obtainMessage(8, "无效卡56"));
                                 continue;
                             }
-                            if ("03".equalsIgnoreCase(stateRfid) || "02".equalsIgnoreCase(stateRfid) || "04".equalsIgnoreCase(stateRfid)) {
-                                handler.sendMessage(handler.obtainMessage(9, "warning234"));
-                                continue;
-                            }
-                            if ("fb".equalsIgnoreCase(stateRfid)) {
-                                handler.sendMessage(handler.obtainMessage(9, "warningfb"));
-                                continue;
-                            }
+//                            if ("03".equalsIgnoreCase(stateRfid) || "02".equalsIgnoreCase(stateRfid) || "04".equalsIgnoreCase(stateRfid)) {
+//                                handler.sendMessage(handler.obtainMessage(9, "warning234"));
+//                                continue;
+//                            }
+//                            if ("fb".equalsIgnoreCase(stateRfid)) {
+//                                handler.sendMessage(handler.obtainMessage(9, "warningfb"));
+//                                continue;
+//                            }
                             if ("26".equalsIgnoreCase(stateRfid)) {
                                 handler.sendMessage(handler.obtainMessage(9, "warningfb"));
                                 continue;
@@ -700,6 +709,18 @@ public class PsamIcActivity extends MVPBaseActivity<SpdBusPayContract.View, SpdB
 
             }
         }
+    }
+
+    private void playToast(String msg) {
+        runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                ToastUtil.customToastView(PsamIcActivity.this, msg
+                        , Toast.LENGTH_SHORT, (TextView) LayoutInflater
+                                .from(PsamIcActivity.this)
+                                .inflate(R.layout.layout_toast, null));
+            }
+        });
     }
 
 
@@ -736,7 +757,7 @@ public class PsamIcActivity extends MVPBaseActivity<SpdBusPayContract.View, SpdB
                             .substring(
                                     0,
                                     Integer.parseInt(input.substring(0, 4), 16) * 2 + 4);
-                    unionSignResult = com.yht.q6jni.Jni.QapassSignUnPack(result);
+                    unionSignResult = Jni.QapassSignUnPack(result);
                     if (1 == unionSignResult) {
                         MyApplication.uninonSign = "1";
                         SharedXmlUtil.getInstance(getApplicationContext()).write("UNIONSIGN", "1");
@@ -780,6 +801,7 @@ public class PsamIcActivity extends MVPBaseActivity<SpdBusPayContract.View, SpdB
 //        mLlSetConfig = findViewById(R.id.ll_set_config);
         mTvTitle = findViewById(R.id.tv_title);
         mTvTitle.setText("版本号：" + AppUtils.getVerName(getApplicationContext()));
+        mTvUnit = findViewById(R.id.tv_unit);
     }
 
 
@@ -1233,7 +1255,14 @@ public class PsamIcActivity extends MVPBaseActivity<SpdBusPayContract.View, SpdB
                                     SharedXmlUtil.getInstance(getApplicationContext())
                                             .write(Info.DRIVER_MONEY, driverMoneyAll);
                                     LogUtils.d("刷卡消耗时间：" + (System.currentTimeMillis() - timeMillis));
-
+                                    int allPeople = SharedXmlUtil.getInstance(getApplicationContext())
+                                            .read(Info.ALL_PEOPLE, 0);
+                                    int driverPeople = SharedXmlUtil.getInstance(getApplicationContext())
+                                            .read(Info.DRIVER_PEOPLE, 0);
+                                    SharedXmlUtil.getInstance(getApplicationContext())
+                                            .write(Info.ALL_PEOPLE, allPeople + 1);
+                                    SharedXmlUtil.getInstance(getApplicationContext())
+                                            .write(Info.DRIVER_PEOPLE, driverPeople + 1);
                                     handler.postDelayed(runnable, 3000);
                                 }
                             });
@@ -1278,7 +1307,14 @@ public class PsamIcActivity extends MVPBaseActivity<SpdBusPayContract.View, SpdB
                                             .write(Info.DRIVER_YUE, driverYue + 1);
                                     mTvBalanceTitle.setText("剩余次数");
                                     mTvBalance.setText(yueCase2 + "");
-
+                                    int allPeople = SharedXmlUtil.getInstance(getApplicationContext())
+                                            .read(Info.ALL_PEOPLE, 0);
+                                    int driverPeople = SharedXmlUtil.getInstance(getApplicationContext())
+                                            .read(Info.DRIVER_PEOPLE, 0);
+                                    SharedXmlUtil.getInstance(getApplicationContext())
+                                            .write(Info.ALL_PEOPLE, allPeople + 1);
+                                    SharedXmlUtil.getInstance(getApplicationContext())
+                                            .write(Info.DRIVER_PEOPLE, driverPeople + 1);
                                     handler.postDelayed(runnable, 3000);
                                 }
                             });
@@ -1449,9 +1485,9 @@ public class PsamIcActivity extends MVPBaseActivity<SpdBusPayContract.View, SpdB
                     SharedXmlUtil.getInstance(getApplicationContext()).write(
                             Info.IS_CONFIG_CHANGE, true);
                     isConfigChange = true;
-
                     readConfigChangeUI();
                     mLlShowData.setVisibility(View.GONE);
+                    mTvUnit.setVisibility(View.GONE);
                     isConfigUI = false;
                     isDriverUI = false;
                     mLlDriver.setVisibility(View.GONE);
@@ -1477,6 +1513,10 @@ public class PsamIcActivity extends MVPBaseActivity<SpdBusPayContract.View, SpdB
                     isQianDao = true;
                     driversNo = SharedXmlUtil.getInstance(getApplicationContext())
                             .read("TAGS", "0");
+                    signRecord = getDriverRecord.getDriverRecord();
+                    if (20 != driversNo.length() && driversNo.length() > 15) {
+                        driversNo = "3000" + driversNo;
+                    }
                     handler.postDelayed(new Runnable() {
                         @Override
                         public void run() {
@@ -1485,6 +1525,7 @@ public class PsamIcActivity extends MVPBaseActivity<SpdBusPayContract.View, SpdB
                             mLlShowData.setVisibility(View.GONE);
                             isConfigUI = false;
                             isDriverUI = false;
+
                             mLlDriver.setVisibility(View.GONE);
                         }
                     }, 1000);
@@ -1800,7 +1841,7 @@ public class PsamIcActivity extends MVPBaseActivity<SpdBusPayContract.View, SpdB
 //                String result =  HzjString.BinaryToHexString( temp ).substring( 0,
 //                        Integer.parseInt(  HzjString.BinaryToHexString( temp ).substring( 0, 4 ), 16 ) * 2 + 4 );
 //                Logger.i( "银联消费result=" + result );
-                String code = com.yht.q6jni.Jni.QapassDectUnPack(HzjString.BinaryToHexString(temp).substring(0,
+                String code = Jni.QapassDectUnPack(HzjString.BinaryToHexString(temp).substring(0,
                         Integer.parseInt(HzjString.BinaryToHexString(temp).substring(0, 4), 16) * 2 + 4));
                 LogUtils.i("银联消费code=" + code);
                 // String xiangyingma = code.substring( 0, 2 );

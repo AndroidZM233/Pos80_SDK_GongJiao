@@ -22,7 +22,6 @@ import com.spd.base.been.tianjin.produce.yinlian.UploadInfoYinLianDBDao;
 import com.spd.base.been.tianjin.produce.zhifubao.UploadInfoZFBDB;
 import com.spd.base.been.tianjin.produce.zhifubao.UploadInfoZFBDBDao;
 import com.spd.base.db.DbDaoManage;
-import com.spd.base.dbbeen.RunParaFile;
 import com.spd.base.utils.Datautils;
 import com.spd.base.utils.DateUtils;
 import com.spd.bus.Info;
@@ -33,6 +32,7 @@ import com.spd.bus.spdata.been.XFBean;
 import com.spd.bus.spdata.mvp.MVPBaseActivity;
 import com.spd.bus.spdata.showdata.adapter.RVAdapter;
 import com.spd.bus.sql.SqlStatement;
+import com.spd.bus.util.DatabaseTabInfo;
 import com.spd.bus.view.MarqueeTextView;
 
 import java.util.ArrayList;
@@ -102,18 +102,15 @@ public class ShowDataActivity extends MVPBaseActivity<ShowDataContract.View, Sho
                 .read(Info.BLACK, "");
         mTvBlack.setText(black);
 
-        List<RunParaFile> runParaFiles = DbDaoManage.getDaoSession().getRunParaFileDao().loadAll();
-        if (runParaFiles != null && runParaFiles.size() > 0) {
-            RunParaFile runParaFile = runParaFiles.get(0);
-            String busNr = Datautils.byteArrayToString(runParaFile.getBusNr());
-            mTvBusNum.setText(busNr);
-            String lineNr = Datautils.byteArrayToString(runParaFile.getLineNr());
-            mTvLine.setText(lineNr);
-            String corNr = Datautils.byteArrayToString(runParaFile.getCorNr());
-            mTvCompany.setText(corNr);
-            String posID = Datautils.byteArrayToString(runParaFile.getDevNr());
-            mTvPosId.setText(posID);
-        }
+        DatabaseTabInfo.getIntence("info");
+        String busNr = DatabaseTabInfo.busno;
+        mTvBusNum.setText(busNr);
+        String lineNr = DatabaseTabInfo.line;
+        mTvLine.setText(lineNr);
+        String corNr = DatabaseTabInfo.dept;
+        mTvCompany.setText(corNr);
+        String posID = DatabaseTabInfo.deviceNo;
+        mTvPosId.setText(posID);
 
         StringBuffer stringBuffer = new StringBuffer();
         List<Payrecord> selectTagRecord = SqlStatement.selectTagRecord();
