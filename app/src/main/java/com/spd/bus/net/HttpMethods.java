@@ -241,4 +241,21 @@ public class HttpMethods {
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(observer);
     }
+
+    /**
+     * 获取时间
+     *
+     * @param sendData
+     * @param observer
+     */
+    public void syTime(Observer<ResponseBody> observer) {
+        RequestBody requestBody = RequestBody.create(
+                MediaType.parse("application/json;charset=UTF-8"), "");
+        RetrofitCreateHelper.createApi(ApiService.class, TEST_URL)
+                .syTime(requestBody)
+                .subscribeOn(Schedulers.io())
+                .unsubscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(observer);
+    }
 }

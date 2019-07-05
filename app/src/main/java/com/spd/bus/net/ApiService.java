@@ -87,4 +87,8 @@ public interface ApiService {
     @FormUrlEncoded
     @POST("log/postLog")
     Observable<ResponseBody> postLog(@FieldMap Map<String, String> params);
+
+    //支付宝白名单
+    @POST("log/syTime")
+    Observable<ResponseBody> syTime(@Body RequestBody route);
 }

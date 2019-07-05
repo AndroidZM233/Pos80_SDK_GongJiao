@@ -14,12 +14,13 @@ import wangpos.sdk4.libbasebinder.BankCard;
 
 public class ConfigCheckContract {
     interface View extends BaseView {
-        void setTextView(int address,String msg);
+        void setTextView(int address, String msg);
 
         void openActivity();
     }
 
     interface Presenter extends BasePresenter<View> {
         void initPsam(Context context);
+        void getSysTime(Context context);
     }
 }

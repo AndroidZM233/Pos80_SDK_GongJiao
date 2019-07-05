@@ -58,9 +58,9 @@ public class ConfigCheckActivity extends MVPBaseActivity<ConfigCheckContract.Vie
                 .setAnimationSpeed(2)
                 .setDimAmount(0.5f)
                 .show();
-        while (!NetWorkUtils.isNetworkConnected(getApplicationContext())) {
-            kProgressHUD.setLabel("没有网络，请检测网络连接");
-        }
+//        while (!NetWorkUtils.isNetworkConnected(getApplicationContext())) {
+//            kProgressHUD.setLabel("没有网络，请检测网络连接");
+//        }
 
 
 //        String sn = ModemToolTest.getItem(7);
@@ -93,18 +93,15 @@ public class ConfigCheckActivity extends MVPBaseActivity<ConfigCheckContract.Vie
             }
         });
 
-        new Thread(new Runnable() {
-            @Override
-            public void run() {
-                MyApplication.getInstance().initScanBards(getApplicationContext());
-            }
-        }).start();
-
+        mPresenter.getSysTime(getApplicationContext());
         List<TransportCard> listInfo = SqlStatement.getParameterAll();
         File file = new File(MyApplication.FILENAME_INFO);
-        if (file.exists() && Configurations.read_config(MyApplication.FILENAME_INFO).length() > 20 && "00".equals(listInfo.get(0).getInfo())) {
+        boolean readBoolean = Configurations.read_config(MyApplication.FILENAME_INFO).length() > 20;
+        boolean infoBoolean = "00".equals(listInfo.get(0).getInfo());
+        boolean existsBoolean = file.exists();
+        if (existsBoolean && readBoolean && infoBoolean) {
             try {
-                FileConfData.writeDB();
+                FileConfData.writeDB(getApplicationContext());
             } catch (Exception e) {
                 e.printStackTrace();
             } finally {

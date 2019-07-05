@@ -1,6 +1,9 @@
 package com.spd.bus.util;
 
 import android.annotation.SuppressLint;
+
+import com.spd.base.utils.FileUtils;
+
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 
@@ -36,11 +39,17 @@ public class Configurations {
     public static boolean writlog(String code, String file) {
         FileOutputStream fout;
         try {
-            fout = new FileOutputStream( file );
-            byte[] bytes = code.getBytes( "UTF-8" );
-            fout.write( bytes );
-            fout.close();
-            return true;
+            boolean orExistsDir = FileUtils.createOrExistsFile(file);
+            if (orExistsDir) {
+                fout = new FileOutputStream(file);
+                byte[] bytes = code.getBytes("UTF-8");
+                fout.write(bytes);
+                fout.close();
+                return true;
+            } else {
+                return false;
+            }
+
         } catch (Exception e) {
             // TODO Auto-generated catch block
             e.printStackTrace();
@@ -54,9 +63,9 @@ public class Configurations {
     public static boolean writRecord(String record, String file) {
         FileOutputStream fout;
         try {
-            fout = new FileOutputStream( file, true );
-            byte[] bytes = record.getBytes( "UTF-8" );
-            fout.write( bytes );
+            fout = new FileOutputStream(file, true);
+            byte[] bytes = record.getBytes("UTF-8");
+            fout.write(bytes);
             fout.close();
             return true;
         } catch (Exception e) {
@@ -72,9 +81,9 @@ public class Configurations {
     public static boolean writRecord2(String record, String file) {
         FileOutputStream fout;
         try {
-            fout = new FileOutputStream( fileName_log, true );
-            byte[] bytes = record.getBytes( "UTF-8" );
-            fout.write( bytes );
+            fout = new FileOutputStream(fileName_log, true);
+            byte[] bytes = record.getBytes("UTF-8");
+            fout.write(bytes);
             fout.close();
             return true;
         } catch (Exception e) {
@@ -150,11 +159,11 @@ public class Configurations {
     public static boolean writeRecord(String expensecal, String fileName) {
         boolean key = false;
         try {
-            FileOutputStream fos = new FileOutputStream( fileName );
+            FileOutputStream fos = new FileOutputStream(fileName);
             // String result = AES.Encrypt(expensecal.toString(), AES.key);
             // String result=js.toString();
-            byte[] bytes = expensecal.getBytes( "UTF-8" );
-            fos.write( bytes );
+            byte[] bytes = expensecal.getBytes("UTF-8");
+            fos.write(bytes);
             fos.close();
             key = true;
         } catch (Exception e) {
@@ -199,11 +208,11 @@ public class Configurations {
     public static boolean writeConf(String expensecal, String fileName) {
         boolean key = false;
         try {
-            FileOutputStream fos = new FileOutputStream( fileName );
+            FileOutputStream fos = new FileOutputStream(fileName);
             // String result = AES.Encrypt(expensecal.toString(), AES.key);
             String result = expensecal.toString();
-            byte[] bytes = expensecal.getBytes( "UTF-8" );
-            fos.write( bytes );
+            byte[] bytes = expensecal.getBytes("UTF-8");
+            fos.write(bytes);
             fos.close();
             key = true;
         } catch (Exception e) {
@@ -241,50 +250,50 @@ public class Configurations {
         String result = "";
         try {
             FileInputStream fin = new FileInputStream(
-                    "/sdcard/MyDownLoad/version.conf" );
+                    "/sdcard/MyDownLoad/version.conf");
             int length = fin.available();
             byte[] buffer = new byte[length];
-            fin.read( buffer );
-            res_A = new String( buffer, "UTF-8" );
+            fin.read(buffer);
+            res_A = new String(buffer, "UTF-8");
             // result = AES.Decrypt(res_A, AES.key);
         } catch (Exception e) {
             e.printStackTrace();
         }
-        System.out.println( res_A + "---" + res_A );
+        System.out.println(res_A + "---" + res_A);
         return res_A;
     }
 
     public static String readVersion(String fileName) {
         try {
             FileInputStream fin = new FileInputStream(
-                    fileName );
+                    fileName);
             int length = fin.available();
             byte[] buffer = new byte[length];
-            fin.read( buffer );
-            res_A = new String( buffer, "UTF-8" );
+            fin.read(buffer);
+            res_A = new String(buffer, "UTF-8");
             // result = AES.Decrypt(res_A, AES.key);
         } catch (Exception e) {
             e.printStackTrace();
         }
-        System.out.println( res_A + "---" + res_A );
+        System.out.println(res_A + "---" + res_A);
         return res_A;
 
     }
 
     public static String read_config(String red_conf) {
         try {
-            FileInputStream fin = new FileInputStream( red_conf );
+            FileInputStream fin = new FileInputStream(red_conf);
             int length = fin.available();
             byte[] buffer = new byte[length];
-            fin.read( buffer );
-            res_A = new String( buffer, "UTF-8" );
+            fin.read(buffer);
+            res_A = new String(buffer, "UTF-8");
             //String result = AES.Decrypt(res_A, AES.key);
             //JSONObject jasonObject = JSONObject.parseObject(result);
             fin.close();
         } catch (Exception e) {
             e.printStackTrace();
         }
-      //  System.out.println( res_A + "---" );
+        //  System.out.println( res_A + "---" );
 
         return res_A;
     }

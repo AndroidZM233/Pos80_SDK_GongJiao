@@ -1,6 +1,7 @@
 package com.spd.bus.spdata.configcheck;
 
 import android.content.Context;
+import android.content.Intent;
 import android.os.RemoteException;
 import android.os.SystemClock;
 import android.text.TextUtils;
@@ -24,6 +25,7 @@ import com.spd.base.been.tianjin.produce.zhifubao.UploadInfoZFBDB;
 import com.spd.base.been.tianjin.produce.zhifubao.UploadInfoZFBDBDao;
 import com.spd.base.db.DbDaoManage;
 import com.spd.base.utils.Datautils;
+import com.spd.base.utils.DateUtils;
 import com.spd.bus.Info;
 import com.spd.bus.MyApplication;
 import com.spd.bus.entity.Payrecord;
@@ -43,6 +45,8 @@ import java.io.InputStream;
 import java.net.InetSocketAddress;
 import java.net.Socket;
 import java.net.SocketTimeoutException;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
@@ -50,6 +54,7 @@ import java.util.Map;
 
 import io.reactivex.Observer;
 import io.reactivex.disposables.Disposable;
+import okhttp3.ResponseBody;
 import wangpos.sdk4.libbasebinder.BankCard;
 
 /**
@@ -96,7 +101,7 @@ public class ConfigCheckPresenter extends BasePresenterImpl<ConfigCheckContract.
      * //住建部
      */
     private final byte[] ZJB_SELECT_DIR = {0x00, (byte) 0xA4, 0x00, 0x00, 0x02, (byte) 0x10, 0x01};
-
+    private static final String ACTION_SET_SYSTIME_BYSP = "set_systime_with_sp";
 
     @Override
     public void initPsam(Context context) {
@@ -111,6 +116,63 @@ public class ConfigCheckPresenter extends BasePresenterImpl<ConfigCheckContract.
         getWechatMacTianJin();
 
 
+    }
+
+    @Override
+    public void getSysTime(Context context) {
+        HttpMethods.getInstance().syTime(new Observer<ResponseBody>() {
+            @Override
+            public void onSubscribe(Disposable d) {
+
+            }
+
+            @Override
+            public void onNext(ResponseBody responseBody) {
+                try {
+                    byte[] bytes = responseBody.bytes();
+                    String strDate = new String(bytes);
+                    LogUtils.d(strDate);
+
+                    //更新sp时间到系统时间
+                    SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+                    long timeToLong = 0;
+                    timeToLong = simpleDateFormat.parse(strDate).getTime();
+                    LogUtils.i("时间：" + timeToLong);
+                    Intent intent = new Intent();
+                    intent.setAction(ACTION_SET_SYSTIME_BYSP);
+                    intent.putExtra("sp_time", timeToLong);
+                    context.sendBroadcast(intent);
+
+
+                    new Thread(new Runnable() {
+                        @Override
+                        public void run() {
+                            MyApplication.getInstance().initScanBards(context);
+                        }
+                    }).start();
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+
+            }
+
+            @Override
+            public void onError(Throwable e) {
+                LogUtils.e(e.toString());
+
+                new Thread(new Runnable() {
+                    @Override
+                    public void run() {
+                        MyApplication.getInstance().initScanBards(context);
+                    }
+                }).start();
+            }
+
+            @Override
+            public void onComplete() {
+
+            }
+        });
     }
 
     private void init(Context context) {

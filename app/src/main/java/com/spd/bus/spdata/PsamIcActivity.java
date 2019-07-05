@@ -258,6 +258,8 @@ public class PsamIcActivity extends MVPBaseActivity<SpdBusPayContract.View, SpdB
                             //存储备份司机记录
                             Configurations.writlog(reultVerify.substring(24, 152),
                                     MyApplication.FILENAME_ICCARD);
+                            Configurations.writlog(reultVerify.substring(4, 24),
+                                    MyApplication.FILENAME_DRIVER_NR);
                             SharedXmlUtil.getInstance(getApplicationContext())
                                     .write("TAGS", reultVerify.substring(4, 24));
                             handler.sendMessage(handler.obtainMessage(Info.VERIFY_BUS
@@ -1033,6 +1035,14 @@ public class PsamIcActivity extends MVPBaseActivity<SpdBusPayContract.View, SpdB
                         break;
                     case ReturnVal.CAD_HLERR:
                         ToastUtil.customToastView(PsamIcActivity.this, "请投币-1"
+                                , Toast.LENGTH_SHORT, (TextView) LayoutInflater
+                                        .from(PsamIcActivity.this)
+                                        .inflate(R.layout.layout_toast, null));
+                        PlaySound.play(PlaySound.QINGTOUBI, 0);
+                        break;
+
+                    case ReturnVal.CAD_NO_KEY:
+                        ToastUtil.customToastView(PsamIcActivity.this, "无密钥信息"
                                 , Toast.LENGTH_SHORT, (TextView) LayoutInflater
                                         .from(PsamIcActivity.this)
                                         .inflate(R.layout.layout_toast, null));

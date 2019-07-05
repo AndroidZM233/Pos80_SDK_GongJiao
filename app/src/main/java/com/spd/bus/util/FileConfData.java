@@ -1,8 +1,11 @@
 package com.spd.bus.util;
 
+import android.content.Context;
+
 import com.activeandroid.ActiveAndroid;
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
+import com.example.test.yinlianbarcode.utils.SharedXmlUtil;
 import com.spd.bus.MyApplication;
 import com.spd.bus.entity.Payrecord;
 import com.spd.bus.sql.SqlStatement;
@@ -19,27 +22,29 @@ import java.util.List;
  */
 public class FileConfData {
 
-    public static String writeDB() {
+    public static String writeDB(Context context) {
 
         //********************读取info备份文件,更新至参数表中***********************//
-        JSONObject jsbInfo = JSONObject.parseObject( Configurations.read_config( MyApplication.FILENAME_INFO ) );
-        SqlStatement.updataDeviceInfo( jsbInfo.getString( "deviceId" )
-                , jsbInfo.getString( "busId" ), jsbInfo.getString( "price" )
-                , jsbInfo.getString( "info" ) );
+        JSONObject jsbInfo = JSONObject.parseObject(Configurations.read_config(MyApplication.FILENAME_INFO));
+        SqlStatement.updataDeviceInfo(jsbInfo.getString("deviceId")
+                , jsbInfo.getString("busId"), jsbInfo.getString("price")
+                , jsbInfo.getString("info"));
 
+        String driverNr = Configurations.read_config(MyApplication.FILENAME_DRIVER_NR);
+        SharedXmlUtil.getInstance(context).write("TAGS", driverNr);
         //******************** 读取driverSignRecord备份文件,更新至Payrecord表中***********************//
         ActiveAndroid.beginTransaction();
         try {
             Payrecord pay = new Payrecord();
-            pay.setRecord( Configurations.read_config( MyApplication.FILENAME_ICCARD ) );
-            pay.setDatatime( String.valueOf( System.currentTimeMillis() ) );
-            pay.setTag( 1 );
-            pay.setXiaofei( 0 );
-            pay.setBuscard( 0 );
-            pay.setJilu( 2 );
-            pay.setWritetag( 1 );
-            pay.setTraffic( 0 );
-            pay.setTradingflow( 0 );
+            pay.setRecord(Configurations.read_config(MyApplication.FILENAME_ICCARD));
+            pay.setDatatime(String.valueOf(System.currentTimeMillis()));
+            pay.setTag(1);
+            pay.setXiaofei(0);
+            pay.setBuscard(0);
+            pay.setJilu(2);
+            pay.setWritetag(1);
+            pay.setTraffic(0);
+            pay.setTradingflow(0);
             pay.save();
             ActiveAndroid.setTransactionSuccessful();
         } finally {
@@ -86,10 +91,10 @@ public class FileConfData {
 //                , jsbAlipaySercet.getString( "appSercet" ) );
 
         //******************** 读取appId以及unionPosKey备份文件,更新至uniondeng表中***********************//
-        JSONObject jsbUnionAppId = JSONObject.parseObject( Configurations
-                .read_config( MyApplication.FILENAME_UNION_APPID ) );
-        SqlStatement.updataDeviceUnionPosAppId( jsbUnionAppId.getString( "name" )
-                , jsbUnionAppId.getString( "appid" ) );
+//        JSONObject jsbUnionAppId = JSONObject.parseObject( Configurations
+//                .read_config( MyApplication.FILENAME_UNION_APPID ) );
+//        SqlStatement.updataDeviceUnionPosAppId( jsbUnionAppId.getString( "name" )
+//                , jsbUnionAppId.getString( "appid" ) );
         //******************** 更新银联秘钥unionPosKey表中***********************//
 //        SqlStatement.UpdateUnionPosKey( jsbUnionAppId.getString( "poskey" ) );
 

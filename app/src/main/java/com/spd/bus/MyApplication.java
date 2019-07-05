@@ -63,6 +63,7 @@ public class MyApplication extends Application {
     public static final String FILENAME_ICCARD = "/sdcard/mydownload/sijirecord.conf";
     public static final String FILENAME_UNION_APPID = "/sdcard/mydownload/appid.conf";
     public static final String FILENAME_CITYCODE = "/sdcard/mydownload/citycode.conf";
+    public static final String FILENAME_DRIVER_NR = "/sdcard/mydownload/driverNr.conf";
     public static String uninonSign = "";
     //激活成功与否
     public static boolean isScanSuccess = false;
