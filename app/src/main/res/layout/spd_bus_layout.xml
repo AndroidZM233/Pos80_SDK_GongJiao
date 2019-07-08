@@ -78,11 +78,24 @@
                 android:layout_marginLeft="5dp"
                 android:layout_marginRight="3dp" />
 
+            <ImageView
+                android:id="@+id/iv_qd"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="5dp"
+                android:src="@mipmap/upload" />
+
             <View
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:layout_weight="1" />
 
+            <TextView
+                android:gravity="center"
+                android:id="@+id/tv_consume_code"
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                android:textSize="13sp" />
 
         </LinearLayout>
 
@@ -132,7 +145,7 @@
                     android:layout_height="wrap_content"
                     android:layout_gravity="center"
                     android:text="0.99元"
-                    android:textSize="60sp" />
+                    android:textSize="45sp" />
             </LinearLayout>
 
             <LinearLayout
@@ -253,7 +266,8 @@
                 android:id="@+id/hsm_decodeComponent"
                 android:layout_width="125dp"
                 android:layout_height="80dp"
-                android:layout_marginRight="200dp" />
+                android:layout_marginRight="200dp"
+                android:visibility="invisible" />
 
 
         </LinearLayout>

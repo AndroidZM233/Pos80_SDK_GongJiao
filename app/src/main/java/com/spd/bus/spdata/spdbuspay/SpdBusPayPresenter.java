@@ -228,7 +228,7 @@ public class SpdBusPayPresenter extends BasePresenterImpl<SpdBusPayContract.View
     }
 
     private String getALiUploadData(Context context) {
-        final Gson gson = new GsonBuilder().serializeNulls().create();
+        final Gson gson = new GsonBuilder().serializeNulls().disableHtmlEscaping().create();
         //上传记录到天津后台
         ProducePost producePost = new ProducePost();
         producePost.setType("2200AQ");
@@ -453,7 +453,7 @@ public class SpdBusPayPresenter extends BasePresenterImpl<SpdBusPayContract.View
 
 
     private String getWeiXinUploadData(Context context) {
-        final Gson gson = new GsonBuilder().serializeNulls().create();
+        final Gson gson = new GsonBuilder().serializeNulls().disableHtmlEscaping().create();
         //上传记录到天津后台
         ProducePost producePost = new ProducePost();
         producePost.setType("2200WQ");
@@ -478,7 +478,8 @@ public class SpdBusPayPresenter extends BasePresenterImpl<SpdBusPayContract.View
                 payinfoBean.setBus_no(uploadInfoDB.getBus_no());
                 payinfoBean.setDriver(uploadInfoDB.getDriver());
                 payinfoBean.setPos_id(uploadInfoDB.getPos_id());
-                payinfoBean.setRecord_in(uploadInfoDB.getRecord_in());
+                String record_in = uploadInfoDB.getRecord_in();
+                payinfoBean.setRecord_in(record_in);
                 weiXinPayinfo.add(payinfoBean);
             }
         } else {

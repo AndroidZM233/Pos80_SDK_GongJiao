@@ -91,7 +91,7 @@ public class GetDriverRecord {
         List<Payrecord> listId = new ArrayList<Payrecord>();
         listId = SqlStatement.getRecordID();
         if (listId.size() != 0) {
-            long id = listId.get( 0 ).getId();
+            long id = listId.get( 0 ).getTradingflow();
             Log.i( "id==", id + "" );
             id = (id + 1) & 0xFFFF;
             Log.i( "id==", id + "" );

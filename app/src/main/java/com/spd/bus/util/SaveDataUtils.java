@@ -209,7 +209,8 @@ public class SaveDataUtils {
         payinfoBean.setBus_no(DatabaseTabInfo.busno);
         payinfoBean.setDriver(driverNr);
         payinfoBean.setPos_id(DatabaseTabInfo.deviceNo);
-        payinfoBean.setRecord_in(wlxSdk.get_record());
+        String record = wlxSdk.get_record();
+        payinfoBean.setRecord_in(record);
         payinfoBean.setIsUpload(false);
         DbDaoManage.getDaoSession().getUploadInfoDBDao().insertOrReplace(payinfoBean);
     }

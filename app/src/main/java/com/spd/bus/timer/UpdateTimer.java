@@ -2,6 +2,7 @@ package com.spd.bus.timer;
 
 import android.annotation.SuppressLint;
 import android.content.Context;
+import android.text.TextUtils;
 
 import com.alibaba.fastjson.JSONObject;
 import com.example.test.yinlianbarcode.utils.SharedXmlUtil;
@@ -96,6 +97,8 @@ public class UpdateTimer {
         public void run() {
             DatabaseTabInfo.getIntence("info");
 //            Logger.i( "dayinjieguo "+payrecords.get(0 ).getRecord() );
+
+
             for (int i = 0; i < payRecords.size(); i++) {
                 if (payRecords.get(i).getRecord().substring(124, 128).equalsIgnoreCase(GetDriverRecord
                         .dirverRecordData().substring(0, 4))) {

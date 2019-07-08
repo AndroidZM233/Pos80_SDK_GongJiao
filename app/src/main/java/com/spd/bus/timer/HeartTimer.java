@@ -141,6 +141,8 @@ public class HeartTimer {
                 if (vs.length >= 2) {
                     String[] split = vs[1].split(".apk");
                     if (!split[0].equals(AppUtils.getVerName(mContext))) {
+                        SharedXmlUtil.getInstance(mContext).write(Info.DOWN_APP_VERSION, split[0]);
+                        SharedXmlUtil.getInstance(mContext).write(Info.BINS, split[1]);
                         downloadAPK(program);
                     }
 

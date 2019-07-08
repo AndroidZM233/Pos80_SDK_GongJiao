@@ -5,10 +5,12 @@ import android.content.Intent;
 import android.os.RemoteException;
 import android.os.SystemClock;
 import android.text.TextUtils;
+import android.widget.Toast;
 
 import com.example.test.yinlianbarcode.utils.SharedXmlUtil;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
+import com.jni.libtest;
 import com.spd.base.been.tianjin.AppSercetBackBean;
 import com.spd.base.been.tianjin.AppSercetPost;
 import com.spd.base.been.tianjin.GetMacBackBean;
@@ -24,11 +26,13 @@ import com.spd.base.been.tianjin.produce.yinlian.UploadInfoYinLianDBDao;
 import com.spd.base.been.tianjin.produce.zhifubao.UploadInfoZFBDB;
 import com.spd.base.been.tianjin.produce.zhifubao.UploadInfoZFBDBDao;
 import com.spd.base.db.DbDaoManage;
+import com.spd.base.utils.AppUtils;
 import com.spd.base.utils.Datautils;
 import com.spd.base.utils.DateUtils;
 import com.spd.bus.Info;
 import com.spd.bus.MyApplication;
 import com.spd.bus.entity.Payrecord;
+import com.spd.bus.entity.TransportCard;
 import com.spd.bus.entity.UnionPay;
 import com.spd.bus.net.HttpMethods;
 import com.spd.base.utils.LogUtils;
@@ -37,6 +41,8 @@ import com.spd.bus.spdata.mvp.BasePresenterImpl;
 import com.spd.bus.sql.SqlStatement;
 import com.spd.bus.util.ConfigUtils;
 import com.spd.bus.util.DataUploadToTianJinUtils;
+import com.spd.bus.util.DatabaseTabInfo;
+import com.spd.bus.util.EN_CH_NumberDate;
 import com.spd.bus.util.ModifyTime;
 
 import java.io.DataOutputStream;
@@ -105,6 +111,7 @@ public class ConfigCheckPresenter extends BasePresenterImpl<ConfigCheckContract.
 
     @Override
     public void initPsam(Context context) {
+
         //获取支付宝微信key
         getZhiFuBaoAppSercet(context);
         getAliPubKeyTianJin();
@@ -147,7 +154,7 @@ public class ConfigCheckPresenter extends BasePresenterImpl<ConfigCheckContract.
                     new Thread(new Runnable() {
                         @Override
                         public void run() {
-                            MyApplication.getInstance().initScanBards(context);
+                            MyApplication.initScanBards(context);
                         }
                     }).start();
                 } catch (Exception e) {
@@ -163,7 +170,7 @@ public class ConfigCheckPresenter extends BasePresenterImpl<ConfigCheckContract.
                 new Thread(new Runnable() {
                     @Override
                     public void run() {
-                        MyApplication.getInstance().initScanBards(context);
+                        MyApplication.initScanBards(context);
                     }
                 }).start();
             }
@@ -243,6 +250,13 @@ public class ConfigCheckPresenter extends BasePresenterImpl<ConfigCheckContract.
     public void showPsam(Context context, String version, String psamData) {
         String psam1 = psamData.substring(2, 4);
         String psam3 = psamData.substring(6, 8);
+        if (version.length() > 24) {//修改-2019-3-29
+            String hardShift = EN_CH_NumberDate.Intercep(version.substring(14, 25));
+            SqlStatement.updataBinVersion(hardShift);
+        } else {
+            SqlStatement.updataBinVersion("2018-01-01");
+        }
+
         int lengthInt = Integer.parseInt(psamData.substring(34, 38), 16);
         if (psamData.length() > 160) {
             String result = psamData.substring(38, 38 + lengthInt * 2);

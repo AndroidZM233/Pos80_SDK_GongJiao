@@ -13,8 +13,8 @@ import retrofit2.converter.gson.GsonConverterFactory;
  * Email 741183142@qq.com
  */
 public class RetrofitCreateHelper {
-    private static final int TIMEOUT_READ = 20;
-    private static final int TIMEOUT_CONNECTION = 20;
+    private static final int TIMEOUT_READ = 30;
+    private static final int TIMEOUT_CONNECTION = 30;
     private static final HttpLoggingInterceptor interceptor = new HttpLoggingInterceptor()
             .setLevel(HttpLoggingInterceptor.Level.BODY);
     private static OkHttpClient okHttpClient = new OkHttpClient.Builder()

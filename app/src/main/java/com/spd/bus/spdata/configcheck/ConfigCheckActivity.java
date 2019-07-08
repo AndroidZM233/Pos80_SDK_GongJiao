@@ -8,10 +8,12 @@ import android.support.annotation.Nullable;
 import android.text.TextUtils;
 import android.widget.TextView;
 
-import com.example.zhoukai.modemtooltest.ModemToolTest;
+import com.example.test.yinlianbarcode.utils.SharedXmlUtil;
 import com.kaopiz.kprogresshud.KProgressHUD;
+import com.spd.base.utils.AppUtils;
 import com.spd.base.utils.LogUtils;
 import com.spd.base.utils.NetWorkUtils;
+import com.spd.bus.Info;
 import com.spd.bus.MyApplication;
 import com.spd.bus.R;
 import com.spd.bus.entity.TransportCard;
@@ -21,6 +23,7 @@ import com.spd.bus.sql.SqlStatement;
 import com.spd.bus.util.ConfigUtils;
 import com.spd.bus.util.Configurations;
 import com.spd.bus.util.FileConfData;
+import com.szxb.jni.libtest;
 
 import java.io.File;
 import java.util.List;
@@ -63,11 +66,11 @@ public class ConfigCheckActivity extends MVPBaseActivity<ConfigCheckContract.Vie
 //        }
 
 
-//        String sn = ModemToolTest.getItem(7);
-//        if (!"000000".equals(sn)) {
-//            String deviceNId = sn.substring(7, 15);
-//            SqlStatement.updataSN(deviceNId);
-//        }
+        String sn = android.os.Build.SERIAL;
+        if (!"000000".equals(sn)) {
+            String deviceNId = sn.substring(8, 16);
+            SqlStatement.updataSN(deviceNId);
+        }
 
 
 //        ConfigUtils.loadTxtConfig();
@@ -89,11 +92,22 @@ public class ConfigCheckActivity extends MVPBaseActivity<ConfigCheckContract.Vie
             @Override
             public void onError() {
                 kProgressHUD.setLabel("激活失败！准备重新激活...");
-                MyApplication.getInstance().initScanBards(getApplicationContext());
+                MyApplication.initScanBards(getApplicationContext());
             }
         });
 
         mPresenter.getSysTime(getApplicationContext());
+
+        String bins = SharedXmlUtil.getInstance(this).read(Info.BINS, "0");
+        String downAppVersion = SharedXmlUtil.getInstance(this).read(Info.DOWN_APP_VERSION, "0");
+        if (bins.equals("1") && !AppUtils.getVerName(this).equals(downAppVersion)) {
+            //更新k21程序，成功保存状态，失败忽略此次更新
+            int resultK21 = libtest.ymodemUpdate(getAssets(), "unionpay_190708165448.bin");
+            if (resultK21 == 0) {
+                SharedXmlUtil.getInstance(this).write(Info.BINS, "0");
+            }
+        }
+
         List<TransportCard> listInfo = SqlStatement.getParameterAll();
         File file = new File(MyApplication.FILENAME_INFO);
         boolean readBoolean = Configurations.read_config(MyApplication.FILENAME_INFO).length() > 20;
