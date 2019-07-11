@@ -6,7 +6,7 @@ android {
         minSdkVersion 15
         targetSdkVersion 28
         versionCode 1
-        versionName "1.1"
+        versionName "1.1.1"
         testInstrumentationRunner "android.support.xiaofeichenggong.runner.AndroidJUnitRunner"
         multiDexEnabled true
         ndk {
@@ -48,4 +48,6 @@ dependencies {
     implementation files('libs/activeandroid-3.1-3.jar')
     implementation files('libs/fastjson-1.2.7.jar')
     implementation files('libs/ksoap2-android-assembly-3.0.0-jar-with-dependencies.jar')
+//    implementation 'com.github.SpeedataG:Device:1.6.7'
+    implementation 'eu.the4thfloor.volley:com.android.volley:2015.05.28'
 }

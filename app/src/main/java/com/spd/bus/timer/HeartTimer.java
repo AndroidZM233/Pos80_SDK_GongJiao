@@ -137,16 +137,16 @@ public class HeartTimer {
                 }
 
                 String program = baseInfoBackBean.getProgram();
-                String[] vs = program.split("_V");
-                if (vs.length >= 2) {
-                    String[] split = vs[1].split(".apk");
-                    if (!split[0].equals(AppUtils.getVerName(mContext))) {
-                        SharedXmlUtil.getInstance(mContext).write(Info.DOWN_APP_VERSION, split[0]);
-                        SharedXmlUtil.getInstance(mContext).write(Info.BINS, split[1]);
-                        downloadAPK(program);
-                    }
-
-                }
+                String[] vs = program.split("_");
+//                if (vs.length >= 3) {
+//                    if (!vs[1].equals(AppUtils.getVerName(mContext))) {
+//                        String[] split = vs[2].split(".apk");
+//                        SharedXmlUtil.getInstance(mContext).write(Info.DOWN_APP_VERSION, vs[1]);
+//                        SharedXmlUtil.getInstance(mContext).write(Info.BINS, split[0]);
+//                        downloadAPK(program);
+//                    }
+//
+//                }
 
                 LogUtils.d("成功" + gson.toJson(baseInfoBackBean));
             }
@@ -268,7 +268,7 @@ public class HeartTimer {
             public void onSuccess() {
                 LogUtils.v("下载完成");
                 //静默安装
-                ReflectUtils.installApk(getApkPath() + "/BUS.apk", mContext);
+                ReflectUtils.installApkInSilence(getApkPath() + "/BUS.apk");
             }
         });
         File file = new File(getApkPath(), "BUS.apk");

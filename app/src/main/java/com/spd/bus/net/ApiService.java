@@ -11,6 +11,7 @@ import com.spd.base.been.tianjin.NetBackBean;
 import com.spd.base.been.tianjin.PosInfoBackBean;
 import com.spd.base.been.tianjin.PosKeysBackBean;
 import com.spd.base.been.tianjin.UnqrkeyBackBean;
+import com.spd.base.been.tianjin.YinLianBlackBack;
 
 import java.util.Map;
 
@@ -65,11 +66,16 @@ public interface ApiService {
     @POST("pos/wxPay/getMac")
     Observable<GetMacBackBean> getMac(@Body RequestBody route);
 
-    //支付宝黑名单
+    //黑名单
     @POST("pos/black")
     Observable<AliBlackBackBean> black(@Body RequestBody route);
 
-    //支付宝白名单
+    //银联黑名单
+    @FormUrlEncoded
+    @POST("pos/blankDownload")
+    Observable<YinLianBlackBack> blankDownload(@FieldMap Map<String, String> params);
+
+    //白名单
     @POST("pos/white")
     Observable<AliWhiteBackBean> white(@Body RequestBody route);
 

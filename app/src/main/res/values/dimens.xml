@@ -21,4 +21,5 @@
     <dimen name="input_money_yuan_text_size">50sp</dimen>
     <dimen name="textSize">35sp</dimen>
     <dimen name="data_text_size">16sp</dimen>
+    <dimen name="bus_no">30sp</dimen>
 </resources>

@@ -2,6 +2,9 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     package="com.spd.bus">
+    <!-- 录音权限 -->
+    <uses-permission android:name="android.permission.RECORD_AUDIO" />
+    <uses-permission android:name="android.permission.MODIFY_AUDIO_SETTINGS" />
 
     <uses-permission android:name="android.permission.CALL_PHONE" />
     <uses-permission android:name="android.permission.WAKE_LOCK" />
@@ -22,6 +25,7 @@
     <uses-permission
         android:name="android.permission.DELETE_PACKAGES"
         tools:ignore="ProtectedPermissions" />
+    <uses-permission android:name="app.permission.install" />
 
     <application
         android:name=".MyApplication"
@@ -35,12 +39,13 @@
         tools:replace="android:icon,android:theme,android:allowBackup">
         <activity
             android:name=".spdata.PsamIcActivity"
-            android:screenOrientation="landscape"
-            android:launchMode="singleInstance">
+            android:launchMode="singleInstance"
+            android:screenOrientation="landscape">
 
         </activity>
 
-        <activity android:name=".spdata.configcheck.ConfigCheckActivity"
+        <activity
+            android:name=".spdata.configcheck.ConfigCheckActivity"
             android:screenOrientation="landscape">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
@@ -50,6 +55,7 @@
         </activity>
 
         <activity android:name=".spdata.showdata.ShowDataActivity" />
+        <activity android:name=".spdata.setbusnr.SetBusNrActivity" />
 
         <meta-data
             android:name="companyId"
@@ -87,8 +93,7 @@
             android:name="com.activeandroid.content.ContentProvider"
             android:authorities="com.spd.bus"
             android:enabled="true"
-            android:exported="false">
-        </provider>
+            android:exported="false"></provider>
 
         <meta-data
             android:name="AA_DB_NAME"

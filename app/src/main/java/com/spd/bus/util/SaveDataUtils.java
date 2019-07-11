@@ -17,6 +17,8 @@ import com.spd.base.utils.Datautils;
 import com.spd.base.utils.LogUtils;
 import com.spd.bus.Info;
 import com.spd.base.utils.DateUtils;
+import com.spd.bus.entity.MobileApp;
+import com.spd.bus.sql.SqlStatement;
 import com.tencent.wlxsdk.WlxSdk;
 
 import org.apache.commons.lang3.text.StrBuilder;
@@ -64,9 +66,8 @@ public class SaveDataUtils {
     }
 
 
-
     public static void saveZhiFuBaoReqDataBean(TianjinAlipayRes aliCodeinfoData
-            ,  String orderNr,String driverNr,String driverTime) throws Exception {
+            , String orderNr, String driverNr, String driverTime) throws Exception {
 
         DatabaseTabInfo.getIntence("info");
         UploadInfoZFBDB reqDataBean = new UploadInfoZFBDB();
@@ -88,28 +89,29 @@ public class SaveDataUtils {
         // 公司号
         reqDataBean.setCompanyCode(DatabaseTabInfo.dept);
         // 站点名称
-        reqDataBean.setStationName("1");
+        reqDataBean.setStationName("");
         // 电子公交卡卡号
         reqDataBean.setCardId(new String(aliCodeinfoData.cardNo));
         // 售票员签到时间
         reqDataBean.setSellerSignTime("20190313113100");
         // 机具内扫码序号
-        reqDataBean.setSeq("001");
+        long count = DbDaoManage.getDaoSession().getUploadInfoZFBDBDao().count();
+        reqDataBean.setSeq(count + "");
         // 司机签到时间
         reqDataBean.setDriverSignTime(driverTime);
         // 区域号
         reqDataBean.setAreaCode("00");
         // 票价
-        reqDataBean.setPrice(Integer.parseInt(DatabaseTabInfo.price, 16)+"");
+        reqDataBean.setPrice(Integer.parseInt(DatabaseTabInfo.price, 16) + "");
         // 站点号
-        reqDataBean.setStationId("1");
+        reqDataBean.setStationId("");
         // 交易时间
         reqDataBean.setActualOrderTime(currentTimeMillis);
 
 //        reqDataBean.setCardData(Datautils.byteArrayToString(aliCodeinfoData.cardData));
         reqDataBean.setCardData("31");
         // 真实票价
-        reqDataBean.setActualPrice(Integer.parseInt(DatabaseTabInfo.price, 16)+"");
+        reqDataBean.setActualPrice(Integer.parseInt(DatabaseTabInfo.price, 16) + "");
         // 线路号
         reqDataBean.setLineCode(DatabaseTabInfo.line);
         // 记录内容
@@ -193,7 +195,7 @@ public class SaveDataUtils {
     }
 
 
-    public static void saveWeiXinDataBean(WlxSdk wlxSdk,String driverNr,String driverTime) throws Exception {
+    public static void saveWeiXinDataBean(WlxSdk wlxSdk, String driverNr, String driverTime) throws Exception {
         DatabaseTabInfo.getIntence("info");
         UploadInfoDB payinfoBean = new UploadInfoDB();
         payinfoBean.setOpen_id(wlxSdk.get_open_id());
@@ -201,7 +203,7 @@ public class SaveDataUtils {
         payinfoBean.setTeam(DatabaseTabInfo.tream);
         payinfoBean.setRoute(DatabaseTabInfo.line);
         // TODO: 2019/4/9 测试先写一分钱
-        payinfoBean.setAccount(Integer.parseInt(DatabaseTabInfo.price, 16)+"");
+        payinfoBean.setAccount(Integer.parseInt(DatabaseTabInfo.price, 16) + "");
 //        payinfoBean.setAccount("1");
 
         payinfoBean.setDept(DatabaseTabInfo.dept);
@@ -230,7 +232,8 @@ public class SaveDataUtils {
         strBuilder.append(valueOf);
         payinfoBean.setTrans_seq(strBuilder.toString());
         //APPID
-        payinfoBean.setApp_id(qrEntity.getMobileMark());
+        List<MobileApp> appinfo = SqlStatement.getAppinfo();
+        payinfoBean.setApp_id(appinfo.get(0).getAppid());
         //业务标识
         payinfoBean.setService_id("02");
         //扫码时间
@@ -244,7 +247,7 @@ public class SaveDataUtils {
         //线路号
         payinfoBean.setLine_no(DatabaseTabInfo.line);
         //金额
-        payinfoBean.setAmount(Integer.parseInt(DatabaseTabInfo.price, 16)+"");
+        payinfoBean.setAmount(Integer.parseInt(DatabaseTabInfo.price, 16) + "");
         //路队
         payinfoBean.setTeam(DatabaseTabInfo.tream);
         //线路号
@@ -253,7 +256,7 @@ public class SaveDataUtils {
         payinfoBean.setPosId(DatabaseTabInfo.deviceNo);
         //用户凭证类型
         payinfoBean.setVoucher_type("00");
-        payinfoBean.setTerminal_no("1751041817510418");
+        payinfoBean.setTerminal_no(DatabaseTabInfo.deviceNo);
         //公司号
         payinfoBean.setDept(DatabaseTabInfo.dept);
         payinfoBean.setVoucher_no(qrEntity.getQrCode());

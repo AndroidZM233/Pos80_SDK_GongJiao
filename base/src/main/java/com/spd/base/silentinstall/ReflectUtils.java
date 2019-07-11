@@ -3,12 +3,17 @@ package com.spd.base.silentinstall;
 import android.content.Context;
 import android.content.pm.PackageManager;
 import android.net.Uri;
+import android.os.Binder;
+import android.os.Build;
+
+import com.spd.base.utils.LogUtils;
 
 import java.io.File;
 import java.lang.reflect.AccessibleObject;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
 import java.lang.reflect.InvocationHandler;
+import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Member;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
@@ -40,18 +45,97 @@ public class ReflectUtils {
     }
 
     /**
+     * 静默安装8.1
+     * void installPackageAsUser(in String originPath,
+     * in IPackageInstallObserver2 observer,
+     * int flags,
+     * in String installerPackageName,
+     * int userId);
+     * @param installPath
+     */
+    public static void installApkInSilence(String installApk) {
+        Class<?> pmService;
+        Class<?> activityTherad;
+        Method method;
+        try {
+            activityTherad = Class.forName("android.app.ActivityThread");
+            Class<?> paramTypes[] = getParamTypes(activityTherad, "getPackageManager");
+            method = activityTherad.getMethod("getPackageManager", paramTypes);
+            Object PackageManagerService = method.invoke(activityTherad);
+            pmService = PackageManagerService.getClass();
+            Class<?> paramTypes1[] = getParamTypes(pmService, "installPackageAsUser");
+            method = pmService.getMethod("installPackageAsUser", paramTypes1);
+            File apkFile = new File(installApk);//InstallApk绝对路径
+            method.invoke(PackageManagerService, Uri.fromFile(apkFile).getPath(), null
+                    , 0x00000040,apkFile.getName(), getUserId(Binder.getCallingUid()));//getUserId
+        } catch (ClassNotFoundException e) {
+            e.printStackTrace();
+        } catch (NoSuchMethodException e) {
+            e.printStackTrace();
+        } catch (IllegalAccessException e) {
+            e.printStackTrace();
+        } catch (InvocationTargetException e) {
+            e.printStackTrace();
+        }
+    }
+
+    private static Class<?>[] getParamTypes(Class<?> cls, String mName) {
+        Class<?> cs[] = null;
+        Method[] mtd = cls.getMethods();
+        for (int i = 0; i < mtd.length; i++) {
+            if (!mtd[i].getName().equals(mName)) {
+                continue;
+            }
+
+            cs = mtd[i].getParameterTypes();
+        }
+        return cs;
+    }
+    public static final int PER_USER_RANGE = 100000;
+    public static int getUserId(int uid) {
+        return uid / PER_USER_RANGE;
+    }
+
+
+
+    /**
      * 静默安装自身
      *
      * @param filePath apk文件路径
      * @param context  上下文对象
      */
     public static void installApk(String filePath, Context context) {
+        LogUtils.v("静默安装自身" + filePath);
         int installReplaceExisting = 0x00000002;
         int installFlags = 0;
         PackageManager pm = context.getPackageManager();
         Uri fileUri = Uri.fromFile(new File(filePath));
         installFlags = installFlags | installReplaceExisting;
         reflect(pm).method("installPackage", new Object[]{fileUri, null, installFlags, null});
+    }
+
+    public static boolean silentInstall(String apkPath,Context context) {
+        PackageManager packageManager = context.getPackageManager();
+        Class<?> pmClz = packageManager.getClass();
+        try {
+            if (Build.VERSION.SDK_INT >= 21) {
+                Class<?> aClass = Class.forName("android.app.PackageInstallObserver");
+                Constructor<?> constructor = aClass.getDeclaredConstructor();
+                constructor.setAccessible(true);
+                Object installObserver = constructor.newInstance();
+                Method method = pmClz.getDeclaredMethod("installPackage", Uri.class, aClass, int.class, String.class);
+                method.setAccessible(true);
+                method.invoke(packageManager, Uri.fromFile(new File(apkPath)), installObserver, 2, null);
+            } else {
+                Method method = pmClz.getDeclaredMethod("installPackage", Uri.class, Class.forName("android.content.pm.IPackageInstallObserver"), int.class, String.class);
+                method.setAccessible(true);
+                method.invoke(packageManager, Uri.fromFile(new File(apkPath)), null, 2, null);
+            }
+            return true;
+        } catch (Exception e) {
+            LogUtils.e(e.toString());
+        }
+        return false;
     }
     ///////////////////////////////////////////////////////////////////////////
     // reflect

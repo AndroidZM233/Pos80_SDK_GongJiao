@@ -29,6 +29,7 @@ import com.spd.bus.R;
 import com.spd.bus.entity.Payrecord;
 import com.spd.bus.spdata.PsamIcActivity;
 import com.spd.bus.spdata.been.XFBean;
+import com.spd.bus.spdata.configcheck.ConfigCheckActivity;
 import com.spd.bus.spdata.mvp.MVPBaseActivity;
 import com.spd.bus.spdata.showdata.adapter.RVAdapter;
 import com.spd.bus.sql.SqlStatement;
@@ -136,15 +137,13 @@ public class ShowDataActivity extends MVPBaseActivity<ShowDataContract.View, Sho
         List<Payrecord> listSel = SqlStatement.recordListSel();
         for (Payrecord payrecord : listSel) {
             XFBean xfBean = new XFBean();
-            byte[] record = Datautils.hexStringToByteArray(payrecord.getRecord());
+            byte[] record = Datautils.HexString2Bytes(payrecord.getRecord());
             if (record != null) {
-                if (record[4] == (byte) 0x02) {
-                    byte[] id = Datautils.cutBytes(record, 11, 8);
-                    xfBean.setId(Datautils.byteArrayToString(id));
-                } else {
-                    byte[] id = Datautils.cutBytes(record, 11, 8);
-                    xfBean.setId(Datautils.byteArrayToString(id));
+                if (record[3] == (byte) 0x22) {
+                    continue;
                 }
+                byte[] id = Datautils.cutBytes(record, 11, 8);
+                xfBean.setId(Datautils.byteArrayToString(id));
                 byte exchType = record[2];
                 byte[] money = Datautils.cutBytes(record, 56, 3);
                 //0钱包2月票
@@ -192,6 +191,7 @@ public class ShowDataActivity extends MVPBaseActivity<ShowDataContract.View, Sho
     @Override
     public boolean onKeyDown(int keyCode, KeyEvent event) {
         if (keyCode == KeyEvent.KEYCODE_BACK) {
+            ShowDataActivity.this.finish();
             Intent intent = new Intent(ShowDataActivity.this, PsamIcActivity.class);
             startActivity(intent);
         }

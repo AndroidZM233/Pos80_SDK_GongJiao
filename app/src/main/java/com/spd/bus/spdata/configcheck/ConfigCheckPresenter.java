@@ -2,15 +2,16 @@ package com.spd.bus.spdata.configcheck;
 
 import android.content.Context;
 import android.content.Intent;
+import android.os.Build;
 import android.os.RemoteException;
 import android.os.SystemClock;
 import android.text.TextUtils;
 import android.widget.Toast;
 
+import com.activeandroid.ActiveAndroid;
 import com.example.test.yinlianbarcode.utils.SharedXmlUtil;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
-import com.jni.libtest;
 import com.spd.base.been.tianjin.AppSercetBackBean;
 import com.spd.base.been.tianjin.AppSercetPost;
 import com.spd.base.been.tianjin.GetMacBackBean;
@@ -19,6 +20,7 @@ import com.spd.base.been.tianjin.GetZhiFuBaoKey;
 import com.spd.base.been.tianjin.KeysBean;
 import com.spd.base.been.tianjin.PosKeysBackBean;
 import com.spd.base.been.tianjin.UnqrkeyBackBean;
+import com.spd.base.been.tianjin.YinLianBlackBack;
 import com.spd.base.been.tianjin.produce.weixin.UploadInfoDB;
 import com.spd.base.been.tianjin.produce.weixin.UploadInfoDBDao;
 import com.spd.base.been.tianjin.produce.yinlian.UploadInfoYinLianDB;
@@ -33,6 +35,7 @@ import com.spd.bus.Info;
 import com.spd.bus.MyApplication;
 import com.spd.bus.entity.Payrecord;
 import com.spd.bus.entity.TransportCard;
+import com.spd.bus.entity.UnionBlack;
 import com.spd.bus.entity.UnionPay;
 import com.spd.bus.net.HttpMethods;
 import com.spd.base.utils.LogUtils;
@@ -44,6 +47,7 @@ import com.spd.bus.util.DataUploadToTianJinUtils;
 import com.spd.bus.util.DatabaseTabInfo;
 import com.spd.bus.util.EN_CH_NumberDate;
 import com.spd.bus.util.ModifyTime;
+import com.szxb.jni.libtest;
 
 import java.io.DataOutputStream;
 import java.io.IOException;
@@ -122,8 +126,8 @@ public class ConfigCheckPresenter extends BasePresenterImpl<ConfigCheckContract.
         getShuangMianPubKey(context, "pos/posKeys?data=" + read);
         getWechatMacTianJin();
 
-
     }
+
 
     @Override
     public void getSysTime(Context context) {
@@ -186,12 +190,21 @@ public class ConfigCheckPresenter extends BasePresenterImpl<ConfigCheckContract.
         new Thread(new Runnable() {
             @Override
             public void run() {
+//                String version5 = Build.VERSION.SDK_INT + "";
+//                LogUtils.d(version5);
+                String bins = SharedXmlUtil.getInstance(context).read(Info.BINS, "0");
+                String downAppVersion = SharedXmlUtil.getInstance(context).read(Info.DOWN_APP_VERSION, "0");
+                if (bins.equals("1") && !AppUtils.getVerName(context).equals(downAppVersion)) {
+                    //更新k21程序，成功保存状态，失败忽略此次更新
+                    int resultK21 = libtest.ymodemUpdate(context.getAssets(), "unionpay_190710154401.bin");
+                    if (resultK21 == 0) {
+                        SharedXmlUtil.getInstance(context).write(Info.BINS, "0");
+                    }
+                    SystemClock.sleep(6000);
+                }
 
-//                ConfigUtils.jsonToDB();
                 String key = SharedXmlUtil.getInstance(context)
                         .read(Info.YLSM_KEY, "00000000");
-
-//                DataUploadToTianJinUtils.uploadCardData(context);
 
                 deleteDB();
                 ModifyTime.JudgmentTime();
@@ -204,7 +217,6 @@ public class ConfigCheckPresenter extends BasePresenterImpl<ConfigCheckContract.
                 if (!TextUtils.isEmpty(result) && (result.length() > 31)) {
                     showPsam(context, version, result);
                 }
-                mView.openActivity();
 
 
             }
@@ -250,8 +262,9 @@ public class ConfigCheckPresenter extends BasePresenterImpl<ConfigCheckContract.
     public void showPsam(Context context, String version, String psamData) {
         String psam1 = psamData.substring(2, 4);
         String psam3 = psamData.substring(6, 8);
-        if (version.length() > 24) {//修改-2019-3-29
-            String hardShift = EN_CH_NumberDate.Intercep(version.substring(14, 25));
+        if (version.length() > 39) {//修改-2019-3-29
+            String substring = version.substring(30, 41);
+            String hardShift = EN_CH_NumberDate.Intercep(substring);
             SqlStatement.updataBinVersion(hardShift);
         } else {
             SqlStatement.updataBinVersion("2018-01-01");
@@ -273,6 +286,11 @@ public class ConfigCheckPresenter extends BasePresenterImpl<ConfigCheckContract.
         } else {
             mView.setTextView(2, "成功");
         }
+
+//        if (psam1.equals("01") && psam3.equals("01")) {
+            mView.openActivity();
+//        }
+
     }
 
 
@@ -299,7 +317,7 @@ public class ConfigCheckPresenter extends BasePresenterImpl<ConfigCheckContract.
                 socket.setSoTimeout(10000);
                 DataOutputStream out = new DataOutputStream(
                         socket.getOutputStream());
-                out.write(Datautils.hexStringToByteArray(recordSigns));
+                out.write(Datautils.HexString2Bytes(recordSigns));
                 out.flush();
                 InputStream inputStream = socket.getInputStream();
                 byte[] temp = new byte[1024];

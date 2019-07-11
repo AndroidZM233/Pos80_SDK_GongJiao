@@ -89,11 +89,11 @@ public class ValidationUtils {
      * @return
      * @throws Exception
      */
-    public static boolean validationTianJin(QrEntity qrEntity, List<KeysBean> list) throws Exception {
+    public static int validationTianJin(QrEntity qrEntity, List<KeysBean> list) throws Exception {
         String scope = qrEntity.getScope();
         String substring = scope.substring(0, 2);
         if (!"02".equals(substring)) {
-            return false;
+            return -1;
         }
 
         String index = qrEntity.getIndex();
@@ -105,6 +105,7 @@ public class ValidationUtils {
                 String signatureResult = signature.substring(2);
                 // 国密规范测试用户ID
                 int length = qrEntity.getLength();
+//                String userId = qrEntity.getUserMark().toLowerCase();
                 String userId = "1234567812345678";
                 byte[] publicKey = Base64.decode(public_key, Base64.NO_WRAP);
                 String publicKeyHex = "04" + ParseUtils.bytes2Hex(publicKey);
@@ -118,7 +119,7 @@ public class ValidationUtils {
                 boolean verifyBoolean = cipher.verifySignByBytes(userIdBytes, publicKeyBytes, sourceDataBytes, signDataBytes);
                 System.out.println("验签结果: " + verifyBoolean);
                 if (!verifyBoolean) {
-                    return false;
+                    return -1;
                 } else {
                     break;
                 }
@@ -129,10 +130,10 @@ public class ValidationUtils {
         long createTime = qrEntity.getCreateTime();
         long currentTimeMillis = System.currentTimeMillis();
         if (currentTimeMillis > (createTime + valid)) {
-            return false;
+            return -2;
         }
 
-        return true;
+        return 0;
     }
 
 }

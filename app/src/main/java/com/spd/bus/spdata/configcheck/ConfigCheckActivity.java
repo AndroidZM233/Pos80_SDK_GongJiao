@@ -26,6 +26,7 @@ import com.spd.bus.util.FileConfData;
 import com.szxb.jni.libtest;
 
 import java.io.File;
+import java.io.IOException;
 import java.util.List;
 
 
@@ -98,15 +99,13 @@ public class ConfigCheckActivity extends MVPBaseActivity<ConfigCheckContract.Vie
 
         mPresenter.getSysTime(getApplicationContext());
 
-        String bins = SharedXmlUtil.getInstance(this).read(Info.BINS, "0");
-        String downAppVersion = SharedXmlUtil.getInstance(this).read(Info.DOWN_APP_VERSION, "0");
-        if (bins.equals("1") && !AppUtils.getVerName(this).equals(downAppVersion)) {
-            //更新k21程序，成功保存状态，失败忽略此次更新
-            int resultK21 = libtest.ymodemUpdate(getAssets(), "unionpay_190708165448.bin");
-            if (resultK21 == 0) {
-                SharedXmlUtil.getInstance(this).write(Info.BINS, "0");
-            }
-        }
+//        try {
+//            DeviceControlSpd deviceControlSpd = new DeviceControlSpd(DeviceControlSpd.PowerType.NEW_MAIN);
+//            deviceControlSpd.newSetGpioOff(1);
+//        } catch (IOException e) {
+//            e.printStackTrace();
+//        }
+
 
         List<TransportCard> listInfo = SqlStatement.getParameterAll();
         File file = new File(MyApplication.FILENAME_INFO);
@@ -190,6 +189,7 @@ public class ConfigCheckActivity extends MVPBaseActivity<ConfigCheckContract.Vie
             public void run() {
                 SystemClock.sleep(2000);
                 startActivity(new Intent(ConfigCheckActivity.this, PsamIcActivity.class));
+                ConfigCheckActivity.this.finish();
             }
         }).start();
 

@@ -36,6 +36,17 @@ public class Info {
     public static final String URL_UNION_PAY = "http://123.150.11.50:29838/unionpay/services/NetbarServices/";
     public static final String NAMESPACE = "http://service.iccard.yht.com/";
     public static final String URL2 = REQUEST_CARDRECORD_URL + "/yht-iccard-server/ws/posXBService";
+    private static String IP_COMMON = "http://123.150.11.50:18188";
+    public static final String REGIDTER_URL = IP_COMMON
+            + "/transfor/gate?sid=10202&encode=utf-8&reqData=";
+    // 请求获取秘钥版本以及服务请求编码 ip不确定
+    public static final String URL_KEYVERSION = IP_COMMON
+            + "/transfor/gate?sid=10600&reqData={}&appKey=";
+    // 请求获取支付宝秘钥 ip不确定
+    public static final String URL_KEYLIST = IP_COMMON
+            + "/transfor/gate?sid=10604&reqData=";
+    //注冊地址
+    public static final String JM_REGISER_DATA="http://112.74.41.206:8086/transfor/gate?sid=10202&encode=utf-8&appKey=9A174E6CF9AAD017&reqData=";
 
 
 

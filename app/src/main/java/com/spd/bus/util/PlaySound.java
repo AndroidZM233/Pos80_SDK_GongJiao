@@ -40,6 +40,7 @@ public class PlaySound {
     public static final int CODESHIXIAO = 18;
     public static final int QINGQIANDAO = 19;
     public static final int QINGCHOGNZHI = 20;
+    public static final int ERWEIMAGUOQI = 21;
     public static int NO_CYCLE = 0;//不循环
 
 
@@ -70,6 +71,10 @@ public class PlaySound {
         mapSRC.put(CODESHIXIAO, sp.load(context, R.raw.erweimashixiao, 0));
         mapSRC.put(QINGQIANDAO, sp.load(context, R.raw.qingqiandao, 0));
         mapSRC.put(QINGCHOGNZHI, sp.load(context, R.raw.qingchongzhi, 0));
+        mapSRC.put(ERWEIMAGUOQI, sp.load(context, R.raw.erweimaguoqi, 0));
+
+        AudioManager am = (AudioManager) context.getSystemService(Context.AUDIO_SERVICE);
+        am.setStreamVolume(2, 35, 0);
     }
 
 

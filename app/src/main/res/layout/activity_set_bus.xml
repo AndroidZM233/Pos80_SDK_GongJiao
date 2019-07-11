@@ -1,0 +1,84 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@mipmap/bg_k"
+    android:orientation="vertical">
+
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="20dp"
+        android:gravity="center"
+        android:text="设置车辆号"
+        android:textSize="40sp" />
+
+    <LinearLayout
+        android:layout_marginTop="30dp"
+        android:layout_width="match_parent"
+        android:layout_height="60dp"
+        android:orientation="horizontal"
+        android:padding="10dp">
+
+        <TextView
+            android:gravity="center"
+            android:text="0"
+            android:id="@+id/et_no1"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:textColor="@color/black"
+            android:textSize="@dimen/bus_no" />
+
+        <TextView
+            android:text="0"
+            android:gravity="center"
+            android:id="@+id/et_no2"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:textColor="@color/black"
+            android:textSize="@dimen/bus_no" />
+
+        <TextView
+            android:text="0"
+            android:gravity="center"
+            android:id="@+id/et_no3"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:textColor="@color/black"
+            android:textSize="@dimen/bus_no" />
+
+        <TextView
+            android:text="0"
+            android:gravity="center"
+            android:id="@+id/et_no4"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:textColor="@color/black"
+            android:textSize="@dimen/bus_no" />
+
+        <TextView
+            android:text="0"
+            android:gravity="center"
+            android:id="@+id/et_no5"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:textColor="@color/black"
+            android:textSize="@dimen/bus_no" />
+
+        <TextView
+            android:text="0"
+            android:gravity="center"
+            android:id="@+id/et_no6"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:textColor="@color/black"
+            android:textSize="@dimen/bus_no" />
+    </LinearLayout>
+
+</LinearLayout>

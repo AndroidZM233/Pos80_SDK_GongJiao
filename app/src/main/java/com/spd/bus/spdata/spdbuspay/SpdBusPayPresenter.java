@@ -4,6 +4,11 @@ import android.content.Context;
 import android.text.TextUtils;
 import android.util.Log;
 
+import com.activeandroid.ActiveAndroid;
+import com.android.volley.Request;
+import com.android.volley.Response;
+import com.android.volley.VolleyError;
+import com.android.volley.toolbox.JsonObjectRequest;
 import com.example.test.yinlianbarcode.entity.QrEntity;
 import com.example.test.yinlianbarcode.utils.SharedXmlUtil;
 import com.example.test.yinlianbarcode.utils.ValidationUtils;
@@ -21,6 +26,7 @@ import com.spd.base.been.tianjin.GetPublicBackBean;
 import com.spd.base.been.tianjin.GetZhiFuBaoKey;
 import com.spd.base.been.tianjin.KeysBean;
 import com.spd.base.been.tianjin.TCardOpDU;
+import com.spd.base.been.tianjin.YinLianBlackBack;
 import com.spd.base.been.tianjin.produce.shuangmian.ProduceShuangMian;
 import com.spd.base.been.tianjin.produce.shuangmian.ShuangMianBean;
 import com.spd.base.been.tianjin.produce.shuangmian.UploadSMDB;
@@ -47,6 +53,7 @@ import com.spd.base.been.tianjin.PosInfoBackBean;
 import com.spd.base.been.tianjin.produce.ProducePost;
 import com.spd.bus.card.methods.ReturnVal;
 import com.spd.base.utils.DateUtils;
+import com.spd.bus.entity.UnionBlack;
 import com.spd.bus.entity.UnionPay;
 import com.spd.bus.net.HttpMethods;
 import com.spd.base.utils.LogUtils;
@@ -54,8 +61,12 @@ import com.spd.bus.spdata.been.ErroCode;
 import com.spd.bus.spdata.mvp.BasePresenterImpl;
 import com.spd.bus.sql.SqlStatement;
 import com.spd.bus.util.DatabaseTabInfo;
+import com.spd.bus.util.PacketUtils;
 import com.spd.bus.util.SaveDataUtils;
 import com.tencent.wlxsdk.WlxSdk;
+
+import org.json.JSONException;
+import org.json.JSONObject;
 
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -149,7 +160,7 @@ public class SpdBusPayPresenter extends BasePresenterImpl<SpdBusPayContract.View
         TianjinAlipayRes tianjinAlipayRes = new TianjinAlipayRes();
 
 
-        if (alipayJni==null){
+        if (alipayJni == null) {
             mView.erro(ReturnVal.CAD_NO_KEY);
             return;
         }
@@ -159,25 +170,27 @@ public class SpdBusPayPresenter extends BasePresenterImpl<SpdBusPayContract.View
         LogUtils.v("onHSMDecodeResult: " + tianjinAlipayRes.toString());
 
         if (tianjinAlipayRes.result != 1) {
-            mView.erro(ReturnVal.CAD_EMPTY);
+            mView.showCheckAliQrCode(tianjinAlipayRes, outTradeNo);
             return;
         }
         String userId = tianjinAlipayRes.uid;
         //判断是否连刷
-        List<UploadInfoZFBDB> checklist = DbDaoManage.getDaoSession().getUploadInfoZFBDBDao()
-                .queryBuilder().where(UploadInfoZFBDBDao.Properties.UserId.eq(userId)).list();
-        if (checklist.size() > 0) {
-            UploadInfoZFBDB uploadInfoDB = checklist.get(checklist.size() - 1);
-            String inStationTime = uploadInfoDB.getActualOrderTime();
-            try {
-                boolean brush = DateUtils.isBrush(inStationTime, 5);
-                if (!brush) {
-                    mView.erro(ReturnVal.CAD_EMPTY);
-                    return;
+        long dbCount = DbDaoManage.getDaoSession().getUploadInfoZFBDBDao().count();
+        if (dbCount > 0) {
+            UploadInfoZFBDB uploadInfoDB = DbDaoManage.getDaoSession()
+                    .getUploadInfoZFBDBDao().loadByRowId(dbCount);
+            if (uploadInfoDB.getUserId().equals(userId)) {
+                String inStationTime = uploadInfoDB.getActualOrderTime();
+                try {
+                    boolean brush = DateUtils.isBrush(inStationTime, 5);
+                    if (!brush) {
+                        return;
+                    }
+                } catch (Exception e) {
+                    e.printStackTrace();
                 }
-            } catch (Exception e) {
-                e.printStackTrace();
             }
+
         }
 
         mView.showCheckAliQrCode(tianjinAlipayRes, outTradeNo);
@@ -204,7 +217,6 @@ public class SpdBusPayPresenter extends BasePresenterImpl<SpdBusPayContract.View
                     Log.i(TAG, "onNext: " + netBackBean.toString());
                     TCardOpDU tCardOpDU = new TCardOpDU();
                     tCardOpDU.ulHCSub = Integer.parseInt(netBackBean.getCode());
-//                    mView.successCode(new CardBackBean(ReturnVal.CODE_ZHIFUBAO_SUCCESS, tCardOpDU));
                     for (UploadInfoZFBDB uploadInfoZFBDB : uploadInfoZFBDBS) {
                         uploadInfoZFBDB.setIsUpload(true);
                         DbDaoManage.getDaoSession().getUploadInfoZFBDBDao().update(uploadInfoZFBDB);
@@ -336,21 +348,23 @@ public class SpdBusPayPresenter extends BasePresenterImpl<SpdBusPayContract.View
         }
         String openId = wlxSdk.get_open_id();
         //判断是否连刷
-        List<UploadInfoDB> checklist = DbDaoManage.getDaoSession().getUploadInfoDBDao()
-                .queryBuilder().where(UploadInfoDBDao.Properties.Open_id.eq(openId)).list();
-        if (checklist.size() > 0) {
-            UploadInfoDB uploadInfoDB = checklist.get(checklist.size() - 1);
-            String inStationTime = uploadInfoDB.getIn_station_time();
-            try {
-                boolean brush = DateUtils.isBrush(inStationTime, 5);
-                if (!brush) {
-                    mView.erro(ReturnVal.CAD_EMPTY);
-                    return;
+        long dbCount = DbDaoManage.getDaoSession().getUploadInfoDBDao().count();
+        if (dbCount > 0) {
+            UploadInfoDB uploadInfoDB = DbDaoManage.getDaoSession()
+                    .getUploadInfoDBDao().loadByRowId(dbCount);
+            if (uploadInfoDB.getOpen_id().equals(openId)) {
+                String inStationTime = uploadInfoDB.getIn_station_time();
+                try {
+                    boolean brush = DateUtils.isBrush(inStationTime, 5);
+                    if (!brush) {
+                        return;
+                    }
+                } catch (Exception e) {
+                    e.printStackTrace();
+                    LogUtils.d(e.toString());
                 }
-            } catch (Exception e) {
-                e.printStackTrace();
-                LogUtils.d(e.toString());
             }
+
         }
         String pubKey = "";
         String aesMacRoot = "";
@@ -429,7 +443,6 @@ public class SpdBusPayPresenter extends BasePresenterImpl<SpdBusPayContract.View
                     LogUtils.d("onNext: " + netBackBean.toString());
                     TCardOpDU tCardOpDU = new TCardOpDU();
                     tCardOpDU.ulHCSub = Integer.parseInt(netBackBean.getCode());
-//                    mView.successCode(new CardBackBean(ReturnVal.CODE_WEIXIN_SUCCESS, tCardOpDU));
                     for (UploadInfoDB uploadInfoDB : uploadInfoDBS) {
                         uploadInfoDB.setIsUpload(true);
                         DbDaoManage.getDaoSession().getUploadInfoDBDao().update(uploadInfoDB);
@@ -502,12 +515,36 @@ public class SpdBusPayPresenter extends BasePresenterImpl<SpdBusPayContract.View
         try {
             List<KeysBean> keysBeans = DbDaoManage.getDaoSession().getKeysBeanDao().loadAll();
             if (keysBeans.size() > 0) {
-                boolean validation = ValidationUtils.validationTianJin(qrEntity, keysBeans);
-                if (validation) {
+                int validation = ValidationUtils.validationTianJin(qrEntity, keysBeans);
+                if (validation == 0) {
+                    //判断是否连刷
+                    long dbCount = DbDaoManage.getDaoSession().getUploadInfoYinLianDBDao().count();
+                    if (dbCount > 0) {
+                        UploadInfoYinLianDB uploadInfoDB = DbDaoManage.getDaoSession()
+                                .getUploadInfoYinLianDBDao().loadByRowId(dbCount);
+                        if (uploadInfoDB.getUser_id().equals(qrEntity.getUserMark())) {
+                            String inStationTime = uploadInfoDB.getScan_time();
+                            try {
+                                boolean brush = DateUtils.isBrush2(inStationTime, 5);
+                                if (!brush) {
+                                    LogUtils.v("银联同id连刷");
+                                    return;
+                                }
+                            } catch (Exception e) {
+                                e.printStackTrace();
+                                LogUtils.d(e.toString());
+                            }
+                        }
+
+                    }
+
                     SaveDataUtils.saveYinLianDataBean(context, qrcode, qrEntity);
                     mView.successCode(new CardBackBean(ReturnVal.CODE_YINLAIN_SUCCESS
                             , null));
                     uploadYinLian(context);
+                } else if (validation == -2) {
+                    mView.successCode(new CardBackBean(ReturnVal.CAD_GUOQI
+                            , null));
                 } else {
                     mView.successCode(new CardBackBean(ReturnVal.CAD_EMPTY
                             , null));
@@ -522,6 +559,54 @@ public class SpdBusPayPresenter extends BasePresenterImpl<SpdBusPayContract.View
         }
     }
 
+    /**
+     * 获取银联黑名单
+     */
+    @Override
+    public void getYinLianBlack() {
+        DatabaseTabInfo.getIntence("info");
+        Map<String, String> map = new HashMap<>();
+        map.put("posid", DatabaseTabInfo.deviceNo);
+        map.put("version", DateUtils.getCurrentTimeMillis("yyyyMMdd"));
+        HttpMethods.getInstance().blankDownload(map, new Observer<YinLianBlackBack>() {
+            @Override
+            public void onSubscribe(Disposable d) {
+
+            }
+
+            @Override
+            public void onNext(YinLianBlackBack yinLianBlackBack) {
+                if (yinLianBlackBack.getCode().equals("00")){
+                    List<YinLianBlackBack.BlankDataBean> blankData = yinLianBlackBack.getBlank_data();
+                    if (blankData != null && blankData.size() != 0) {
+                        ActiveAndroid.beginTransaction();
+                        try {
+                            for (int i = 0; i < blankData.size(); i++) {
+                                UnionBlack uBlack = new UnionBlack();
+                                uBlack.setUnionCode(blankData.get(i).getCardNo().trim());
+                                uBlack.setRemake("");
+                                uBlack.save();
+                            }
+                            ActiveAndroid.setTransactionSuccessful();
+                        } finally {
+                            ActiveAndroid.endTransaction();
+                        }
+                    }
+                }
+
+            }
+
+            @Override
+            public void onError(Throwable e) {
+                LogUtils.e("银联黑名单" + e.toString());
+            }
+
+            @Override
+            public void onComplete() {
+
+            }
+        });
+    }
 
     @Override
     public void uploadYinLian(Context context) {
@@ -544,7 +629,6 @@ public class SpdBusPayPresenter extends BasePresenterImpl<SpdBusPayContract.View
                     Log.i(TAG, "onNext: " + netBackBean.toString());
                     TCardOpDU tCardOpDU = new TCardOpDU();
                     tCardOpDU.ulHCSub = Integer.parseInt(netBackBean.getCode());
-//                    mView.successCode(new CardBackBean(ReturnVal.CODE_YINLAIN_SUCCESS, tCardOpDU));
                     for (UploadInfoYinLianDB yinLianDB : yinLianDBS) {
                         yinLianDB.setIsUpload(true);
                         DbDaoManage.getDaoSession().getUploadInfoYinLianDBDao().update(yinLianDB);
@@ -725,4 +809,6 @@ public class SpdBusPayPresenter extends BasePresenterImpl<SpdBusPayContract.View
         producePost.setData(gson.toJson(produceShuangMian));
         return gson.toJson(producePost).toString();
     }
+
+
 }

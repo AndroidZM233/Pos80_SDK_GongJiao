@@ -28,14 +28,14 @@ import java.util.GregorianCalendar;
  */
 public class libtest {
 
-	static {
-		try {
-			System.loadLibrary("business");
-		} catch (Throwable e) {
-			Log.e("jni", "i can't find business so!");
-			e.printStackTrace();
-		}
-	}
+//	static {
+//		try {
+//			System.loadLibrary("business");
+//		} catch (Throwable e) {
+//			Log.e("jni", "i can't find business so!");
+//			e.printStackTrace();
+//		}
+//	}
 
 	static {
 		try {

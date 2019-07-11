@@ -24,8 +24,6 @@ public class SpdBusPayContract {
          */
         void successCode(CardBackBean cardBackBean);
 
-        void success(String msg);
-
         void erro(int msg);
 
         void showAliPublicKey(int result);
@@ -84,6 +82,7 @@ public class SpdBusPayContract {
         void uploadSM(Context context);
 
         void uploadYinLian(Context context);
+        void getYinLianBlack();
 
 
     }

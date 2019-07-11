@@ -344,4 +344,30 @@ public class DateUtils {
             return true;
         }
     }
+
+    /**
+     * 是否在时间区域内
+     *
+     * @param date
+     * @param s
+     * @return
+     * @throws Exception
+     */
+    public static boolean isBrush2(String date, int s) throws Exception {
+        SimpleDateFormat simpleDateFormat = new SimpleDateFormat(DateUtils.FORMAT_yyyyMMddHHmmss);
+        Date parse = simpleDateFormat.parse(date);
+        Calendar c1 = Calendar.getInstance();
+        Calendar c3 = Calendar.getInstance();
+        c1.setTime(parse);//要判断的日期
+        String format1 = simpleDateFormat.format(c1.getTime());
+        c3.setTime(new Date());//也给初始日期 把分钟加五
+        c1.add(Calendar.SECOND, s);
+        String format2 = simpleDateFormat.format(c1.getTime());
+        String format3 = simpleDateFormat.format(c3.getTime());
+        if (c1.after(c3)) {
+            return false;
+        } else {
+            return true;
+        }
+    }
 }

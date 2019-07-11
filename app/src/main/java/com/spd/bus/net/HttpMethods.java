@@ -11,6 +11,7 @@ import com.spd.base.been.tianjin.NetBackBean;
 import com.spd.base.been.tianjin.PosInfoBackBean;
 import com.spd.base.been.tianjin.PosKeysBackBean;
 import com.spd.base.been.tianjin.UnqrkeyBackBean;
+import com.spd.base.been.tianjin.YinLianBlackBack;
 import com.spd.base.utils.RetrofitCreateHelper;
 
 import java.util.Map;
@@ -185,6 +186,21 @@ public class HttpMethods {
                 MediaType.parse("application/json;charset=UTF-8"), sendData);
         RetrofitCreateHelper.createApi(ApiService.class, BASE_URL)
                 .black(requestBody)
+                .subscribeOn(Schedulers.io())
+                .unsubscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(observer);
+    }
+
+    /**
+     * 银联黑名单
+     *
+     * @param sendData
+     * @param observer
+     */
+    public void blankDownload(Map<String, String> params, Observer<YinLianBlackBack> observer) {
+        RetrofitCreateHelper.createApi(ApiService.class, BASE_URL)
+                .blankDownload(params)
                 .subscribeOn(Schedulers.io())
                 .unsubscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
