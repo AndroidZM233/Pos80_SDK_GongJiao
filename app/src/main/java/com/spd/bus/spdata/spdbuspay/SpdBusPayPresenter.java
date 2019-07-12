@@ -568,6 +568,7 @@ public class SpdBusPayPresenter extends BasePresenterImpl<SpdBusPayContract.View
         Map<String, String> map = new HashMap<>();
         map.put("posid", DatabaseTabInfo.deviceNo);
         map.put("version", DateUtils.getCurrentTimeMillis("yyyyMMdd"));
+//        map.put("version", "20190711");
         HttpMethods.getInstance().blankDownload(map, new Observer<YinLianBlackBack>() {
             @Override
             public void onSubscribe(Disposable d) {
@@ -579,6 +580,7 @@ public class SpdBusPayPresenter extends BasePresenterImpl<SpdBusPayContract.View
                 if (yinLianBlackBack.getCode().equals("00")){
                     List<YinLianBlackBack.BlankDataBean> blankData = yinLianBlackBack.getBlank_data();
                     if (blankData != null && blankData.size() != 0) {
+                        SqlStatement.deleteUnionBlack();
                         ActiveAndroid.beginTransaction();
                         try {
                             for (int i = 0; i < blankData.size(); i++) {

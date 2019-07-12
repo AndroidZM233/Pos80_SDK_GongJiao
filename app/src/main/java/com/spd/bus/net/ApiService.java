@@ -97,4 +97,8 @@ public interface ApiService {
     //支付宝白名单
     @POST("log/syTime")
     Observable<ResponseBody> syTime(@Body RequestBody route);
+
+    //支付宝注册
+    @GET
+    Observable<ResponseBody> gate(@Url String url);
 }

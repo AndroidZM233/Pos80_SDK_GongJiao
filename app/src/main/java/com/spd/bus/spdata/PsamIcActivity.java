@@ -3,6 +3,7 @@ package com.spd.bus.spdata;
 import android.annotation.SuppressLint;
 import android.content.Intent;
 import android.content.IntentFilter;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
@@ -42,6 +43,7 @@ import com.spd.bus.card.methods.ReturnVal;
 import com.spd.bus.entity.Payrecord;
 import com.spd.bus.entity.TransportCard;
 import com.spd.bus.entity.UnionPay;
+import com.spd.bus.net.HttpMethods;
 import com.spd.bus.spdata.been.ErroCode;
 import com.spd.bus.spdata.mvp.MVPBaseActivity;
 import com.spd.bus.spdata.setbusnr.SetBusNrActivity;
@@ -60,6 +62,7 @@ import com.spd.bus.util.HzjString;
 import com.spd.bus.util.PacketUtils;
 import com.spd.bus.util.PlaySound;
 import com.spd.bus.util.SaveDataUtils;
+import com.spd.bus.util.download.DownloadUtils;
 import com.yht.q6jni.Jni;
 
 import org.json.JSONException;
@@ -68,6 +71,7 @@ import org.json.JSONObject;
 import java.io.DataOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.net.HttpURLConnection;
 import java.net.InetSocketAddress;
 import java.net.Socket;
 import java.net.SocketTimeoutException;
@@ -78,9 +82,12 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
 
 import io.reactivex.Flowable;
+import io.reactivex.Observer;
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.annotations.NonNull;
+import io.reactivex.disposables.Disposable;
 import io.reactivex.functions.Consumer;
+import okhttp3.ResponseBody;
 
 import static com.spd.bus.MyApplication.FILENAME_INFO;
 import static com.spd.bus.spdata.been.ErroCode.ILLEGAL_PARAM;
@@ -184,6 +191,7 @@ public class PsamIcActivity extends MVPBaseActivity<SpdBusPayContract.View, SpdB
     private long mTime;
     private ExecutorService ex = Executors.newCachedThreadPool();
     private TextView mTvDriver;
+    private MyThread myThread;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -194,13 +202,14 @@ public class PsamIcActivity extends MVPBaseActivity<SpdBusPayContract.View, SpdB
         initView();
 //        init();
         initCard();
+
     }
 
     @Override
     protected void onResume() {
         super.onResume();
         init();
-        MyThread myThread = new MyThread();
+        myThread = new MyThread();
         myThread.start();
     }
 
@@ -1360,7 +1369,7 @@ public class PsamIcActivity extends MVPBaseActivity<SpdBusPayContract.View, SpdB
                         msgValue = msg.obj.toString();
                     }
                     PlaySound.play(PlaySound.WUXIAOKA, 0);
-                    ToastUtil.customToastView(PsamIcActivity.this, "无效卡"
+                    ToastUtil.customToastView(PsamIcActivity.this, msgValue
                             , Toast.LENGTH_SHORT, (TextView) LayoutInflater
                                     .from(PsamIcActivity.this)
                                     .inflate(R.layout.layout_toast, null));
@@ -1611,7 +1620,7 @@ public class PsamIcActivity extends MVPBaseActivity<SpdBusPayContract.View, SpdB
                     SharedXmlUtil.getInstance(getApplicationContext()).write(
                             Info.IS_CONFIG_CHANGE, true);
                     isConfigChange = true;
-                    requestRegister();
+                    HttpMethods.getInstance().requestRegister();
                     runOnUiThread(new Runnable() {
                         @Override
                         public void run() {
@@ -1739,6 +1748,7 @@ public class PsamIcActivity extends MVPBaseActivity<SpdBusPayContract.View, SpdB
 
         if (event.getAction() == KeyEvent.ACTION_DOWN) {
             if (keyCode == KeyEvent.KEYCODE_ENTER) {
+                key = false;
                 Intent intent = new Intent(PsamIcActivity.this, ShowDataActivity.class);
                 startActivity(intent);
             }
@@ -1883,32 +1893,5 @@ public class PsamIcActivity extends MVPBaseActivity<SpdBusPayContract.View, SpdB
         }
     }
 
-    //请求获取注册
-    public void requestRegister() {
-        PacketUtils packetUtils = new PacketUtils();
-        JsonObjectRequest req = new JsonObjectRequest(Request.Method.GET, packetUtils.RegisMachineUrl(), null,
-                new Response.Listener<JSONObject>() {
-                    @Override
-                    public void onResponse(JSONObject response) {
-                        try {
-                            String status = response.getString("status");
-                            JSONObject jsbs = new JSONObject(status);
-                            String code = jsbs.getString("code");
-                            LogUtils.d("请求获取注册code");
-                            if (code.equals("0")) {
-                                LogUtils.d("code");
-//                                SharedXmlUtil.getInstance().write("regisTime",
-//                                        new SimpleDateFormat("yyyyMMdd").format(new Date()));
-                            }
-                        } catch (JSONException e) {
-                            e.printStackTrace();
-                        }
-                    }
-                }, new Response.ErrorListener() {
-            @Override
-            public void onErrorResponse(VolleyError error) {
-                LogUtils.e("请求获取注册Error: " + error.getMessage());
-            }
-        });
-    }
+
 }

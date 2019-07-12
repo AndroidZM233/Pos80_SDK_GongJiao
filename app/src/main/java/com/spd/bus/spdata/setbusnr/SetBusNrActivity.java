@@ -15,6 +15,7 @@ import android.widget.TextView;
 
 import com.example.test.yinlianbarcode.utils.SharedXmlUtil;
 import com.spd.bus.R;
+import com.spd.bus.net.HttpMethods;
 import com.spd.bus.spdata.PsamIcActivity;
 import com.spd.bus.spdata.mvp.MVPBaseActivity;
 import com.spd.bus.sql.SqlStatement;
@@ -121,6 +122,7 @@ public class SetBusNrActivity extends MVPBaseActivity<SetBusNrContract.View, Set
                                     .write("TAGS", "");
                         }
                         PlaySound.play(PlaySound.setSuccess, 0);
+                        HttpMethods.getInstance().requestRegister();
                         handlerSet.postDelayed(new Runnable() {
                             @Override
                             public void run() {

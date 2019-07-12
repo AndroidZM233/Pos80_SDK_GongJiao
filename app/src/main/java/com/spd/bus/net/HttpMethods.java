@@ -12,16 +12,22 @@ import com.spd.base.been.tianjin.PosInfoBackBean;
 import com.spd.base.been.tianjin.PosKeysBackBean;
 import com.spd.base.been.tianjin.UnqrkeyBackBean;
 import com.spd.base.been.tianjin.YinLianBlackBack;
+import com.spd.base.utils.LogUtils;
 import com.spd.base.utils.RetrofitCreateHelper;
+import com.spd.bus.Info;
+import com.spd.bus.util.PacketUtils;
 
 import java.util.Map;
 
 import io.reactivex.Observer;
 import io.reactivex.android.schedulers.AndroidSchedulers;
+import io.reactivex.disposables.Disposable;
 import io.reactivex.schedulers.Schedulers;
 import okhttp3.MediaType;
 import okhttp3.RequestBody;
 import okhttp3.ResponseBody;
+import retrofit2.Retrofit;
+import retrofit2.adapter.rxjava2.RxJava2CallAdapterFactory;
 
 /**
  * Created by 张明_ on 2019/2/18.
@@ -274,4 +280,48 @@ public class HttpMethods {
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(observer);
     }
+
+    /**
+     * 支付宝注册
+     *
+     * @param sendData
+     * @param observer
+     */
+    public void gate(String url, Observer<ResponseBody> observer) {
+        RetrofitCreateHelper.createApi(ApiService.class, Info.IP_COMMON)
+                .gate(url)
+                .subscribeOn(Schedulers.io())
+                .unsubscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(observer);
+    }
+
+    //请求获取注册
+    public void requestRegister() {
+        PacketUtils packetUtils = new PacketUtils();
+        String regisMachineUrl = packetUtils.RegisMachineUrl();
+        HttpMethods.getInstance().gate(regisMachineUrl, new Observer<ResponseBody>() {
+            @Override
+            public void onSubscribe(Disposable d) {
+
+            }
+
+            @Override
+            public void onNext(ResponseBody responseBody) {
+                LogUtils.d(responseBody.toString());
+            }
+
+            @Override
+            public void onError(Throwable e) {
+                LogUtils.e(e.toString());
+            }
+
+            @Override
+            public void onComplete() {
+
+            }
+        });
+
+    }
+
 }

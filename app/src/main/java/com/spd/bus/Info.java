@@ -36,7 +36,7 @@ public class Info {
     public static final String URL_UNION_PAY = "http://123.150.11.50:29838/unionpay/services/NetbarServices/";
     public static final String NAMESPACE = "http://service.iccard.yht.com/";
     public static final String URL2 = REQUEST_CARDRECORD_URL + "/yht-iccard-server/ws/posXBService";
-    private static String IP_COMMON = "http://123.150.11.50:18188";
+    public static final String IP_COMMON = "http://123.150.11.50:18188";
     public static final String REGIDTER_URL = IP_COMMON
             + "/transfor/gate?sid=10202&encode=utf-8&reqData=";
     // 请求获取秘钥版本以及服务请求编码 ip不确定

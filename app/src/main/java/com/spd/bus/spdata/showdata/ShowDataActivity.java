@@ -191,9 +191,9 @@ public class ShowDataActivity extends MVPBaseActivity<ShowDataContract.View, Sho
     @Override
     public boolean onKeyDown(int keyCode, KeyEvent event) {
         if (keyCode == KeyEvent.KEYCODE_BACK) {
-            ShowDataActivity.this.finish();
             Intent intent = new Intent(ShowDataActivity.this, PsamIcActivity.class);
             startActivity(intent);
+            ShowDataActivity.this.finish();
         }
 
         if (event.getAction() == KeyEvent.ACTION_DOWN) {

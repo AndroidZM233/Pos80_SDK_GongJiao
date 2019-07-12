@@ -59,7 +59,7 @@ public class HeartTimer {
     }
 
     public void initTimer() {
-        long period = 5 * 60 * 1000;//时间间隔
+        long period = 1 * 60 * 1000;//时间间隔
         mDisposable = Observable.interval(period, TimeUnit.MILLISECONDS)
 //                .observeOn(Schedulers.newThread())
                 .subscribe(aLong -> heart());
@@ -138,15 +138,15 @@ public class HeartTimer {
 
                 String program = baseInfoBackBean.getProgram();
                 String[] vs = program.split("_");
-//                if (vs.length >= 3) {
-//                    if (!vs[1].equals(AppUtils.getVerName(mContext))) {
-//                        String[] split = vs[2].split(".apk");
-//                        SharedXmlUtil.getInstance(mContext).write(Info.DOWN_APP_VERSION, vs[1]);
-//                        SharedXmlUtil.getInstance(mContext).write(Info.BINS, split[0]);
-//                        downloadAPK(program);
-//                    }
-//
-//                }
+                if (vs.length >= 3) {
+                    if (!vs[1].equals(AppUtils.getVerName(mContext))) {
+                        String[] split = vs[2].split(".apk");
+                        SharedXmlUtil.getInstance(mContext).write(Info.DOWN_APP_VERSION, vs[1]);
+                        SharedXmlUtil.getInstance(mContext).write(Info.BINS, split[0]);
+                        downloadAPK(program);
+                    }
+
+                }
 
                 LogUtils.d("成功" + gson.toJson(baseInfoBackBean));
             }
@@ -268,7 +268,7 @@ public class HeartTimer {
             public void onSuccess() {
                 LogUtils.v("下载完成");
                 //静默安装
-                ReflectUtils.installApkInSilence(getApkPath() + "/BUS.apk");
+                ReflectUtils.silentInstall(getApkPath() + "/BUS.apk", mContext);
             }
         });
         File file = new File(getApkPath(), "BUS.apk");

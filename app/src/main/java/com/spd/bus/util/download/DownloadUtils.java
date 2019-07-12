@@ -1,5 +1,6 @@
 package com.spd.bus.util.download;
 
+import com.spd.base.utils.RetrofitCreateHelper;
 import com.spd.bus.net.ApiService;
 
 import java.io.File;
@@ -62,6 +63,7 @@ public class DownloadUtils {
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(observer);
     }
+
 
     /**
      * 开始下载
@@ -130,4 +132,6 @@ public class DownloadUtils {
         }
 
     }
+
+
 }
