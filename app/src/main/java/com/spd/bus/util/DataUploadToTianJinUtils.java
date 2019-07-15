@@ -222,7 +222,8 @@ public class DataUploadToTianJinUtils {
 
 
     public static void postLog(Context context, String log) {
-        String logString = SharedXmlUtil.getInstance(context).read(Info.POS_ID, Info.POS_ID_INIT)
+        DatabaseTabInfo.getIntence("info");
+        String logString = DatabaseTabInfo.deviceNo
                 + "," + log;
         Map<String, String> map = new HashMap<>();
         map.put("log", logString);

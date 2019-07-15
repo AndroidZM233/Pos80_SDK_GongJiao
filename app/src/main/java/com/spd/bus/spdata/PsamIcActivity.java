@@ -497,7 +497,8 @@ public class PsamIcActivity extends MVPBaseActivity<SpdBusPayContract.View, SpdB
                                 if (intPrices != 0 && intPrices < 100000 && !"000000".equals(DatabaseTabInfo.busno)) {
                                     if (driversNo.length() > 16) {
                                         // TODO: 2019/6/24  1.查询本次交易卡是否是黑名单
-                                        rfidDectValue = Jni.RfidDectValue(SqlStatement.SelectCard(cardCode));
+                                        int isBlock = SqlStatement.SelectCard(cardCode);
+                                        rfidDectValue = Jni.RfidDectValue(isBlock);
                                         LogUtils.d("消费" + rfidDectValue);
                                         if (rfidDectValue.length() > 2) {
                                             rfidDectState = rfidDectValue.substring(0, 2);
@@ -1084,9 +1085,9 @@ public class PsamIcActivity extends MVPBaseActivity<SpdBusPayContract.View, SpdB
         int driverPeople = SharedXmlUtil.getInstance(getApplicationContext())
                 .read(Info.DRIVER_PEOPLE, 0);
         SharedXmlUtil.getInstance(getApplicationContext())
-                .write(Info.ALL_YUE, allPeople + 1);
+                .write(Info.ALL_PEOPLE, allPeople + 1);
         SharedXmlUtil.getInstance(getApplicationContext())
-                .write(Info.DRIVER_YUE, driverPeople + 1);
+                .write(Info.DRIVER_PEOPLE, driverPeople + 1);
     }
 
     private void logToNet(CardBackBean cardBackBean) {
@@ -1346,7 +1347,6 @@ public class PsamIcActivity extends MVPBaseActivity<SpdBusPayContract.View, SpdB
                     PlaySound.play(PlaySound.YINLIAN, 0);
                     LogUtils.d("银联双免ODA消耗时间：" + (System.currentTimeMillis() - timeMillis));
                     codeChangeUI();
-                    statisticalAddition();
                     break;
                 case 8:
                     //卡错误状态吗--请投币系列
@@ -1624,12 +1624,11 @@ public class PsamIcActivity extends MVPBaseActivity<SpdBusPayContract.View, SpdB
                     runOnUiThread(new Runnable() {
                         @Override
                         public void run() {
-                            String busNr = SharedXmlUtil.getInstance(getApplicationContext())
-                                    .read(Info.BUS_NO, "000000");
+                            DatabaseTabInfo.getIntence("info");
+                            String busNr = DatabaseTabInfo.busno;
                             StringBuffer stringBuffer = new StringBuffer();
                             stringBuffer.append("车辆号：" + busNr + "\n");
-                            String posID = SharedXmlUtil.getInstance(getApplicationContext())
-                                    .read(Info.POS_ID, Info.POS_ID_INIT);
+                            String posID = DatabaseTabInfo.deviceNo;
                             stringBuffer.append("设备号：" + posID);
                             mTvDeviceMessage.setText(stringBuffer + "");
                             driversNo = "";

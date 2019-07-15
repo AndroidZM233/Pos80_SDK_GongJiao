@@ -121,8 +121,10 @@ public class ConfigCheckPresenter extends BasePresenterImpl<ConfigCheckContract.
         getAliPubKeyTianJin();
         getYinLianPubKey(context);
         getWechatPublicKeyTianJin();
-        String read = SharedXmlUtil.getInstance(context)
-                .read(Info.POS_ID, Info.POS_ID_INIT);
+//        String read = SharedXmlUtil.getInstance(context)
+//                .read(Info.POS_ID, Info.POS_ID_INIT);
+        DatabaseTabInfo.getIntence("info");
+        String read=DatabaseTabInfo.deviceNo;
         getShuangMianPubKey(context, "pos/posKeys?data=" + read);
         getWechatMacTianJin();
 
@@ -485,7 +487,8 @@ public class ConfigCheckPresenter extends BasePresenterImpl<ConfigCheckContract.
     public void getZhiFuBaoAppSercet(Context context) {
         final Gson gson = new GsonBuilder().serializeNulls().create();
         Map<String, String> map = new HashMap<>();
-        String posID = SharedXmlUtil.getInstance(context).read(Info.POS_ID, Info.POS_ID_INIT);
+        DatabaseTabInfo.getIntence("info");
+        String posID = DatabaseTabInfo.deviceNo;
         AppSercetPost appSercetPost = new AppSercetPost();
         appSercetPost.setDeviceId(posID);
         map.put("data", gson.toJson(appSercetPost));

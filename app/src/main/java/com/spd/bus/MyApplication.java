@@ -90,7 +90,7 @@ public class MyApplication extends Application {
         filter.addDataScheme("package");
         registerReceiver(new InstallReceiver(), filter);
 
-//        CrashHandler.getInstance().init(getApplicationContext());
+        CrashHandler.getInstance().init(getApplicationContext());
         // 初始化ActiveAndroid
         ActiveAndroid.initialize(this);
         DbDaoManage.initDb(this);

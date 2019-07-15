@@ -59,7 +59,7 @@ public class HeartTimer {
     }
 
     public void initTimer() {
-        long period = 1 * 60 * 1000;//时间间隔
+        long period = 5 * 60 * 1000;//时间间隔
         mDisposable = Observable.interval(period, TimeUnit.MILLISECONDS)
 //                .observeOn(Schedulers.newThread())
                 .subscribe(aLong -> heart());
@@ -120,6 +120,7 @@ public class HeartTimer {
 
             @Override
             public void onNext(BaseInfoBackBean baseInfoBackBean) {
+
                 if (beanList.size() != 0) {
                     BaseInfoBackBean backBean = beanList.get(0);
                     String black = baseInfoBackBean.getBlack();
@@ -166,7 +167,8 @@ public class HeartTimer {
     private void getBlack(String version, BaseInfoBackBean baseInfoBackBean) {
         final Gson gson = new GsonBuilder().serializeNulls().create();
         AliWhiteBlackPost aliWhiteBlackPost = new AliWhiteBlackPost();
-        String posID = SharedXmlUtil.getInstance(mContext).read(Info.POS_ID, Info.POS_ID_INIT);
+        DatabaseTabInfo.getIntence("info");
+        String posID = DatabaseTabInfo.deviceNo;
         aliWhiteBlackPost.setPosid(posID);
         aliWhiteBlackPost.setVersion(version);
         HttpMethods.getInstance().black(gson.toJson(aliWhiteBlackPost)
@@ -220,7 +222,8 @@ public class HeartTimer {
     private void getWhite(String version) {
         final Gson gson = new GsonBuilder().serializeNulls().create();
         AliWhiteBlackPost aliWhiteBlackPost = new AliWhiteBlackPost();
-        String posID = SharedXmlUtil.getInstance(mContext).read(Info.POS_ID, Info.POS_ID_INIT);
+        DatabaseTabInfo.getIntence("info");
+        String posID = DatabaseTabInfo.deviceNo;
         aliWhiteBlackPost.setPosid(posID);
         aliWhiteBlackPost.setVersion(version);
         HttpMethods.getInstance().white(gson.toJson(aliWhiteBlackPost)
